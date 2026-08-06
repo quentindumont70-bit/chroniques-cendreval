@@ -21,13 +21,13 @@ const MAP = [
   "1111111111111111",
 ];
 
-type Save = { x:number; y:number; a:number; hp:number; mana:number; gold:number; potions:number; enemyHp:number; quest:number; level:number; reward:number };
-const START: Save = { x: 2.5, y: 13.2, a: -Math.PI/2, hp: 100, mana: 80, gold: 12, potions: 2, enemyHp: 70, quest: 0, level:1, reward:0 };
+type Save = { x:number; y:number; a:number; hp:number; mana:number; stamina:number; gold:number; potions:number; enemyHp:number; quest:number; level:number; reward:number };
+const START: Save = { x: 2.5, y: 13.2, a: -Math.PI/2, hp: 100, mana: 80, stamina:100, gold:12, potions:2, enemyHp:70, quest:0, level:1, reward:0 };
 const W = 426, H = 240, FOV = Math.PI / 3;
-type Action = "forward"|"back"|"left"|"right"|"turnLeft"|"turnRight"|"attack"|"spell"|"potion"|"inventory"|"journal"|"save";
+type Action = "forward"|"back"|"left"|"right"|"turnLeft"|"turnRight"|"attack"|"spell"|"parry"|"dodge"|"potion"|"inventory"|"journal"|"save";
 type Bindings = Record<Action,string>;
-const DEFAULT_BINDINGS: Bindings = {forward:"KeyZ",back:"KeyS",left:"KeyQ",right:"KeyD",turnLeft:"ArrowLeft",turnRight:"ArrowRight",attack:"Mouse0",spell:"Mouse2",potion:"Digit1",inventory:"KeyI",journal:"KeyJ",save:"KeyP"};
-const ACTION_LABELS: Record<Action,string> = {forward:"Avancer",back:"Reculer",left:"Pas à gauche",right:"Pas à droite",turnLeft:"Tourner à gauche",turnRight:"Tourner à droite",attack:"Attaquer",spell:"Lancer la flamme",potion:"Boire une potion",inventory:"Ouvrir le sac",journal:"Ouvrir le journal",save:"Sauvegarder"};
+const DEFAULT_BINDINGS: Bindings = {forward:"KeyZ",back:"KeyS",left:"KeyQ",right:"KeyD",turnLeft:"ArrowLeft",turnRight:"ArrowRight",attack:"Mouse0",spell:"Mouse2",parry:"Mouse1",dodge:"ShiftLeft",potion:"Digit1",inventory:"KeyI",journal:"KeyJ",save:"KeyP"};
+const ACTION_LABELS: Record<Action,string> = {forward:"Avancer",back:"Reculer",left:"Pas à gauche",right:"Pas à droite",turnLeft:"Tourner à gauche",turnRight:"Tourner à droite",attack:"Attaquer",spell:"Lancer la flamme",parry:"Parer",dodge:"Esquiver",potion:"Boire une potion",inventory:"Ouvrir le sac",journal:"Ouvrir le journal",save:"Sauvegarder"};
 function bindingLabel(value:string){return value.replace("Key","Touche ").replace("Digit","Touche ").replace("Arrow","Flèche ").replace("Mouse0","Clic gauche").replace("Mouse1","Clic molette").replace("Mouse2","Clic droit").replace("Mouse3","Souris 3").replace("Mouse4","Souris 4")}
 
 function wallAt(x:number, y:number) {
@@ -39,14 +39,17 @@ export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const state = useRef<Save>({...START});
   const keys = useRef<Record<string,boolean>>({});
-  const enemy = useRef({x:11.5,y:4.5,hp:70,alive:true,hit:0,cooldown:0,boss:true,name:"gardien"});
+  const enemy = useRef({x:11.5,y:4.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien"});
   const minions = useRef([
-    {x:5.5,y:3.5,hp:34,alive:true,hit:0,cooldown:0,boss:false,name:"ombre"},
-    {x:8.5,y:11.5,hp:34,alive:true,hit:0,cooldown:0,boss:false,name:"ombre"},
+    {x:5.5,y:3.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"},
+    {x:8.5,y:11.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"},
   ]);
   const attackFx = useRef(0);
   const spellFx = useRef(0);
   const hurtFx = useRef(0);
+  const parryFx = useRef(0);
+  const perfectFx = useRef(0);
+  const dodgeFx = useRef(0);
   const last = useRef(0);
   const [started,setStarted] = useState(false);
   const [panel,setPanel] = useState<"inventory"|"journal"|"controls"|null>(null);
@@ -91,6 +94,9 @@ export default function Home() {
     sync();
   },[panel,sync]);
 
+  const parry = useCallback(()=>{const s=state.current;if(panel||s.stamina<10)return;s.stamina-=10;parryFx.current=.46;perfectFx.current=.13;sync();setMessage("Parade — frappez au moment de l’impact pour une parade parfaite.")},[panel,sync]);
+  const dodge = useCallback(()=>{const s=state.current;if(panel||s.stamina<24)return;s.stamina-=24;dodgeFx.current=.34;const nx=s.x-Math.cos(s.a)*.9,ny=s.y-Math.sin(s.a)*.9;if(!wallAt(nx,s.y))s.x=nx;if(!wallAt(s.x,ny))s.y=ny;sync();setMessage("Esquive !")},[panel,sync]);
+
   useEffect(()=>{
     const raw=localStorage.getItem("cendreval-bindings");
     if(raw){try{applyBindings({...DEFAULT_BINDINGS,...JSON.parse(raw)})}catch{}}
@@ -103,6 +109,8 @@ export default function Home() {
       const action=(Object.keys(bindingsRef.current) as Action[]).find(a=>bindingsRef.current[a]===input);
       if(action==="attack")strike(false);
       if(action==="spell")strike(true);
+      if(action==="parry")parry();
+      if(action==="dodge")dodge();
       if(action==="potion")potion();
       if(action==="inventory")setPanel(p=>p==="inventory"?null:"inventory");
       if(action==="journal")setPanel(p=>p==="journal"?null:"journal");
@@ -128,7 +136,7 @@ export default function Home() {
     const lock=()=>setMouseLook(document.pointerLockElement===canvasRef.current);
     addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("mousedown",mouseDown);addEventListener("mouseup",mouseUp);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);
     return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("mousedown",mouseDown);removeEventListener("mouseup",mouseUp);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock)};
-  },[applyBindings,capture,panel,save,started,strike,village]);
+  },[applyBindings,capture,dodge,panel,parry,save,started,strike,village]);
 
   useEffect(()=>{
     if(!started) return;
@@ -149,13 +157,14 @@ export default function Home() {
         const speed=dt*2.35, dx=(Math.cos(s.a)*move+Math.cos(s.a+Math.PI/2)*strafe)*speed, dy=(Math.sin(s.a)*move+Math.sin(s.a+Math.PI/2)*strafe)*speed;
         if(!wallAt(s.x+dx,s.y))s.x+=dx;if(!wallAt(s.x,s.y+dy))s.y+=dy;
       }
-      attackFx.current=Math.max(0,attackFx.current-dt);spellFx.current=Math.max(0,spellFx.current-dt);hurtFx.current=Math.max(0,hurtFx.current-dt);
+      attackFx.current=Math.max(0,attackFx.current-dt);spellFx.current=Math.max(0,spellFx.current-dt);hurtFx.current=Math.max(0,hurtFx.current-dt);parryFx.current=Math.max(0,parryFx.current-dt);perfectFx.current=Math.max(0,perfectFx.current-dt);dodgeFx.current=Math.max(0,dodgeFx.current-dt);s.stamina=Math.min(100,s.stamina+dt*16);
       for(const foe of [enemy.current,...minions.current]){
-        foe.hit=Math.max(0,foe.hit-dt);foe.cooldown=Math.max(0,foe.cooldown-dt);
+        const telegraphBefore=foe.telegraph;foe.hit=Math.max(0,foe.hit-dt);foe.cooldown=Math.max(0,foe.cooldown-dt);foe.telegraph=Math.max(0,foe.telegraph-dt);
         if(!foe.alive)continue;
         const vx=s.x-foe.x,vy=s.y-foe.y,dist=Math.hypot(vx,vy);
-        if(dist<7&&dist>.9){const step=dt*(foe.boss?.65:.85),nx=foe.x+vx/dist*step,ny=foe.y+vy/dist*step;if(!wallAt(nx,foe.y))foe.x=nx;if(!wallAt(foe.x,ny))foe.y=ny;}
-        if(dist<1.25&&foe.cooldown===0){foe.cooldown=foe.boss?1.15:1.45;s.hp=Math.max(0,s.hp-(foe.boss?8:4));hurtFx.current=.25;sync();setMessage(s.hp?`${foe.boss?"Le gardien":"Une ombre"} vous frappe !`: "Vous êtes tombé… rechargez votre sauvegarde.");}
+        if(dist<7&&dist>.9&&foe.telegraph===0){const step=dt*(foe.boss?.65:.85),nx=foe.x+vx/dist*step,ny=foe.y+vy/dist*step;if(!wallAt(nx,foe.y))foe.x=nx;if(!wallAt(foe.x,ny))foe.y=ny;}
+        if(dist<1.25&&foe.cooldown===0&&foe.telegraph===0){foe.telegraph=foe.boss?.64:.48;setMessage(`${foe.boss?"Le gardien lève son arme !":"L’ombre se prépare à frapper !"}`);}
+        if(telegraphBefore>0&&foe.telegraph===0){foe.cooldown=foe.boss?1.15:1.35;if(dodgeFx.current>0){setMessage("Esquive parfaite !")}else if(parryFx.current>0){if(perfectFx.current>0){foe.hit=.65;foe.cooldown=1.8;s.stamina=Math.min(100,s.stamina+22);setMessage("PARADE PARFAITE — l’ennemi est étourdi !")}else{setMessage("Parade réussie.")}}else{s.hp=Math.max(0,s.hp-(foe.boss?8:4));hurtFx.current=.25;sync();setMessage(s.hp?`${foe.boss?"Le gardien":"Une ombre"} vous frappe !`: "Vous êtes tombé… rechargez votre sauvegarde.");}}
       }
 
       // Ciel voûté et sol en damier rétro.
@@ -180,7 +189,7 @@ export default function Home() {
         if(!shade.alive)continue;
         const dx=shade.x-s.x,dy=shade.y-s.y,dist=Math.hypot(dx,dy);let ang=Math.atan2(dy,dx)-s.a;ang=Math.atan2(Math.sin(ang),Math.cos(ang));
         const column=Math.max(0,Math.min(W-1,Math.floor((ang/FOV+.5)*W)));
-        if(Math.abs(ang)<FOV*.7&&dist<zbuf[column]){const size=Math.min(98,105/dist),cx=(.5+ang/FOV)*W,base=H/2+size*.52,u=size/12;ctx.save();ctx.translate(Math.floor(cx-size/2),Math.floor(base-size));ctx.fillStyle=shade.hit?"#f9d9bf":"#100d1b";ctx.fillRect(3*u,2*u,6*u,9*u);ctx.fillStyle="#4a315f";ctx.fillRect(2*u,5*u,8*u,5*u);ctx.fillStyle="#c44c6a";ctx.fillRect(4*u,4*u,u,u);ctx.fillRect(7*u,4*u,u,u);ctx.fillStyle="#21152e";ctx.fillRect(2*u,10*u,3*u,2*u);ctx.fillRect(7*u,10*u,3*u,2*u);ctx.restore();}
+        if(Math.abs(ang)<FOV*.7&&dist<zbuf[column]){const size=Math.min(98,105/dist),cx=(.5+ang/FOV)*W,base=H/2+size*.52,u=size/12;ctx.save();ctx.translate(Math.floor(cx-size/2),Math.floor(base-size));ctx.fillStyle=shade.hit?"#f9d9bf":shade.telegraph>0?"#8e273c":"#100d1b";ctx.fillRect(3*u,2*u,6*u,9*u);ctx.fillStyle="#4a315f";ctx.fillRect(2*u,5*u,8*u,5*u);ctx.fillStyle="#c44c6a";ctx.fillRect(4*u,4*u,u,u);ctx.fillRect(7*u,4*u,u,u);ctx.fillStyle="#21152e";ctx.fillRect(2*u,10*u,3*u,2*u);ctx.fillRect(7*u,10*u,3*u,2*u);ctx.restore();}
       }
 
       // Gardien sous forme de billboard pixelisé.
@@ -190,7 +199,7 @@ export default function Home() {
         if(Math.abs(ang)<FOV*.7 && dist<zbuf[Math.max(0,Math.min(W-1,Math.floor((ang/FOV+.5)*W)))]){
           const size=Math.min(130,150/dist),cx=(.5+ang/FOV)*W,base=H/2+size*.52;
           ctx.save();ctx.translate(Math.floor(cx-size/2),Math.floor(base-size));
-          const u=size/16;ctx.fillStyle=e.hit?"#fff0c4":"#16101b";ctx.fillRect(4*u,3*u,8*u,12*u);
+          const u=size/16;ctx.fillStyle=e.hit?"#fff0c4":e.telegraph>0?"#9f2b37":"#16101b";ctx.fillRect(4*u,3*u,8*u,12*u);
           ctx.fillStyle="#696075";ctx.fillRect(5*u,2*u,6*u,7*u);ctx.fillRect(3*u,7*u,10*u,6*u);
           ctx.fillStyle="#c4463d";ctx.fillRect(6*u,5*u,1.5*u,u);ctx.fillRect(9*u,5*u,1.5*u,u);
           ctx.fillStyle="#a87a42";ctx.fillRect(1*u,6*u,3*u,2*u);ctx.fillRect(12*u,6*u,3*u,2*u);
@@ -202,6 +211,7 @@ export default function Home() {
       if(spellFx.current>0){const r=30+spellFx.current*90,g=ctx.createRadialGradient(W*.68,H*.68,2,W*.68,H*.68,r);g.addColorStop(0,"#fff7a0");g.addColorStop(.35,"#ff6b28");g.addColorStop(1,"transparent");ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
       const swing=attackFx.current?Math.sin(attackFx.current/.28*Math.PI)*38:0;
       ctx.save();ctx.translate(W*.64+swing,H*.78-swing*.6);ctx.rotate(-.62+swing*.012);ctx.fillStyle="#211724";ctx.fillRect(-5,-2,15,8);ctx.fillStyle="#c0aeb1";ctx.fillRect(8,0,92,5);ctx.fillStyle="#f2d89c";ctx.fillRect(8,0,88,1);ctx.restore();
+      if(parryFx.current>0){ctx.strokeStyle=perfectFx.current>0?"#ffe49a":"#9db5d5";ctx.lineWidth=5;ctx.beginPath();ctx.arc(W*.78,H*.73,35,Math.PI*.45,Math.PI*1.55);ctx.stroke()}
       ctx.fillStyle="rgba(255,239,190,.75)";ctx.fillRect(W/2-5,H/2,11,1);ctx.fillRect(W/2,H/2-5,1,11);
       if(hurtFx.current){ctx.fillStyle=`rgba(170,15,20,${hurtFx.current})`;ctx.fillRect(0,0,W,H)}
       raf=requestAnimationFrame(loop);
@@ -223,8 +233,8 @@ export default function Home() {
       {!started&&<div className="start-screen"><div className="sigil">ᛉ</div><h1>CENDREVAL</h1><p>Un royaume brisé. Une crypte oubliée.<br/>Votre légende commence sous terre.</p><button onClick={()=>setStarted(true)}>NOUVELLE PARTIE</button><button className="secondary" onClick={load}>CONTINUER</button><small>Cliquez dans le jeu pour diriger la caméra à la souris</small></div>}
       {started&&<><div className="top-hud"><div className="quest"><span>OBJECTIF</span>{hud.quest===0?"Terrasser le gardien de la crypte":hud.quest===1?"Retourner à Valbrume":"Préparer la prochaine expédition"}</div><div className="top-actions">{hud.quest>0&&<button onClick={()=>setVillage(true)}>Valbrume</button>}<button onClick={save}>Sauvegarder</button></div></div>
       <div className="message">{message}</div>
-      <div className="bars"><div><label>VIE</label><i className="hp" style={{width:`${hud.hp}%`}}/></div><div><label>MANA</label><i className="mana" style={{width:`${hud.mana}%`}}/></div></div>
-      <div className="quickbar"><button onClick={potion}><b>1</b> Potion <em>{hud.potions}</em></button><button onClick={()=>strike(false)}><b>2</b> Lame</button><button onClick={()=>strike(true)}><b>3</b> Flamme</button><span>◈ {hud.gold}</span></div>
+      <div className="bars"><div><label>VIE</label><i className="hp" style={{width:`${hud.hp}%`}}/></div><div><label>MANA</label><i className="mana" style={{width:`${hud.mana}%`}}/></div><div><label>ENDURANCE</label><i className="stamina" style={{width:`${hud.stamina}%`}}/></div></div>
+      <div className="quickbar"><button onClick={potion}><b>1</b> Potion <em>{hud.potions}</em></button><button onClick={()=>strike(false)}><b>2</b> Lame</button><button onClick={()=>strike(true)}><b>3</b> Flamme</button><button onClick={parry}><b>MB3</b> Parade</button><button onClick={dodge}><b>⇧</b> Esquive</button><span>◈ {hud.gold}</span></div>
       <div className="menu-buttons"><button onClick={()=>setPanel("inventory")}>SAC</button><button onClick={()=>setPanel("journal")}>JOURNAL</button><button onClick={()=>setPanel("controls")}>OPTIONS</button></div>
       <div className="touch"><button onPointerDown={()=>hold("KeyA",true)} onPointerUp={()=>hold("KeyA",false)}>◀</button><button onPointerDown={()=>hold("KeyW",true)} onPointerUp={()=>hold("KeyW",false)}>▲</button><button onPointerDown={()=>hold("KeyD",true)} onPointerUp={()=>hold("KeyD",false)}>▶</button><button onClick={()=>strike(false)}>⚔</button><button onClick={()=>strike(true)}>✦</button></div></>}
       {panel&&<div className="panel"><button className="close" onClick={()=>setPanel(null)}>×</button>{panel==="controls"?<><span className="eyebrow">COMMANDES</span><h2>Clavier et souris</h2><p className="controls-note">Cliquez dans le jeu pour capturer la souris. Échap libère le curseur. Cliquez sur une action, puis pressez une touche ou un bouton de souris.</p><label className="sensitivity">Sensibilité souris <input aria-label="Sensibilité souris" type="range" min="0.3" max="2.5" step="0.1" value={sensitivity} onChange={e=>changeSensitivity(Number(e.target.value))}/><b>{sensitivity.toFixed(1)}×</b></label><div className="bindings">{(Object.keys(ACTION_LABELS) as Action[]).map(action=><div className="binding" key={action}><span>{ACTION_LABELS[action]}</span><button className={capture===action?"listening":""} onClick={()=>setCapture(action)}>{capture===action?"Appuyez…":bindingLabel(bindings[action])}</button></div>)}</div><button className="reset-bindings" onClick={()=>applyBindings(DEFAULT_BINDINGS)}>RÉTABLIR LES COMMANDES</button></>:panel==="inventory"?<><span className="eyebrow">ÉQUIPEMENT · NIVEAU {hud.level}</span><h2>Sac de l’aventurier</h2><div className="inventory"><div className="item selected">⚔<span>Lame ébréchée<small>Dégâts 22</small></span></div><div className="item">✦<span>Flamme ancienne<small>Coût 15 mana</small></span></div><div className="item">♥<span>Potion carmin<small>Quantité : {hud.potions}</small></span></div><div className="item">◆<span>Éclats d’or<small>{hud.gold} pièces</small></span></div></div></>:<><span className="eyebrow">JOURNAL</span><h2>La Crypte des rois muets</h2><p>Le village de Valbrume vit dans l’ombre d’un ancien gardien réveillé sous les collines.</p><div className={hud.quest>0?"objective done":"objective"}>{hud.quest>0?"✓ Gardien terrassé":"○ Trouver et terrasser le gardien"}</div><div className={hud.quest===2?"objective done":"objective"}>{hud.quest===2?"✓ Récompense de Valbrume reçue":"○ Retourner à Valbrume"}</div></>}</div>}
