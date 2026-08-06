@@ -66,6 +66,8 @@ export default function Home() {
 
   const sync = useCallback(() => setHud({...state.current}), []);
   const applyBindings = useCallback((next:Bindings)=>{bindingsRef.current=next;setBindings(next);localStorage.setItem("cendreval-bindings",JSON.stringify(next))},[]);
+  const clearInput = useCallback(()=>{keys.current={}},[]);
+  const captureMouse = useCallback(()=>{if(started&&!panel&&!village&&!choosingSpec)canvasRef.current?.requestPointerLock?.()},[choosingSpec,panel,started,village]);
   const save = useCallback(() => {
     localStorage.setItem("cendreval-save", JSON.stringify(state.current));
     setMessage("Partie sauvegardée");
@@ -125,22 +127,25 @@ export default function Home() {
       keys.current[e.code]=true;
       trigger(e.code);
       if(e.code==="Space")e.preventDefault();
-      if(e.code==="Escape") setPanel(null);
+      if(e.code==="Escape"){clearInput();setPanel(null);document.exitPointerLock?.()}
     };
     const up=(e:KeyboardEvent)=>{keys.current[e.code]=false};
     const mouseDown=(e:MouseEvent)=>{
       const input=`Mouse${e.button}`;
       if(capture){e.preventDefault();applyBindings({...bindingsRef.current,[capture]:input});setCapture(null);return}
       keys.current[input]=true;trigger(input);
-      if(started && !panel && !village && canvasRef.current?.contains(e.target as Node))canvasRef.current.requestPointerLock();
+      if(started && !panel && !village && canvasRef.current?.contains(e.target as Node))canvasRef.current.requestPointerLock?.();
       if(e.button!==0)e.preventDefault();
     };
     const mouseUp=(e:MouseEvent)=>{keys.current[`Mouse${e.button}`]=false};
     const move=(e:MouseEvent)=>{if(document.pointerLockElement===canvasRef.current&&!panel&&!village){state.current.a+=e.movementX*.0024*sensitivityRef.current}};
-    const lock=()=>setMouseLook(document.pointerLockElement===canvasRef.current);
-    addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("mousedown",mouseDown);addEventListener("mouseup",mouseUp);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);
-    return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("mousedown",mouseDown);removeEventListener("mouseup",mouseUp);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock)};
-  },[applyBindings,capture,dodge,panel,parry,save,shootBow,started,strike,village]);
+    const lock=()=>{if(document.pointerLockElement!==canvasRef.current)clearInput();setMouseLook(document.pointerLockElement===canvasRef.current)};
+    const blur=()=>clearInput();
+    addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("mousedown",mouseDown);addEventListener("mouseup",mouseUp);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("blur",blur);
+    return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("mousedown",mouseDown);removeEventListener("mouseup",mouseUp);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock);removeEventListener("blur",blur)};
+  },[applyBindings,capture,clearInput,dodge,panel,parry,save,shootBow,started,strike,village]);
+
+  useEffect(()=>{clearInput();document.exitPointerLock?.()},[clearInput,panel,village,choosingSpec]);
 
   useEffect(()=>{
     if(!started) return;
@@ -150,7 +155,7 @@ export default function Home() {
     const loop=(t:number)=>{
       const dt=Math.min(.04,(t-last.current)/1000||0);last.current=t;
       const s=state.current;
-      if(!panel){
+      if(!panel&&!village&&!choosingSpec){
         let turn=0,move=0,strafe=0;
         if(keys.current[bindingsRef.current.turnLeft])turn-=1;
         if(keys.current[bindingsRef.current.turnRight])turn+=1;
@@ -234,7 +239,7 @@ export default function Home() {
     <div className="grain" />
     <header><div className="brand"><span>CHRONIQUES DE</span><strong>CENDREVAL</strong></div><div className="chapter">{village?"VALBRUME · LE VILLAGE DES BRUMES":"ACTE I · LA CRYPTE DES ROIS MUETS"}</div></header>
     <section className="stage" aria-label="Jeu en vue subjective">
-      <canvas ref={canvasRef} width={W} height={H} />
+      <canvas ref={canvasRef} width={W} height={H} tabIndex={0} onPointerDown={captureMouse} />
       {!started&&!choosingSpec&&<div className="start-screen"><div className="sigil">ᛉ</div><h1>CENDREVAL</h1><p>Un royaume brisé. Une crypte oubliée.<br/>Votre légende commence sous terre.</p><button onClick={()=>setChoosingSpec(true)}>NOUVELLE PARTIE</button><button className="secondary" onClick={load}>CONTINUER</button><small>Cliquez dans le jeu pour diriger la caméra à la souris</small></div>}
       {choosingSpec&&<div className="start-screen spec-select"><span className="eyebrow">CHOISISSEZ VOTRE VOIE</span><h1>VOTRE LÉGENDE</h1><div className="spec-cards"><button onClick={()=>chooseSpec("blade")}><b>⚔ LAME</b><small>Combat rapproché et endurance renforcée.</small></button><button onClick={()=>chooseSpec("bow")}><b>⌁ RÔDEUR</b><small>Arc, distance et vingt-deux flèches.</small></button><button onClick={()=>chooseSpec("arcane")}><b>✦ ARCANES</b><small>Mana maximum pour la flamme ancienne.</small></button></div><button className="secondary" onClick={()=>setChoosingSpec(false)}>RETOUR</button></div>}
       {started&&<><div className="top-hud"><div className="quest"><span>OBJECTIF</span>{hud.quest===0?"Terrasser le gardien de la crypte":hud.quest===1?"Retourner à Valbrume":"Préparer la prochaine expédition"}</div><div className="top-actions">{hud.quest>0&&<button onClick={()=>setVillage(true)}>Valbrume</button>}<button onClick={save}>Sauvegarder</button></div></div>
