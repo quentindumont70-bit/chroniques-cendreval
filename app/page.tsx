@@ -24,6 +24,11 @@ const MAP = [
 type Save = { x:number; y:number; a:number; hp:number; mana:number; gold:number; potions:number; enemyHp:number; quest:number; level:number; reward:number };
 const START: Save = { x: 2.5, y: 13.2, a: -Math.PI/2, hp: 100, mana: 80, gold: 12, potions: 2, enemyHp: 70, quest: 0, level:1, reward:0 };
 const W = 426, H = 240, FOV = Math.PI / 3;
+type Action = "forward"|"back"|"left"|"right"|"turnLeft"|"turnRight"|"attack"|"spell"|"potion"|"inventory"|"journal"|"save";
+type Bindings = Record<Action,string>;
+const DEFAULT_BINDINGS: Bindings = {forward:"KeyZ",back:"KeyS",left:"KeyQ",right:"KeyD",turnLeft:"ArrowLeft",turnRight:"ArrowRight",attack:"Mouse0",spell:"Mouse2",potion:"Digit1",inventory:"KeyI",journal:"KeyJ",save:"KeyP"};
+const ACTION_LABELS: Record<Action,string> = {forward:"Avancer",back:"Reculer",left:"Pas à gauche",right:"Pas à droite",turnLeft:"Tourner à gauche",turnRight:"Tourner à droite",attack:"Attaquer",spell:"Lancer la flamme",potion:"Boire une potion",inventory:"Ouvrir le sac",journal:"Ouvrir le journal",save:"Sauvegarder"};
+function bindingLabel(value:string){return value.replace("Key","Touche ").replace("Digit","Touche ").replace("Arrow","Flèche ").replace("Mouse0","Clic gauche").replace("Mouse1","Clic molette").replace("Mouse2","Clic droit").replace("Mouse3","Souris 3").replace("Mouse4","Souris 4")}
 
 function wallAt(x:number, y:number) {
   const row = MAP[Math.floor(y)];
@@ -40,12 +45,19 @@ export default function Home() {
   const hurtFx = useRef(0);
   const last = useRef(0);
   const [started,setStarted] = useState(false);
-  const [panel,setPanel] = useState<"inventory"|"journal"|null>(null);
+  const [panel,setPanel] = useState<"inventory"|"journal"|"controls"|null>(null);
   const [village,setVillage] = useState(false);
+  const [bindings,setBindings] = useState<Bindings>(DEFAULT_BINDINGS);
+  const bindingsRef = useRef<Bindings>(DEFAULT_BINDINGS);
+  const [capture,setCapture] = useState<Action|null>(null);
+  const [mouseLook,setMouseLook] = useState(false);
+  const [sensitivity,setSensitivity] = useState(1);
+  const sensitivityRef = useRef(1);
   const [hud,setHud] = useState({...START});
   const [message,setMessage] = useState("Les ruines murmurent votre nom…");
 
   const sync = useCallback(() => setHud({...state.current}), []);
+  const applyBindings = useCallback((next:Bindings)=>{bindingsRef.current=next;setBindings(next);localStorage.setItem("cendreval-bindings",JSON.stringify(next))},[]);
   const save = useCallback(() => {
     localStorage.setItem("cendreval-save", JSON.stringify(state.current));
     setMessage("Partie sauvegardée");
@@ -73,19 +85,43 @@ export default function Home() {
   },[panel,sync]);
 
   useEffect(()=>{
+    const raw=localStorage.getItem("cendreval-bindings");
+    if(raw){try{applyBindings({...DEFAULT_BINDINGS,...JSON.parse(raw)})}catch{}}
+    const savedSensitivity=Number(localStorage.getItem("cendreval-mouse-sensitivity"));
+    if(savedSensitivity){setSensitivity(savedSensitivity);sensitivityRef.current=savedSensitivity}
+  },[applyBindings]);
+
+  useEffect(()=>{
+    const trigger=(input:string)=>{
+      const action=(Object.keys(bindingsRef.current) as Action[]).find(a=>bindingsRef.current[a]===input);
+      if(action==="attack")strike(false);
+      if(action==="spell")strike(true);
+      if(action==="potion")potion();
+      if(action==="inventory")setPanel(p=>p==="inventory"?null:"inventory");
+      if(action==="journal")setPanel(p=>p==="journal"?null:"journal");
+      if(action==="save")save();
+    };
     const down=(e:KeyboardEvent)=>{
+      if(capture){e.preventDefault();applyBindings({...bindingsRef.current,[capture]:e.code});setCapture(null);return}
       keys.current[e.code]=true;
-      if(e.code==="Space"){e.preventDefault();strike(false)}
-      if(e.code==="KeyF") strike(true);
-      if(e.code==="KeyI") setPanel(p=>p==="inventory"?null:"inventory");
-      if(e.code==="KeyJ") setPanel(p=>p==="journal"?null:"journal");
-      if(e.code==="KeyP") save();
+      trigger(e.code);
+      if(e.code==="Space")e.preventDefault();
       if(e.code==="Escape") setPanel(null);
     };
     const up=(e:KeyboardEvent)=>{keys.current[e.code]=false};
-    addEventListener("keydown",down);addEventListener("keyup",up);
-    return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up)};
-  },[save,strike]);
+    const mouseDown=(e:MouseEvent)=>{
+      const input=`Mouse${e.button}`;
+      if(capture){e.preventDefault();applyBindings({...bindingsRef.current,[capture]:input});setCapture(null);return}
+      keys.current[input]=true;trigger(input);
+      if(started && !panel && !village && canvasRef.current?.contains(e.target as Node))canvasRef.current.requestPointerLock();
+      if(e.button!==0)e.preventDefault();
+    };
+    const mouseUp=(e:MouseEvent)=>{keys.current[`Mouse${e.button}`]=false};
+    const move=(e:MouseEvent)=>{if(document.pointerLockElement===canvasRef.current&&!panel&&!village){state.current.a+=e.movementX*.0024*sensitivityRef.current}};
+    const lock=()=>setMouseLook(document.pointerLockElement===canvasRef.current);
+    addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("mousedown",mouseDown);addEventListener("mouseup",mouseUp);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);
+    return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("mousedown",mouseDown);removeEventListener("mouseup",mouseUp);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock)};
+  },[applyBindings,capture,panel,save,started,strike,village]);
 
   useEffect(()=>{
     if(!started) return;
@@ -97,11 +133,11 @@ export default function Home() {
       const s=state.current;
       if(!panel){
         let turn=0,move=0,strafe=0;
-        if(keys.current.ArrowLeft||keys.current.KeyQ)turn-=1;
-        if(keys.current.ArrowRight||keys.current.KeyE)turn+=1;
-        if(keys.current.KeyW||keys.current.KeyZ||keys.current.ArrowUp)move+=1;
-        if(keys.current.KeyS||keys.current.ArrowDown)move-=1;
-        if(keys.current.KeyA)strafe-=1;if(keys.current.KeyD)strafe+=1;
+        if(keys.current[bindingsRef.current.turnLeft])turn-=1;
+        if(keys.current[bindingsRef.current.turnRight])turn+=1;
+        if(keys.current[bindingsRef.current.forward])move+=1;
+        if(keys.current[bindingsRef.current.back])move-=1;
+        if(keys.current[bindingsRef.current.left])strafe-=1;if(keys.current[bindingsRef.current.right])strafe+=1;
         s.a+=turn*dt*2.15;
         const speed=dt*2.35, dx=(Math.cos(s.a)*move+Math.cos(s.a+Math.PI/2)*strafe)*speed, dy=(Math.sin(s.a)*move+Math.sin(s.a+Math.PI/2)*strafe)*speed;
         if(!wallAt(s.x+dx,s.y))s.x+=dx;if(!wallAt(s.x,s.y+dy))s.y+=dy;
@@ -156,20 +192,21 @@ export default function Home() {
   const potion=()=>{if(state.current.potions&&state.current.hp<100){state.current.potions--;state.current.hp=Math.min(100,state.current.hp+45);sync();setMessage("La potion réchauffe votre sang.")}};
   const claimReward=()=>{const s=state.current;if(s.quest===1&&!s.reward){s.reward=1;s.quest=2;s.gold+=35;s.potions+=2;s.level=2;s.hp=100;s.mana=100;sync();setMessage("Récompense reçue : 35 or, 2 potions. Niveau 2 !")} };
   const buyPotion=()=>{const s=state.current;if(s.gold<8){setMessage("Il vous manque des pièces d’or.");return}s.gold-=8;s.potions++;sync();setMessage("Potion achetée.")};
+  const changeSensitivity=(value:number)=>{setSensitivity(value);sensitivityRef.current=value;localStorage.setItem("cendreval-mouse-sensitivity",String(value))};
 
   return <main className="game-shell">
     <div className="grain" />
     <header><div className="brand"><span>CHRONIQUES DE</span><strong>CENDREVAL</strong></div><div className="chapter">{village?"VALBRUME · LE VILLAGE DES BRUMES":"ACTE I · LA CRYPTE DES ROIS MUETS"}</div></header>
     <section className="stage" aria-label="Jeu en vue subjective">
       <canvas ref={canvasRef} width={W} height={H} />
-      {!started&&<div className="start-screen"><div className="sigil">ᛉ</div><h1>CENDREVAL</h1><p>Un royaume brisé. Une crypte oubliée.<br/>Votre légende commence sous terre.</p><button onClick={()=>setStarted(true)}>NOUVELLE PARTIE</button><button className="secondary" onClick={load}>CONTINUER</button><small>ZQSD / flèches · Espace attaque · F magie</small></div>}
+      {!started&&<div className="start-screen"><div className="sigil">ᛉ</div><h1>CENDREVAL</h1><p>Un royaume brisé. Une crypte oubliée.<br/>Votre légende commence sous terre.</p><button onClick={()=>setStarted(true)}>NOUVELLE PARTIE</button><button className="secondary" onClick={load}>CONTINUER</button><small>Cliquez dans le jeu pour diriger la caméra à la souris</small></div>}
       {started&&<><div className="top-hud"><div className="quest"><span>OBJECTIF</span>{hud.quest===0?"Terrasser le gardien de la crypte":hud.quest===1?"Retourner à Valbrume":"Préparer la prochaine expédition"}</div><div className="top-actions">{hud.quest>0&&<button onClick={()=>setVillage(true)}>Valbrume</button>}<button onClick={save}>Sauvegarder</button></div></div>
       <div className="message">{message}</div>
       <div className="bars"><div><label>VIE</label><i className="hp" style={{width:`${hud.hp}%`}}/></div><div><label>MANA</label><i className="mana" style={{width:`${hud.mana}%`}}/></div></div>
       <div className="quickbar"><button onClick={potion}><b>1</b> Potion <em>{hud.potions}</em></button><button onClick={()=>strike(false)}><b>2</b> Lame</button><button onClick={()=>strike(true)}><b>3</b> Flamme</button><span>◈ {hud.gold}</span></div>
-      <div className="menu-buttons"><button onClick={()=>setPanel("inventory")}>I · SAC</button><button onClick={()=>setPanel("journal")}>J · JOURNAL</button></div>
+      <div className="menu-buttons"><button onClick={()=>setPanel("inventory")}>SAC</button><button onClick={()=>setPanel("journal")}>JOURNAL</button><button onClick={()=>setPanel("controls")}>OPTIONS</button></div>
       <div className="touch"><button onPointerDown={()=>hold("KeyA",true)} onPointerUp={()=>hold("KeyA",false)}>◀</button><button onPointerDown={()=>hold("KeyW",true)} onPointerUp={()=>hold("KeyW",false)}>▲</button><button onPointerDown={()=>hold("KeyD",true)} onPointerUp={()=>hold("KeyD",false)}>▶</button><button onClick={()=>strike(false)}>⚔</button><button onClick={()=>strike(true)}>✦</button></div></>}
-      {panel&&<div className="panel"><button className="close" onClick={()=>setPanel(null)}>×</button>{panel==="inventory"?<><span className="eyebrow">ÉQUIPEMENT · NIVEAU {hud.level}</span><h2>Sac de l’aventurier</h2><div className="inventory"><div className="item selected">⚔<span>Lame ébréchée<small>Dégâts 22</small></span></div><div className="item">✦<span>Flamme ancienne<small>Coût 15 mana</small></span></div><div className="item">♥<span>Potion carmin<small>Quantité : {hud.potions}</small></span></div><div className="item">◆<span>Éclats d’or<small>{hud.gold} pièces</small></span></div></div></>:<><span className="eyebrow">JOURNAL</span><h2>La Crypte des rois muets</h2><p>Le village de Valbrume vit dans l’ombre d’un ancien gardien réveillé sous les collines.</p><div className={hud.quest>0?"objective done":"objective"}>{hud.quest>0?"✓ Gardien terrassé":"○ Trouver et terrasser le gardien"}</div><div className={hud.quest===2?"objective done":"objective"}>{hud.quest===2?"✓ Récompense de Valbrume reçue":"○ Retourner à Valbrume"}</div></>}</div>}
+      {panel&&<div className="panel"><button className="close" onClick={()=>setPanel(null)}>×</button>{panel==="controls"?<><span className="eyebrow">COMMANDES</span><h2>Clavier et souris</h2><p className="controls-note">Cliquez dans le jeu pour capturer la souris. Échap libère le curseur. Cliquez sur une action, puis pressez une touche ou un bouton de souris.</p><label className="sensitivity">Sensibilité souris <input aria-label="Sensibilité souris" type="range" min="0.3" max="2.5" step="0.1" value={sensitivity} onChange={e=>changeSensitivity(Number(e.target.value))}/><b>{sensitivity.toFixed(1)}×</b></label><div className="bindings">{(Object.keys(ACTION_LABELS) as Action[]).map(action=><div className="binding" key={action}><span>{ACTION_LABELS[action]}</span><button className={capture===action?"listening":""} onClick={()=>setCapture(action)}>{capture===action?"Appuyez…":bindingLabel(bindings[action])}</button></div>)}</div><button className="reset-bindings" onClick={()=>applyBindings(DEFAULT_BINDINGS)}>RÉTABLIR LES COMMANDES</button></>:panel==="inventory"?<><span className="eyebrow">ÉQUIPEMENT · NIVEAU {hud.level}</span><h2>Sac de l’aventurier</h2><div className="inventory"><div className="item selected">⚔<span>Lame ébréchée<small>Dégâts 22</small></span></div><div className="item">✦<span>Flamme ancienne<small>Coût 15 mana</small></span></div><div className="item">♥<span>Potion carmin<small>Quantité : {hud.potions}</small></span></div><div className="item">◆<span>Éclats d’or<small>{hud.gold} pièces</small></span></div></div></>:<><span className="eyebrow">JOURNAL</span><h2>La Crypte des rois muets</h2><p>Le village de Valbrume vit dans l’ombre d’un ancien gardien réveillé sous les collines.</p><div className={hud.quest>0?"objective done":"objective"}>{hud.quest>0?"✓ Gardien terrassé":"○ Trouver et terrasser le gardien"}</div><div className={hud.quest===2?"objective done":"objective"}>{hud.quest===2?"✓ Récompense de Valbrume reçue":"○ Retourner à Valbrume"}</div></>}</div>}
       {village&&<div className="village"><div className="village-art"><div className="moon"/><div className="mountain one"/><div className="mountain two"/><div className="houses"><i/><i/><i/></div></div><div className="village-copy"><span className="eyebrow">VALBRUME · HALLE DU CONSEIL</span><h2>« Vous avez rendu le silence à nos morts. »</h2><p>La doyenne Elenn vous accueille au coin du feu. Les habitants sortent de leurs maisons et le marchand a rouvert son étal.</p>{hud.quest===1?<button className="gold-button" onClick={claimReward}>RECEVOIR LA RÉCOMPENSE</button>:<div className="rewarded">✓ Vous êtes désormais protecteur de Valbrume.</div>}<div className="merchant"><span>ÉTAL DE RUNE</span><p>Potion carmin · restaure 45 points de vie</p><button onClick={buyPotion}>ACHETER · 8 OR</button></div><button className="leave" onClick={()=>setVillage(false)}>RETOURNER À LA CRYPTE</button></div><button className="close village-close" onClick={()=>setVillage(false)}>×</button></div>}
     </section>
     <footer><span>Une aventure rétro en vue subjective</span><span>Version prototype · Sauvegarde locale</span></footer>
