@@ -39,7 +39,11 @@ export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const state = useRef<Save>({...START});
   const keys = useRef<Record<string,boolean>>({});
-  const enemy = useRef({x:11.5,y:4.5,alive:true,hit:0});
+  const enemy = useRef({x:11.5,y:4.5,hp:70,alive:true,hit:0,cooldown:0,boss:true,name:"gardien"});
+  const minions = useRef([
+    {x:5.5,y:3.5,hp:34,alive:true,hit:0,cooldown:0,boss:false,name:"ombre"},
+    {x:8.5,y:11.5,hp:34,alive:true,hit:0,cooldown:0,boss:false,name:"ombre"},
+  ]);
   const attackFx = useRef(0);
   const spellFx = useRef(0);
   const hurtFx = useRef(0);
@@ -64,7 +68,7 @@ export default function Home() {
   }, []);
   const load = useCallback(() => {
     const raw=localStorage.getItem("cendreval-save");
-    if(raw){ state.current={...START,...JSON.parse(raw)}; enemy.current.alive=state.current.enemyHp>0; sync(); setMessage("Sauvegarde chargée"); }
+    if(raw){ state.current={...START,...JSON.parse(raw)}; enemy.current.hp=state.current.enemyHp; enemy.current.alive=state.current.enemyHp>0; sync(); setMessage("Sauvegarde chargée"); }
     setStarted(true);
   },[sync]);
 
@@ -73,12 +77,15 @@ export default function Home() {
     const s=state.current;
     if(spell && s.mana<15){setMessage("Pas assez de mana");return;}
     if(spell){s.mana-=15;spellFx.current=.35}else attackFx.current=.28;
-    const e=enemy.current, d=Math.hypot(e.x-s.x,e.y-s.y);
+    const candidates=[enemy.current,...minions.current].filter(e=>e.alive).sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y));
+    const e=candidates[0]; if(!e){setMessage("La crypte est silencieuse.");sync();return}
+    const d=Math.hypot(e.x-s.x,e.y-s.y);
     const target=Math.atan2(e.y-s.y,e.x-s.x);
     const diff=Math.abs(Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a)));
     if(e.alive && d<(spell?7:1.65) && diff<.32){
-      s.enemyHp=Math.max(0,s.enemyHp-(spell?28:22)); e.hit=.18;
-      if(s.enemyHp===0){e.alive=false;s.gold+=18;s.quest=1;setMessage("Le gardien tombe. Valbrume vous attend !");}
+      e.hp=Math.max(0,e.hp-(spell?28:22)); e.hit=.18;
+      if(e.boss)s.enemyHp=e.hp;
+      if(e.hp===0){e.alive=false;s.gold+=e.boss?18:6;if(e.boss){s.quest=1;setMessage("Le gardien tombe. Valbrume vous attend !")}else setMessage("L’ombre se dissipe en cendres.");}
       else setMessage(spell?"La flamme dévore le gardien !":"Votre lame mord la pierre vive !");
     }
     sync();
@@ -142,7 +149,14 @@ export default function Home() {
         const speed=dt*2.35, dx=(Math.cos(s.a)*move+Math.cos(s.a+Math.PI/2)*strafe)*speed, dy=(Math.sin(s.a)*move+Math.sin(s.a+Math.PI/2)*strafe)*speed;
         if(!wallAt(s.x+dx,s.y))s.x+=dx;if(!wallAt(s.x,s.y+dy))s.y+=dy;
       }
-      attackFx.current=Math.max(0,attackFx.current-dt);spellFx.current=Math.max(0,spellFx.current-dt);hurtFx.current=Math.max(0,hurtFx.current-dt);enemy.current.hit=Math.max(0,enemy.current.hit-dt);
+      attackFx.current=Math.max(0,attackFx.current-dt);spellFx.current=Math.max(0,spellFx.current-dt);hurtFx.current=Math.max(0,hurtFx.current-dt);
+      for(const foe of [enemy.current,...minions.current]){
+        foe.hit=Math.max(0,foe.hit-dt);foe.cooldown=Math.max(0,foe.cooldown-dt);
+        if(!foe.alive)continue;
+        const vx=s.x-foe.x,vy=s.y-foe.y,dist=Math.hypot(vx,vy);
+        if(dist<7&&dist>.9){const step=dt*(foe.boss?.65:.85),nx=foe.x+vx/dist*step,ny=foe.y+vy/dist*step;if(!wallAt(nx,foe.y))foe.x=nx;if(!wallAt(foe.x,ny))foe.y=ny;}
+        if(dist<1.25&&foe.cooldown===0){foe.cooldown=foe.boss?1.15:1.45;s.hp=Math.max(0,s.hp-(foe.boss?8:4));hurtFx.current=.25;sync();setMessage(s.hp?`${foe.boss?"Le gardien":"Une ombre"} vous frappe !`: "Vous êtes tombé… rechargez votre sauvegarde.");}
+      }
 
       // Ciel voûté et sol en damier rétro.
       const sky=ctx.createLinearGradient(0,0,0,H/2);sky.addColorStop(0,"#090815");sky.addColorStop(1,"#34213b");ctx.fillStyle=sky;ctx.fillRect(0,0,W,H/2);
@@ -161,6 +175,14 @@ export default function Home() {
         if(x%13===0){ctx.fillStyle="rgba(10,5,10,.22)";ctx.fillRect(x,top,1,wh)}
       }
 
+      // Ombres errantes : elles suivent le joueur et apparaissent comme des sprites dans le couloir.
+      for(const shade of minions.current){
+        if(!shade.alive)continue;
+        const dx=shade.x-s.x,dy=shade.y-s.y,dist=Math.hypot(dx,dy);let ang=Math.atan2(dy,dx)-s.a;ang=Math.atan2(Math.sin(ang),Math.cos(ang));
+        const column=Math.max(0,Math.min(W-1,Math.floor((ang/FOV+.5)*W)));
+        if(Math.abs(ang)<FOV*.7&&dist<zbuf[column]){const size=Math.min(98,105/dist),cx=(.5+ang/FOV)*W,base=H/2+size*.52,u=size/12;ctx.save();ctx.translate(Math.floor(cx-size/2),Math.floor(base-size));ctx.fillStyle=shade.hit?"#f9d9bf":"#100d1b";ctx.fillRect(3*u,2*u,6*u,9*u);ctx.fillStyle="#4a315f";ctx.fillRect(2*u,5*u,8*u,5*u);ctx.fillStyle="#c44c6a";ctx.fillRect(4*u,4*u,u,u);ctx.fillRect(7*u,4*u,u,u);ctx.fillStyle="#21152e";ctx.fillRect(2*u,10*u,3*u,2*u);ctx.fillRect(7*u,10*u,3*u,2*u);ctx.restore();}
+      }
+
       // Gardien sous forme de billboard pixelisé.
       const e=enemy.current;
       if(e.alive){
@@ -173,7 +195,6 @@ export default function Home() {
           ctx.fillStyle="#c4463d";ctx.fillRect(6*u,5*u,1.5*u,u);ctx.fillRect(9*u,5*u,1.5*u,u);
           ctx.fillStyle="#a87a42";ctx.fillRect(1*u,6*u,3*u,2*u);ctx.fillRect(12*u,6*u,3*u,2*u);
           ctx.fillStyle="#3b3146";ctx.fillRect(4*u,13*u,3*u,3*u);ctx.fillRect(9*u,13*u,3*u,3*u);ctx.restore();
-          if(dist<1.35 && t%900<35){s.hp=Math.max(0,s.hp-7);hurtFx.current=.25;sync();setMessage(s.hp?"Le gardien vous frappe !":"Vous êtes tombé… rechargez votre sauvegarde.");}
         }
       }
 
