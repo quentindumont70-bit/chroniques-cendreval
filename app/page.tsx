@@ -47,6 +47,7 @@ function wallAt(x:number, y:number) {
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const horizonRef = useRef<HTMLImageElement|null>(null);
   const state = useRef<Save>({...START});
   const keys = useRef<Record<string,boolean>>({});
   const enemy = useRef({x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien"});
@@ -121,6 +122,12 @@ export default function Home() {
   },[applyBindings]);
 
   useEffect(()=>{
+    const horizon=new Image();
+    horizon.src="/cendreval-plains-v2.png";
+    horizon.onload=()=>{horizonRef.current=horizon};
+  },[]);
+
+  useEffect(()=>{
     const trigger=(input:string)=>{
       const action=(Object.keys(bindingsRef.current) as Action[]).find(a=>bindingsRef.current[a]===input);
       if(action==="attack")strike(false);
@@ -189,10 +196,13 @@ export default function Home() {
 
       // Ciel voûté et sol en damier rétro.
       const sky=ctx.createLinearGradient(0,0,0,H/2);sky.addColorStop(0,"#314d82");sky.addColorStop(.55,"#8ca6c7");sky.addColorStop(1,"#c4b88f");ctx.fillStyle=sky;ctx.fillRect(0,0,W,H/2);
-      ctx.fillStyle="rgba(244,222,161,.72)";ctx.fillRect(55,27,18,18);ctx.fillStyle="rgba(244,222,161,.28)";ctx.fillRect(50,22,28,28);
-      ctx.fillStyle="rgba(238,242,230,.38)";ctx.fillRect(125,27,42,3);ctx.fillRect(141,23,23,3);ctx.fillRect(190,45,58,3);ctx.fillRect(205,41,25,3);
-      ctx.fillStyle="#7283a0";ctx.beginPath();ctx.moveTo(0,93);ctx.lineTo(68,48);ctx.lineTo(120,94);ctx.lineTo(190,60);ctx.lineTo(263,95);ctx.lineTo(342,45);ctx.lineTo(W,92);ctx.lineTo(W,120);ctx.lineTo(0,120);ctx.fill();
-      ctx.fillStyle="#38435c";ctx.fillRect(296,55,22,43);ctx.fillRect(321,67,38,31);ctx.fillRect(301,46,12,52);ctx.fillRect(346,50,9,48);ctx.fillStyle="#253044";ctx.fillRect(298,43,18,6);ctx.fillRect(344,47,15,5);ctx.fillRect(316,61,47,6);
+      const horizon=horizonRef.current;
+      if(horizon){const pan=Math.sin(s.a)*12;ctx.drawImage(horizon,pan-14,0,W+28,H*.59)}else{
+        ctx.fillStyle="rgba(244,222,161,.72)";ctx.fillRect(55,27,18,18);ctx.fillStyle="rgba(244,222,161,.28)";ctx.fillRect(50,22,28,28);
+        ctx.fillStyle="rgba(238,242,230,.38)";ctx.fillRect(125,27,42,3);ctx.fillRect(141,23,23,3);ctx.fillRect(190,45,58,3);ctx.fillRect(205,41,25,3);
+        ctx.fillStyle="#7283a0";ctx.beginPath();ctx.moveTo(0,93);ctx.lineTo(68,48);ctx.lineTo(120,94);ctx.lineTo(190,60);ctx.lineTo(263,95);ctx.lineTo(342,45);ctx.lineTo(W,92);ctx.lineTo(W,120);ctx.lineTo(0,120);ctx.fill();
+        ctx.fillStyle="#38435c";ctx.fillRect(296,55,22,43);ctx.fillRect(321,67,38,31);ctx.fillRect(301,46,12,52);ctx.fillRect(346,50,9,48);ctx.fillStyle="#253044";ctx.fillRect(298,43,18,6);ctx.fillRect(344,47,15,5);ctx.fillRect(316,61,47,6);
+      }
       const floor=ctx.createLinearGradient(0,H/2,0,H);floor.addColorStop(0,"#6f8050");floor.addColorStop(1,"#26341e");ctx.fillStyle=floor;ctx.fillRect(0,H/2,W,H/2);
       for(let y=H/2;y<H;y+=8){ctx.fillStyle=y%16?"rgba(33,56,27,.45)":"rgba(161,146,82,.24)";ctx.fillRect(0,y,W,1)}
       ctx.fillStyle="rgba(181,146,80,.35)";ctx.beginPath();ctx.moveTo(W*.45,H);ctx.lineTo(W*.64,H);ctx.lineTo(W*.56,H/2);ctx.lineTo(W*.53,H/2);ctx.fill();
