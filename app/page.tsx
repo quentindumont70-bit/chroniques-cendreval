@@ -3,26 +3,30 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const MAP = [
-  "1111111111111111",
-  "1000000000000001",
-  "1022200011110001",
-  "1020000000010001",
-  "1020000000010001",
-  "1022200000010001",
-  "1000000000000001",
-  "1000111100033301",
-  "1000100000030301",
-  "1000100000030301",
-  "1000100000033301",
-  "1000000000000001",
-  "1000011100000001",
-  "1000000000000001",
-  "1000000000000001",
-  "1111111111111111",
+  "11111111111111111111",
+  "12222200000000022221",
+  "12000000000000000021",
+  "12000000000000000001",
+  "12000000000000000001",
+  "10000000000000000001",
+  "10000000000000000001",
+  "10000000003330000001",
+  "10000000003030000001",
+  "10000000003330000001",
+  "10000000000000000001",
+  "10000000000000000001",
+  "10000000000000000001",
+  "10000000000000000001",
+  "10000000000000000001",
+  "10000000000000000001",
+  "10000000000000000001",
+  "10000000000000000021",
+  "12222200000000022221",
+  "11111111111111111111",
 ];
 
 type Save = { x:number; y:number; a:number; hp:number; mana:number; stamina:number; gold:number; potions:number; arrows:number; spec:"blade"|"bow"|"arcane"; xp:number; talent:number; perkBlade:boolean; perkBow:boolean; perkArcane:boolean; enemyHp:number; quest:number; level:number; reward:number };
-const START: Save = { x:2.5, y:13.2, a:-Math.PI/2, hp:100, mana:80, stamina:100, gold:12, potions:2, arrows:14, spec:"blade", xp:0, talent:0, perkBlade:false, perkBow:false, perkArcane:false, enemyHp:70, quest:0, level:1, reward:0 };
+const START: Save = { x:3.5, y:16.5, a:-Math.PI/2, hp:100, mana:80, stamina:100, gold:12, potions:2, arrows:14, spec:"blade", xp:0, talent:0, perkBlade:false, perkBow:false, perkArcane:false, enemyHp:70, quest:0, level:1, reward:0 };
 const W = 426, H = 240, FOV = Math.PI / 3;
 type Action = "forward"|"back"|"left"|"right"|"turnLeft"|"turnRight"|"attack"|"spell"|"bow"|"parry"|"dodge"|"potion"|"inventory"|"journal"|"save";
 type Bindings = Record<Action,string>;
@@ -39,10 +43,10 @@ export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const state = useRef<Save>({...START});
   const keys = useRef<Record<string,boolean>>({});
-  const enemy = useRef({x:11.5,y:4.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien"});
+  const enemy = useRef({x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien"});
   const minions = useRef([
-    {x:5.5,y:3.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"},
-    {x:8.5,y:11.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"},
+    {x:6.5,y:5.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"},
+    {x:14.5,y:13.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"},
   ]);
   const attackFx = useRef(0);
   const spellFx = useRef(0);
@@ -178,9 +182,11 @@ export default function Home() {
       }
 
       // Ciel voûté et sol en damier rétro.
-      const sky=ctx.createLinearGradient(0,0,0,H/2);sky.addColorStop(0,"#090815");sky.addColorStop(1,"#34213b");ctx.fillStyle=sky;ctx.fillRect(0,0,W,H/2);
-      const floor=ctx.createLinearGradient(0,H/2,0,H);floor.addColorStop(0,"#261b22");floor.addColorStop(1,"#09080c");ctx.fillStyle=floor;ctx.fillRect(0,H/2,W,H/2);
-      for(let y=H/2;y<H;y+=8){ctx.fillStyle=y%16?"#1a1319":"#21171d";ctx.fillRect(0,y,W,1)}
+      const sky=ctx.createLinearGradient(0,0,0,H/2);sky.addColorStop(0,"#314d82");sky.addColorStop(.55,"#8ca6c7");sky.addColorStop(1,"#c4b88f");ctx.fillStyle=sky;ctx.fillRect(0,0,W,H/2);
+      ctx.fillStyle="#7283a0";ctx.beginPath();ctx.moveTo(0,93);ctx.lineTo(68,48);ctx.lineTo(120,94);ctx.lineTo(190,60);ctx.lineTo(263,95);ctx.lineTo(342,45);ctx.lineTo(W,92);ctx.lineTo(W,120);ctx.lineTo(0,120);ctx.fill();
+      ctx.fillStyle="#38435c";ctx.fillRect(296,55,22,43);ctx.fillRect(321,67,38,31);ctx.fillRect(301,46,12,52);ctx.fillRect(346,50,9,48);ctx.fillStyle="#253044";ctx.fillRect(298,43,18,6);ctx.fillRect(344,47,15,5);ctx.fillRect(316,61,47,6);
+      const floor=ctx.createLinearGradient(0,H/2,0,H);floor.addColorStop(0,"#6f8050");floor.addColorStop(1,"#26341e");ctx.fillStyle=floor;ctx.fillRect(0,H/2,W,H/2);
+      for(let y=H/2;y<H;y+=8){ctx.fillStyle=y%16?"rgba(33,56,27,.45)":"rgba(161,146,82,.24)";ctx.fillRect(0,y,W,1)}
       const zbuf=new Float32Array(W);
       for(let x=0;x<W;x++){
         const ray=s.a-FOV/2+(x/W)*FOV; let d=.02,hit=0;
@@ -189,7 +195,7 @@ export default function Home() {
         const wh=Math.min(H*1.6,H/d);const top=(H-wh)/2;
         const side=(Math.floor(s.x+Math.cos(ray)*d*8)+Math.floor(s.y+Math.sin(ray)*d*8))%2;
         const shade=Math.max(20,155-d*9)+(side?8:0);
-        const colors=hit===2?[shade*.55,shade*.32,shade*.2]:hit===3?[shade*.25,shade*.52,shade*.48]:[shade*.48,shade*.42,shade*.44];
+        const colors=hit===2?[shade*.16,shade*.42,shade*.19]:hit===3?[shade*.38,shade*.39,shade*.42]:[shade*.42,shade*.36,shade*.31];
         ctx.fillStyle=`rgb(${colors[0]},${colors[1]},${colors[2]})`;ctx.fillRect(x,top,1,wh);
         if(x%13===0){ctx.fillStyle="rgba(10,5,10,.22)";ctx.fillRect(x,top,1,wh)}
       }
