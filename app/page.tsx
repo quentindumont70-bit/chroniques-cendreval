@@ -28,6 +28,12 @@ const MAP = [
 type Save = { x:number; y:number; a:number; hp:number; mana:number; stamina:number; gold:number; potions:number; arrows:number; spec:"blade"|"bow"|"arcane"; xp:number; talent:number; perkBlade:boolean; perkBow:boolean; perkArcane:boolean; enemyHp:number; quest:number; level:number; reward:number };
 const START: Save = { x:3.5, y:16.5, a:-Math.PI/2, hp:100, mana:80, stamina:100, gold:12, potions:2, arrows:14, spec:"blade", xp:0, talent:0, perkBlade:false, perkBow:false, perkArcane:false, enemyHp:70, quest:0, level:1, reward:0 };
 const W = 426, H = 240, FOV = Math.PI / 3;
+const SCENERY = [
+  {x:4.7,y:13.5,kind:"tree"},{x:6.1,y:15.1,kind:"tree"},{x:8.1,y:16.9,kind:"stone"},
+  {x:11.2,y:13.8,kind:"tree"},{x:13.6,y:15.8,kind:"tree"},{x:16.1,y:11.4,kind:"tree"},
+  {x:5.4,y:8.3,kind:"tree"},{x:8.1,y:5.1,kind:"stone"},{x:13.6,y:5.7,kind:"tree"},
+  {x:15.4,y:7.8,kind:"stone"},{x:10.1,y:12.8,kind:"sign"}
+];
 type Action = "forward"|"back"|"left"|"right"|"turnLeft"|"turnRight"|"attack"|"spell"|"bow"|"parry"|"dodge"|"potion"|"inventory"|"journal"|"save";
 type Bindings = Record<Action,string>;
 const DEFAULT_BINDINGS: Bindings = {forward:"KeyZ",back:"KeyS",left:"KeyQ",right:"KeyD",turnLeft:"ArrowLeft",turnRight:"ArrowRight",attack:"Mouse0",spell:"Mouse2",bow:"KeyR",parry:"Mouse1",dodge:"ShiftLeft",potion:"Digit1",inventory:"KeyI",journal:"KeyJ",save:"KeyP"};
@@ -183,10 +189,13 @@ export default function Home() {
 
       // Ciel voûté et sol en damier rétro.
       const sky=ctx.createLinearGradient(0,0,0,H/2);sky.addColorStop(0,"#314d82");sky.addColorStop(.55,"#8ca6c7");sky.addColorStop(1,"#c4b88f");ctx.fillStyle=sky;ctx.fillRect(0,0,W,H/2);
+      ctx.fillStyle="rgba(244,222,161,.72)";ctx.fillRect(55,27,18,18);ctx.fillStyle="rgba(244,222,161,.28)";ctx.fillRect(50,22,28,28);
+      ctx.fillStyle="rgba(238,242,230,.38)";ctx.fillRect(125,27,42,3);ctx.fillRect(141,23,23,3);ctx.fillRect(190,45,58,3);ctx.fillRect(205,41,25,3);
       ctx.fillStyle="#7283a0";ctx.beginPath();ctx.moveTo(0,93);ctx.lineTo(68,48);ctx.lineTo(120,94);ctx.lineTo(190,60);ctx.lineTo(263,95);ctx.lineTo(342,45);ctx.lineTo(W,92);ctx.lineTo(W,120);ctx.lineTo(0,120);ctx.fill();
       ctx.fillStyle="#38435c";ctx.fillRect(296,55,22,43);ctx.fillRect(321,67,38,31);ctx.fillRect(301,46,12,52);ctx.fillRect(346,50,9,48);ctx.fillStyle="#253044";ctx.fillRect(298,43,18,6);ctx.fillRect(344,47,15,5);ctx.fillRect(316,61,47,6);
       const floor=ctx.createLinearGradient(0,H/2,0,H);floor.addColorStop(0,"#6f8050");floor.addColorStop(1,"#26341e");ctx.fillStyle=floor;ctx.fillRect(0,H/2,W,H/2);
       for(let y=H/2;y<H;y+=8){ctx.fillStyle=y%16?"rgba(33,56,27,.45)":"rgba(161,146,82,.24)";ctx.fillRect(0,y,W,1)}
+      ctx.fillStyle="rgba(181,146,80,.35)";ctx.beginPath();ctx.moveTo(W*.45,H);ctx.lineTo(W*.64,H);ctx.lineTo(W*.56,H/2);ctx.lineTo(W*.53,H/2);ctx.fill();
       const zbuf=new Float32Array(W);
       for(let x=0;x<W;x++){
         const ray=s.a-FOV/2+(x/W)*FOV; let d=.02,hit=0;
@@ -206,6 +215,20 @@ export default function Home() {
         const dx=shade.x-s.x,dy=shade.y-s.y,dist=Math.hypot(dx,dy);let ang=Math.atan2(dy,dx)-s.a;ang=Math.atan2(Math.sin(ang),Math.cos(ang));
         const column=Math.max(0,Math.min(W-1,Math.floor((ang/FOV+.5)*W)));
         if(Math.abs(ang)<FOV*.7&&dist<zbuf[column]){const size=Math.min(98,105/dist),cx=(.5+ang/FOV)*W,base=H/2+size*.52,u=size/12;ctx.save();ctx.translate(Math.floor(cx-size/2),Math.floor(base-size));ctx.fillStyle=shade.hit?"#f9d9bf":shade.telegraph>0?"#8e273c":"#100d1b";ctx.fillRect(3*u,2*u,6*u,9*u);ctx.fillStyle="#4a315f";ctx.fillRect(2*u,5*u,8*u,5*u);ctx.fillStyle="#c44c6a";ctx.fillRect(4*u,4*u,u,u);ctx.fillRect(7*u,4*u,u,u);ctx.fillStyle="#21152e";ctx.fillRect(2*u,10*u,3*u,2*u);ctx.fillRect(7*u,10*u,3*u,2*u);ctx.restore();}
+      }
+
+      for(const prop of SCENERY){
+        const dx=prop.x-s.x,dy=prop.y-s.y,dist=Math.hypot(dx,dy);let ang=Math.atan2(dy,dx)-s.a;ang=Math.atan2(Math.sin(ang),Math.cos(ang));
+        const column=Math.max(0,Math.min(W-1,Math.floor((ang/FOV+.5)*W)));
+        if(Math.abs(ang)>=FOV*.7||dist>=zbuf[column])continue;
+        const size=Math.min(prop.kind==="tree"?102:64,(prop.kind==="tree"?92:62)/dist),cx=(.5+ang/FOV)*W,base=H/2+size*.56,u=Math.max(1,size/12);
+        ctx.save();ctx.translate(Math.floor(cx-size/2),Math.floor(base-size));
+        if(prop.kind==="tree"){
+          ctx.fillStyle="#38271d";ctx.fillRect(5*u,6*u,2*u,6*u);ctx.fillStyle="#193b28";ctx.fillRect(2*u,1*u,8*u,7*u);ctx.fillStyle="#285538";ctx.fillRect(4*u,0,5*u,5*u);ctx.fillStyle="#5f7940";ctx.fillRect(5*u,1*u,2*u,2*u);
+        } else if(prop.kind==="sign"){
+          ctx.fillStyle="#4c3022";ctx.fillRect(5*u,2*u,2*u,10*u);ctx.fillStyle="#b58b4f";ctx.fillRect(1*u,1*u,10*u,4*u);ctx.fillStyle="#312018";ctx.fillRect(3*u,2*u,6*u,u);
+        } else {ctx.fillStyle="#29313b";ctx.fillRect(2*u,5*u,8*u,7*u);ctx.fillStyle="#68707a";ctx.fillRect(3*u,3*u,6*u,6*u);ctx.fillStyle="#99a0a0";ctx.fillRect(4*u,3*u,3*u,u)}
+        ctx.restore();
       }
 
       // Gardien sous forme de billboard pixelisé.
@@ -245,10 +268,10 @@ export default function Home() {
 
   return <main className="game-shell">
     <div className="grain" />
-    <header><div className="brand"><span>CHRONIQUES DE</span><strong>CENDREVAL</strong></div><div className="chapter">{village?"VALBRUME · LE VILLAGE DES BRUMES":"ACTE I · LA CRYPTE DES ROIS MUETS"}</div></header>
+    <header><div className="brand"><span>CHRONIQUES DE</span><strong>CENDREVAL</strong></div><div className="chapter">{village?"VALBRUME · LE VILLAGE DES BRUMES":"ACTE I · LES PLAINES DE CENDREVAL"}</div></header>
     <section className="stage" aria-label="Jeu en vue subjective">
       <canvas ref={canvasRef} width={W} height={H} tabIndex={0} onPointerDown={captureMouse} />
-      {!started&&!choosingSpec&&<div className="start-screen"><div className="sigil">ᛉ</div><h1>CENDREVAL</h1><p>Un royaume brisé. Une crypte oubliée.<br/>Votre légende commence sous terre.</p><button onClick={()=>setChoosingSpec(true)}>NOUVELLE PARTIE</button><button className="secondary" onClick={load}>CONTINUER</button><small>Cliquez dans le jeu pour diriger la caméra à la souris</small></div>}
+      {!started&&!choosingSpec&&<div className="start-screen"><div className="sigil">ᛉ</div><h1>CENDREVAL</h1><p>Au-delà des plaines, le château noir veille.<br/>Votre légende commence sous un ciel ouvert.</p><button onClick={()=>setChoosingSpec(true)}>NOUVELLE PARTIE</button><button className="secondary" onClick={load}>CONTINUER</button><small>Cliquez dans le jeu pour diriger la caméra à la souris</small></div>}
       {choosingSpec&&<div className="start-screen spec-select"><span className="eyebrow">CHOISISSEZ VOTRE VOIE</span><h1>VOTRE LÉGENDE</h1><div className="spec-cards"><button onClick={()=>chooseSpec("blade")}><b>⚔ LAME</b><small>Combat rapproché et endurance renforcée.</small></button><button onClick={()=>chooseSpec("bow")}><b>⌁ RÔDEUR</b><small>Arc, distance et vingt-deux flèches.</small></button><button onClick={()=>chooseSpec("arcane")}><b>✦ ARCANES</b><small>Mana maximum pour la flamme ancienne.</small></button></div><button className="secondary" onClick={()=>setChoosingSpec(false)}>RETOUR</button></div>}
       {started&&<><div className="top-hud"><div className="quest"><span>NIV. {hud.level} · {hud.xp}/{hud.level*40} EXP</span>{hud.quest===0?"Terrasser le gardien de la crypte":hud.quest===1?"Retourner à Valbrume":"Préparer la prochaine expédition"}</div><div className="top-actions">{hud.talent>0&&<button onClick={()=>setPanel("talents")}>Talent {hud.talent}</button>}{hud.quest>0&&<button onClick={()=>setVillage(true)}>Valbrume</button>}<button onClick={save}>Sauvegarder</button></div></div>
       <div className="message">{message}</div>
