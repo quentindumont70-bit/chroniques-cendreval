@@ -48,6 +48,7 @@ function wallAt(x:number, y:number) {
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const horizonRef = useRef<HTMLImageElement|null>(null);
+  const guardianRef = useRef<HTMLImageElement|null>(null);
   const state = useRef<Save>({...START});
   const keys = useRef<Record<string,boolean>>({});
   const enemy = useRef({x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien"});
@@ -126,6 +127,9 @@ export default function Home() {
     const horizon=new Image();
     horizon.src="/cendreval-plains-v2.png";
     horizon.onload=()=>{horizonRef.current=horizon};
+    const guardian=new Image();
+    guardian.src="/guardian-pixel.png";
+    guardian.onload=()=>{guardianRef.current=guardian};
   },[]);
 
   useEffect(()=>{
@@ -249,11 +253,8 @@ export default function Home() {
         if(Math.abs(ang)<FOV*.7 && dist<zbuf[Math.max(0,Math.min(W-1,Math.floor((ang/FOV+.5)*W)))]){
           const size=Math.min(130,150/dist),cx=(.5+ang/FOV)*W,base=H/2+size*.52;
           ctx.save();ctx.translate(Math.floor(cx-size/2),Math.floor(base-size));
-          const u=size/16;ctx.fillStyle=e.hit?"#fff0c4":e.telegraph>0?"#9f2b37":"#16101b";ctx.fillRect(4*u,3*u,8*u,12*u);
-          ctx.fillStyle="#696075";ctx.fillRect(5*u,2*u,6*u,7*u);ctx.fillRect(3*u,7*u,10*u,6*u);
-          ctx.fillStyle="#c4463d";ctx.fillRect(6*u,5*u,1.5*u,u);ctx.fillRect(9*u,5*u,1.5*u,u);
-          ctx.fillStyle="#a87a42";ctx.fillRect(1*u,6*u,3*u,2*u);ctx.fillRect(12*u,6*u,3*u,2*u);
-          ctx.fillStyle="#3b3146";ctx.fillRect(4*u,13*u,3*u,3*u);ctx.fillRect(9*u,13*u,3*u,3*u);ctx.restore();
+          const sprite=guardianRef.current;
+          if(sprite){ctx.drawImage(sprite,0,0,sprite.width,sprite.height,0,0,size,size);if(e.telegraph>0){ctx.fillStyle="rgba(179,25,35,.24)";ctx.fillRect(0,0,size,size)}if(e.hit){ctx.fillStyle="rgba(255,235,181,.30)";ctx.fillRect(0,0,size,size)}}else{const u=size/16;ctx.fillStyle=e.hit?"#fff0c4":e.telegraph>0?"#9f2b37":"#16101b";ctx.fillRect(4*u,3*u,8*u,12*u);ctx.fillStyle="#696075";ctx.fillRect(5*u,2*u,6*u,7*u);ctx.fillRect(3*u,7*u,10*u,6*u);ctx.fillStyle="#c4463d";ctx.fillRect(6*u,5*u,1.5*u,u);ctx.fillRect(9*u,5*u,1.5*u,u);ctx.fillStyle="#a87a42";ctx.fillRect(1*u,6*u,3*u,2*u);ctx.fillRect(12*u,6*u,3*u,2*u);ctx.fillStyle="#3b3146";ctx.fillRect(4*u,13*u,3*u,3*u);ctx.fillRect(9*u,13*u,3*u,3*u)}ctx.restore();
         }
       }
 
@@ -288,6 +289,7 @@ export default function Home() {
       {choosingSpec&&<div className="start-screen spec-select"><span className="eyebrow">CHOISISSEZ VOTRE VOIE</span><h1>VOTRE LÉGENDE</h1><div className="spec-cards"><button onClick={()=>chooseSpec("blade")}><b>⚔ LAME</b><small>Combat rapproché et endurance renforcée.</small></button><button onClick={()=>chooseSpec("bow")}><b>⌁ RÔDEUR</b><small>Arc, distance et vingt-deux flèches.</small></button><button onClick={()=>chooseSpec("arcane")}><b>✦ ARCANES</b><small>Mana maximum pour la flamme ancienne.</small></button></div><button className="secondary" onClick={()=>setChoosingSpec(false)}>RETOUR</button></div>}
       {started&&<><div className="top-hud"><div className="quest"><span>NIV. {hud.level} · {hud.xp}/{hud.level*40} EXP</span>{hud.quest===0?"Nettoyer les ruines de la plaine":hud.quest===1?"Retourner à Valbrume":"Préparer la prochaine expédition"}</div><div className="top-actions"><button className={testMode?"active-test":""} onClick={()=>setTestMode(v=>!v)}>Test</button>{hud.talent>0&&<button onClick={()=>setPanel("talents")}>Talent {hud.talent}</button>}{hud.quest>0&&<button onClick={()=>setVillage(true)}>Valbrume</button>}<button onClick={save}>Sauvegarder</button></div></div>
       <div className="message">{message}</div>
+      {enemy.current.alive&&<div className="boss-health"><span>GARDIEN DES RUINES</span><i style={{width:`${enemy.current.hp/70*100}%`}}/></div>}
       {testMode&&<div className="test-kit"><span>BAC À SABLE</span><button onClick={restoreForTest}>RESSOURCES</button><button onClick={resetEncounter}>REJOUER LE COMBAT</button><small>Les raccourcis et la sauvegarde restent actifs.</small></div>}
       <div className="bars"><div><label>VIE</label><i className="hp" style={{width:`${hud.hp}%`}}/></div><div><label>MANA</label><i className="mana" style={{width:`${hud.mana}%`}}/></div><div><label>ENDURANCE</label><i className="stamina" style={{width:`${hud.stamina}%`}}/></div></div>
       <div className="quickbar"><button onClick={potion}><b>1</b> Potion <em>{hud.potions}</em></button><button onClick={()=>strike(false)}><b>2</b> Lame</button><button onClick={()=>strike(true)}><b>3</b> Flamme</button><button onClick={shootBow}><b>R</b> Arc <em>{hud.arrows}</em></button><button onClick={parry}><b>MB3</b> Parade</button><button onClick={dodge}><b>⇧</b> Esquive</button><span>◈ {hud.gold}</span></div>
