@@ -69,6 +69,7 @@ export default function Home() {
   const dodgeFx = useRef(0);
   const abilityFx = useRef(0);
   const abilityCd = useRef(0);
+  const worldTime = useRef(.24);
   const last = useRef(0);
   const [started,setStarted] = useState(false);
   const [testMode,setTestMode] = useState(false);
@@ -192,6 +193,7 @@ export default function Home() {
     const loop=(t:number)=>{
       const dt=Math.min(.04,(t-last.current)/1000||0);last.current=t;
       const s=state.current;
+      if(!panel&&!village&&!choosingSpec&&s.hp>0)worldTime.current=(worldTime.current+dt*.006)%1;
       if(s.hp>0&&!panel&&!village&&!choosingSpec){
         let turn=0,move=0,strafe=0;
         if(keys.current[bindingsRef.current.turnLeft])turn-=1;
@@ -276,6 +278,9 @@ export default function Home() {
         }
       }
 
+      const daylight=Math.max(.08,Math.sin(worldTime.current*Math.PI*2)*.78+.22);
+      if(daylight<.45){ctx.fillStyle=`rgba(3,8,28,${.64*(.48-daylight)/.4})`;ctx.fillRect(0,0,W,H);ctx.fillStyle=`rgba(220,235,255,${(.45-daylight)*1.8})`;for(let star=0;star<36;star++){const sx=(star*83)%W,sy=(star*47)%Math.floor(H*.43);ctx.fillRect(sx,sy,star%3?1:2,1)}}
+
       // Arme, sort et viseur.
       const threats=[enemy.current,...minions.current].filter(foe=>foe.alive);
       for(const foe of threats){const dx=foe.x-s.x,dy=foe.y-s.y,dist=Math.hypot(dx,dy);let ang=Math.atan2(dy,dx)-s.a;ang=Math.atan2(Math.sin(ang),Math.cos(ang));if(Math.abs(ang)>FOV*.48&&dist<8){const right=ang>0,x=right?W-17:17,y=H*.48;ctx.save();ctx.translate(x,y);ctx.rotate(right?Math.PI/2:-Math.PI/2);ctx.fillStyle=foe.telegraph>0?"#ff6260":"rgba(255,223,164,.72)";ctx.beginPath();ctx.moveTo(0,-8);ctx.lineTo(7,7);ctx.lineTo(-7,7);ctx.fill();ctx.restore();}}
@@ -296,6 +301,7 @@ export default function Home() {
   const hold=(code:string,on:boolean)=>{keys.current[code]=on};
   const potion=()=>{if(state.current.potions&&state.current.hp<100){state.current.potions--;state.current.hp=Math.min(100,state.current.hp+45);sync();setMessage("La potion réchauffe votre sang.")}};
   const revive=()=>{const s=state.current;s.x=3.5;s.y=16.5;s.a=-Math.PI/2;s.hp=100;s.mana=100;s.stamina=100;sync();setMessage("Vous reprenez conscience près du chemin des ruines.")};
+  const shiftSky=()=>{worldTime.current=worldTime.current<.5?.73:.24;setMessage(worldTime.current<.5?"L’aube éclaire de nouveau les plaines.":"La nuit enveloppe Cendreval.")};
   const restoreForTest=()=>{const s=state.current;s.hp=100;s.mana=100;s.stamina=100;s.arrows=22;s.potions=Math.max(3,s.potions);sync();setMessage("Ressources restaurées — à toi de jouer.")};
   const resetEncounter=()=>{const s=state.current;s.x=3.5;s.y=16.5;s.a=-Math.PI/2;s.enemyHp=70;s.quest=0;enemy.current={x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien"};minions.current=[{x:6.5,y:5.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"},{x:14.5,y:13.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"}];restoreForTest();setMessage("Rencontre réinitialisée — départ de la plaine.")};
   const claimReward=()=>{const s=state.current;if(s.quest===1&&!s.reward){s.reward=1;s.quest=2;s.gold+=35;s.potions+=2;s.level=2;s.hp=100;s.mana=100;sync();setMessage("Récompense reçue : 35 or, 2 potions. Niveau 2 !")} };
@@ -315,7 +321,7 @@ export default function Home() {
       <div className="message">{message}</div>
       {hud.hp<=0&&<div className="death-screen"><span className="eyebrow">VOUS ÊTES TOMBÉ</span><h2>Les plaines attendent votre retour.</h2><p>La rencontre est conservée : reprenez immédiatement le test depuis le chemin.</p><button onClick={revive}>SE RELEVER</button></div>}
       {enemy.current.alive&&hud.shrines>=3&&<div className="boss-health"><span>GARDIEN DES RUINES</span><i style={{width:`${enemy.current.hp/70*100}%`}}/></div>}
-      {testMode&&<div className="test-kit"><span>BAC À SABLE</span><button onClick={restoreForTest}>RESSOURCES</button><button onClick={resetEncounter}>REJOUER LE COMBAT</button><small>Les raccourcis et la sauvegarde restent actifs.</small></div>}
+      {testMode&&<div className="test-kit"><span>BAC À SABLE</span><button onClick={restoreForTest}>RESSOURCES</button><button onClick={resetEncounter}>REJOUER LE COMBAT</button><button onClick={shiftSky}>AUBE / NUIT</button><small>Les raccourcis et la sauvegarde restent actifs.</small></div>}
       <div className="bars"><div><label>VIE</label><i className="hp" style={{width:`${hud.hp}%`}}/></div><div><label>MANA</label><i className="mana" style={{width:`${hud.mana}%`}}/></div><div><label>ENDURANCE</label><i className="stamina" style={{width:`${hud.stamina}%`}}/></div></div>
       <div className="quickbar"><button onClick={potion}><b>1</b> Potion <em>{hud.potions}</em></button><button onClick={()=>strike(false)}><b>2</b> Lame</button><button onClick={()=>strike(true)}><b>3</b> Flamme</button><button onClick={shootBow}><b>R</b> Arc <em>{hud.arrows}</em></button><button onClick={parry}><b>MB3</b> Parade</button><button onClick={dodge}><b>⇧</b> Esquive</button><button className="ability" onClick={ability}><b>F</b> {hud.spec==="blade"?"Garde":hud.spec==="bow"?"Volée":"Braises"}</button><span>◈ {hud.gold}</span></div>
       <div className="menu-buttons"><button onClick={()=>setPanel("inventory")}>SAC</button><button onClick={()=>setPanel("journal")}>JOURNAL</button><button onClick={()=>setPanel("controls")}>OPTIONS</button></div>
