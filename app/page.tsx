@@ -27,6 +27,7 @@ const MAP = [
 
 type Relic = "none"|"iron"|"oak"|"ember";
 type Save = { x:number; y:number; a:number; hp:number; mana:number; stamina:number; gold:number; potions:number; arrows:number; spec:"blade"|"bow"|"arcane"; xp:number; talent:number; perkBlade:boolean; perkBow:boolean; perkArcane:boolean; enemyHp:number; quest:number; level:number; reward:number; shrines:number; relic:Relic; expedition:number };
+type Foe = {x:number;y:number;hp:number;alive:boolean;hit:number;cooldown:number;telegraph:number;boss:boolean;name:string;kind:"melee"|"ranged"|"brute"};
 const START: Save = { x:3.5, y:16.5, a:-Math.PI/2, hp:100, mana:80, stamina:100, gold:12, potions:2, arrows:14, spec:"blade", xp:0, talent:0, perkBlade:false, perkBow:false,perkArcane:false,enemyHp:70,quest:0,level:1,reward:0,shrines:0,relic:"none",expedition:0 };
 const W = 426, H = 240, FOV = Math.PI / 3;
 const SCENERY = [
@@ -57,10 +58,10 @@ export default function Home() {
   const dragLook = useRef(false);
   const hoverLook = useRef(false);
   const lastMouseX = useRef<number|null>(null);
-  const enemy = useRef({x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien"});
-  const minions = useRef([
-    {x:6.5,y:5.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"},
-    {x:14.5,y:13.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"},
+  const enemy = useRef<Foe>({x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien",kind:"brute"});
+  const minions = useRef<Foe[]>([
+    {x:6.5,y:5.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre",kind:"melee"},
+    {x:14.5,y:13.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre",kind:"melee"},
   ]);
   const reinforcements = useRef(false);
   const attackFx = useRef(0);
@@ -215,11 +216,12 @@ export default function Home() {
         if(!foe.alive||(foe.boss&&s.shrines<3))continue;
         const vx=s.x-foe.x,vy=s.y-foe.y,dist=Math.hypot(vx,vy);
         const enraged=foe.boss&&foe.hp<=35;
-        if(dist<7&&dist>.9&&foe.telegraph===0){const step=dt*(foe.boss?(enraged ? .96 : .65):.85),nx=foe.x+vx/dist*step,ny=foe.y+vy/dist*step;if(!wallAt(nx,foe.y))foe.x=nx;if(!wallAt(foe.x,ny))foe.y=ny;}
-        if(dist<1.25&&foe.cooldown===0&&foe.telegraph===0){foe.telegraph=foe.boss?(enraged ? .42 : .64):.48;setMessage(`${foe.boss?(enraged?"Le gardien se déchaîne !":"Le gardien lève son arme !"):"L’ombre se prépare à frapper !"}`);}
-        if(telegraphBefore>0&&foe.telegraph===0){foe.cooldown=foe.boss?(enraged ? .72 : 1.15):1.35;if(dodgeFx.current>0){setMessage("Esquive parfaite !")}else if(parryFx.current>0){if(perfectFx.current>0){foe.hit=.65;foe.cooldown=1.8;s.stamina=Math.min(100,s.stamina+22);setMessage("PARADE PARFAITE — l’ennemi est étourdi !")}else{setMessage("Parade réussie.")}}else{s.hp=Math.max(0,s.hp-(foe.boss?(enraged?11:8):4));hurtFx.current=.25;sync();setMessage(s.hp?`${foe.boss?"Le gardien":"Une ombre"} vous frappe !`: "Vous êtes tombé… rechargez votre sauvegarde.");}}
+        const ranged=foe.kind==="ranged",brute=foe.kind==="brute"&&!foe.boss,reach=ranged?5.4:1.25,stop=ranged?3.2:.9;
+        if(dist<7&&dist>stop&&foe.telegraph===0){const step=dt*(foe.boss?(enraged ? .96 : .65):ranged?.56:brute?.62:.85),nx=foe.x+vx/dist*step,ny=foe.y+vy/dist*step;if(!wallAt(nx,foe.y))foe.x=nx;if(!wallAt(foe.x,ny))foe.y=ny;}
+        if(dist<reach&&foe.cooldown===0&&foe.telegraph===0){foe.telegraph=foe.boss?(enraged ? .42 : .64):ranged?.72:brute?.72:.48;setMessage(foe.boss?(enraged?"Le gardien se déchaîne !":"Le gardien lève son arme !"):ranged?"Le Veilleur tend son arc de cendre !":brute?"Le Veilleur lourd arme son marteau !":"L’ombre se prépare à frapper !");}
+        if(telegraphBefore>0&&foe.telegraph===0){foe.cooldown=foe.boss?(enraged ? .72 : 1.15):ranged?1.8:brute?1.65:1.35;if(dodgeFx.current>0){setMessage("Esquive parfaite !")}else if(parryFx.current>0){if(perfectFx.current>0){foe.hit=.65;foe.cooldown=1.8;s.stamina=Math.min(100,s.stamina+22);setMessage("PARADE PARFAITE — l’ennemi est étourdi !")}else{setMessage("Parade réussie.")}}else{const damage=foe.boss?(enraged?11:8):ranged?5:brute?8:4;s.hp=Math.max(0,s.hp-damage);hurtFx.current=.25;sync();setMessage(s.hp?`${ranged?"La flèche de cendre":brute?"Le marteau du Veilleur":foe.boss?"Le gardien":"Une ombre"} vous frappe !`: "Vous êtes tombé… rechargez votre sauvegarde.");}}
       }
-      if(s.shrines===3&&enemy.current.alive&&enemy.current.hp<=35&&!reinforcements.current){reinforcements.current=true;minions.current.push({x:8.2,y:8.4,hp:28,alive:true,hit:0,cooldown:.5,telegraph:0,boss:false,name:"ombre"},{x:12.8,y:9.2,hp:28,alive:true,hit:0,cooldown:.7,telegraph:0,boss:false,name:"ombre"});setMessage("PHASE II — les ombres jaillissent des ruines !")}
+      if(s.shrines===3&&enemy.current.alive&&enemy.current.hp<=35&&!reinforcements.current){reinforcements.current=true;minions.current.push({x:8.2,y:8.4,hp:28,alive:true,hit:0,cooldown:.5,telegraph:0,boss:false,name:"ombre",kind:"melee"},{x:12.8,y:9.2,hp:28,alive:true,hit:0,cooldown:.7,telegraph:0,boss:false,name:"ombre",kind:"melee"});setMessage("PHASE II — les ombres jaillissent des ruines !")}
       if(s.quest===3&&!minions.current.some(foe=>foe.alive)){s.quest=4;s.expedition=2;s.gold+=20;s.talent++;sync();setMessage("EXPÉDITION ACCOMPLIE — les veilleurs cendrés se dispersent. +20 or, +1 talent.")}
 
       // Ciel voûté et sol en damier rétro.
@@ -311,10 +313,10 @@ export default function Home() {
   const revive=()=>{const s=state.current;s.x=3.5;s.y=16.5;s.a=-Math.PI/2;s.hp=100;s.mana=100;s.stamina=100;sync();setMessage("Vous reprenez conscience près du chemin des ruines.")};
   const shiftSky=()=>{worldTime.current=worldTime.current<.5?.73:.24;setMessage(worldTime.current<.5?"L’aube éclaire de nouveau les plaines.":"La nuit enveloppe Cendreval.")};
   const restoreForTest=()=>{const s=state.current;s.hp=100;s.mana=100;s.stamina=100;s.arrows=22;s.potions=Math.max(3,s.potions);sync();setMessage("Ressources restaurées — à toi de jouer.")};
-  const resetEncounter=()=>{const s=state.current;s.x=3.5;s.y=16.5;s.a=-Math.PI/2;s.enemyHp=70;s.quest=0;reinforcements.current=false;enemy.current={x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien"};minions.current=[{x:6.5,y:5.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"},{x:14.5,y:13.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"}];restoreForTest();setMessage("Rencontre réinitialisée — départ de la plaine.")};
+  const resetEncounter=()=>{const s=state.current;s.x=3.5;s.y=16.5;s.a=-Math.PI/2;s.enemyHp=70;s.quest=0;s.expedition=0;reinforcements.current=false;enemy.current={x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien",kind:"brute"};minions.current=[{x:6.5,y:5.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre",kind:"melee"},{x:14.5,y:13.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre",kind:"melee"}];restoreForTest();setMessage("Rencontre réinitialisée — départ de la plaine.")};
   const claimReward=()=>{const s=state.current;if(s.quest===1&&!s.reward){s.reward=1;s.quest=2;s.gold+=35;s.potions+=2;s.level=2;s.hp=100;s.mana=100;sync();setMessage("Récompense reçue : 35 or, 2 potions. Niveau 2 !")} };
   const chooseRelic=(relic:Relic)=>{const s=state.current;if(s.relic!=="none")return;s.relic=relic;sync();setMessage("Relique liée à votre âme.")};
-  const beginExpedition=()=>{const s=state.current;if(s.relic==="none"){setMessage("Choisissez d’abord une relique dans la halle de Valbrume.");return}s.quest=3;s.expedition=1;s.x=3.5;s.y=16.5;s.a=-Math.PI/2;s.hp=100;s.mana=100;s.stamina=100;s.potions=Math.max(s.potions,3);s.arrows=Math.max(s.arrows,18);enemy.current.alive=false;minions.current=[{x:7.3,y:13.1,hp:42,alive:true,hit:0,cooldown:.7,telegraph:0,boss:false,name:"veilleur"},{x:13.2,y:10.4,hp:46,alive:true,hit:0,cooldown:1.1,telegraph:0,boss:false,name:"veilleur"},{x:9.4,y:6.7,hp:52,alive:true,hit:0,cooldown:1.5,telegraph:0,boss:false,name:"veilleur"}];setVillage(false);sync();setMessage("EXPÉDITION — chassez les trois veilleurs cendrés dans la plaine.")};
+  const beginExpedition=()=>{const s=state.current;if(s.relic==="none"){setMessage("Choisissez d’abord une relique dans la halle de Valbrume.");return}s.quest=3;s.expedition=1;s.x=3.5;s.y=16.5;s.a=-Math.PI/2;s.hp=100;s.mana=100;s.stamina=100;s.potions=Math.max(s.potions,3);s.arrows=Math.max(s.arrows,18);enemy.current.alive=false;minions.current=[{x:7.3,y:13.1,hp:42,alive:true,hit:0,cooldown:.7,telegraph:0,boss:false,name:"veilleur archer",kind:"ranged"},{x:13.2,y:10.4,hp:46,alive:true,hit:0,cooldown:1.1,telegraph:0,boss:false,name:"veilleur",kind:"melee"},{x:9.4,y:6.7,hp:52,alive:true,hit:0,cooldown:1.5,telegraph:0,boss:false,name:"veilleur lourd",kind:"brute"}];setVillage(false);sync();setMessage("EXPÉDITION — un archer, un duelliste et un lourd gardent la plaine.")};
   const buyPotion=()=>{const s=state.current;if(s.gold<8){setMessage("Il vous manque des pièces d’or.");return}s.gold-=8;s.potions++;sync();setMessage("Potion achetée.")};
   const chooseSpec=(spec:Save["spec"])=>{const s=state.current;s.spec=spec;s.perkBlade=spec==="blade";s.perkBow=spec==="bow";s.perkArcane=spec==="arcane";if(spec==="blade")s.stamina=100;if(spec==="bow")s.arrows=Math.max(s.arrows,22);if(spec==="arcane")s.mana=100;sync();setChoosingSpec(false);setStarted(true);setMessage(`Voie choisie : ${spec==="blade"?"Lame":spec==="bow"?"Rôdeur":"Arcanes"}.`)};
   const learnPerk=(perk:"perkBlade"|"perkBow"|"perkArcane")=>{const s=state.current;if(!s.talent||s[perk])return;s.talent--;s[perk]=true;sync();setMessage("Talent appris !")};
