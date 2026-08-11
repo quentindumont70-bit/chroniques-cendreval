@@ -153,7 +153,7 @@ export default function Home() {
       keys.current[e.code]=true;
       trigger(e.code);
       if(e.code==="Space")e.preventDefault();
-      if(e.code==="Escape"){clearInput();setPanel(null);document.exitPointerLock?.()}
+      if(e.code==="Escape"){e.preventDefault();clearInput();setPanel(p=>p==="controls"?null:"controls");document.exitPointerLock?.()}
     };
     const up=(e:KeyboardEvent)=>{keys.current[e.code]=false};
     const mouseDown=(e:PointerEvent)=>{
@@ -193,7 +193,7 @@ export default function Home() {
         if(!wallAt(s.x+dx,s.y))s.x+=dx;if(!wallAt(s.x,s.y+dy))s.y+=dy;
       }
       attackFx.current=Math.max(0,attackFx.current-dt);spellFx.current=Math.max(0,spellFx.current-dt);hurtFx.current=Math.max(0,hurtFx.current-dt);parryFx.current=Math.max(0,parryFx.current-dt);perfectFx.current=Math.max(0,perfectFx.current-dt);dodgeFx.current=Math.max(0,dodgeFx.current-dt);s.stamina=Math.min(100,s.stamina+dt*16);
-      for(const foe of [enemy.current,...minions.current]){
+      if(!panel&&!village&&!choosingSpec)for(const foe of [enemy.current,...minions.current]){
         const telegraphBefore=foe.telegraph;foe.hit=Math.max(0,foe.hit-dt);foe.cooldown=Math.max(0,foe.cooldown-dt);foe.telegraph=Math.max(0,foe.telegraph-dt);
         if(!foe.alive)continue;
         const vx=s.x-foe.x,vy=s.y-foe.y,dist=Math.hypot(vx,vy);
