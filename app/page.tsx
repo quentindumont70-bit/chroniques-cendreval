@@ -35,10 +35,10 @@ const SCENERY = [
   {x:15.4,y:7.8,kind:"stone"},{x:10.1,y:12.8,kind:"sign"}
 ];
 const SHRINES = [{x:7.5,y:14.5,name:"Borne du chemin"},{x:15.5,y:10.5,name:"Borne des pins"},{x:8.5,y:5.5,name:"Borne des ruines"}];
-type Action = "forward"|"back"|"left"|"right"|"turnLeft"|"turnRight"|"attack"|"spell"|"bow"|"parry"|"dodge"|"potion"|"interact"|"inventory"|"journal"|"save";
+type Action = "forward"|"back"|"left"|"right"|"turnLeft"|"turnRight"|"attack"|"spell"|"bow"|"parry"|"dodge"|"potion"|"ability"|"interact"|"inventory"|"journal"|"save";
 type Bindings = Record<Action,string>;
-const DEFAULT_BINDINGS: Bindings = {forward:"KeyZ",back:"KeyS",left:"KeyQ",right:"KeyD",turnLeft:"ArrowLeft",turnRight:"ArrowRight",attack:"Mouse0",spell:"Mouse2",bow:"KeyR",parry:"Mouse1",dodge:"ShiftLeft",potion:"Digit1",interact:"KeyE",inventory:"KeyI",journal:"KeyJ",save:"KeyP"};
-const ACTION_LABELS: Record<Action,string> = {forward:"Avancer",back:"Reculer",left:"Pas à gauche",right:"Pas à droite",turnLeft:"Tourner à gauche",turnRight:"Tourner à droite",attack:"Attaquer",spell:"Lancer la flamme",bow:"Tirer à l’arc",parry:"Parer",dodge:"Esquiver",potion:"Boire une potion",interact:"Interagir",inventory:"Ouvrir le sac",journal:"Ouvrir le journal",save:"Sauvegarder"};
+const DEFAULT_BINDINGS: Bindings = {forward:"KeyZ",back:"KeyS",left:"KeyQ",right:"KeyD",turnLeft:"ArrowLeft",turnRight:"ArrowRight",attack:"Mouse0",spell:"Mouse2",bow:"KeyR",parry:"Mouse1",dodge:"ShiftLeft",potion:"Digit1",ability:"KeyF",interact:"KeyE",inventory:"KeyI",journal:"KeyJ",save:"KeyP"};
+const ACTION_LABELS: Record<Action,string> = {forward:"Avancer",back:"Reculer",left:"Pas à gauche",right:"Pas à droite",turnLeft:"Tourner à gauche",turnRight:"Tourner à droite",attack:"Attaquer",spell:"Lancer la flamme",bow:"Tirer à l’arc",parry:"Parer",dodge:"Esquiver",potion:"Boire une potion",ability:"Pouvoir de voie",interact:"Interagir",inventory:"Ouvrir le sac",journal:"Ouvrir le journal",save:"Sauvegarder"};
 function bindingLabel(value:string){return value.replace("Key","Touche ").replace("Digit","Touche ").replace("Arrow","Flèche ").replace("Mouse0","Clic gauche").replace("Mouse1","Clic molette").replace("Mouse2","Clic droit").replace("Mouse3","Souris 3").replace("Mouse4","Souris 4")}
 
 function wallAt(x:number, y:number) {
@@ -67,6 +67,8 @@ export default function Home() {
   const parryFx = useRef(0);
   const perfectFx = useRef(0);
   const dodgeFx = useRef(0);
+  const abilityFx = useRef(0);
+  const abilityCd = useRef(0);
   const last = useRef(0);
   const [started,setStarted] = useState(false);
   const [testMode,setTestMode] = useState(false);
@@ -120,6 +122,7 @@ export default function Home() {
 
   const parry = useCallback(()=>{const s=state.current;if(panel||s.stamina<10)return;s.stamina-=10;parryFx.current=.46;perfectFx.current=.13;sync();setMessage("Parade — frappez au moment de l’impact pour une parade parfaite.")},[panel,sync]);
   const dodge = useCallback(()=>{const s=state.current;if(panel||s.stamina<24)return;s.stamina-=24;dodgeFx.current=.34;const nx=s.x-Math.cos(s.a)*.9,ny=s.y-Math.sin(s.a)*.9;if(!wallAt(nx,s.y))s.x=nx;if(!wallAt(s.x,ny))s.y=ny;sync();setMessage("Esquive !")},[panel,sync]);
+  const ability=useCallback(()=>{const s=state.current;if(panel||s.hp<=0)return;if(abilityCd.current>0){setMessage("Le pouvoir de votre voie se recharge.");return}abilityCd.current=9;abilityFx.current=.7;const foes=[enemy.current,...minions.current].filter(foe=>foe.alive);if(s.spec==="blade"){s.stamina=100;parryFx.current=1.05;perfectFx.current=.38;for(const foe of foes){const dist=Math.hypot(foe.x-s.x,foe.y-s.y);if(dist<2.1){foe.hit=.8;foe.cooldown=1.9}}setMessage("GARDE DU FER — vos parades brisent l’élan adverse.")}else if(s.spec==="bow"){let struck=0;for(const foe of foes){const target=Math.atan2(foe.y-s.y,foe.x-s.x),diff=Math.abs(Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a)));if(diff<.32&&Math.hypot(foe.x-s.x,foe.y-s.y)<11){foe.hp=Math.max(0,foe.hp-20-(s.perkBow?8:0));foe.hit=.45;if(foe.boss)s.enemyHp=foe.hp;struck++}}setMessage(struck?"VOLÉE DU RÔDEUR — les traits fendent l’air.":"Volée perdue : aucune cible devant vous.");}else{if(s.mana<25){abilityCd.current=0;abilityFx.current=0;setMessage("Pas assez de mana pour les braises profondes.");return}s.mana-=25;let struck=0;for(const foe of foes){if(Math.hypot(foe.x-s.x,foe.y-s.y)<5.2){foe.hp=Math.max(0,foe.hp-24-(s.perkArcane?8:0));foe.hit=.55;if(foe.boss)s.enemyHp=foe.hp;struck++}}setMessage(struck?"BRAISES PROFONDES — la plaine s’embrase autour de vous.":"Les braises se dissipent dans le vent.")}for(const foe of foes){if(foe.hp===0&&foe.alive){foe.alive=false;s.gold+=foe.boss?18:6;gainXp(foe.boss?40:16);if(foe.boss){s.quest=1;setMessage("Le gardien tombe. Valbrume vous attend !")}}}sync()},[gainXp,panel,sync]);
   const interact=useCallback(()=>{if(panel||village)return;const s=state.current;const index=SHRINES.findIndex(shrine=>Math.hypot(shrine.x-s.x,shrine.y-s.y)<1.75);if(index<0){setMessage("Aucun lieu ancien à portée.");return}const shrine=SHRINES[index],flag=1<<index;if(!(s.shrines&flag)){s.shrines|=flag;s.hp=100;s.mana=100;s.stamina=100;s.potions=Math.max(s.potions,2);localStorage.setItem("cendreval-save",JSON.stringify(s));setMessage(`${shrine.name} éveillée — votre présence y est désormais ancrée.`)}else{s.hp=100;s.mana=100;s.stamina=100;setMessage(`${shrine.name} vous rend vos forces.`)}sync()},[panel,sync,village]);
 
   useEffect(()=>{
@@ -150,6 +153,7 @@ export default function Home() {
       if(action==="parry")parry();
       if(action==="dodge")dodge();
       if(action==="potion")potion();
+      if(action==="ability")ability();
       if(action==="interact")interact();
       if(action==="inventory")setPanel(p=>p==="inventory"?null:"inventory");
       if(action==="journal")setPanel(p=>p==="journal"?null:"journal");
@@ -176,7 +180,7 @@ export default function Home() {
     const blur=()=>clearInput();
     addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("pointerdown",mouseDown);addEventListener("pointerup",mouseUp);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("blur",blur);
     return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("pointerdown",mouseDown);removeEventListener("pointerup",mouseUp);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock);removeEventListener("blur",blur)};
-  },[applyBindings,capture,captureMouse,clearInput,dodge,interact,panel,parry,save,shootBow,started,strike,village]);
+  },[ability,applyBindings,capture,captureMouse,clearInput,dodge,interact,panel,parry,save,shootBow,started,strike,village]);
 
   useEffect(()=>{clearInput();document.exitPointerLock?.()},[clearInput,panel,village,choosingSpec]);
 
@@ -199,7 +203,7 @@ export default function Home() {
         const speed=dt*2.35, dx=(Math.cos(s.a)*move+Math.cos(s.a+Math.PI/2)*strafe)*speed, dy=(Math.sin(s.a)*move+Math.sin(s.a+Math.PI/2)*strafe)*speed;
         if(!wallAt(s.x+dx,s.y))s.x+=dx;if(!wallAt(s.x,s.y+dy))s.y+=dy;
       }
-      attackFx.current=Math.max(0,attackFx.current-dt);spellFx.current=Math.max(0,spellFx.current-dt);hurtFx.current=Math.max(0,hurtFx.current-dt);parryFx.current=Math.max(0,parryFx.current-dt);perfectFx.current=Math.max(0,perfectFx.current-dt);dodgeFx.current=Math.max(0,dodgeFx.current-dt);s.stamina=Math.min(100,s.stamina+dt*16);
+      attackFx.current=Math.max(0,attackFx.current-dt);spellFx.current=Math.max(0,spellFx.current-dt);hurtFx.current=Math.max(0,hurtFx.current-dt);parryFx.current=Math.max(0,parryFx.current-dt);perfectFx.current=Math.max(0,perfectFx.current-dt);dodgeFx.current=Math.max(0,dodgeFx.current-dt);abilityFx.current=Math.max(0,abilityFx.current-dt);if(!panel&&!village&&!choosingSpec)abilityCd.current=Math.max(0,abilityCd.current-dt);s.stamina=Math.min(100,s.stamina+dt*16);
       if(s.hp>0&&!panel&&!village&&!choosingSpec)for(const foe of [enemy.current,...minions.current]){
         const telegraphBefore=foe.telegraph;foe.hit=Math.max(0,foe.hit-dt);foe.cooldown=Math.max(0,foe.cooldown-dt);foe.telegraph=Math.max(0,foe.telegraph-dt);
         if(!foe.alive)continue;
@@ -276,6 +280,7 @@ export default function Home() {
       const nearest=threats.sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y))[0];
       let targetReady=false;if(nearest){const target=Math.atan2(nearest.y-s.y,nearest.x-s.x),diff=Math.abs(Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a)));targetReady=diff<.12&&Math.hypot(nearest.x-s.x,nearest.y-s.y)<7}
       if(spellFx.current>0){const r=30+spellFx.current*90,g=ctx.createRadialGradient(W*.68,H*.68,2,W*.68,H*.68,r);g.addColorStop(0,"#fff7a0");g.addColorStop(.35,"#ff6b28");g.addColorStop(1,"transparent");ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
+      if(abilityFx.current>0){const palette=s.spec==="blade"?[180,210,255]:s.spec==="bow"?[225,190,105]:[222,90,255];ctx.strokeStyle=`rgba(${palette[0]},${palette[1]},${palette[2]},${abilityFx.current*.68})`;ctx.lineWidth=3;ctx.beginPath();ctx.arc(W/2,H/2,32+(1-abilityFx.current/.7)*72,0,Math.PI*2);ctx.stroke()}
       const swing=attackFx.current?Math.sin(attackFx.current/.28*Math.PI)*38:0;
       ctx.save();ctx.translate(W*.64+swing,H*.78-swing*.6);ctx.rotate(-.62+swing*.012);ctx.fillStyle="#211724";ctx.fillRect(-5,-2,15,8);ctx.fillStyle="#c0aeb1";ctx.fillRect(8,0,92,5);ctx.fillStyle="#f2d89c";ctx.fillRect(8,0,88,1);ctx.restore();
       if(parryFx.current>0){ctx.strokeStyle=perfectFx.current>0?"#ffe49a":"#9db5d5";ctx.lineWidth=5;ctx.beginPath();ctx.arc(W*.78,H*.73,35,Math.PI*.45,Math.PI*1.55);ctx.stroke()}
@@ -310,7 +315,7 @@ export default function Home() {
       {enemy.current.alive&&<div className="boss-health"><span>GARDIEN DES RUINES</span><i style={{width:`${enemy.current.hp/70*100}%`}}/></div>}
       {testMode&&<div className="test-kit"><span>BAC À SABLE</span><button onClick={restoreForTest}>RESSOURCES</button><button onClick={resetEncounter}>REJOUER LE COMBAT</button><small>Les raccourcis et la sauvegarde restent actifs.</small></div>}
       <div className="bars"><div><label>VIE</label><i className="hp" style={{width:`${hud.hp}%`}}/></div><div><label>MANA</label><i className="mana" style={{width:`${hud.mana}%`}}/></div><div><label>ENDURANCE</label><i className="stamina" style={{width:`${hud.stamina}%`}}/></div></div>
-      <div className="quickbar"><button onClick={potion}><b>1</b> Potion <em>{hud.potions}</em></button><button onClick={()=>strike(false)}><b>2</b> Lame</button><button onClick={()=>strike(true)}><b>3</b> Flamme</button><button onClick={shootBow}><b>R</b> Arc <em>{hud.arrows}</em></button><button onClick={parry}><b>MB3</b> Parade</button><button onClick={dodge}><b>⇧</b> Esquive</button><span>◈ {hud.gold}</span></div>
+      <div className="quickbar"><button onClick={potion}><b>1</b> Potion <em>{hud.potions}</em></button><button onClick={()=>strike(false)}><b>2</b> Lame</button><button onClick={()=>strike(true)}><b>3</b> Flamme</button><button onClick={shootBow}><b>R</b> Arc <em>{hud.arrows}</em></button><button onClick={parry}><b>MB3</b> Parade</button><button onClick={dodge}><b>⇧</b> Esquive</button><button className="ability" onClick={ability}><b>F</b> {hud.spec==="blade"?"Garde":hud.spec==="bow"?"Volée":"Braises"}</button><span>◈ {hud.gold}</span></div>
       <div className="menu-buttons"><button onClick={()=>setPanel("inventory")}>SAC</button><button onClick={()=>setPanel("journal")}>JOURNAL</button><button onClick={()=>setPanel("controls")}>OPTIONS</button></div>
       <div className="touch"><button onPointerDown={()=>hold("KeyA",true)} onPointerUp={()=>hold("KeyA",false)}>◀</button><button onPointerDown={()=>hold("KeyW",true)} onPointerUp={()=>hold("KeyW",false)}>▲</button><button onPointerDown={()=>hold("KeyD",true)} onPointerUp={()=>hold("KeyD",false)}>▶</button><button onClick={()=>strike(false)}>⚔</button><button onClick={()=>strike(true)}>✦</button></div></>}
       {panel&&<div className="panel"><button className="close" onClick={()=>setPanel(null)}>×</button>{panel==="controls"?<><span className="eyebrow">COMMANDES</span><h2>Clavier et souris</h2><p className="controls-note">Cliquez dans le jeu pour capturer la souris. Échap libère le curseur. Cliquez sur une action, puis pressez une touche ou un bouton de souris.</p><label className="sensitivity">Sensibilité souris <input aria-label="Sensibilité souris" type="range" min="0.3" max="2.5" step="0.1" value={sensitivity} onChange={e=>changeSensitivity(Number(e.target.value))}/><b>{sensitivity.toFixed(1)}×</b></label><div className="bindings">{(Object.keys(ACTION_LABELS) as Action[]).map(action=><div className="binding" key={action}><span>{ACTION_LABELS[action]}</span><button className={capture===action?"listening":""} onClick={()=>setCapture(action)}>{capture===action?"Appuyez…":bindingLabel(bindings[action])}</button></div>)}</div><button className="reset-bindings" onClick={()=>applyBindings(DEFAULT_BINDINGS)}>RÉTABLIR LES COMMANDES</button></>:panel==="inventory"?<><span className="eyebrow">ÉQUIPEMENT · NIVEAU {hud.level}</span><h2>Sac de l’aventurier</h2><div className="inventory"><div className="item selected">⚔<span>Lame ébréchée<small>Dégâts 22</small></span></div><div className="item">✦<span>Flamme ancienne<small>Coût 15 mana</small></span></div><div className="item">♥<span>Potion carmin<small>Quantité : {hud.potions}</small></span></div><div className="item">◆<span>Éclats d’or<small>{hud.gold} pièces</small></span></div></div></>:<><span className="eyebrow">JOURNAL</span><h2>La Crypte des rois muets</h2><p>Le village de Valbrume vit dans l’ombre d’un ancien gardien réveillé sous les collines.</p><div className={hud.quest>0?"objective done":"objective"}>{hud.quest>0?"✓ Gardien terrassé":"○ Trouver et terrasser le gardien"}</div><div className={hud.quest===2?"objective done":"objective"}>{hud.quest===2?"✓ Récompense de Valbrume reçue":"○ Retourner à Valbrume"}</div></>}</div>}
