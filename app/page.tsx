@@ -62,6 +62,7 @@ export default function Home() {
     {x:6.5,y:5.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"},
     {x:14.5,y:13.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"},
   ]);
+  const reinforcements = useRef(false);
   const attackFx = useRef(0);
   const spellFx = useRef(0);
   const hurtFx = useRef(0);
@@ -211,10 +212,12 @@ export default function Home() {
         const telegraphBefore=foe.telegraph;foe.hit=Math.max(0,foe.hit-dt);foe.cooldown=Math.max(0,foe.cooldown-dt);foe.telegraph=Math.max(0,foe.telegraph-dt);
         if(!foe.alive||(foe.boss&&s.shrines<3))continue;
         const vx=s.x-foe.x,vy=s.y-foe.y,dist=Math.hypot(vx,vy);
-        if(dist<7&&dist>.9&&foe.telegraph===0){const step=dt*(foe.boss?.65:.85),nx=foe.x+vx/dist*step,ny=foe.y+vy/dist*step;if(!wallAt(nx,foe.y))foe.x=nx;if(!wallAt(foe.x,ny))foe.y=ny;}
-        if(dist<1.25&&foe.cooldown===0&&foe.telegraph===0){foe.telegraph=foe.boss?.64:.48;setMessage(`${foe.boss?"Le gardien lève son arme !":"L’ombre se prépare à frapper !"}`);}
-        if(telegraphBefore>0&&foe.telegraph===0){foe.cooldown=foe.boss?1.15:1.35;if(dodgeFx.current>0){setMessage("Esquive parfaite !")}else if(parryFx.current>0){if(perfectFx.current>0){foe.hit=.65;foe.cooldown=1.8;s.stamina=Math.min(100,s.stamina+22);setMessage("PARADE PARFAITE — l’ennemi est étourdi !")}else{setMessage("Parade réussie.")}}else{s.hp=Math.max(0,s.hp-(foe.boss?8:4));hurtFx.current=.25;sync();setMessage(s.hp?`${foe.boss?"Le gardien":"Une ombre"} vous frappe !`: "Vous êtes tombé… rechargez votre sauvegarde.");}}
+        const enraged=foe.boss&&foe.hp<=35;
+        if(dist<7&&dist>.9&&foe.telegraph===0){const step=dt*(foe.boss?(enraged ? .96 : .65):.85),nx=foe.x+vx/dist*step,ny=foe.y+vy/dist*step;if(!wallAt(nx,foe.y))foe.x=nx;if(!wallAt(foe.x,ny))foe.y=ny;}
+        if(dist<1.25&&foe.cooldown===0&&foe.telegraph===0){foe.telegraph=foe.boss?(enraged ? .42 : .64):.48;setMessage(`${foe.boss?(enraged?"Le gardien se déchaîne !":"Le gardien lève son arme !"):"L’ombre se prépare à frapper !"}`);}
+        if(telegraphBefore>0&&foe.telegraph===0){foe.cooldown=foe.boss?(enraged ? .72 : 1.15):1.35;if(dodgeFx.current>0){setMessage("Esquive parfaite !")}else if(parryFx.current>0){if(perfectFx.current>0){foe.hit=.65;foe.cooldown=1.8;s.stamina=Math.min(100,s.stamina+22);setMessage("PARADE PARFAITE — l’ennemi est étourdi !")}else{setMessage("Parade réussie.")}}else{s.hp=Math.max(0,s.hp-(foe.boss?(enraged?11:8):4));hurtFx.current=.25;sync();setMessage(s.hp?`${foe.boss?"Le gardien":"Une ombre"} vous frappe !`: "Vous êtes tombé… rechargez votre sauvegarde.");}}
       }
+      if(s.shrines===3&&enemy.current.alive&&enemy.current.hp<=35&&!reinforcements.current){reinforcements.current=true;minions.current.push({x:8.2,y:8.4,hp:28,alive:true,hit:0,cooldown:.5,telegraph:0,boss:false,name:"ombre"},{x:12.8,y:9.2,hp:28,alive:true,hit:0,cooldown:.7,telegraph:0,boss:false,name:"ombre"});setMessage("PHASE II — les ombres jaillissent des ruines !")}
 
       // Ciel voûté et sol en damier rétro.
       const sky=ctx.createLinearGradient(0,0,0,H/2);sky.addColorStop(0,"#314d82");sky.addColorStop(.55,"#8ca6c7");sky.addColorStop(1,"#c4b88f");ctx.fillStyle=sky;ctx.fillRect(0,0,W,H/2);
@@ -304,7 +307,7 @@ export default function Home() {
   const revive=()=>{const s=state.current;s.x=3.5;s.y=16.5;s.a=-Math.PI/2;s.hp=100;s.mana=100;s.stamina=100;sync();setMessage("Vous reprenez conscience près du chemin des ruines.")};
   const shiftSky=()=>{worldTime.current=worldTime.current<.5?.73:.24;setMessage(worldTime.current<.5?"L’aube éclaire de nouveau les plaines.":"La nuit enveloppe Cendreval.")};
   const restoreForTest=()=>{const s=state.current;s.hp=100;s.mana=100;s.stamina=100;s.arrows=22;s.potions=Math.max(3,s.potions);sync();setMessage("Ressources restaurées — à toi de jouer.")};
-  const resetEncounter=()=>{const s=state.current;s.x=3.5;s.y=16.5;s.a=-Math.PI/2;s.enemyHp=70;s.quest=0;enemy.current={x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien"};minions.current=[{x:6.5,y:5.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"},{x:14.5,y:13.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"}];restoreForTest();setMessage("Rencontre réinitialisée — départ de la plaine.")};
+  const resetEncounter=()=>{const s=state.current;s.x=3.5;s.y=16.5;s.a=-Math.PI/2;s.enemyHp=70;s.quest=0;reinforcements.current=false;enemy.current={x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien"};minions.current=[{x:6.5,y:5.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"},{x:14.5,y:13.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"}];restoreForTest();setMessage("Rencontre réinitialisée — départ de la plaine.")};
   const claimReward=()=>{const s=state.current;if(s.quest===1&&!s.reward){s.reward=1;s.quest=2;s.gold+=35;s.potions+=2;s.level=2;s.hp=100;s.mana=100;sync();setMessage("Récompense reçue : 35 or, 2 potions. Niveau 2 !")} };
   const chooseRelic=(relic:Relic)=>{const s=state.current;if(s.relic!=="none")return;s.relic=relic;sync();setMessage("Relique liée à votre âme.")};
   const buyPotion=()=>{const s=state.current;if(s.gold<8){setMessage("Il vous manque des pièces d’or.");return}s.gold-=8;s.potions++;sync();setMessage("Potion achetée.")};
@@ -322,7 +325,7 @@ export default function Home() {
       {started&&<><div className="top-hud"><div className="quest"><span>NIV. {hud.level} · {hud.xp}/{hud.level*40} EXP · BORNES {hud.shrines}/3</span>{hud.quest===0?(hud.shrines<3?"Éveiller les bornes anciennes de la plaine":"Nettoyer les ruines de la plaine"):hud.quest===1?"Retourner à Valbrume":"Préparer la prochaine expédition"}</div><div className="top-actions"><button className={testMode?"active-test":""} onClick={()=>setTestMode(v=>!v)}>Test</button>{hud.talent>0&&<button onClick={()=>setPanel("talents")}>Talent {hud.talent}</button>}{hud.quest>0&&<button onClick={()=>setVillage(true)}>Valbrume</button>}<button onClick={save}>Sauvegarder</button></div></div>
       <div className="message">{message}</div>
       {hud.hp<=0&&<div className="death-screen"><span className="eyebrow">VOUS ÊTES TOMBÉ</span><h2>Les plaines attendent votre retour.</h2><p>La rencontre est conservée : reprenez immédiatement le test depuis le chemin.</p><button onClick={revive}>SE RELEVER</button></div>}
-      {enemy.current.alive&&hud.shrines>=3&&<div className="boss-health"><span>GARDIEN DES RUINES</span><i style={{width:`${enemy.current.hp/70*100}%`}}/></div>}
+      {enemy.current.alive&&hud.shrines>=3&&<div className="boss-health"><span>GARDIEN DES RUINES{enemy.current.hp<=35?" · PHASE II":""}</span><i style={{width:`${enemy.current.hp/70*100}%`}}/></div>}
       {testMode&&<div className="test-kit"><span>BAC À SABLE</span><button onClick={restoreForTest}>RESSOURCES</button><button onClick={resetEncounter}>REJOUER LE COMBAT</button><button onClick={shiftSky}>AUBE / NUIT</button><small>Les raccourcis et la sauvegarde restent actifs.</small></div>}
       <div className="bars"><div><label>VIE</label><i className="hp" style={{width:`${hud.hp}%`}}/></div><div><label>MANA</label><i className="mana" style={{width:`${hud.mana}%`}}/></div><div><label>ENDURANCE</label><i className="stamina" style={{width:`${hud.stamina}%`}}/></div></div>
       <div className="quickbar"><button onClick={potion}><b>1</b> Potion <em>{hud.potions}</em></button><button onClick={()=>strike(false)}><b>2</b> Lame</button><button onClick={()=>strike(true)}><b>3</b> Flamme</button><button onClick={shootBow}><b>R</b> Arc <em>{hud.arrows}</em></button><button onClick={parry}><b>MB3</b> Parade</button><button onClick={dodge}><b>⇧</b> Esquive</button><button className="ability" onClick={ability}><b>F</b> {hud.spec==="blade"?"Garde":hud.spec==="bow"?"Volée":"Braises"}</button><span>◈ {hud.gold}</span></div>
