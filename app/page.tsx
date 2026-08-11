@@ -150,6 +150,7 @@ export default function Home() {
 
   useEffect(()=>{
     const trigger=(input:string)=>{
+      if(village)return;
       const action=(Object.keys(bindingsRef.current) as Action[]).find(a=>bindingsRef.current[a]===input);
       if(action==="attack")strike(false);
       if(action==="spell")strike(true);
