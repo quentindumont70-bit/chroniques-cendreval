@@ -51,6 +51,8 @@ export default function Home() {
   const guardianRef = useRef<HTMLImageElement|null>(null);
   const state = useRef<Save>({...START});
   const keys = useRef<Record<string,boolean>>({});
+  const dragLook = useRef(false);
+  const lastMouseX = useRef<number|null>(null);
   const enemy = useRef({x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien"});
   const minions = useRef([
     {x:6.5,y:5.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre"},
@@ -81,7 +83,7 @@ export default function Home() {
   const gainXp = (amount:number)=>{const s=state.current;s.xp+=amount;while(s.xp>=s.level*40){s.xp-=s.level*40;s.level++;s.talent++;s.hp=100;s.mana=100;s.stamina=100;setMessage(`Niveau ${s.level} atteint — un point de talent disponible !`)}sync()};
   const applyBindings = useCallback((next:Bindings)=>{bindingsRef.current=next;setBindings(next);localStorage.setItem("cendreval-bindings",JSON.stringify(next))},[]);
   const clearInput = useCallback(()=>{keys.current={}},[]);
-  const captureMouse = useCallback(()=>{if(started&&!panel&&!village&&!choosingSpec)canvasRef.current?.requestPointerLock?.()},[choosingSpec,panel,started,village]);
+  const captureMouse = useCallback((event?:{clientX?:number})=>{if(started&&!panel&&!village&&!choosingSpec){dragLook.current=true;lastMouseX.current=event?.clientX??null;canvasRef.current?.requestPointerLock?.()}},[choosingSpec,panel,started,village]);
   const save = useCallback(() => {
     localStorage.setItem("cendreval-save", JSON.stringify(state.current));
     setMessage("Partie sauvegardée");
@@ -153,20 +155,20 @@ export default function Home() {
       if(e.code==="Escape"){clearInput();setPanel(null);document.exitPointerLock?.()}
     };
     const up=(e:KeyboardEvent)=>{keys.current[e.code]=false};
-    const mouseDown=(e:MouseEvent)=>{
+    const mouseDown=(e:PointerEvent)=>{
       const input=`Mouse${e.button}`;
-      if(capture){e.preventDefault();applyBindings({...bindingsRef.current,[capture]:input});setCapture(null);return}
+      if(capture){e.preventDefault();e.stopPropagation();applyBindings({...bindingsRef.current,[capture]:input});setCapture(null);setMessage(`Commande associée à ${bindingLabel(input)}.`);return}
       keys.current[input]=true;trigger(input);
-      if(started && !panel && !village && canvasRef.current?.contains(e.target as Node))canvasRef.current.requestPointerLock?.();
-      if(e.button!==0)e.preventDefault();
+      if(started && !panel && !village && canvasRef.current?.contains(e.target as Node))captureMouse(e);
+      if(e.button!==0){e.preventDefault();e.stopPropagation()}
     };
-    const mouseUp=(e:MouseEvent)=>{keys.current[`Mouse${e.button}`]=false};
-    const move=(e:MouseEvent)=>{if(document.pointerLockElement===canvasRef.current&&!panel&&!village){state.current.a+=e.movementX*.0024*sensitivityRef.current}};
-    const lock=()=>{if(document.pointerLockElement!==canvasRef.current)clearInput();setMouseLook(document.pointerLockElement===canvasRef.current)};
+    const mouseUp=(e:PointerEvent)=>{keys.current[`Mouse${e.button}`]=false;if(e.button===0&&document.pointerLockElement!==canvasRef.current){dragLook.current=false;lastMouseX.current=null}};
+    const move=(e:MouseEvent)=>{const locked=document.pointerLockElement===canvasRef.current;if((locked||dragLook.current)&&!panel&&!village){const delta=locked?e.movementX:(lastMouseX.current===null?0:e.clientX-lastMouseX.current);lastMouseX.current=e.clientX;state.current.a+=delta*.0024*sensitivityRef.current}};
+    const lock=()=>{if(document.pointerLockElement!==canvasRef.current){clearInput();lastMouseX.current=null}setMouseLook(document.pointerLockElement===canvasRef.current)};
     const blur=()=>clearInput();
-    addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("mousedown",mouseDown);addEventListener("mouseup",mouseUp);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("blur",blur);
-    return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("mousedown",mouseDown);removeEventListener("mouseup",mouseUp);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock);removeEventListener("blur",blur)};
-  },[applyBindings,capture,clearInput,dodge,panel,parry,save,shootBow,started,strike,village]);
+    addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("pointerdown",mouseDown);addEventListener("pointerup",mouseUp);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("blur",blur);
+    return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("pointerdown",mouseDown);removeEventListener("pointerup",mouseUp);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock);removeEventListener("blur",blur)};
+  },[applyBindings,capture,captureMouse,clearInput,dodge,panel,parry,save,shootBow,started,strike,village]);
 
   useEffect(()=>{clearInput();document.exitPointerLock?.()},[clearInput,panel,village,choosingSpec]);
 
@@ -284,7 +286,7 @@ export default function Home() {
     <div className="grain" />
     <header><div className="brand"><span>CHRONIQUES DE</span><strong>CENDREVAL</strong></div><div className="chapter">{village?"VALBRUME · LE VILLAGE DES BRUMES":"ACTE I · LES PLAINES DE CENDREVAL"}</div></header>
     <section className="stage" aria-label="Jeu en vue subjective">
-      <canvas ref={canvasRef} width={W} height={H} tabIndex={0} onPointerDown={captureMouse} />
+      <canvas ref={canvasRef} width={W} height={H} tabIndex={0} onPointerDown={captureMouse} onContextMenu={e=>e.preventDefault()} />
       {!started&&!choosingSpec&&<div className="start-screen"><div className="sigil">ᛉ</div><h1>CENDREVAL</h1><p>Au-delà des plaines, le château noir veille.<br/>Votre légende commence sous un ciel ouvert.</p><button onClick={()=>setChoosingSpec(true)}>NOUVELLE PARTIE</button><button className="secondary" onClick={load}>CONTINUER</button><small>Cliquez dans le jeu pour diriger la caméra à la souris</small></div>}
       {choosingSpec&&<div className="start-screen spec-select"><span className="eyebrow">CHOISISSEZ VOTRE VOIE</span><h1>VOTRE LÉGENDE</h1><div className="spec-cards"><button onClick={()=>chooseSpec("blade")}><b>⚔ LAME</b><small>Combat rapproché et endurance renforcée.</small></button><button onClick={()=>chooseSpec("bow")}><b>⌁ RÔDEUR</b><small>Arc, distance et vingt-deux flèches.</small></button><button onClick={()=>chooseSpec("arcane")}><b>✦ ARCANES</b><small>Mana maximum pour la flamme ancienne.</small></button></div><button className="secondary" onClick={()=>setChoosingSpec(false)}>RETOUR</button></div>}
       {started&&<><div className="top-hud"><div className="quest"><span>NIV. {hud.level} · {hud.xp}/{hud.level*40} EXP</span>{hud.quest===0?"Nettoyer les ruines de la plaine":hud.quest===1?"Retourner à Valbrume":"Préparer la prochaine expédition"}</div><div className="top-actions"><button className={testMode?"active-test":""} onClick={()=>setTestMode(v=>!v)}>Test</button>{hud.talent>0&&<button onClick={()=>setPanel("talents")}>Talent {hud.talent}</button>}{hud.quest>0&&<button onClick={()=>setVillage(true)}>Valbrume</button>}<button onClick={save}>Sauvegarder</button></div></div>
