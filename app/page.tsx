@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+// The canvas raycaster keeps its world data local so the static server bundle stays self-contained.
 const MAP = [
   "11111111111111111111",
   "12222200000000022221",
