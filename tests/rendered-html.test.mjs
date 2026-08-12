@@ -45,6 +45,8 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /ÉCRASEMENT/);
   assert.match(page, /hitStop/);
   assert.match(page, /prepareFirstDuel/);
+  assert.match(page, /PREMIERS PAS/);
+  assert.match(page, /PREMIER GARDIEN VAINCU/);
   assert.match(layout, /Chroniques de Cendreval/);
   assert.match(css, /game-shell/);
   assert.doesNotMatch(page, /SkeletonPreview|react-loading-skeleton/);
