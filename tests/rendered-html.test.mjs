@@ -55,6 +55,8 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /canvasRef\.current\?\.requestPointerLock/);
   assert.match(page, /const idle=Math\.sin/);
   assert.match(page, /shade\.telegraph>0\?0/);
+  assert.match(page, /impactFx\.current/);
+  assert.match(page, /shakeFx\.current/);
   assert.match(page, /Promise\.resolve\(canvasRef\.current\?\.requestPointerLock/);
   assert.match(page, /aria-live="polite"/);
   assert.match(page, /FENÊTRE PARFAITE/);
