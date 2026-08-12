@@ -75,6 +75,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /pendingCombatSummary/);
   assert.match(page, /telegraphCharge/);
   assert.match(page, /riposteReady/);
+  assert.match(page, /guardian-state/);
   assert.match(page, /attackSwing/);
   assert.doesNotMatch(page, /hoverLook/);
   assert.match(page, /JEU EN PAUSE/);
@@ -86,6 +87,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(css, /player-card/);
   assert.match(css, /control-ribbon/);
   assert.match(css, /pause-panel/);
+  assert.match(css, /guardian-state/);
   assert.match(css, /canvas\{cursor:none\}/);
   assert.match(css, /combat-cue/);
   assert.match(css, /bars\.critical/);
