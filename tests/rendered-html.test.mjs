@@ -50,11 +50,13 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /guardLift/);
   assert.match(page, /hud-frame/);
   assert.match(page, /VOIE DU VEILLEUR/);
+  assert.match(page, /aria-live="polite"/);
   assert.match(page, /FENÊTRE PARFAITE/);
   assert.match(layout, /Chroniques de Cendreval/);
   assert.match(css, /game-shell/);
   assert.match(css, /HUD de production/);
   assert.match(css, /player-card/);
+  assert.match(css, /Ecrans et panneaux/);
   assert.doesNotMatch(page, /SkeletonPreview|react-loading-skeleton/);
 });
 
