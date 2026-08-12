@@ -263,7 +263,7 @@ export default function Home() {
       const inDungeon=s.quest>=12;
       const sky=ctx.createLinearGradient(0,0,0,H/2);sky.addColorStop(0,inDungeon?"#130e19":inCourt?"#181625":"#314d82");sky.addColorStop(.55,inDungeon?"#3a202b":inCourt?"#4a4154":"#8ca6c7");sky.addColorStop(1,inDungeon?"#6e3534":inCourt?"#786b66":"#c4b88f");ctx.fillStyle=sky;ctx.fillRect(0,0,W,H/2);
       const horizon=horizonRef.current;
-      if(horizon&&!inCourt){const pan=Math.sin(s.a)*12;ctx.drawImage(horizon,pan-14,0,W+28,H*.59)}else{
+      if(inHalls){ctx.fillStyle=inDungeon?"#1f101b":"#211c25";ctx.fillRect(0,0,W,H*.5);ctx.fillStyle=inDungeon?"rgba(204,63,53,.2)":"rgba(163,110,78,.18)";for(let x=-8;x<W+14;x+=34){ctx.fillRect(x,0,16,H*.42);ctx.fillRect(x-5,H*.3,26,4)}ctx.fillStyle=inDungeon?"#9f3837":"#6b5761";ctx.fillRect(0,H*.37,W,5);for(let x=0;x<W;x+=36)ctx.fillRect(x,H*.25,5,H*.17)}else if(horizon&&!inCourt){const pan=Math.sin(s.a)*12;ctx.drawImage(horizon,pan-14,0,W+28,H*.59)}else{
         ctx.fillStyle="rgba(244,222,161,.72)";ctx.fillRect(55,27,18,18);ctx.fillStyle="rgba(244,222,161,.28)";ctx.fillRect(50,22,28,28);
         ctx.fillStyle="rgba(238,242,230,.38)";ctx.fillRect(125,27,42,3);ctx.fillRect(141,23,23,3);ctx.fillRect(190,45,58,3);ctx.fillRect(205,41,25,3);
         ctx.fillStyle="#7283a0";ctx.beginPath();ctx.moveTo(0,93);ctx.lineTo(68,48);ctx.lineTo(120,94);ctx.lineTo(190,60);ctx.lineTo(263,95);ctx.lineTo(342,45);ctx.lineTo(W,92);ctx.lineTo(W,120);ctx.lineTo(0,120);ctx.fill();
@@ -283,7 +283,7 @@ export default function Home() {
         const wh=Math.min(H*1.6,H/d);const top=(H-wh)/2;
         const side=(Math.floor(s.x+Math.cos(ray)*d*8)+Math.floor(s.y+Math.sin(ray)*d*8))%2;
         const shade=Math.max(20,155-d*9)+(side?8:0);
-        const colors=hit===2?[shade*.16,shade*.42,shade*.19]:hit===3?[shade*.38,shade*.39,shade*.42]:[shade*.42,shade*.36,shade*.31];
+        const colors=hit===2?[shade*.16,shade*.42,shade*.19]:hit===3?[shade*.38,shade*.39,shade*.42]:inDungeon?[shade*.4,shade*.16,shade*.18]:inHalls?[shade*.33,shade*.25,shade*.24]:inCourt?[shade*.35,shade*.31,shade*.34]:[shade*.42,shade*.36,shade*.31];
         ctx.fillStyle=`rgb(${colors[0]},${colors[1]},${colors[2]})`;ctx.fillRect(x,top,1,wh);
         if(x%13===0){ctx.fillStyle="rgba(10,5,10,.22)";ctx.fillRect(x,top,1,wh)}
       }
