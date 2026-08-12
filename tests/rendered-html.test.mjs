@@ -37,6 +37,8 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /DONJON NOIR/);
   assert.match(page, /MANUEL DU VEILLEUR/);
   assert.match(page, /ANCRAGE DU CHÂTEAU/);
+  assert.match(page, /TOUR DES CENDRES/);
+  assert.match(page, /CHRONIQUE ACHEVÉE/);
   assert.match(layout, /Chroniques de Cendreval/);
   assert.match(css, /game-shell/);
   assert.doesNotMatch(page, /SkeletonPreview|react-loading-skeleton/);
