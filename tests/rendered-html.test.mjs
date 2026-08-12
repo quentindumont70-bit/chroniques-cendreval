@@ -42,6 +42,9 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /ÉCHOS DE CENDRE/);
   assert.match(page, /beginAshEcho/);
   assert.match(page, /ash-warden-v1\.png/);
+  assert.match(page, /ÉCRASEMENT/);
+  assert.match(page, /hitStop/);
+  assert.match(page, /prepareFirstDuel/);
   assert.match(layout, /Chroniques de Cendreval/);
   assert.match(css, /game-shell/);
   assert.doesNotMatch(page, /SkeletonPreview|react-loading-skeleton/);
