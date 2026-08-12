@@ -57,6 +57,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /shade\.telegraph>0\?0/);
   assert.match(page, /impactFx\.current/);
   assert.match(page, /shakeFx\.current/);
+  assert.match(page, /OUVERTURE · RIPOSTEZ/);
   assert.match(page, /Promise\.resolve\(canvasRef\.current\?\.requestPointerLock/);
   assert.match(page, /aria-live="polite"/);
   assert.match(page, /FENÊTRE PARFAITE/);
@@ -66,6 +67,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(css, /player-card/);
   assert.match(css, /control-ribbon/);
   assert.match(css, /canvas\{cursor:none\}/);
+  assert.match(css, /combat-cue/);
   assert.match(css, /espace de jeu/);
   assert.match(css, /Ecrans et panneaux/);
   assert.doesNotMatch(page, /SkeletonPreview|react-loading-skeleton/);
