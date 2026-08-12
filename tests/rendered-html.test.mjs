@@ -28,7 +28,8 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
   ]);
-  assert.match(page, /const MAP/);
+  assert.match(page, /const PLAINS_MAP/);
+  assert.match(page, /function mapForQuest/);
   assert.match(page, /cendreval-save/);
   assert.match(page, /Mouse3/);
   assert.match(page, /PARADE PARFAITE/);
@@ -38,4 +39,23 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(layout, /Chroniques de Cendreval/);
   assert.match(css, /game-shell/);
   assert.doesNotMatch(page, /SkeletonPreview|react-loading-skeleton/);
+});
+
+test("keeps every castle encounter inside a walkable authored zone", async () => {
+  const page = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const readMap = (name) => {
+    const match = page.match(new RegExp(`const ${name} = \\[([\\s\\S]*?)\\];`));
+    assert.ok(match, `${name} must exist`);
+    const rows = [...match[1].matchAll(/"([013]+)"/g)].map((entry) => entry[1]);
+    assert.equal(rows.length, 20, `${name} has twenty rows`);
+    for (const row of rows) assert.equal(row.length, 20, `${name} has twenty columns`);
+    return rows;
+  };
+  const court = readMap("COURT_MAP");
+  const halls = readMap("HALLS_MAP");
+  const dungeon = readMap("DUNGEON_MAP");
+  const walkable = (map, x, y) => assert.notEqual(map[Math.floor(y)][Math.floor(x)], "1", `spawn ${x},${y} is walkable`);
+  [[15.1,4.8],[10.5,6.8],[12.7,5.6],[8.5,7.1],[10.5,8.8]].forEach(([x,y]) => walkable(court,x,y));
+  [[10.5,8.8],[10.5,5.8],[6.7,7.2],[14.2,7.1],[10.4,10.4]].forEach(([x,y]) => walkable(halls,x,y));
+  [[10.5,9.3],[10.5,5.2],[6.4,7.3],[14.5,7.4],[10.5,10.2]].forEach(([x,y]) => walkable(dungeon,x,y));
 });

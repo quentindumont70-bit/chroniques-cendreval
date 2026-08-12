@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 // The canvas raycaster keeps its world data local so the static server bundle stays self-contained.
-const MAP = [
+const PLAINS_MAP = [
   "11111111111111111111",
   "12222200000000022221",
   "12000000000000000021",
@@ -25,6 +25,29 @@ const MAP = [
   "12222200000000022221",
   "11111111111111111111",
 ];
+const COURT_MAP = [
+  "11111111111111111111","10000000000000000001","10000000000000000001","10000000000000000001",
+  "10000110000001100001","10000110000001100001","10000000000000000001","10000000000000000001",
+  "10000000000000000001","10000000111100000001","10000000100100000001","10000000100100000001",
+  "10000000111100000001","10000000000000000001","10000000000000000001","10000000000000000001",
+  "10000110000001100001","10000110000001100001","10000000000000000001","11111111111111111111",
+];
+const HALLS_MAP = [
+  "11111111111111111111","10000000000000000001","10000011111111000001","10000010000001000001",
+  "10000010000001000001","10000000000000000001","10000111100111100001","10000000000000000001",
+  "10000000000000000001","10000000111100000001","10000000100100000001","10000000100100000001",
+  "10000000111100000001","10000000000000000001","10000111100111100001","10000000000000000001",
+  "10000010000001000001","10000010000001000001","10000000000000000001","11111111111111111111",
+];
+const DUNGEON_MAP = [
+  "11111111111111111111","10000000000000000001","10000111111111100001","10000110000001100001",
+  "10000110000001100001","10000000000000000001","10000011100111000001","10000000000000000001",
+  "10000010000001000001","10000000000000000001","10000000000000000001","10000000000000000001",
+  "10000011100111000001","10000010000001000001","10000010000001000001","10000000000000000001",
+  "10000110000001100001","10000110000001100001","10000000000000000001","11111111111111111111",
+];
+let activeMap = PLAINS_MAP;
+function mapForQuest(quest:number){return quest>=12?DUNGEON_MAP:quest>=10?HALLS_MAP:quest>=7?COURT_MAP:PLAINS_MAP}
 
 type Relic = "none"|"iron"|"oak"|"ember";
 type CourtBoon = "none"|"ward"|"fury"|"focus";
@@ -48,7 +71,7 @@ const ACTION_LABELS: Record<Action,string> = {forward:"Avancer",back:"Reculer",l
 function bindingLabel(value:string){return value.replace("Key","Touche ").replace("Digit","Touche ").replace("Arrow","Flèche ").replace("Mouse0","Clic gauche").replace("Mouse1","Clic molette").replace("Mouse2","Clic droit").replace("Mouse3","Souris 3").replace("Mouse4","Souris 4")}
 
 function wallAt(x:number, y:number) {
-  const row = MAP[Math.floor(y)];
+  const row = activeMap[Math.floor(y)];
   return !row ? 1 : Number(row[Math.floor(x)] ?? 1);
 }
 
@@ -94,7 +117,7 @@ export default function Home() {
   const [hud,setHud] = useState({...START});
   const [message,setMessage] = useState("Les ruines murmurent votre nom…");
 
-  const sync = useCallback(() => setHud({...state.current}), []);
+  const sync = useCallback(() => {activeMap=mapForQuest(state.current.quest);setHud({...state.current})}, []);
   const gainXp = (amount:number)=>{const s=state.current;s.xp+=amount;while(s.xp>=s.level*40){s.xp-=s.level*40;s.level++;s.talent++;s.hp=100;s.mana=100;s.stamina=100;setMessage(`Niveau ${s.level} atteint — un point de talent disponible !`)}sync()};
   const applyBindings = useCallback((next:Bindings)=>{bindingsRef.current=next;setBindings(next);localStorage.setItem("cendreval-bindings",JSON.stringify(next))},[]);
   const clearInput = useCallback(()=>{keys.current={}},[]);
