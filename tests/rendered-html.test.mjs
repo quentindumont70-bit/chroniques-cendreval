@@ -56,6 +56,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(css, /game-shell/);
   assert.match(css, /HUD de production/);
   assert.match(css, /player-card/);
+  assert.match(css, /espace de jeu/);
   assert.match(css, /Ecrans et panneaux/);
   assert.doesNotMatch(page, /SkeletonPreview|react-loading-skeleton/);
 });
