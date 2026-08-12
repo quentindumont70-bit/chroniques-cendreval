@@ -89,8 +89,6 @@ export default function Home() {
   const shadowRef = useRef<HTMLImageElement|null>(null);
   const state = useRef<Save>({...START});
   const keys = useRef<Record<string,boolean>>({});
-  const dragLook = useRef(false);
-  const hoverLook = useRef(false);
   const lastMouseX = useRef<number|null>(null);
   const enemy = useRef<Foe>({x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien",kind:"brute"});
   const minions = useRef<Foe[]>([
@@ -139,7 +137,7 @@ export default function Home() {
   const gainXp = (amount:number)=>{const s=state.current;s.xp+=amount;while(s.xp>=s.level*40){s.xp-=s.level*40;s.level++;s.talent++;s.hp=100;s.mana=100;s.stamina=100;setMessage(`Niveau ${s.level} atteint — un point de talent disponible !`)}sync()};
   const applyBindings = useCallback((next:Bindings)=>{bindingsRef.current=next;setBindings(next);localStorage.setItem("cendreval-bindings",JSON.stringify(next))},[]);
   const clearInput = useCallback(()=>{keys.current={};movement.current={forward:0,strafe:0};queuedAttack.current=null},[]);
-  const captureMouse = useCallback((event?:{clientX?:number})=>{if(started&&!panel&&!village&&!choosingSpec){dragLook.current=true;lastMouseX.current=event?.clientX??null;lockCursor()}},[choosingSpec,lockCursor,panel,started,village]);
+  const captureMouse = useCallback(()=>{if(started&&!panel&&!village&&!choosingSpec)lockCursor()},[choosingSpec,lockCursor,panel,started,village]);
   const save = useCallback(() => {
     localStorage.setItem("cendreval-save", JSON.stringify(state.current));
     setMessage("Partie sauvegardée");
@@ -231,8 +229,8 @@ export default function Home() {
       if(started && !panel && !village && canvasRef.current?.contains(e.target as Node))captureMouse(e);
       if(e.button!==0){e.preventDefault();e.stopPropagation()}
     };
-    const mouseUp=(e:PointerEvent)=>{keys.current[`Mouse${e.button}`]=false;if(e.button===0&&document.pointerLockElement!==canvasRef.current){dragLook.current=false;lastMouseX.current=null}};
-    const move=(e:MouseEvent)=>{const locked=document.pointerLockElement===canvasRef.current;if(started&&(locked||dragLook.current||hoverLook.current)&&!panel&&!village){const delta=locked?e.movementX:(lastMouseX.current===null?0:e.clientX-lastMouseX.current);lastMouseX.current=e.clientX;state.current.a+=delta*.0024*sensitivityRef.current}};
+    const mouseUp=(e:PointerEvent)=>{keys.current[`Mouse${e.button}`]=false};
+    const move=(e:MouseEvent)=>{if(started&&document.pointerLockElement===canvasRef.current&&!panel&&!village)state.current.a+=e.movementX*.0024*sensitivityRef.current};
     const lock=()=>{if(document.pointerLockElement!==canvasRef.current){clearInput();lastMouseX.current=null}setMouseLook(document.pointerLockElement===canvasRef.current)};
     const blur=()=>clearInput();
     addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("pointerdown",mouseDown);addEventListener("pointerup",mouseUp);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("blur",blur);
@@ -358,7 +356,7 @@ export default function Home() {
         if(Math.abs(ang)<FOV*.7 && dist<zbuf[Math.max(0,Math.min(W-1,Math.floor((ang/FOV+.5)*W)))]){
           const size=Math.min(130,150/dist),cx=(.5+ang/FOV)*W,base=H/2+size*.52,telegraphCharge=e.telegraph>0?1-e.telegraph/(e.intent==="crush"?.82:.64):0;
           if(e.telegraph>0){ctx.save();ctx.translate(cx,base-size*.04);ctx.scale(1,.28);ctx.strokeStyle=e.intent==="crush"?`rgba(246,176,78,${.34+.42*telegraphCharge})`:`rgba(220,75,72,${.24+.38*telegraphCharge})`;ctx.lineWidth=Math.max(1,size*.025);ctx.beginPath();ctx.arc(0,0,size*(e.intent==="crush"?.5:.38+telegraphCharge*.14),0,Math.PI*2);ctx.stroke();if(e.intent==="crush"){ctx.globalAlpha=.25+.32*telegraphCharge;ctx.fillStyle="#e59445";ctx.fillRect(-size*.09,-size*.22,size*.18,size*.22)}ctx.restore()}
-          const idle=Math.sin(t*.007+e.x*1.7)*size*.028,attack=e.telegraph>0?0:Math.max(0,Math.min(1,(e.cooldown-.82)/.3));ctx.save();ctx.translate(Math.floor(cx-size/2),Math.floor(base-size+idle));if(e.telegraph>0){const charge=1-e.telegraph/(e.intent==="crush"?.82:.64);ctx.translate(0,charge*size*.08);ctx.rotate((e.intent==="sweep"?-.18:.14)*charge)}else if(attack>0){ctx.translate(0,-attack*size*.12);ctx.rotate((e.intent==="sweep"?-.2:.16)*attack)}
+          const idle=Math.sin(t*.007+e.x*1.7)*size*.04,attack=e.telegraph>0?0:Math.max(0,Math.min(1,(e.cooldown-.68)/.47)),attackSwing=Math.sin(attack*Math.PI);ctx.save();ctx.translate(Math.floor(cx-size/2),Math.floor(base-size+idle));if(e.telegraph>0){const charge=1-e.telegraph/(e.intent==="crush"?.82:.64);ctx.translate(0,charge*size*.18);ctx.scale(1+charge*.12,1-charge*.07);ctx.rotate((e.intent==="sweep"?-.32:.24)*charge)}else if(attack>0){ctx.translate(0,-attackSwing*size*.28);ctx.scale(1+attackSwing*.12,1-attackSwing*.08);ctx.rotate((e.intent==="sweep"?-.46:.32)*attackSwing)}
           const sprite=guardianRef.current;
           if(sprite){ctx.drawImage(sprite,0,0,sprite.width,sprite.height,0,0,size,size);if(s.shrines<3){ctx.fillStyle="rgba(72,124,186,.48)";ctx.fillRect(0,0,size,size);ctx.strokeStyle="rgba(158,223,255,.78)";ctx.lineWidth=2;ctx.beginPath();ctx.arc(size/2,size/2,size*.43,0,Math.PI*2);ctx.stroke()}if(e.telegraph>0){ctx.fillStyle="rgba(179,25,35,.24)";ctx.fillRect(0,0,size,size)}if(e.hit){ctx.fillStyle="rgba(255,235,181,.30)";ctx.fillRect(0,0,size,size)}}else{const u=size/16;ctx.fillStyle=e.hit?"#fff0c4":e.telegraph>0?"#9f2b37":"#16101b";ctx.fillRect(4*u,3*u,8*u,12*u);ctx.fillStyle="#696075";ctx.fillRect(5*u,2*u,6*u,7*u);ctx.fillRect(3*u,7*u,10*u,6*u);ctx.fillStyle="#c4463d";ctx.fillRect(6*u,5*u,1.5*u,u);ctx.fillRect(9*u,5*u,1.5*u,u);ctx.fillStyle="#a87a42";ctx.fillRect(1*u,6*u,3*u,2*u);ctx.fillRect(12*u,6*u,3*u,2*u);ctx.fillStyle="#3b3146";ctx.fillRect(4*u,13*u,3*u,3*u);ctx.fillRect(9*u,13*u,3*u,3*u)}ctx.restore();
         }
@@ -422,7 +420,7 @@ export default function Home() {
     <div className="grain" />
     <header><div className="brand"><span>CHRONIQUES DE</span><strong>CENDREVAL</strong></div><div className="chapter">{village?"VALBRUME · LE VILLAGE DES BRUMES":hud.quest>=14?"ACTE IV · LA TOUR DES CENDRES":hud.quest>=12?"ACTE III · LE DONJON NOIR":hud.quest>=7?"ACTE II · LE CHÂTEAU NOIR":"ACTE I · LES PLAINES DE CENDREVAL"}</div></header>
     <section className="stage" aria-label="Jeu en vue subjective">
-      <canvas ref={canvasRef} width={W} height={H} tabIndex={0} onPointerEnter={e=>{hoverLook.current=true;lastMouseX.current=e.clientX}} onPointerLeave={()=>{hoverLook.current=false;lastMouseX.current=null}} onPointerDown={captureMouse} onContextMenu={e=>e.preventDefault()} />
+      <canvas ref={canvasRef} width={W} height={H} tabIndex={0} onPointerDown={captureMouse} onContextMenu={e=>e.preventDefault()} />
       {started&&<div className="hud-frame" aria-hidden="true"><i/><i/><i/><i/></div>}
       {!started&&!choosingSpec&&<div className="start-screen"><div className="sigil">ᛉ</div><h1>CENDREVAL</h1><p>Au-delà des plaines, le château noir veille.<br/>Votre légende commence sous un ciel ouvert.</p><button onClick={()=>setChoosingSpec(true)}>NOUVELLE PARTIE</button><button className="secondary" onClick={load}>CONTINUER</button><small>Cliquez dans le jeu pour diriger la caméra à la souris</small></div>}
       {choosingSpec&&<div className="start-screen spec-select"><span className="eyebrow">CHOISISSEZ VOTRE VOIE</span><h1>VOTRE LÉGENDE</h1><div className="spec-cards"><button onClick={()=>chooseSpec("blade")}><b>⚔ LAME</b><small>Combat rapproché et endurance renforcée.</small></button><button onClick={()=>chooseSpec("bow")}><b>⌁ RÔDEUR</b><small>Arc, distance et vingt-deux flèches.</small></button><button onClick={()=>chooseSpec("arcane")}><b>✦ ARCANES</b><small>Mana maximum pour la flamme ancienne.</small></button></div><button className="secondary" onClick={()=>setChoosingSpec(false)}>RETOUR</button></div>}
