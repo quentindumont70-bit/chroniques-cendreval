@@ -51,6 +51,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /hud-frame/);
   assert.match(page, /VOIE DU VEILLEUR/);
   assert.match(page, /control-ribbon/);
+  assert.match(page, /bindingLabel\(bindings\.attack\)/);
   assert.match(page, /aria-live="polite"/);
   assert.match(page, /FENÊTRE PARFAITE/);
   assert.match(layout, /Chroniques de Cendreval/);
