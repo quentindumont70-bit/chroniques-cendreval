@@ -59,7 +59,7 @@ function mapForQuest(quest:number){return quest>=14?THRONE_MAP:quest>=12?DUNGEON
 type Relic = "none"|"iron"|"oak"|"ember";
 type CourtBoon = "none"|"ward"|"fury"|"focus";
 type Save = { x:number; y:number; a:number; hp:number; mana:number; stamina:number; gold:number; potions:number; arrows:number; spec:"blade"|"bow"|"arcane"; xp:number; talent:number; perkBlade:boolean; perkBow:boolean; perkArcane:boolean; enemyHp:number; quest:number; level:number; reward:number; shrines:number; relic:Relic; expedition:number; courtBoon:CourtBoon; echoTier:number; echoBest:number };
-type Foe = {x:number;y:number;hp:number;alive:boolean;hit:number;cooldown:number;telegraph:number;boss:boolean;name:string;kind:"melee"|"ranged"|"brute";intent?:"sweep"|"crush"|"shot"};
+type Foe = {x:number;y:number;hp:number;alive:boolean;hit:number;cooldown:number;telegraph:number;boss:boolean;name:string;kind:"melee"|"ranged"|"brute";intent?:"sweep"|"crush"|"shot";death?:number};
 const START: Save = { x:3.5, y:16.5, a:-Math.PI/2, hp:100, mana:80, stamina:100, gold:12, potions:2, arrows:14, spec:"blade", xp:0, talent:0, perkBlade:false, perkBow:false,perkArcane:false,enemyHp:70,quest:0,level:1,reward:0,shrines:0,relic:"none",expedition:0,courtBoon:"none",echoTier:0,echoBest:0 };
 const W = 426, H = 240, FOV = Math.PI / 3;
 const SCENERY = [
@@ -136,7 +136,7 @@ export default function Home() {
   const sync = useCallback(() => {activeMap=mapForQuest(state.current.quest);setHud({...state.current})}, []);
   const gainXp = (amount:number)=>{const s=state.current;s.xp+=amount;while(s.xp>=s.level*40){s.xp-=s.level*40;s.level++;s.talent++;s.hp=100;s.mana=100;s.stamina=100;setMessage(`Niveau ${s.level} atteint — un point de talent disponible !`)}sync()};
   const applyBindings = useCallback((next:Bindings)=>{bindingsRef.current=next;setBindings(next);localStorage.setItem("cendreval-bindings",JSON.stringify(next))},[]);
-  const clearInput = useCallback(()=>{keys.current={};movement.current={forward:0,strafe:0}},[]);
+  const clearInput = useCallback(()=>{keys.current={};movement.current={forward:0,strafe:0};queuedAttack.current=null},[]);
   const captureMouse = useCallback((event?:{clientX?:number})=>{if(started&&!panel&&!village&&!choosingSpec){dragLook.current=true;lastMouseX.current=event?.clientX??null;lockCursor()}},[choosingSpec,lockCursor,panel,started,village]);
   const save = useCallback(() => {
     localStorage.setItem("cendreval-save", JSON.stringify(state.current));
@@ -165,13 +165,13 @@ export default function Home() {
     if(e.alive && d<(spell?7:1.65) && diff<.32){
       const boon=s.courtBoon==="fury"?4:0;const riposte=!spell&&e.hit>.42;const base=spell?28+(s.perkArcane?12:0)+(s.relic==="ember"?8:0)+boon:22+(s.perkBlade?8:0)+(s.relic==="iron"?6:0)+boon+(riposte?14:0);e.hp=Math.max(0,e.hp-base); e.hit=.18;
       hitStop.current=riposte?.095:spell?.045:.032;impactFx.current=riposte?.34:spell?.26:.19;shakeFx.current=riposte?5:spell?3:2;if(e.boss)s.enemyHp=e.hp;
-      if(e.hp===0){e.alive=false;s.gold+=e.boss?18:6;gainXp(e.boss?40:16);if(e.boss){s.quest=1;setCombatSummary(true);setMessage("Le gardien tombe. Valbrume vous attend !")}else setMessage("L’ombre se dissipe en cendres.");}
+      if(e.hp===0){e.alive=false;e.death=.62;s.gold+=e.boss?18:6;gainXp(e.boss?40:16);if(e.boss){s.quest=1;setCombatSummary(true);setMessage("Le gardien tombe. Valbrume vous attend !")}else setMessage("L’ombre se dissipe en cendres.");}
       else setMessage(riposte?"RIPOSTE — votre lame frappe dans l’ouverture !":spell?"La flamme dévore le gardien !":"Votre lame mord la pierre vive !");
     }else if(e.alive)setMessage(spell?"La flamme se dissipe hors de portée.":"Votre lame ne trouve que le vent.");
     sync();
   },[panel,sync]);
 
-  const shootBow = useCallback(()=>{if(panel)return;const s=state.current;if(!s.arrows){setMessage("Plus de flèches.");return}const foes=[enemy.current,...minions.current].filter(e=>e.alive).sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y));const e=foes[0];if(e?.boss&&s.shrines<3){setMessage("Le sceau des trois bornes dévie votre flèche.");sync();return}s.arrows--;if(e){const dist=Math.hypot(e.x-s.x,e.y-s.y),target=Math.atan2(e.y-s.y,e.x-s.x),diff=Math.abs(Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a)));if(dist<10&&diff<.18){e.hp=Math.max(0,e.hp-(30+(s.perkBow?12:0)+(s.relic==="oak"?8:0)+(s.courtBoon==="fury"?4:0)));if(e.boss)s.enemyHp=e.hp;e.hit=.22;if(!e.hp){e.alive=false;s.gold+=e.boss?18:6;gainXp(e.boss?40:16);if(e.boss)s.quest=1;}setMessage("Flèche précise !")}else setMessage("La flèche se perd dans les ténèbres.")}sync()},[panel,sync]);
+  const shootBow = useCallback(()=>{if(panel)return;const s=state.current;if(!s.arrows){setMessage("Plus de flèches.");return}const foes=[enemy.current,...minions.current].filter(e=>e.alive).sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y));const e=foes[0];if(e?.boss&&s.shrines<3){setMessage("Le sceau des trois bornes dévie votre flèche.");sync();return}s.arrows--;if(e){const dist=Math.hypot(e.x-s.x,e.y-s.y),target=Math.atan2(e.y-s.y,e.x-s.x),diff=Math.abs(Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a)));if(dist<10&&diff<.18){e.hp=Math.max(0,e.hp-(30+(s.perkBow?12:0)+(s.relic==="oak"?8:0)+(s.courtBoon==="fury"?4:0)));if(e.boss)s.enemyHp=e.hp;e.hit=.22;if(!e.hp){e.alive=false;e.death=.62;s.gold+=e.boss?18:6;gainXp(e.boss?40:16);if(e.boss)s.quest=1;}setMessage("Flèche précise !")}else setMessage("La flèche se perd dans les ténèbres.")}sync()},[panel,sync]);
 
   const parry = useCallback(()=>{const s=state.current;if(panel)return;if(s.stamina<10){setMessage("Endurance insuffisante pour parer.");return}s.stamina-=10;parryFx.current=.46;perfectFx.current=.13;sync();setMessage("Parade — frappez au moment de l’impact pour une parade parfaite.")},[panel,sync]);
   const dodge = useCallback(()=>{const s=state.current;if(panel)return;if(s.stamina<24){setMessage("Endurance insuffisante pour esquiver.");return}s.stamina-=24;dodgeFx.current=.34;const side=(keys.current[bindingsRef.current.left]?-1:0)+(keys.current[bindingsRef.current.right]?1:0);const angle=s.a+(side?side*Math.PI/2:Math.PI);const nx=s.x+Math.cos(angle)*.9,ny=s.y+Math.sin(angle)*.9;if(!wallAt(nx,s.y))s.x=nx;if(!wallAt(s.x,ny))s.y=ny;sync();setMessage(side?"Esquive latérale !":"Esquive arrière !")},[panel,sync]);
@@ -262,12 +262,12 @@ export default function Home() {
       }
       attackFx.current=Math.max(0,attackFx.current-dt);spellFx.current=Math.max(0,spellFx.current-dt);hurtFx.current=Math.max(0,hurtFx.current-dt);parryFx.current=Math.max(0,parryFx.current-dt);perfectFx.current=Math.max(0,perfectFx.current-dt);dodgeFx.current=Math.max(0,dodgeFx.current-dt);abilityFx.current=Math.max(0,abilityFx.current-dt);impactFx.current=Math.max(0,impactFx.current-dt);shakeFx.current=Math.max(0,shakeFx.current-dt);if(attackFx.current===0&&queuedAttack.current!==null){queuedAttack.current=null;strike(false)}if(!panel&&!village&&!choosingSpec)abilityCd.current=Math.max(0,abilityCd.current-dt);if(abilityCd.current===0&&!abilityReadyRef.current){abilityReadyRef.current=true;setAbilityReady(true)}s.stamina=Math.min(100,s.stamina+dt*16);
       if(s.hp>0&&!panel&&!village&&!choosingSpec)for(const foe of [enemy.current,...minions.current]){
-        const telegraphBefore=foe.telegraph;foe.hit=Math.max(0,foe.hit-dt);foe.cooldown=Math.max(0,foe.cooldown-dt);foe.telegraph=Math.max(0,foe.telegraph-dt);
+        const telegraphBefore=foe.telegraph;foe.hit=Math.max(0,foe.hit-dt);foe.cooldown=Math.max(0,foe.cooldown-dt);foe.telegraph=Math.max(0,foe.telegraph-dt);foe.death=Math.max(0,(foe.death??0)-dt);
         if(!foe.alive||(foe.boss&&s.shrines<3))continue;
         const vx=s.x-foe.x,vy=s.y-foe.y,dist=Math.hypot(vx,vy);
         const enraged=foe.boss&&foe.hp<=35;
         const ranged=foe.kind==="ranged",brute=foe.kind==="brute"&&!foe.boss,reach=ranged?5.4:1.25,stop=ranged?3.2:.9;
-        if(dist<7&&dist>stop&&foe.telegraph===0){const step=dt*(foe.boss?(enraged ? .96 : .65):ranged?.56:brute?.62:.85),nx=foe.x+vx/dist*step,ny=foe.y+vy/dist*step;if(!wallAt(nx,foe.y))foe.x=nx;if(!wallAt(foe.x,ny))foe.y=ny;}
+        if(dist<7&&dist>stop&&foe.telegraph===0&&foe.hit<.42){const step=dt*(foe.boss?(enraged ? .96 : .65):ranged?.56:brute?.62:.85),nx=foe.x+vx/dist*step,ny=foe.y+vy/dist*step;if(!wallAt(nx,foe.y))foe.x=nx;if(!wallAt(foe.x,ny))foe.y=ny;}
         if(dist<reach&&foe.cooldown===0&&foe.telegraph===0){foe.intent=ranged?"shot":(foe.intent==="sweep"?"crush":"sweep");foe.telegraph=foe.intent==="crush"?(foe.boss?.82:.78):foe.boss?(enraged ? .42 : .64):ranged?.72:.48;setMessage(foe.intent==="crush"?"Le Gardien arme un ÉCRASEMENT — esquivez ou parez tard !":foe.intent==="sweep"?"Le Gardien ouvre sa garde pour un BALAYAGE — préparez la parade !":"Le Veilleur vise une flèche de cendre !");}
         if(telegraphBefore>0&&foe.telegraph===0){if(!ranged&&dist>reach+.35){foe.cooldown=.65;setMessage(foe.boss?"Le Gardien frappe le vide — l’ouverture est brève.":"L’ennemi manque son coup.");continue}foe.cooldown=foe.boss?(enraged ? .72 : 1.15):ranged?1.8:brute?1.65:1.35;if(dodgeFx.current>0){foe.hit=.42;foe.cooldown=1.65;s.stamina=Math.min(100,s.stamina+10);setMessage("ESQUIVE PARFAITE — l’ennemi vous perd et votre endurance revient.")}else if(parryFx.current>0){if(perfectFx.current>0){foe.hit=.65;foe.cooldown=1.8;s.stamina=Math.min(100,s.stamina+22);impactFx.current=.25;shakeFx.current=2;setMessage("PARADE PARFAITE — l’ennemi est étourdi !")}else{setMessage("Parade réussie.")}}else{const raw=foe.boss?(enraged?11:8):ranged?5:brute?8:4;const damage=Math.max(1,raw-(s.courtBoon==="ward"?2:0));s.hp=Math.max(0,s.hp-damage);hurtFx.current=.25;shakeFx.current=4;sync();setMessage(s.hp?`${ranged?"La flèche de cendre":brute?"Le marteau du Veilleur":foe.boss?"Le gardien":"Une ombre"} vous frappe !`: "Vous êtes tombé… rechargez votre sauvegarde.");}}
       }
@@ -320,6 +320,15 @@ export default function Home() {
         if(Math.abs(ang)<FOV*.7&&dist<zbuf[column]){const size=Math.min(98,105/dist),cx=(.5+ang/FOV)*W,base=H/2+size*.52,u=size/12,idle=Math.sin(t*.009+shade.x*2.1)*size*.03,attack=shade.telegraph>0?0:Math.max(0,Math.min(1,(shade.cooldown-.76)/.28));ctx.save();ctx.translate(Math.floor(cx-size/2),Math.floor(base-size+idle));if(shade.telegraph>0){const charge=1-shade.telegraph/(shade.intent==="crush"?.78:shade.kind==="ranged"?.72:.48);ctx.translate(0,charge*size*.07);ctx.rotate((shade.kind==="ranged"?-.08:.14)*charge)}else if(attack>0){ctx.translate(0,-attack*size*.1);ctx.rotate((shade.kind==="ranged"?-.1:.18)*attack)}const sprite=shadowRef.current;if(sprite){ctx.drawImage(sprite,0,0,sprite.width,sprite.height,0,0,size,size);if(shade.telegraph>0){ctx.fillStyle="rgba(172,31,55,.28)";ctx.fillRect(0,0,size,size)}if(shade.hit){ctx.fillStyle="rgba(255,230,205,.32)";ctx.fillRect(0,0,size,size)}}else{ctx.fillStyle=shade.hit?"#f9d9bf":shade.telegraph>0?"#8e273c":"#100d1b";ctx.fillRect(3*u,2*u,6*u,9*u);ctx.fillStyle="#4a315f";ctx.fillRect(2*u,5*u,8*u,5*u);ctx.fillStyle="#c44c6a";ctx.fillRect(4*u,4*u,u,u);ctx.fillRect(7*u,4*u,u,u);ctx.fillStyle="#21152e";ctx.fillRect(2*u,10*u,3*u,2*u);ctx.fillRect(7*u,10*u,3*u,2*u)}ctx.restore();}
       }
 
+      // Un ennemi vaincu laisse une brève silhouette de cendres, au lieu de disparaître net.
+      for(const shade of minions.current){
+        const death=shade.death??0;if(shade.alive||death<=0)continue;
+        const dx=shade.x-s.x,dy=shade.y-s.y,dist=Math.hypot(dx,dy);let ang=Math.atan2(dy,dx)-s.a;ang=Math.atan2(Math.sin(ang),Math.cos(ang));
+        const column=Math.max(0,Math.min(W-1,Math.floor((ang/FOV+.5)*W)));if(Math.abs(ang)>=FOV*.7||dist>=zbuf[column])continue;
+        const size=Math.min(98,105/dist),cx=(.5+ang/FOV)*W,base=H/2+size*.52,fade=Math.min(1,death/.62),u=Math.max(1,size/12);
+        ctx.save();ctx.globalAlpha=fade;ctx.translate(Math.floor(cx-size/2),Math.floor(base-size*(.32+.68*fade)));ctx.scale(1+.18*(1-fade),.38+.62*fade);ctx.fillStyle="#31232f";ctx.fillRect(3*u,4*u,6*u,7*u);ctx.fillStyle="#b45b4a";ctx.fillRect(4*u,5*u,1*u,1*u);ctx.fillRect(7*u,5*u,1*u,1*u);ctx.globalAlpha=fade*.55;ctx.fillStyle="#c7a38a";for(let ash=0;ash<5;ash++)ctx.fillRect((2+ash*2)*u,(1+(1-fade)*5+(ash%2))*u,u,u);ctx.restore();
+      }
+
       for(const prop of (inCourt?[]:SCENERY)){
         const dx=prop.x-s.x,dy=prop.y-s.y,dist=Math.hypot(dx,dy);let ang=Math.atan2(dy,dx)-s.a;ang=Math.atan2(Math.sin(ang),Math.cos(ang));
         const column=Math.max(0,Math.min(W-1,Math.floor((ang/FOV+.5)*W)));
@@ -351,6 +360,12 @@ export default function Home() {
         }
       }
 
+      const guardianDeath=e.death??0;
+      if(!e.alive&&guardianDeath>0){
+        const dx=e.x-s.x,dy=e.y-s.y,dist=Math.hypot(dx,dy);let ang=Math.atan2(dy,dx)-s.a;ang=Math.atan2(Math.sin(ang),Math.cos(ang));const column=Math.max(0,Math.min(W-1,Math.floor((ang/FOV+.5)*W)));
+        if(Math.abs(ang)<FOV*.7&&dist<zbuf[column]){const size=Math.min(130,150/dist),cx=(.5+ang/FOV)*W,base=H/2+size*.52,fade=Math.min(1,guardianDeath/.62);ctx.save();ctx.globalAlpha=fade;ctx.translate(Math.floor(cx-size/2),Math.floor(base-size*(.27+.73*fade)));ctx.scale(1+.2*(1-fade),.3+.7*fade);const sprite=guardianRef.current;if(sprite)ctx.drawImage(sprite,0,0,sprite.width,sprite.height,0,0,size,size);else{ctx.fillStyle="#241826";ctx.fillRect(size*.25,size*.2,size*.5,size*.72)}ctx.globalAlpha=fade*.48;ctx.fillStyle="#e0a360";for(let ash=0;ash<8;ash++)ctx.fillRect(size*(.12+ash*.1),size*(.08+(ash%3)*.07+(1-fade)*.35),Math.max(1,size*.025),Math.max(1,size*.025));ctx.restore()}
+      }
+
       const daylight=Math.max(.08,Math.sin(worldTime.current*Math.PI*2)*.78+.22);
       if(daylight<.45){ctx.fillStyle=`rgba(3,8,28,${.64*(.48-daylight)/.4})`;ctx.fillRect(0,0,W,H);ctx.fillStyle=`rgba(220,235,255,${(.45-daylight)*1.8})`;for(let star=0;star<36;star++){const sx=(star*83)%W,sy=(star*47)%Math.floor(H*.43);ctx.fillRect(sx,sy,star%3?1:2,1)}}
 
@@ -361,6 +376,7 @@ export default function Home() {
       let targetReady=false;if(nearest){const target=Math.atan2(nearest.y-s.y,nearest.x-s.x),diff=Math.abs(Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a)));targetReady=diff<.12&&Math.hypot(nearest.x-s.x,nearest.y-s.y)<7}
       if(spellFx.current>0){const r=30+spellFx.current*90,g=ctx.createRadialGradient(W*.68,H*.68,2,W*.68,H*.68,r);g.addColorStop(0,"#fff7a0");g.addColorStop(.35,"#ff6b28");g.addColorStop(1,"transparent");ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
       if(abilityFx.current>0){const palette=s.spec==="blade"?[180,210,255]:s.spec==="bow"?[225,190,105]:[222,90,255];ctx.strokeStyle=`rgba(${palette[0]},${palette[1]},${palette[2]},${abilityFx.current*.68})`;ctx.lineWidth=3;ctx.beginPath();ctx.arc(W/2,H/2,32+(1-abilityFx.current/.7)*72,0,Math.PI*2);ctx.stroke()}
+      if(dodgeFx.current>0){const phase=1-dodgeFx.current/.34;ctx.save();ctx.globalAlpha=(1-phase)*.46;ctx.strokeStyle="#d9e2d6";ctx.lineWidth=2;for(let streak=0;streak<4;streak++){const y=H*(.58+streak*.065),start=W*(.16+phase*.32),end=start+W*(.16+phase*.1);ctx.beginPath();ctx.moveTo(start,y);ctx.lineTo(end,y-5);ctx.stroke()}ctx.restore()}
       const swing=attackFx.current?Math.sin(attackFx.current/.28*Math.PI)*38:0;const guarding=parryFx.current>0;const guardLift=guarding?(1-parryFx.current/.46)*52:0;
       const shake=shakeFx.current?Math.sin(t*.09)*shakeFx.current:0;ctx.save();ctx.translate(W*.64+swing+shake,H*.78-swing*.6-guardLift+shake*.35);ctx.rotate(guarding?-1.22+swing*.008:-.62+swing*.012);ctx.fillStyle="#211724";ctx.fillRect(-5,-2,15,8);ctx.fillStyle="#c0aeb1";ctx.fillRect(8,0,92,5);ctx.fillStyle="#f2d89c";ctx.fillRect(8,0,88,1);ctx.restore();
       if(parryFx.current>0){const r=34+(1-parryFx.current/.46)*18;ctx.strokeStyle=perfectFx.current>0?"#ffe49a":"#9db5d5";ctx.lineWidth=5;ctx.beginPath();ctx.arc(W*.78,H*.73,r,Math.PI*.45,Math.PI*1.55);ctx.stroke();ctx.strokeStyle=perfectFx.current>0?"rgba(255,230,140,.55)":"rgba(142,190,235,.35)";ctx.lineWidth=2;ctx.beginPath();ctx.arc(W*.78,H*.73,r+8,Math.PI*.5,Math.PI*1.48);ctx.stroke()}
