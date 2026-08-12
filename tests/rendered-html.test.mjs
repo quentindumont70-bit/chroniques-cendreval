@@ -48,9 +48,13 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /PREMIERS PAS/);
   assert.match(page, /PREMIER GARDIEN VAINCU/);
   assert.match(page, /guardLift/);
+  assert.match(page, /hud-frame/);
+  assert.match(page, /VOIE DU VEILLEUR/);
   assert.match(page, /FENÊTRE PARFAITE/);
   assert.match(layout, /Chroniques de Cendreval/);
   assert.match(css, /game-shell/);
+  assert.match(css, /HUD de production/);
+  assert.match(css, /player-card/);
   assert.doesNotMatch(page, /SkeletonPreview|react-loading-skeleton/);
 });
 
