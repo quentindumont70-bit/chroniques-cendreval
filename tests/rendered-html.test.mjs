@@ -72,6 +72,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /queuedAttack\.current=null/);
   assert.match(page, /dodgeFx\.current>0/);
   assert.match(page, /perfectImpactFx/);
+  assert.match(page, /pendingCombatSummary/);
   assert.match(page, /FENÊTRE PARFAITE/);
   assert.match(layout, /Chroniques de Cendreval/);
   assert.match(css, /game-shell/);
