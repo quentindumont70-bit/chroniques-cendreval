@@ -74,6 +74,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /perfectImpactFx/);
   assert.match(page, /pendingCombatSummary/);
   assert.match(page, /telegraphCharge/);
+  assert.match(page, /riposteReady/);
   assert.match(page, /JEU EN PAUSE/);
   assert.match(page, /if\(panel==="pause"\)\{setPanel\(null\);lockCursor\(\)\}/);
   assert.match(page, /FENÊTRE PARFAITE/);
