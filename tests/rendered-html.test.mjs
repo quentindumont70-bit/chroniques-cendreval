@@ -55,8 +55,10 @@ test("keeps every castle encounter inside a walkable authored zone", async () =>
   const court = readMap("COURT_MAP");
   const halls = readMap("HALLS_MAP");
   const dungeon = readMap("DUNGEON_MAP");
+  const throne = readMap("THRONE_MAP");
   const walkable = (map, x, y) => assert.notEqual(map[Math.floor(y)][Math.floor(x)], "1", `spawn ${x},${y} is walkable`);
   [[15.1,4.8],[10.5,6.8],[12.7,5.6],[8.5,7.1],[10.5,8.8]].forEach(([x,y]) => walkable(court,x,y));
   [[10.5,8.8],[10.5,5.8],[6.7,7.2],[14.2,7.1],[10.4,10.4]].forEach(([x,y]) => walkable(halls,x,y));
   [[10.5,9.3],[10.5,5.2],[6.4,7.3],[14.5,7.4],[10.5,10.2]].forEach(([x,y]) => walkable(dungeon,x,y));
+  [[10.5,15.8],[10.5,4.7],[7.1,8.2],[13.9,8.2],[10.5,9.9]].forEach(([x,y]) => walkable(throne,x,y));
 });
