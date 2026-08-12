@@ -62,6 +62,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /Votre lame ne trouve que le vent/);
   assert.match(page, /Endurance insuffisante pour esquiver/);
   assert.match(page, /Le Gardien frappe le vide/);
+  assert.match(page, /queuedAttack/);
   assert.match(page, /OUVERTURE · RIPOSTEZ/);
   assert.match(page, /Promise\.resolve\(canvasRef\.current\?\.requestPointerLock/);
   assert.match(page, /aria-live="polite"/);

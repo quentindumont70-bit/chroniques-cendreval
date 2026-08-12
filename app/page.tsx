@@ -112,6 +112,7 @@ export default function Home() {
   const abilityReadyRef = useRef(true);
   const worldTime = useRef(.24);
   const movement = useRef({forward:0,strafe:0});
+  const queuedAttack = useRef<null|boolean>(null);
   const last = useRef(0);
   const [started,setStarted] = useState(false);
   const [testMode,setTestMode] = useState(false);
@@ -151,6 +152,7 @@ export default function Home() {
 
   const strike = useCallback((spell=false) => {
     if(panel) return;
+    if(!spell&&attackFx.current>.09){queuedAttack.current=false;return}
     const s=state.current;
     if(spell && s.mana<15){setMessage("Pas assez de mana");return;}
     if(spell){s.mana-=15;spellFx.current=.35}else attackFx.current=.28;
@@ -258,7 +260,7 @@ export default function Home() {
         const speed=dt*2.35, dx=(Math.cos(s.a)*movement.current.forward+Math.cos(s.a+Math.PI/2)*movement.current.strafe)*speed, dy=(Math.sin(s.a)*movement.current.forward+Math.sin(s.a+Math.PI/2)*movement.current.strafe)*speed;
         if(!wallAt(s.x+dx,s.y))s.x+=dx;if(!wallAt(s.x,s.y+dy))s.y+=dy;
       }
-      attackFx.current=Math.max(0,attackFx.current-dt);spellFx.current=Math.max(0,spellFx.current-dt);hurtFx.current=Math.max(0,hurtFx.current-dt);parryFx.current=Math.max(0,parryFx.current-dt);perfectFx.current=Math.max(0,perfectFx.current-dt);dodgeFx.current=Math.max(0,dodgeFx.current-dt);abilityFx.current=Math.max(0,abilityFx.current-dt);impactFx.current=Math.max(0,impactFx.current-dt);shakeFx.current=Math.max(0,shakeFx.current-dt);if(!panel&&!village&&!choosingSpec)abilityCd.current=Math.max(0,abilityCd.current-dt);if(abilityCd.current===0&&!abilityReadyRef.current){abilityReadyRef.current=true;setAbilityReady(true)}s.stamina=Math.min(100,s.stamina+dt*16);
+      attackFx.current=Math.max(0,attackFx.current-dt);spellFx.current=Math.max(0,spellFx.current-dt);hurtFx.current=Math.max(0,hurtFx.current-dt);parryFx.current=Math.max(0,parryFx.current-dt);perfectFx.current=Math.max(0,perfectFx.current-dt);dodgeFx.current=Math.max(0,dodgeFx.current-dt);abilityFx.current=Math.max(0,abilityFx.current-dt);impactFx.current=Math.max(0,impactFx.current-dt);shakeFx.current=Math.max(0,shakeFx.current-dt);if(attackFx.current===0&&queuedAttack.current!==null){queuedAttack.current=null;strike(false)}if(!panel&&!village&&!choosingSpec)abilityCd.current=Math.max(0,abilityCd.current-dt);if(abilityCd.current===0&&!abilityReadyRef.current){abilityReadyRef.current=true;setAbilityReady(true)}s.stamina=Math.min(100,s.stamina+dt*16);
       if(s.hp>0&&!panel&&!village&&!choosingSpec)for(const foe of [enemy.current,...minions.current]){
         const telegraphBefore=foe.telegraph;foe.hit=Math.max(0,foe.hit-dt);foe.cooldown=Math.max(0,foe.cooldown-dt);foe.telegraph=Math.max(0,foe.telegraph-dt);
         if(!foe.alive||(foe.boss&&s.shrines<3))continue;
@@ -368,7 +370,7 @@ export default function Home() {
       raf=requestAnimationFrame(loop);
     };
     raf=requestAnimationFrame(loop);return()=>cancelAnimationFrame(raf);
-  },[panel,started,sync]);
+  },[panel,started,strike,sync]);
 
   const hold=(code:string,on:boolean)=>{keys.current[code]=on};
   const holdAction=(action:"forward"|"back"|"left"|"right",on:boolean)=>hold(bindingsRef.current[action],on);
