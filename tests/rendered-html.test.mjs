@@ -63,6 +63,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /Endurance insuffisante pour esquiver/);
   assert.match(page, /Le Gardien frappe le vide/);
   assert.match(page, /queuedAttack/);
+  assert.match(page, /bars\$\{hud\.hp<30/);
   assert.match(page, /OUVERTURE · RIPOSTEZ/);
   assert.match(page, /Promise\.resolve\(canvasRef\.current\?\.requestPointerLock/);
   assert.match(page, /aria-live="polite"/);
@@ -74,6 +75,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(css, /control-ribbon/);
   assert.match(css, /canvas\{cursor:none\}/);
   assert.match(css, /combat-cue/);
+  assert.match(css, /bars\.critical/);
   assert.match(css, /espace de jeu/);
   assert.match(css, /Ecrans et panneaux/);
   assert.doesNotMatch(page, /SkeletonPreview|react-loading-skeleton/);
