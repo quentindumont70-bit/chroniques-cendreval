@@ -52,6 +52,9 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /VOIE DU VEILLEUR/);
   assert.match(page, /control-ribbon/);
   assert.match(page, /bindingLabel\(bindings\.attack\)/);
+  assert.match(page, /canvasRef\.current\?\.requestPointerLock/);
+  assert.match(page, /const idle=Math\.sin/);
+  assert.match(page, /Promise\.resolve\(canvasRef\.current\?\.requestPointerLock/);
   assert.match(page, /aria-live="polite"/);
   assert.match(page, /FENÊTRE PARFAITE/);
   assert.match(layout, /Chroniques de Cendreval/);
@@ -59,6 +62,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(css, /HUD de production/);
   assert.match(css, /player-card/);
   assert.match(css, /control-ribbon/);
+  assert.match(css, /canvas\{cursor:none\}/);
   assert.match(css, /espace de jeu/);
   assert.match(css, /Ecrans et panneaux/);
   assert.doesNotMatch(page, /SkeletonPreview|react-loading-skeleton/);
