@@ -221,7 +221,7 @@ export default function Home() {
       keys.current[e.code]=true;
       trigger(e.code);
       if(e.code==="Space")e.preventDefault();
-      if(e.code==="Escape"){e.preventDefault();clearInput();setPanel(p=>p==="pause"?null:"pause");document.exitPointerLock?.()}
+      if(e.code==="Escape"){e.preventDefault();clearInput();if(panel==="pause"){setPanel(null);lockCursor()}else{setPanel("pause");document.exitPointerLock?.()}}
     };
     const up=(e:KeyboardEvent)=>{keys.current[e.code]=false};
     const mouseDown=(e:PointerEvent)=>{
@@ -237,7 +237,7 @@ export default function Home() {
     const blur=()=>clearInput();
     addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("pointerdown",mouseDown);addEventListener("pointerup",mouseUp);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("blur",blur);
     return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("pointerdown",mouseDown);removeEventListener("pointerup",mouseUp);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock);removeEventListener("blur",blur)};
-  },[ability,applyBindings,capture,captureMouse,clearInput,dodge,interact,panel,parry,save,shootBow,started,strike,village]);
+  },[ability,applyBindings,capture,captureMouse,clearInput,dodge,interact,lockCursor,panel,parry,save,shootBow,started,strike,village]);
 
   useEffect(()=>{clearInput();document.exitPointerLock?.()},[clearInput,panel,village,choosingSpec]);
 
