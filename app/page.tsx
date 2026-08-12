@@ -85,7 +85,7 @@ function wallAt(x:number, y:number) {
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const horizonRef = useRef<HTMLImageElement|null>(null);
-  const guardianRef = useRef<HTMLImageElement|null>(null);
+  const guardianRef = useRef<HTMLCanvasElement|null>(null);
   const shadowRef = useRef<HTMLImageElement|null>(null);
   const state = useRef<Save>({...START});
   const keys = useRef<Record<string,boolean>>({});
@@ -181,8 +181,8 @@ export default function Home() {
     horizon.src="/cendreval-plains-v2.png";
     horizon.onload=()=>{horizonRef.current=horizon};
     const guardian=new Image();
-    guardian.src="/guardian-pixel.png";
-    guardian.onload=()=>{guardianRef.current=guardian};
+    guardian.src="/ash-warden-v1.png";
+    guardian.onload=()=>{const clean=document.createElement("canvas");clean.width=guardian.naturalWidth;clean.height=guardian.naturalHeight;const cleanCtx=clean.getContext("2d")!;cleanCtx.drawImage(guardian,0,0);const pixels=cleanCtx.getImageData(0,0,clean.width,clean.height);for(let p=0;p<pixels.data.length;p+=4){const r=pixels.data[p],g=pixels.data[p+1],b=pixels.data[p+2];if(g>135&&g>r*1.32&&g>b*1.32)pixels.data[p+3]=0}cleanCtx.putImageData(pixels,0,0);guardianRef.current=clean};
     const shadow=new Image();
     shadow.src="/shadow-pixel.png";
     shadow.onload=()=>{shadowRef.current=shadow};
