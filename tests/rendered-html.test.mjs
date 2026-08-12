@@ -73,12 +73,15 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /dodgeFx\.current>0/);
   assert.match(page, /perfectImpactFx/);
   assert.match(page, /pendingCombatSummary/);
+  assert.match(page, /telegraphCharge/);
+  assert.match(page, /JEU EN PAUSE/);
   assert.match(page, /FENÊTRE PARFAITE/);
   assert.match(layout, /Chroniques de Cendreval/);
   assert.match(css, /game-shell/);
   assert.match(css, /HUD de production/);
   assert.match(css, /player-card/);
   assert.match(css, /control-ribbon/);
+  assert.match(css, /pause-panel/);
   assert.match(css, /canvas\{cursor:none\}/);
   assert.match(css, /combat-cue/);
   assert.match(css, /bars\.critical/);
