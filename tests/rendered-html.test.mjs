@@ -102,6 +102,10 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /lockOn/);
   assert.match(page, /CIBLE VERROUILLÉE/);
   assert.match(page, /bindingLabel\(bindings\.lockOn\)/);
+  assert.match(page, /function shrineCount/);
+  assert.match(page, /function allShrinesAwake/);
+  assert.doesNotMatch(page, /boss&&s\.shrines<3/);
+  assert.match(page, /shrines:shrineCount\(state\.current\.shrines\)/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);
