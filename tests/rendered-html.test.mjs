@@ -93,6 +93,8 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /PARADES PARFAITES/);
   assert.match(page, /guardianPosture/);
   assert.match(page, /POSTURE DU GARDIEN/);
+  assert.match(page, /guardianBeat/);
+  assert.match(page, /RITUEL DU GARDIEN/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);
@@ -111,6 +113,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(css, /blade-chain/);
   assert.match(css, /duel-record/);
   assert.match(css, /posture-meter/);
+  assert.match(css, /combat-lesson/);
   assert.match(css, /espace de jeu/);
   assert.match(css, /Ecrans et panneaux/);
   assert.doesNotMatch(page, /SkeletonPreview|react-loading-skeleton/);
