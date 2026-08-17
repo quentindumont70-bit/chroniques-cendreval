@@ -79,6 +79,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /enemy\.current\.telegraph\/\(enemy\.current\.intent/);
   assert.match(page, /attackSwing/);
   assert.match(page, /guardianAttack/);
+  assert.match(page, /const recoil=dt/);
   assert.doesNotMatch(page, /hoverLook/);
   assert.match(page, /JEU EN PAUSE/);
   assert.match(page, /if\(panel==="pause"\)\{setPanel\(null\);lockCursor\(\)\}/);

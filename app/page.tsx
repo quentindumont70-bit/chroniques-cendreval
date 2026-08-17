@@ -265,6 +265,7 @@ export default function Home() {
         const telegraphBefore=foe.telegraph;foe.hit=Math.max(0,foe.hit-dt);foe.cooldown=Math.max(0,foe.cooldown-dt);foe.telegraph=Math.max(0,foe.telegraph-dt);foe.death=Math.max(0,(foe.death??0)-dt);
         if(!foe.alive||(foe.boss&&s.shrines<3))continue;
         const vx=s.x-foe.x,vy=s.y-foe.y,dist=Math.hypot(vx,vy);
+        if(foe.hit>.42&&dist>.01){const recoil=dt*(foe.boss?1.15:.8),rx=foe.x-vx/dist*recoil,ry=foe.y-vy/dist*recoil;if(!wallAt(rx,foe.y))foe.x=rx;if(!wallAt(foe.x,ry))foe.y=ry;}
         const enraged=foe.boss&&foe.hp<=35;
         const ranged=foe.kind==="ranged",brute=foe.kind==="brute"&&!foe.boss,reach=ranged?5.4:1.25,stop=ranged?3.2:.9;
         if(dist<7&&dist>stop&&foe.telegraph===0&&foe.hit<.42){const step=dt*(foe.boss?(enraged ? .96 : .65):ranged?.56:brute?.62:.85),nx=foe.x+vx/dist*step,ny=foe.y+vy/dist*step;if(!wallAt(nx,foe.y))foe.x=nx;if(!wallAt(foe.x,ny))foe.y=ny;}
