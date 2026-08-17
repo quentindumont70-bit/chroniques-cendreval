@@ -131,6 +131,10 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /charge\*\.5/);
   assert.match(page, /POUVOIR DÉCISIF/);
   assert.match(page, /foe\.death=\.62/);
+  assert.match(page, /staminaDelay/);
+  assert.match(page, /TROP ÉPUISÉ/);
+  assert.match(page, /if\(staminaDelay\.current===0\)s\.stamina/);
+  assert.match(page, /hudRefresh\.current>=\.1/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);

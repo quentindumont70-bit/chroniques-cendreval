@@ -113,6 +113,7 @@ export default function Home() {
   const impactFx = useRef(0);
   const shakeFx = useRef(0);
   const hitStop = useRef(0);
+  const staminaDelay = useRef(0);
   const abilityCd = useRef(0);
   const abilityReadyRef = useRef(true);
   const worldTime = useRef(.24);
@@ -126,6 +127,7 @@ export default function Home() {
   const guardianBeat = useRef(0);
   const pendingCombatSummary = useRef(false);
   const last = useRef(0);
+  const hudRefresh = useRef(0);
   const [started,setStarted] = useState(false);
   const [testMode,setTestMode] = useState(false);
   const [guideOpen,setGuideOpen] = useState(true);
@@ -168,8 +170,9 @@ export default function Home() {
     if(panel) return;
     if(!spell&&attackFx.current>.09){queuedAttack.current=false;return}
     const s=state.current;
+    if(!spell&&s.stamina<10){setMessage("TROP ÉPUISÉ — reprenez votre souffle avant de frapper.");return}
     if(spell && s.mana<15){setMessage("Pas assez de mana");return;}
-    if(spell){s.mana-=15;spellFx.current=.35}else attackFx.current=.28;
+    if(spell){s.mana-=15;spellFx.current=.35}else{s.stamina-=10;staminaDelay.current=.62;attackFx.current=.28}
     const candidates=[enemy.current,...minions.current].filter(e=>e.alive).sort((a,b)=>targetScore(a,s)-targetScore(b,s));
     const e=lockedTarget.current?.alive?lockedTarget.current:candidates[0]; if(!e){setMessage("La crypte est silencieuse.");sync();return}
     if(e.boss&&s.shrines!==7){setMessage("Le sceau des trois bornes protège encore le gardien.");sync();return}
@@ -189,10 +192,11 @@ export default function Home() {
     if(panel)return;
     const s=state.current;
     if(!s.arrows){setMessage("Plus de flèches.");return}
+    if(s.stamina<6){setMessage("TROP ÉPUISÉ — impossible de stabiliser l’arc.");return}
     const foes=[enemy.current,...minions.current].filter(e=>e.alive).sort((a,b)=>targetScore(a,s)-targetScore(b,s));
     const e=lockedTarget.current?.alive?lockedTarget.current:foes[0];
     if(e?.boss&&!allShrinesAwake(s.shrines)){setMessage("Le sceau des trois bornes dévie votre flèche.");sync();return}
-    s.arrows--;attackFx.current=.28;
+    s.arrows--;s.stamina-=6;staminaDelay.current=.48;attackFx.current=.28;
     if(e){
       const dist=Math.hypot(e.x-s.x,e.y-s.y),target=Math.atan2(e.y-s.y,e.x-s.x),diff=Math.abs(Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a)));
       if(dist<10&&diff<.18){
@@ -207,8 +211,8 @@ export default function Home() {
   },[gainXp,panel,sync]);
   const primaryAttack=useCallback(()=>{const spec=state.current.spec;if(spec==="bow")shootBow();else strike(spec==="arcane")},[shootBow,strike]);
 
-  const parry = useCallback(()=>{const s=state.current;if(panel)return;if(s.stamina<10){setMessage("Endurance insuffisante pour parer.");return}s.stamina-=10;parryFx.current=.46;perfectFx.current=.13;sync();setMessage("Parade — frappez au moment de l’impact pour une parade parfaite.")},[panel,sync]);
-  const dodge = useCallback(()=>{const s=state.current;if(panel)return;if(s.stamina<24){setMessage("Endurance insuffisante pour esquiver.");return}s.stamina-=24;dodgeFx.current=.34;const side=(keys.current[bindingsRef.current.left]?-1:0)+(keys.current[bindingsRef.current.right]?1:0);const angle=s.a+(side?side*Math.PI/2:Math.PI);const nx=s.x+Math.cos(angle)*.9,ny=s.y+Math.sin(angle)*.9;if(!wallAt(nx,s.y))s.x=nx;if(!wallAt(s.x,ny))s.y=ny;sync();setMessage(side?"Esquive latérale !":"Esquive arrière !")},[panel,sync]);
+  const parry = useCallback(()=>{const s=state.current;if(panel)return;if(s.stamina<10){setMessage("Endurance insuffisante pour parer.");return}s.stamina-=10;staminaDelay.current=.82;parryFx.current=.46;perfectFx.current=.13;sync();setMessage("Parade — frappez au moment de l’impact pour une parade parfaite.")},[panel,sync]);
+  const dodge = useCallback(()=>{const s=state.current;if(panel)return;if(s.stamina<24){setMessage("Endurance insuffisante pour esquiver.");return}s.stamina-=24;staminaDelay.current=1.05;dodgeFx.current=.34;const side=(keys.current[bindingsRef.current.left]?-1:0)+(keys.current[bindingsRef.current.right]?1:0);const angle=s.a+(side?side*Math.PI/2:Math.PI);const nx=s.x+Math.cos(angle)*.9,ny=s.y+Math.sin(angle)*.9;if(!wallAt(nx,s.y))s.x=nx;if(!wallAt(s.x,ny))s.y=ny;sync();setMessage(side?"Esquive latérale !":"Esquive arrière !")},[panel,sync]);
   const ability=useCallback(()=>{
     const s=state.current;if(panel||s.hp<=0)return;
     if(abilityCd.current>0){setMessage("Le pouvoir de votre voie se recharge.");return}
@@ -317,8 +321,9 @@ export default function Home() {
         if(!wallAt(s.x+dx,s.y))s.x+=dx;if(!wallAt(s.x,s.y+dy))s.y+=dy;
         const focus=lockedTarget.current;if(locked&&focus?.alive){const target=Math.atan2(focus.y-s.y,focus.x-s.x),diff=Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a));s.a+=diff*Math.min(1,dt*3.6)}else if(locked&&!focus?.alive){lockedTarget.current=null;setLocked(false)}
       }
-      attackFx.current=Math.max(0,attackFx.current-dt);spellFx.current=Math.max(0,spellFx.current-dt);hurtFx.current=Math.max(0,hurtFx.current-dt);parryFx.current=Math.max(0,parryFx.current-dt);perfectFx.current=Math.max(0,perfectFx.current-dt);perfectImpactFx.current=Math.max(0,perfectImpactFx.current-dt);perfectDodgeFx.current=Math.max(0,perfectDodgeFx.current-dt);dodgeFx.current=Math.max(0,dodgeFx.current-dt);abilityFx.current=Math.max(0,abilityFx.current-dt);impactFx.current=Math.max(0,impactFx.current-dt);shakeFx.current=Math.max(0,shakeFx.current-dt);bladeChainTimer.current=Math.max(0,bladeChainTimer.current-dt);if(bladeChainTimer.current===0)bladeChain.current=0;if(attackFx.current===0&&queuedAttack.current!==null){queuedAttack.current=null;strike(false)}if(!panel&&!village&&!choosingSpec)abilityCd.current=Math.max(0,abilityCd.current-dt);if(abilityCd.current===0&&!abilityReadyRef.current){abilityReadyRef.current=true;setAbilityReady(true)}s.stamina=Math.min(100,s.stamina+dt*16);
+      attackFx.current=Math.max(0,attackFx.current-dt);spellFx.current=Math.max(0,spellFx.current-dt);hurtFx.current=Math.max(0,hurtFx.current-dt);parryFx.current=Math.max(0,parryFx.current-dt);perfectFx.current=Math.max(0,perfectFx.current-dt);perfectImpactFx.current=Math.max(0,perfectImpactFx.current-dt);perfectDodgeFx.current=Math.max(0,perfectDodgeFx.current-dt);dodgeFx.current=Math.max(0,dodgeFx.current-dt);abilityFx.current=Math.max(0,abilityFx.current-dt);impactFx.current=Math.max(0,impactFx.current-dt);shakeFx.current=Math.max(0,shakeFx.current-dt);bladeChainTimer.current=Math.max(0,bladeChainTimer.current-dt);staminaDelay.current=Math.max(0,staminaDelay.current-dt);if(bladeChainTimer.current===0)bladeChain.current=0;if(attackFx.current===0&&queuedAttack.current!==null){queuedAttack.current=null;strike(false)}if(!panel&&!village&&!choosingSpec)abilityCd.current=Math.max(0,abilityCd.current-dt);if(abilityCd.current===0&&!abilityReadyRef.current){abilityReadyRef.current=true;setAbilityReady(true)}if(staminaDelay.current===0)s.stamina=Math.min(100,s.stamina+dt*16);
       if(enemy.current.alive&&enemy.current.boss&&enemy.current.hit<.42)guardianPosture.current=Math.min(100,guardianPosture.current+dt*3.4);
+      hudRefresh.current+=dt;if(hudRefresh.current>=.1){hudRefresh.current=0;setHud({...s,shrines:shrineCount(s.shrines)})}
       if(s.hp>0&&!panel&&!village&&!choosingSpec)for(const foe of [enemy.current,...minions.current]){
         const telegraphBefore=foe.telegraph;foe.hit=Math.max(0,foe.hit-dt);foe.cooldown=Math.max(0,foe.cooldown-dt);foe.telegraph=Math.max(0,foe.telegraph-dt);foe.death=Math.max(0,(foe.death??0)-dt);
         if(!foe.alive||(foe.boss&&s.shrines!==7))continue;
