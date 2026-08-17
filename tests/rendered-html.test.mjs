@@ -95,6 +95,8 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /POSTURE DU GARDIEN/);
   assert.match(page, /guardianBeat/);
   assert.match(page, /RITUEL DU GARDIEN/);
+  assert.match(page, /LORE_STONES/);
+  assert.match(page, /MÉMOIRE RETROUVÉE/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);
