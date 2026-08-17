@@ -85,6 +85,9 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /JEU EN PAUSE/);
   assert.match(page, /if\(panel==="pause"\)\{setPanel\(null\);lockCursor\(\)\}/);
   assert.match(page, /FENÊTRE PARFAITE/);
+  assert.match(page, /REGARD LIBRE/);
+  assert.match(page, /setPanel\("combat"\)/);
+  assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);
   assert.match(layout, /Chroniques de Cendreval/);
   assert.match(css, /game-shell/);
   assert.match(css, /HUD de production/);
@@ -96,6 +99,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(css, /canvas\{cursor:none\}/);
   assert.match(css, /combat-cue/);
   assert.match(css, /bars\.critical/);
+  assert.match(css, /capture-hint/);
   assert.match(css, /espace de jeu/);
   assert.match(css, /Ecrans et panneaux/);
   assert.doesNotMatch(page, /SkeletonPreview|react-loading-skeleton/);
