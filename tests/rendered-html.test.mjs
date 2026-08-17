@@ -129,6 +129,8 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /guardianPosture\.current-\(opening\?30:10\)/);
   assert.match(page, /shade\.kind==="ranged"\?"#efc269"/);
   assert.match(page, /charge\*\.5/);
+  assert.match(page, /POUVOIR DÉCISIF/);
+  assert.match(page, /foe\.death=\.62/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);
