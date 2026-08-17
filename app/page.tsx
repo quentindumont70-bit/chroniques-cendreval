@@ -79,6 +79,7 @@ const ACTION_LABELS: Record<Action,string> = {forward:"Avancer",back:"Reculer",l
 function bindingLabel(value:string){return value.replace("Key","Touche ").replace("Digit","Touche ").replace("Arrow","Flèche ").replace("Mouse0","Clic gauche").replace("Mouse1","Clic molette").replace("Mouse2","Clic droit").replace("Mouse3","Souris 3").replace("Mouse4","Souris 4")}
 function shrineCount(mask:number){return [0,1,2].filter(index=>mask&(1<<index)).length}
 function allShrinesAwake(mask:number){return (mask&7)===7}
+function targetScore(foe:Foe,s:Save){const angle=Math.atan2(foe.y-s.y,foe.x-s.x),diff=Math.abs(Math.atan2(Math.sin(angle-s.a),Math.cos(angle-s.a)));return diff*12+Math.hypot(foe.x-s.x,foe.y-s.y)}
 
 function wallAt(x:number, y:number) {
   const row = activeMap[Math.floor(y)];
@@ -98,6 +99,7 @@ export default function Home() {
     {x:6.5,y:5.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre",kind:"melee"},
     {x:14.5,y:13.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre",kind:"melee"},
   ]);
+  const lockedTarget = useRef<Foe|null>(null);
   const reinforcements = useRef(false);
   const attackFx = useRef(0);
   const spellFx = useRef(0);
@@ -146,6 +148,7 @@ export default function Home() {
 
   const sync = useCallback(() => {activeMap=mapForQuest(state.current.quest);setHud({...state.current,shrines:shrineCount(state.current.shrines)})}, []);
   const gainXp = useCallback((amount:number)=>{const s=state.current;s.xp+=amount;while(s.xp>=s.level*40){s.xp-=s.level*40;s.level++;s.talent++;s.hp=100;s.mana=100;s.stamina=100;setMessage(`Niveau ${s.level} atteint — un point de talent disponible !`)}sync()},[sync]);
+  useEffect(()=>{lockedTarget.current=null;setLocked(false)},[hud.quest]);
   const applyBindings = useCallback((next:Bindings)=>{bindingsRef.current=next;setBindings(next);localStorage.setItem("cendreval-bindings",JSON.stringify(next))},[]);
   const clearInput = useCallback(()=>{keys.current={};movement.current={forward:0,strafe:0};queuedAttack.current=null},[]);
   const captureMouse = useCallback(()=>{if(started&&!panel&&!village&&!choosingSpec)lockCursor()},[choosingSpec,lockCursor,panel,started,village]);
@@ -167,8 +170,8 @@ export default function Home() {
     const s=state.current;
     if(spell && s.mana<15){setMessage("Pas assez de mana");return;}
     if(spell){s.mana-=15;spellFx.current=.35}else attackFx.current=.28;
-    const candidates=[enemy.current,...minions.current].filter(e=>e.alive).sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y));
-    const e=candidates[0]; if(!e){setMessage("La crypte est silencieuse.");sync();return}
+    const candidates=[enemy.current,...minions.current].filter(e=>e.alive).sort((a,b)=>targetScore(a,s)-targetScore(b,s));
+    const e=lockedTarget.current?.alive?lockedTarget.current:candidates[0]; if(!e){setMessage("La crypte est silencieuse.");sync();return}
     if(e.boss&&s.shrines!==7){setMessage("Le sceau des trois bornes protège encore le gardien.");sync();return}
     const d=Math.hypot(e.x-s.x,e.y-s.y);
     const target=Math.atan2(e.y-s.y,e.x-s.x);
@@ -186,8 +189,8 @@ export default function Home() {
     if(panel)return;
     const s=state.current;
     if(!s.arrows){setMessage("Plus de flèches.");return}
-    const foes=[enemy.current,...minions.current].filter(e=>e.alive).sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y));
-    const e=foes[0];
+    const foes=[enemy.current,...minions.current].filter(e=>e.alive).sort((a,b)=>targetScore(a,s)-targetScore(b,s));
+    const e=lockedTarget.current?.alive?lockedTarget.current:foes[0];
     if(e?.boss&&!allShrinesAwake(s.shrines)){setMessage("Le sceau des trois bornes dévie votre flèche.");sync();return}
     s.arrows--;attackFx.current=.28;
     if(e){
@@ -240,7 +243,7 @@ export default function Home() {
       if(action==="dodge")dodge();
       if(action==="potion")potion();
       if(action==="ability")ability();
-      if(action==="lockOn")setLocked(value=>{const next=!value;setMessage(next&&enemy.current.alive?"CIBLE VERROUILLÉE — la caméra suit le Gardien.":"Cible libérée.");return next});
+      if(action==="lockOn")setLocked(value=>{if(value){lockedTarget.current=null;setMessage("Cible libérée.");return false}const s=state.current,target=[enemy.current,...minions.current].filter(foe=>foe.alive).sort((a,b)=>targetScore(a,s)-targetScore(b,s))[0];lockedTarget.current=target??null;setMessage(target?`CIBLE VERROUILLÉE — ${target.name}.`:"Aucune menace à verrouiller.");return Boolean(target)});
       if(action==="interact")interact();
       if(action==="inventory")setPanel(p=>p==="inventory"?null:"inventory");
       if(action==="journal")setPanel(p=>p==="journal"?null:"journal");
@@ -291,7 +294,7 @@ export default function Home() {
         const responsiveness=1-Math.exp(-dt*(move||strafe?15:10));movement.current.forward+=(move-movement.current.forward)*responsiveness;movement.current.strafe+=(strafe-movement.current.strafe)*responsiveness;
         const speed=dt*2.35, dx=(Math.cos(s.a)*movement.current.forward+Math.cos(s.a+Math.PI/2)*movement.current.strafe)*speed, dy=(Math.sin(s.a)*movement.current.forward+Math.sin(s.a+Math.PI/2)*movement.current.strafe)*speed;
         if(!wallAt(s.x+dx,s.y))s.x+=dx;if(!wallAt(s.x,s.y+dy))s.y+=dy;
-        if(locked&&enemy.current.alive){const target=Math.atan2(enemy.current.y-s.y,enemy.current.x-s.x),diff=Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a));s.a+=diff*Math.min(1,dt*3.6)}
+        const focus=lockedTarget.current;if(locked&&focus?.alive){const target=Math.atan2(focus.y-s.y,focus.x-s.x),diff=Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a));s.a+=diff*Math.min(1,dt*3.6)}else if(locked&&!focus?.alive){lockedTarget.current=null;setLocked(false)}
       }
       attackFx.current=Math.max(0,attackFx.current-dt);spellFx.current=Math.max(0,spellFx.current-dt);hurtFx.current=Math.max(0,hurtFx.current-dt);parryFx.current=Math.max(0,parryFx.current-dt);perfectFx.current=Math.max(0,perfectFx.current-dt);perfectImpactFx.current=Math.max(0,perfectImpactFx.current-dt);perfectDodgeFx.current=Math.max(0,perfectDodgeFx.current-dt);dodgeFx.current=Math.max(0,dodgeFx.current-dt);abilityFx.current=Math.max(0,abilityFx.current-dt);impactFx.current=Math.max(0,impactFx.current-dt);shakeFx.current=Math.max(0,shakeFx.current-dt);bladeChainTimer.current=Math.max(0,bladeChainTimer.current-dt);if(bladeChainTimer.current===0)bladeChain.current=0;if(attackFx.current===0&&queuedAttack.current!==null){queuedAttack.current=null;strike(false)}if(!panel&&!village&&!choosingSpec)abilityCd.current=Math.max(0,abilityCd.current-dt);if(abilityCd.current===0&&!abilityReadyRef.current){abilityReadyRef.current=true;setAbilityReady(true)}s.stamina=Math.min(100,s.stamina+dt*16);
       if(enemy.current.alive&&enemy.current.boss&&enemy.current.hit<.42)guardianPosture.current=Math.min(100,guardianPosture.current+dt*3.4);
@@ -499,7 +502,7 @@ export default function Home() {
       {enemy.current.alive&&hud.shrines>=3&&<div className="boss-health"><span>{enemy.current.boss?`GARDIEN DES RUINES${enemy.current.hp<=35?" · PHASE II":""}`:hud.quest===7?"CAPITAINE NOIR DE LA COUR":hud.quest===10?"MAÎTRE D’ARMES DES SALLES BASSES":hud.quest===12?"MARÉCHAL DE CENDRE":hud.quest===14?"ROI DE CENDRE · TOUR FINALE":"SENTINELLE DE LA PORTE NOIRE"}</span><i style={{width:`${enemy.current.hp/(enemy.current.boss?70:hud.quest===7?130:hud.quest===10?150:hud.quest===12?180:hud.quest===14?240:100)*100}%`}}/></div>}
       {enemy.current.alive&&enemy.current.boss&&hud.shrines>=3&&<div className={`guardian-state${enemy.current.hit>.42?" opening":enemy.current.telegraph>0?" arming":""}`}><b>{enemy.current.hit>.42?"ÉTOURDI":enemy.current.telegraph>0?enemy.current.intent==="crush"?"ARME · ÉCRASEMENT":"ARME · BALAYAGE":"EN APPROCHE"}</b><span>{enemy.current.hit>.42?"Frappez maintenant.":enemy.current.telegraph>0?"Défendez-vous à l’impact.":"Gardez-le au centre de l’écran."}</span></div>}
       {enemy.current.alive&&enemy.current.boss&&hud.shrines>=3&&<div className="posture-meter"><span>POSTURE DU GARDIEN</span><i><em style={{width:`${guardianPosture.current}%`}}/></i><small>{guardianPosture.current<=35?"Une défense parfaite peut le briser.":"Parades parfaites et ripostes brisent sa garde."}</small></div>}
-      {locked&&enemy.current.alive&&<div className="lock-state"><b>◈ CIBLE VERROUILLÉE</b><span>{enemy.current.boss?"Gardien des ruines":"Menace prioritaire"} · {bindingLabel(bindings.lockOn)} pour libérer</span></div>}
+      {locked&&lockedTarget.current?.alive&&<div className="lock-state"><b>◈ CIBLE VERROUILLÉE</b><span>{lockedTarget.current.name} · {bindingLabel(bindings.lockOn)} pour libérer</span></div>}
       {enemy.current.alive&&enemy.current.boss&&hud.shrines>=3&&guardianBeat.current<3&&<div className="combat-lesson"><span>RITUEL DU GARDIEN · {guardianBeat.current+1}/3</span><b>{guardianBeat.current<2?"Balayage : attendez l’impact, puis parez.":"Écrasement : restez mobile, esquivez au dernier instant."}</b></div>}
       {[enemy.current,...minions.current].filter(foe=>foe.alive).length>1&&<div className="threat-feed"><span>MENACES ACTIVES</span>{[enemy.current,...minions.current].filter(foe=>foe.alive).slice(0,4).map((foe,index)=><i key={`${foe.name}-${index}`} className={foe.kind}><b>{foe.kind==="ranged"?"ARC":foe.kind==="brute"?"LOURD":"LAME"}</b>{foe.name}</i>)}</div>}
       {testMode&&<div className="test-kit"><span>BAC À SABLE</span><button onClick={restoreForTest}>RESSOURCES</button><button onClick={resetEncounter}>REJOUER LE COMBAT</button><button onClick={prepareCastleTest}>PRÉPARER LE CHÂTEAU</button>{hud.quest>=2&&<button onClick={beginExpedition}>LANCER L’EXPÉDITION</button>}{hud.quest>=9&&<button onClick={enterLowerHalls}>TESTER LES SALLES BASSES</button>}{hud.quest>=11&&<button onClick={beginDungeonAssault}>TESTER LE DONJON</button>}{hud.quest>=13&&<button onClick={beginThroneAssault}>TESTER LA TOUR</button>}<button onClick={shiftSky}>AUBE / NUIT</button><small>Les raccourcis et la sauvegarde restent actifs.</small></div>}

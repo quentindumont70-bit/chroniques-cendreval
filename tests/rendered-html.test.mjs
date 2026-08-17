@@ -102,6 +102,9 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /lockOn/);
   assert.match(page, /CIBLE VERROUILLÉE/);
   assert.match(page, /bindingLabel\(bindings\.lockOn\)/);
+  assert.match(page, /function targetScore/);
+  assert.match(page, /lockedTarget/);
+  assert.match(page, /targetScore\(a,s\)-targetScore\(b,s\)/);
   assert.match(page, /function shrineCount/);
   assert.match(page, /function allShrinesAwake/);
   assert.doesNotMatch(page, /boss&&s\.shrines<3/);
