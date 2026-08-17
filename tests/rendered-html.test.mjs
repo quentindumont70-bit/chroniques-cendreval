@@ -97,6 +97,8 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /RITUEL DU GARDIEN/);
   assert.match(page, /LORE_STONES/);
   assert.match(page, /MÉMOIRE RETROUVÉE/);
+  assert.match(page, /CHRONIQUE DES PLAINES/);
+  assert.match(page, /posture dorée du Gardien/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);
@@ -116,6 +118,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(css, /duel-record/);
   assert.match(css, /posture-meter/);
   assert.match(css, /combat-lesson/);
+  assert.match(css, /exploration-ledger/);
   assert.match(css, /espace de jeu/);
   assert.match(css, /Ecrans et panneaux/);
   assert.doesNotMatch(page, /SkeletonPreview|react-loading-skeleton/);
