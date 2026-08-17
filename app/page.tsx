@@ -166,7 +166,7 @@ export default function Home() {
     if(spell){s.mana-=15;spellFx.current=.35}else attackFx.current=.28;
     const candidates=[enemy.current,...minions.current].filter(e=>e.alive).sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y));
     const e=candidates[0]; if(!e){setMessage("La crypte est silencieuse.");sync();return}
-    if(e.boss&&s.shrines<3){setMessage("Le sceau des trois bornes protège encore le gardien.");sync();return}
+    if(e.boss&&s.shrines!==7){setMessage("Le sceau des trois bornes protège encore le gardien.");sync();return}
     const d=Math.hypot(e.x-s.x,e.y-s.y);
     const target=Math.atan2(e.y-s.y,e.x-s.x);
     const diff=Math.abs(Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a)));
@@ -274,7 +274,7 @@ export default function Home() {
       if(enemy.current.alive&&enemy.current.boss&&enemy.current.hit<.42)guardianPosture.current=Math.min(100,guardianPosture.current+dt*3.4);
       if(s.hp>0&&!panel&&!village&&!choosingSpec)for(const foe of [enemy.current,...minions.current]){
         const telegraphBefore=foe.telegraph;foe.hit=Math.max(0,foe.hit-dt);foe.cooldown=Math.max(0,foe.cooldown-dt);foe.telegraph=Math.max(0,foe.telegraph-dt);foe.death=Math.max(0,(foe.death??0)-dt);
-        if(!foe.alive||(foe.boss&&s.shrines<3))continue;
+        if(!foe.alive||(foe.boss&&s.shrines!==7))continue;
         const vx=s.x-foe.x,vy=s.y-foe.y,dist=Math.hypot(vx,vy);
         if(foe.hit>.42&&dist>.01){const recoil=dt*(foe.boss?1.15:.8),rx=foe.x-vx/dist*recoil,ry=foe.y-vy/dist*recoil;if(!wallAt(rx,foe.y))foe.x=rx;if(!wallAt(foe.x,ry))foe.y=ry;}
         const enraged=foe.boss&&foe.hp<=35;
@@ -284,7 +284,7 @@ export default function Home() {
         if(telegraphBefore>0&&foe.telegraph===0){if(!ranged&&dist>reach+.35){foe.cooldown=.65;setMessage(foe.boss?"Le Gardien frappe le vide — l’ouverture est brève.":"L’ennemi manque son coup.");continue}foe.cooldown=foe.boss?(enraged ? .72 : 1.15):ranged?1.8:brute?1.65:1.35;if(dodgeFx.current>0){foe.hit=.42;foe.cooldown=1.65;s.stamina=Math.min(100,s.stamina+10);perfectDodgeFx.current=.42;impactFx.current=.18;if(foe.boss){duelRecord.current.perfectDodges++;guardianPosture.current=Math.max(0,guardianPosture.current-15)}setMessage("ESQUIVE PARFAITE — l’ennemi vous perd et votre endurance revient.")}else if(parryFx.current>0){if(perfectFx.current>0){foe.hit=.65;foe.cooldown=1.8;s.stamina=Math.min(100,s.stamina+22);perfectImpactFx.current=.36;impactFx.current=.25;shakeFx.current=2;if(foe.boss){duelRecord.current.perfectParries++;guardianPosture.current=Math.max(0,guardianPosture.current-48);if(guardianPosture.current===0){foe.hit=.95;foe.cooldown=2.1;guardianPosture.current=100;perfectImpactFx.current=.52;setMessage("GARDE BRISÉE — le Gardien chancelle : ripostez sans attendre !")}else setMessage("PARADE PARFAITE — l’ennemi est étourdi !")}else setMessage("PARADE PARFAITE — l’ennemi est étourdi !")}else{setMessage("Parade réussie.")}}else{const raw=foe.boss?(enraged?11:8):ranged?5:brute?8:4;const damage=Math.max(1,raw-(s.courtBoon==="ward"?2:0));s.hp=Math.max(0,s.hp-damage);hurtFx.current=.25;shakeFx.current=4;sync();setMessage(s.hp?`${ranged?"La flèche de cendre":brute?"Le marteau du Veilleur":foe.boss?"Le gardien":"Une ombre"} vous frappe !`: "Vous êtes tombé… rechargez votre sauvegarde.");}}
       }
       if(pendingCombatSummary.current&&!enemy.current.alive&&(enemy.current.death??0)<=0){pendingCombatSummary.current=false;setCombatSummary(true)}
-      if(s.shrines===3&&enemy.current.alive&&enemy.current.hp<=35&&!reinforcements.current){reinforcements.current=true;minions.current.push({x:8.2,y:8.4,hp:28,alive:true,hit:0,cooldown:.5,telegraph:0,boss:false,name:"ombre",kind:"melee"},{x:12.8,y:9.2,hp:28,alive:true,hit:0,cooldown:.7,telegraph:0,boss:false,name:"ombre",kind:"melee"});setMessage("PHASE II — les ombres jaillissent des ruines !")}
+      if(s.shrines===7&&enemy.current.alive&&enemy.current.hp<=35&&!reinforcements.current){reinforcements.current=true;minions.current.push({x:8.2,y:8.4,hp:28,alive:true,hit:0,cooldown:.5,telegraph:0,boss:false,name:"ombre",kind:"melee"},{x:12.8,y:9.2,hp:28,alive:true,hit:0,cooldown:.7,telegraph:0,boss:false,name:"ombre",kind:"melee"});setMessage("PHASE II — les ombres jaillissent des ruines !")}
       if(s.quest===3&&!minions.current.some(foe=>foe.alive)){s.quest=4;s.expedition=2;s.gold+=20;s.talent++;sync();setMessage("EXPÉDITION ACCOMPLIE — les veilleurs cendrés se dispersent. +20 or, +1 talent.")}
       if(s.quest===5&&!enemy.current.alive){s.quest=6;s.gold+=30;s.talent++;localStorage.setItem("cendreval-save",JSON.stringify(s));sync();setMessage("LA PORTE CÈDE — la route du château noir est ouverte. +30 or, +1 talent.")}
       if(s.quest===7&&!enemy.current.alive&&!minions.current.some(foe=>foe.alive)){s.quest=8;s.gold+=55;s.talent++;localStorage.setItem("cendreval-save",JSON.stringify(s));sync();setMessage("COUR NETTOYÉE — le capitaine noir s’effondre. +55 or, +1 talent.")}
