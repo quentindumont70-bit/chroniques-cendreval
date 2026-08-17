@@ -89,6 +89,10 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /setPanel\("combat"\)/);
   assert.match(page, /bladeChainTimer/);
   assert.match(page, /ENCHAÎNEMENT/);
+  assert.match(page, /duelRecord/);
+  assert.match(page, /PARADES PARFAITES/);
+  assert.match(page, /checkpoint/);
+  assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);
   assert.match(layout, /Chroniques de Cendreval/);
   assert.match(css, /game-shell/);
@@ -103,6 +107,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(css, /bars\.critical/);
   assert.match(css, /capture-hint/);
   assert.match(css, /blade-chain/);
+  assert.match(css, /duel-record/);
   assert.match(css, /espace de jeu/);
   assert.match(css, /Ecrans et panneaux/);
   assert.doesNotMatch(page, /SkeletonPreview|react-loading-skeleton/);
