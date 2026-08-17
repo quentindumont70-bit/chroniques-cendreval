@@ -113,6 +113,8 @@ export default function Home() {
   const worldTime = useRef(.24);
   const movement = useRef({forward:0,strafe:0});
   const queuedAttack = useRef<null|boolean>(null);
+  const bladeChain = useRef(0);
+  const bladeChainTimer = useRef(0);
   const pendingCombatSummary = useRef(false);
   const last = useRef(0);
   const [started,setStarted] = useState(false);
@@ -164,11 +166,11 @@ export default function Home() {
     const target=Math.atan2(e.y-s.y,e.x-s.x);
     const diff=Math.abs(Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a)));
     if(e.alive && d<(spell?7:1.65) && diff<.32){
-      const boon=s.courtBoon==="fury"?4:0;const riposte=!spell&&e.hit>.42;const base=spell?28+(s.perkArcane?12:0)+(s.relic==="ember"?8:0)+boon:22+(s.perkBlade?8:0)+(s.relic==="iron"?6:0)+boon+(riposte?14:0);e.hp=Math.max(0,e.hp-base); e.hit=.18;
+      const boon=s.courtBoon==="fury"?4:0;const riposte=!spell&&e.hit>.42;if(!spell){bladeChain.current=bladeChainTimer.current>0?Math.min(3,bladeChain.current+1):1;bladeChainTimer.current=1.05}else bladeChain.current=0;const chainBonus=!spell&&!riposte?(bladeChain.current-1)*3:0;const base=spell?28+(s.perkArcane?12:0)+(s.relic==="ember"?8:0)+boon:22+(s.perkBlade?8:0)+(s.relic==="iron"?6:0)+boon+(riposte?14:0)+chainBonus;e.hp=Math.max(0,e.hp-base); e.hit=.18;
       hitStop.current=riposte?.095:spell?.045:.032;impactFx.current=riposte?.34:spell?.26:.19;shakeFx.current=riposte?5:spell?3:2;if(e.boss)s.enemyHp=e.hp;
       if(e.hp===0){e.alive=false;e.death=.62;queuedAttack.current=null;s.gold+=e.boss?18:6;gainXp(e.boss?40:16);if(e.boss){s.quest=1;pendingCombatSummary.current=true;setMessage("Le gardien tombe. Valbrume vous attend !")}else setMessage("L’ombre se dissipe en cendres.");}
-      else setMessage(riposte?"RIPOSTE — votre lame frappe dans l’ouverture !":spell?"La flamme dévore le gardien !":"Votre lame mord la pierre vive !");
-    }else if(e.alive)setMessage(spell?"La flamme se dissipe hors de portée.":"Votre lame ne trouve que le vent.");
+      else setMessage(riposte?"RIPOSTE — votre lame frappe dans l’ouverture !":spell?"La flamme dévore le gardien !":bladeChain.current===3?"TROISIÈME FRAPPE — l’enchaînement atteint son sommet !":bladeChain.current===2?"DEUXIÈME FRAPPE — gardez le rythme.":"Votre lame mord la pierre vive !");
+    }else if(e.alive){if(!spell)bladeChain.current=0;setMessage(spell?"La flamme se dissipe hors de portée.":"Votre lame ne trouve que le vent.");}
     sync();
   },[panel,sync]);
 
@@ -261,7 +263,7 @@ export default function Home() {
         const speed=dt*2.35, dx=(Math.cos(s.a)*movement.current.forward+Math.cos(s.a+Math.PI/2)*movement.current.strafe)*speed, dy=(Math.sin(s.a)*movement.current.forward+Math.sin(s.a+Math.PI/2)*movement.current.strafe)*speed;
         if(!wallAt(s.x+dx,s.y))s.x+=dx;if(!wallAt(s.x,s.y+dy))s.y+=dy;
       }
-      attackFx.current=Math.max(0,attackFx.current-dt);spellFx.current=Math.max(0,spellFx.current-dt);hurtFx.current=Math.max(0,hurtFx.current-dt);parryFx.current=Math.max(0,parryFx.current-dt);perfectFx.current=Math.max(0,perfectFx.current-dt);perfectImpactFx.current=Math.max(0,perfectImpactFx.current-dt);perfectDodgeFx.current=Math.max(0,perfectDodgeFx.current-dt);dodgeFx.current=Math.max(0,dodgeFx.current-dt);abilityFx.current=Math.max(0,abilityFx.current-dt);impactFx.current=Math.max(0,impactFx.current-dt);shakeFx.current=Math.max(0,shakeFx.current-dt);if(attackFx.current===0&&queuedAttack.current!==null){queuedAttack.current=null;strike(false)}if(!panel&&!village&&!choosingSpec)abilityCd.current=Math.max(0,abilityCd.current-dt);if(abilityCd.current===0&&!abilityReadyRef.current){abilityReadyRef.current=true;setAbilityReady(true)}s.stamina=Math.min(100,s.stamina+dt*16);
+      attackFx.current=Math.max(0,attackFx.current-dt);spellFx.current=Math.max(0,spellFx.current-dt);hurtFx.current=Math.max(0,hurtFx.current-dt);parryFx.current=Math.max(0,parryFx.current-dt);perfectFx.current=Math.max(0,perfectFx.current-dt);perfectImpactFx.current=Math.max(0,perfectImpactFx.current-dt);perfectDodgeFx.current=Math.max(0,perfectDodgeFx.current-dt);dodgeFx.current=Math.max(0,dodgeFx.current-dt);abilityFx.current=Math.max(0,abilityFx.current-dt);impactFx.current=Math.max(0,impactFx.current-dt);shakeFx.current=Math.max(0,shakeFx.current-dt);bladeChainTimer.current=Math.max(0,bladeChainTimer.current-dt);if(bladeChainTimer.current===0)bladeChain.current=0;if(attackFx.current===0&&queuedAttack.current!==null){queuedAttack.current=null;strike(false)}if(!panel&&!village&&!choosingSpec)abilityCd.current=Math.max(0,abilityCd.current-dt);if(abilityCd.current===0&&!abilityReadyRef.current){abilityReadyRef.current=true;setAbilityReady(true)}s.stamina=Math.min(100,s.stamina+dt*16);
       if(s.hp>0&&!panel&&!village&&!choosingSpec)for(const foe of [enemy.current,...minions.current]){
         const telegraphBefore=foe.telegraph;foe.hit=Math.max(0,foe.hit-dt);foe.cooldown=Math.max(0,foe.cooldown-dt);foe.telegraph=Math.max(0,foe.telegraph-dt);foe.death=Math.max(0,(foe.death??0)-dt);
         if(!foe.alive||(foe.boss&&s.shrines<3))continue;
@@ -440,6 +442,7 @@ export default function Home() {
       {testMode&&<button className="duel-button" onClick={prepareFirstDuel}>DUEL · PREMIER GARDIEN</button>}
       {enemy.current.alive&&enemy.current.telegraph>0&&hud.shrines>=3&&<div className={`attack-warning ${enemy.current.intent??"sweep"}`}><b>{enemy.current.intent==="crush"?"⚠ ÉCRASEMENT":enemy.current.intent==="sweep"?"⚠ BALAYAGE":"⚠ TIR DE CENDRE"}</b><span>{enemy.current.intent==="crush"?"Impact lourd : esquive latérale ou parade parfaite.":enemy.current.intent==="sweep"?"Restez proche : la parade ouvre une riposte.":"Sortez de l’axe ou brisez le tireur."}</span><i aria-hidden="true" style={{width:`${Math.max(0,Math.min(100,enemy.current.telegraph/(enemy.current.intent==="crush"?.82:enemy.current.intent==="shot"?.72:.64)*100))}%`}}/></div>}
       {enemy.current.alive&&enemy.current.boss&&hud.shrines>=3&&<div className={`combat-cue${enemy.current.hit>.42?" opening":""}`}>{enemy.current.hit>.42?"OUVERTURE · RIPOSTEZ":enemy.current.telegraph>0?enemy.current.intent==="crush"?"ESQUIVEZ À L’IMPACT":"PAREZ À L’IMPACT":"OBSERVEZ SA GARDE"}</div>}
+      {enemy.current.alive&&enemy.current.boss&&hud.shrines>=3&&bladeChain.current>0&&<div className={`blade-chain chain-${bladeChain.current}`}><span>ENCHAÎNEMENT</span><b>{bladeChain.current}/3</b><i><em style={{width:`${bladeChainTimer.current/1.05*100}%`}}/></i></div>}
       {hud.hp<=0&&<div className="death-screen"><span className="eyebrow">VOUS ÊTES TOMBÉ</span><h2>Les plaines attendent votre retour.</h2><p>La rencontre est conservée : reprenez immédiatement le test depuis le chemin.</p><button onClick={revive}>SE RELEVER</button></div>}
       {combatSummary&&<div className="combat-summary"><span>PREMIER GARDIEN VAINCU</span><h2>La plaine se tait.</h2><p>+18 or · +40 expérience</p><small>Vous avez ouvert la route de Valbrume. Les bornes restent des refuges : utilisez-les avant chaque grand combat.</small><button onClick={()=>{setCombatSummary(false);setVillage(true)}}>POURSUIVRE VERS VALBRUME</button></div>}
       {hud.quest>=15&&!endingSeen&&<div className="ending-screen"><span className="eyebrow">CHRONIQUE ACHEVÉE</span><h2>La cendre retombe.</h2><p>Le roi a disparu, les cloches de Valbrume résonnent dans la plaine et le château noir cesse enfin de veiller.</p><div><button onClick={()=>{setEndingSeen(true);setVillage(true)}}>RETOURNER À VALBRUME</button><button className="ending-close" onClick={()=>{setEndingSeen(true);setMessage("Cendreval respire à nouveau.")}}>CONTINUER À EXPLORER</button></div></div>}
