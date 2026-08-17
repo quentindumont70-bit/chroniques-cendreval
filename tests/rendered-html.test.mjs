@@ -115,6 +115,11 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /onClick=\{primaryAttack\}/);
   assert.match(page, /Tir rapide/);
   assert.match(page, /aria-label="Attaque principale"/);
+  assert.match(page, /defenseRewarded/);
+  assert.match(page, /CONTRE DU VEILLEUR/);
+  assert.match(page, /PAS FANTÔME/);
+  assert.match(page, /RÉSONANCE/);
+  assert.match(page, /class-passive/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);
@@ -135,6 +140,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(css, /posture-meter/);
   assert.match(css, /combat-lesson/);
   assert.match(css, /exploration-ledger/);
+  assert.match(css, /class-passive/);
   assert.match(css, /lock-state/);
   assert.match(css, /espace de jeu/);
   assert.match(css, /Ecrans et panneaux/);
