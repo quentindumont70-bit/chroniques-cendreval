@@ -105,10 +105,16 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /function shrineCount/);
   assert.match(page, /function allShrinesAwake/);
   assert.doesNotMatch(page, /boss&&s\.shrines<3/);
+  assert.doesNotMatch(page, /s\.shrines===3/);
+  assert.doesNotMatch(page, /s\.shrines<3/);
+  assert.match(page, /!foe\.boss\|\|allShrinesAwake\(s\.shrines\)/);
   assert.match(page, /shrines:shrineCount\(state\.current\.shrines\)/);
   assert.match(page, /s\.spec==="bow"/);
   assert.match(page, /s\.spec==="arcane"/);
   assert.match(page, /const primaryAttack/);
+  assert.match(page, /onClick=\{primaryAttack\}/);
+  assert.match(page, /Tir rapide/);
+  assert.match(page, /aria-label="Attaque principale"/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);
