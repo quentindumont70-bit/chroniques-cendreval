@@ -101,6 +101,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /posture dorée du Gardien/);
   assert.match(page, /lockOn/);
   assert.match(page, /CIBLE VERROUILLÉE/);
+  assert.match(page, /bindingLabel\(bindings\.lockOn\)/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);
