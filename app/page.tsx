@@ -182,6 +182,7 @@ export default function Home() {
   },[panel,sync]);
 
   const shootBow = useCallback(()=>{if(panel)return;const s=state.current;if(!s.arrows){setMessage("Plus de flèches.");return}const foes=[enemy.current,...minions.current].filter(e=>e.alive).sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y));const e=foes[0];if(e?.boss&&!allShrinesAwake(s.shrines)){setMessage("Le sceau des trois bornes dévie votre flèche.");sync();return}s.arrows--;if(e){const dist=Math.hypot(e.x-s.x,e.y-s.y),target=Math.atan2(e.y-s.y,e.x-s.x),diff=Math.abs(Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a)));if(dist<10&&diff<.18){e.hp=Math.max(0,e.hp-(30+(s.perkBow?12:0)+(s.relic==="oak"?8:0)+(s.courtBoon==="fury"?4:0)));if(e.boss)s.enemyHp=e.hp;e.hit=.22;if(!e.hp){e.alive=false;e.death=.62;s.gold+=e.boss?18:6;gainXp(e.boss?40:16);if(e.boss){s.quest=1;pendingCombatSummary.current=true;}}setMessage("Flèche précise !")}else setMessage("La flèche se perd dans les ténèbres.")}sync()},[panel,sync]);
+  const primaryAttack=useCallback(()=>{const spec=state.current.spec;if(spec==="bow")shootBow();else strike(spec==="arcane")},[shootBow,strike]);
 
   const parry = useCallback(()=>{const s=state.current;if(panel)return;if(s.stamina<10){setMessage("Endurance insuffisante pour parer.");return}s.stamina-=10;parryFx.current=.46;perfectFx.current=.13;sync();setMessage("Parade — frappez au moment de l’impact pour une parade parfaite.")},[panel,sync]);
   const dodge = useCallback(()=>{const s=state.current;if(panel)return;if(s.stamina<24){setMessage("Endurance insuffisante pour esquiver.");return}s.stamina-=24;dodgeFx.current=.34;const side=(keys.current[bindingsRef.current.left]?-1:0)+(keys.current[bindingsRef.current.right]?1:0);const angle=s.a+(side?side*Math.PI/2:Math.PI);const nx=s.x+Math.cos(angle)*.9,ny=s.y+Math.sin(angle)*.9;if(!wallAt(nx,s.y))s.x=nx;if(!wallAt(s.x,ny))s.y=ny;sync();setMessage(side?"Esquive latérale !":"Esquive arrière !")},[panel,sync]);
@@ -212,7 +213,7 @@ export default function Home() {
     const trigger=(input:string)=>{
       if(village)return;
       const action=(Object.keys(bindingsRef.current) as Action[]).find(a=>bindingsRef.current[a]===input);
-      if(action==="attack")strike(false);
+      if(action==="attack")primaryAttack();
       if(action==="spell")strike(true);
       if(action==="bow")shootBow();
       if(action==="parry")parry();
@@ -246,7 +247,7 @@ export default function Home() {
     const blur=()=>clearInput();
     addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("pointerdown",mouseDown);addEventListener("pointerup",mouseUp);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("blur",blur);
     return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("pointerdown",mouseDown);removeEventListener("pointerup",mouseUp);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock);removeEventListener("blur",blur)};
-  },[ability,applyBindings,capture,captureMouse,clearInput,dodge,interact,lockCursor,panel,parry,save,shootBow,started,strike,village]);
+  },[ability,applyBindings,capture,captureMouse,clearInput,dodge,interact,lockCursor,panel,parry,primaryAttack,save,shootBow,started,strike,village]);
 
   useEffect(()=>{clearInput();document.exitPointerLock?.()},[clearInput,panel,village,choosingSpec]);
 
@@ -398,7 +399,7 @@ export default function Home() {
       if(abilityFx.current>0){const palette=s.spec==="blade"?[180,210,255]:s.spec==="bow"?[225,190,105]:[222,90,255];ctx.strokeStyle=`rgba(${palette[0]},${palette[1]},${palette[2]},${abilityFx.current*.68})`;ctx.lineWidth=3;ctx.beginPath();ctx.arc(W/2,H/2,32+(1-abilityFx.current/.7)*72,0,Math.PI*2);ctx.stroke()}
       if(dodgeFx.current>0){const phase=1-dodgeFx.current/.34;ctx.save();ctx.globalAlpha=(1-phase)*.46;ctx.strokeStyle="#d9e2d6";ctx.lineWidth=2;for(let streak=0;streak<4;streak++){const y=H*(.58+streak*.065),start=W*(.16+phase*.32),end=start+W*(.16+phase*.1);ctx.beginPath();ctx.moveTo(start,y);ctx.lineTo(end,y-5);ctx.stroke()}ctx.restore()}
       const swing=attackFx.current?Math.sin(attackFx.current/.28*Math.PI)*38:0;const guarding=parryFx.current>0;const guardLift=guarding?(1-parryFx.current/.46)*52:0;
-      const shake=shakeFx.current?Math.sin(t*.09)*shakeFx.current:0;ctx.save();ctx.translate(W*.64+swing+shake,H*.78-swing*.6-guardLift+shake*.35);ctx.rotate(guarding?-1.22+swing*.008:-.62+swing*.012);ctx.fillStyle="#211724";ctx.fillRect(-5,-2,15,8);ctx.fillStyle="#c0aeb1";ctx.fillRect(8,0,92,5);ctx.fillStyle="#f2d89c";ctx.fillRect(8,0,88,1);ctx.restore();
+      const shake=shakeFx.current?Math.sin(t*.09)*shakeFx.current:0;ctx.save();ctx.translate(W*.64+swing+shake,H*.78-swing*.6-guardLift+shake*.35);if(s.spec==="bow"){ctx.rotate(-.18+swing*.004);ctx.strokeStyle="#6e4b2e";ctx.lineWidth=5;ctx.beginPath();ctx.arc(22,2,55,-1.15,1.15);ctx.stroke();ctx.strokeStyle="#dbc99b";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(44,-47);ctx.lineTo(70,2);ctx.lineTo(44,51);ctx.stroke();ctx.fillStyle="#d7b06a";ctx.fillRect(25,0,76,2)}else if(s.spec==="arcane"){const pulse=4+Math.sin(t*.012)*3;ctx.rotate(-.42+swing*.005);ctx.fillStyle="#30213a";ctx.fillRect(-4,-3,90,7);ctx.fillStyle="#9b6cb0";ctx.fillRect(6,-2,76,2);ctx.fillStyle=`rgba(225,125,255,${.65+spellFx.current})`;ctx.beginPath();ctx.arc(88,0,8+pulse,0,Math.PI*2);ctx.fill()}else{ctx.rotate(guarding?-1.22+swing*.008:-.62+swing*.012);ctx.fillStyle="#211724";ctx.fillRect(-5,-2,15,8);ctx.fillStyle="#c0aeb1";ctx.fillRect(8,0,92,5);ctx.fillStyle="#f2d89c";ctx.fillRect(8,0,88,1)}ctx.restore();
       if(parryFx.current>0){const r=34+(1-parryFx.current/.46)*18;ctx.strokeStyle=perfectFx.current>0?"#ffe49a":"#9db5d5";ctx.lineWidth=5;ctx.beginPath();ctx.arc(W*.78,H*.73,r,Math.PI*.45,Math.PI*1.55);ctx.stroke();ctx.strokeStyle=perfectFx.current>0?"rgba(255,230,140,.55)":"rgba(142,190,235,.35)";ctx.lineWidth=2;ctx.beginPath();ctx.arc(W*.78,H*.73,r+8,Math.PI*.5,Math.PI*1.48);ctx.stroke()}
       if(impactFx.current>0){const power=impactFx.current/.34;ctx.save();ctx.translate(W/2,H/2);ctx.strokeStyle=`rgba(255,${Math.floor(170+power*75)},${Math.floor(95+power*130)},${power})`;ctx.lineWidth=2+power*3;for(let spark=0;spark<8;spark++){const a=spark*Math.PI/4+t*.01,len=8+power*20;ctx.beginPath();ctx.moveTo(Math.cos(a)*5,Math.sin(a)*5);ctx.lineTo(Math.cos(a)*len,Math.sin(a)*len);ctx.stroke()}ctx.restore()}
       if(perfectImpactFx.current>0){const pulse=1-perfectImpactFx.current/.36;ctx.save();ctx.strokeStyle=`rgba(255,230,143,${perfectImpactFx.current/.36})`;ctx.lineWidth=2;ctx.beginPath();ctx.arc(W/2,H/2,18+pulse*82,0,Math.PI*2);ctx.stroke();ctx.restore()}
