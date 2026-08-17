@@ -64,7 +64,7 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /Le Gardien frappe le vide/);
   assert.match(page, /queuedAttack/);
   assert.match(page, /bars\$\{hud\.hp<30/);
-  assert.match(page, /OUVERTURE · RIPOSTEZ/);
+  assert.match(page, /OUVERTURE · RIPOSTE LOURDE/);
   assert.match(page, /Promise\.resolve\(canvasRef\.current\?\.requestPointerLock/);
   assert.match(page, /aria-live="polite"/);
   assert.match(page, /foe\.hit<\.42/);
@@ -120,6 +120,12 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /PAS FANTÔME/);
   assert.match(page, /RÉSONANCE/);
   assert.match(page, /class-passive/);
+  assert.match(page, /TIR D’OPPORTUNITÉ/);
+  assert.match(page, /FLAMME AMPLIFIÉE/);
+  assert.match(page, /attackPhase/);
+  assert.match(page, /guardianPosture\.current-\(opening\?30:10\)/);
+  assert.match(page, /shade\.kind==="ranged"\?"#efc269"/);
+  assert.match(page, /charge\*\.5/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);
