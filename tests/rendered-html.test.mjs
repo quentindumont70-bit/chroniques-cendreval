@@ -139,6 +139,8 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /potionStartHp/);
   assert.match(page, /drink-state/);
   assert.match(css, /drink-state/);
+  assert.match(page, /GARDE ÉBRANLÉE/);
+  assert.match(page, /foe\.intent==="crush"/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);
