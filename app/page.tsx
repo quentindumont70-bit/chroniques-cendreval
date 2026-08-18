@@ -288,8 +288,11 @@ export default function Home() {
     const mouseDown=(e:PointerEvent)=>{
       const input=`Mouse${e.button}`;
       if(capture){e.preventDefault();e.stopPropagation();applyBindings({...bindingsRef.current,[capture]:input});setCapture(null);setMessage(`Commande associée à ${bindingLabel(input)}.`);return}
-      const onCanvas=Boolean(canvasRef.current?.contains(e.target as Node)),captured=document.pointerLockElement===canvasRef.current;
-      if(!captured){if(started&&!panel&&!village&&onCanvas){e.preventDefault();captureMouse(e)}return}
+      const target=e.target as Element|null;
+      const onGameSurface=Boolean(target?.closest?.(".stage"));
+      const onControl=Boolean(target?.closest?.("button,input,select,textarea,a"));
+      const captured=document.pointerLockElement===canvasRef.current;
+      if(!captured){if(started&&!panel&&!village&&onGameSurface&&!onControl){e.preventDefault();captureMouse()}return}
       keys.current[input]=true;trigger(input);
       if(e.button!==0){e.preventDefault();e.stopPropagation()}
     };
