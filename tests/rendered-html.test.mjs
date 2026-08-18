@@ -53,6 +53,10 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /control-ribbon/);
   assert.match(page, /bindingLabel\(bindings\.attack\)/);
   assert.match(page, /canvasRef\.current\?\.requestPointerLock/);
+  assert.match(page, /const onCanvas=Boolean/);
+  assert.match(page, /if\(!captured\)/);
+  assert.match(page, /canvasRef\.current\?\.focus\(\);lockCursor\(\)/);
+  assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(started/);
   assert.match(page, /const idle=Math\.sin/);
   assert.match(page, /shade\.telegraph>0\?0/);
   assert.match(page, /impactFx\.current/);

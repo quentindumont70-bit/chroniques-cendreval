@@ -288,17 +288,18 @@ export default function Home() {
     const mouseDown=(e:PointerEvent)=>{
       const input=`Mouse${e.button}`;
       if(capture){e.preventDefault();e.stopPropagation();applyBindings({...bindingsRef.current,[capture]:input});setCapture(null);setMessage(`Commande associée à ${bindingLabel(input)}.`);return}
+      const onCanvas=Boolean(canvasRef.current?.contains(e.target as Node)),captured=document.pointerLockElement===canvasRef.current;
+      if(!captured){if(started&&!panel&&!village&&onCanvas){e.preventDefault();captureMouse(e)}return}
       keys.current[input]=true;trigger(input);
-      if(started && !panel && !village && canvasRef.current?.contains(e.target as Node))captureMouse(e);
       if(e.button!==0){e.preventDefault();e.stopPropagation()}
     };
     const mouseUp=(e:PointerEvent)=>{keys.current[`Mouse${e.button}`]=false};
-    const move=(e:MouseEvent)=>{if(started&&document.pointerLockElement===canvasRef.current&&!panel&&!village)state.current.a+=e.movementX*.0024*sensitivityRef.current};
+    const move=(e:MouseEvent)=>{if(started&&document.pointerLockElement===canvasRef.current&&!panel&&!village&&!choosingSpec)state.current.a+=e.movementX*.0024*sensitivityRef.current};
     const lock=()=>{if(document.pointerLockElement!==canvasRef.current){clearInput();lastMouseX.current=null}setMouseLook(document.pointerLockElement===canvasRef.current)};
     const blur=()=>clearInput();
     addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("pointerdown",mouseDown);addEventListener("pointerup",mouseUp);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("blur",blur);
     return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("pointerdown",mouseDown);removeEventListener("pointerup",mouseUp);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock);removeEventListener("blur",blur)};
-  },[ability,applyBindings,capture,captureMouse,clearInput,dodge,interact,lockCursor,panel,parry,primaryAttack,save,shootBow,started,strike,village]);
+  },[ability,applyBindings,capture,captureMouse,choosingSpec,clearInput,dodge,interact,lockCursor,panel,parry,primaryAttack,save,shootBow,started,strike,village]);
 
   useEffect(()=>{clearInput();document.exitPointerLock?.()},[clearInput,panel,village,choosingSpec]);
 
@@ -501,7 +502,7 @@ export default function Home() {
   const restartJourney=()=>{state.current={...START};enemy.current={x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien",kind:"brute"};minions.current=[{x:6.5,y:5.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre",kind:"melee"},{x:14.5,y:13.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre",kind:"melee"}];reinforcements.current=false;setEndingSeen(true);setVillage(false);localStorage.setItem("cendreval-save",JSON.stringify(state.current));sync();setMessage("NOUVEAU VOYAGE — les bornes vous appellent de nouveau.")};
   const prepareCastleTest=()=>{const s=state.current;s.quest=11;s.expedition=5;s.shrines=7;s.reward=1;s.relic=s.relic==="none"?"iron":s.relic;s.courtBoon=s.courtBoon==="none"?"ward":s.courtBoon;s.x=CASTLE_REST.x;s.y=CASTLE_REST.y;s.a=Math.PI/2;s.hp=100;s.mana=100;s.stamina=100;s.potions=Math.max(s.potions,5);s.arrows=Math.max(s.arrows,26);enemy.current={x:10.5,y:8.5,hp:0,alive:false,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien",kind:"brute"};minions.current=[];reinforcements.current=false;localStorage.setItem("cendreval-save",JSON.stringify(s));sync();setMessage("TEST CHÂTEAU — ancrage, relique et assaut du donjon préparés.")};
   const buyPotion=()=>{const s=state.current;if(s.gold<8){setMessage("Il vous manque des pièces d’or.");return}s.gold-=8;s.potions++;sync();setMessage("Potion achetée.")};
-  const chooseSpec=(spec:Save["spec"])=>{const s=state.current;s.spec=spec;s.perkBlade=spec==="blade";s.perkBow=spec==="bow";s.perkArcane=spec==="arcane";if(spec==="blade")s.stamina=100;if(spec==="bow")s.arrows=Math.max(s.arrows,22);if(spec==="arcane")s.mana=100;sync();setChoosingSpec(false);setStarted(true);lockCursor();setMessage(`Voie choisie : ${spec==="blade"?"Lame":spec==="bow"?"Rôdeur":"Arcanes"}.`)};
+  const chooseSpec=(spec:Save["spec"])=>{const s=state.current;s.spec=spec;s.perkBlade=spec==="blade";s.perkBow=spec==="bow";s.perkArcane=spec==="arcane";if(spec==="blade")s.stamina=100;if(spec==="bow")s.arrows=Math.max(s.arrows,22);if(spec==="arcane")s.mana=100;sync();setChoosingSpec(false);setStarted(true);canvasRef.current?.focus();lockCursor();setMessage(`Voie choisie : ${spec==="blade"?"Lame":spec==="bow"?"Rôdeur":"Arcanes"}.`)};
   const learnPerk=(perk:"perkBlade"|"perkBow"|"perkArcane")=>{const s=state.current;if(!s.talent||s[perk])return;s.talent--;s[perk]=true;sync();setMessage("Talent appris !")};
   const changeSensitivity=(value:number)=>{setSensitivity(value);sensitivityRef.current=value;localStorage.setItem("cendreval-mouse-sensitivity",String(value))};
 
