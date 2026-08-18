@@ -135,6 +135,10 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /TROP ÉPUISÉ/);
   assert.match(page, /if\(staminaDelay\.current===0\)s\.stamina/);
   assert.match(page, /hudRefresh\.current>=\.1/);
+  assert.match(page, /GORGÉE INTERROMPUE/);
+  assert.match(page, /potionStartHp/);
+  assert.match(page, /drink-state/);
+  assert.match(css, /drink-state/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);

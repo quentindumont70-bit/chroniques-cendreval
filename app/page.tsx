@@ -114,6 +114,9 @@ export default function Home() {
   const shakeFx = useRef(0);
   const hitStop = useRef(0);
   const staminaDelay = useRef(0);
+  const potionFx = useRef(0);
+  const pendingPotion = useRef(false);
+  const potionStartHp = useRef(100);
   const abilityCd = useRef(0);
   const abilityReadyRef = useRef(true);
   const worldTime = useRef(.24);
@@ -167,7 +170,7 @@ export default function Home() {
   useEffect(()=>{if(!started||state.current.quest!==16||enemy.current.alive)return;const s=state.current,tier=Math.max(1,s.echoTier);enemy.current={x:10.5,y:4.7,hp:96+tier*28,alive:true,hit:0,cooldown:.7,telegraph:0,boss:false,name:`écho royal ${tier}`,kind:"brute"};minions.current=[{x:7.1,y:8.2,hp:42+tier*10,alive:true,hit:0,cooldown:.4,telegraph:0,boss:false,name:"écho archer",kind:"ranged"},{x:13.9,y:8.2,hp:42+tier*10,alive:true,hit:0,cooldown:.7,telegraph:0,boss:false,name:"écho archer",kind:"ranged"},{x:10.5,y:9.9,hp:52+tier*11,alive:true,hit:0,cooldown:1.1,telegraph:0,boss:false,name:"écho lourd",kind:"brute"}];sync();setMessage(`ÉCHO DE CENDRE · PALIER ${tier} — reprise de l’affrontement.`)},[started,sync]);
 
   const strike = useCallback((spell=false) => {
-    if(panel) return;
+    if(panel||potionFx.current>0) return;
     if(!spell&&attackFx.current>.09){queuedAttack.current=false;return}
     const s=state.current;
     if(!spell&&s.stamina<10){setMessage("TROP ÉPUISÉ — reprenez votre souffle avant de frapper.");return}
@@ -189,7 +192,7 @@ export default function Home() {
   },[gainXp,panel,sync]);
 
   const shootBow = useCallback(()=>{
-    if(panel)return;
+    if(panel||potionFx.current>0)return;
     const s=state.current;
     if(!s.arrows){setMessage("Plus de flèches.");return}
     if(s.stamina<6){setMessage("TROP ÉPUISÉ — impossible de stabiliser l’arc.");return}
@@ -211,10 +214,10 @@ export default function Home() {
   },[gainXp,panel,sync]);
   const primaryAttack=useCallback(()=>{const spec=state.current.spec;if(spec==="bow")shootBow();else strike(spec==="arcane")},[shootBow,strike]);
 
-  const parry = useCallback(()=>{const s=state.current;if(panel)return;if(s.stamina<10){setMessage("Endurance insuffisante pour parer.");return}s.stamina-=10;staminaDelay.current=.82;parryFx.current=.46;perfectFx.current=.13;sync();setMessage("Parade — frappez au moment de l’impact pour une parade parfaite.")},[panel,sync]);
-  const dodge = useCallback(()=>{const s=state.current;if(panel)return;if(s.stamina<24){setMessage("Endurance insuffisante pour esquiver.");return}s.stamina-=24;staminaDelay.current=1.05;dodgeFx.current=.34;const side=(keys.current[bindingsRef.current.left]?-1:0)+(keys.current[bindingsRef.current.right]?1:0);const angle=s.a+(side?side*Math.PI/2:Math.PI);const nx=s.x+Math.cos(angle)*.9,ny=s.y+Math.sin(angle)*.9;if(!wallAt(nx,s.y))s.x=nx;if(!wallAt(s.x,ny))s.y=ny;sync();setMessage(side?"Esquive latérale !":"Esquive arrière !")},[panel,sync]);
+  const parry = useCallback(()=>{const s=state.current;if(panel||potionFx.current>0)return;if(s.stamina<10){setMessage("Endurance insuffisante pour parer.");return}s.stamina-=10;staminaDelay.current=.82;parryFx.current=.46;perfectFx.current=.13;sync();setMessage("Parade — frappez au moment de l’impact pour une parade parfaite.")},[panel,sync]);
+  const dodge = useCallback(()=>{const s=state.current;if(panel||potionFx.current>0)return;if(s.stamina<24){setMessage("Endurance insuffisante pour esquiver.");return}s.stamina-=24;staminaDelay.current=1.05;dodgeFx.current=.34;const side=(keys.current[bindingsRef.current.left]?-1:0)+(keys.current[bindingsRef.current.right]?1:0);const angle=s.a+(side?side*Math.PI/2:Math.PI);const nx=s.x+Math.cos(angle)*.9,ny=s.y+Math.sin(angle)*.9;if(!wallAt(nx,s.y))s.x=nx;if(!wallAt(s.x,ny))s.y=ny;sync();setMessage(side?"Esquive latérale !":"Esquive arrière !")},[panel,sync]);
   const ability=useCallback(()=>{
-    const s=state.current;if(panel||s.hp<=0)return;
+    const s=state.current;if(panel||potionFx.current>0||s.hp<=0)return;
     if(abilityCd.current>0){setMessage("Le pouvoir de votre voie se recharge.");return}
     abilityCd.current=s.courtBoon==="focus"?6.5:9;abilityReadyRef.current=false;setAbilityReady(false);abilityFx.current=.7;
     const foes=[enemy.current,...minions.current].filter(foe=>foe.alive&&(!foe.boss||allShrinesAwake(s.shrines))),boon=s.courtBoon==="fury"?4:0;
@@ -317,11 +320,12 @@ export default function Home() {
         if(keys.current[bindingsRef.current.left])strafe-=1;if(keys.current[bindingsRef.current.right])strafe+=1;
         s.a+=turn*dt*2.15;
         const responsiveness=1-Math.exp(-dt*(move||strafe?15:10));movement.current.forward+=(move-movement.current.forward)*responsiveness;movement.current.strafe+=(strafe-movement.current.strafe)*responsiveness;
-        const speed=dt*2.35, dx=(Math.cos(s.a)*movement.current.forward+Math.cos(s.a+Math.PI/2)*movement.current.strafe)*speed, dy=(Math.sin(s.a)*movement.current.forward+Math.sin(s.a+Math.PI/2)*movement.current.strafe)*speed;
+        const speed=dt*(potionFx.current>0?.72:2.35), dx=(Math.cos(s.a)*movement.current.forward+Math.cos(s.a+Math.PI/2)*movement.current.strafe)*speed, dy=(Math.sin(s.a)*movement.current.forward+Math.sin(s.a+Math.PI/2)*movement.current.strafe)*speed;
         if(!wallAt(s.x+dx,s.y))s.x+=dx;if(!wallAt(s.x,s.y+dy))s.y+=dy;
         const focus=lockedTarget.current;if(locked&&focus?.alive){const target=Math.atan2(focus.y-s.y,focus.x-s.x),diff=Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a));s.a+=diff*Math.min(1,dt*3.6)}else if(locked&&!focus?.alive){lockedTarget.current=null;setLocked(false)}
       }
       attackFx.current=Math.max(0,attackFx.current-dt);spellFx.current=Math.max(0,spellFx.current-dt);hurtFx.current=Math.max(0,hurtFx.current-dt);parryFx.current=Math.max(0,parryFx.current-dt);perfectFx.current=Math.max(0,perfectFx.current-dt);perfectImpactFx.current=Math.max(0,perfectImpactFx.current-dt);perfectDodgeFx.current=Math.max(0,perfectDodgeFx.current-dt);dodgeFx.current=Math.max(0,dodgeFx.current-dt);abilityFx.current=Math.max(0,abilityFx.current-dt);impactFx.current=Math.max(0,impactFx.current-dt);shakeFx.current=Math.max(0,shakeFx.current-dt);bladeChainTimer.current=Math.max(0,bladeChainTimer.current-dt);staminaDelay.current=Math.max(0,staminaDelay.current-dt);if(bladeChainTimer.current===0)bladeChain.current=0;if(attackFx.current===0&&queuedAttack.current!==null){queuedAttack.current=null;strike(false)}if(!panel&&!village&&!choosingSpec)abilityCd.current=Math.max(0,abilityCd.current-dt);if(abilityCd.current===0&&!abilityReadyRef.current){abilityReadyRef.current=true;setAbilityReady(true)}if(staminaDelay.current===0)s.stamina=Math.min(100,s.stamina+dt*16);
+      const potionBefore=potionFx.current;potionFx.current=Math.max(0,potionFx.current-dt);if(pendingPotion.current&&s.hp<potionStartHp.current){pendingPotion.current=false;potionFx.current=0;setMessage("GORGÉE INTERROMPUE — le coup renverse la potion.")}else if(potionBefore>0&&potionFx.current===0&&pendingPotion.current){pendingPotion.current=false;s.hp=Math.min(100,s.hp+45);impactFx.current=.18;sync();setMessage("POTION BUE — la chaleur revient dans vos veines.")}
       if(enemy.current.alive&&enemy.current.boss&&enemy.current.hit<.42)guardianPosture.current=Math.min(100,guardianPosture.current+dt*3.4);
       hudRefresh.current+=dt;if(hudRefresh.current>=.1){hudRefresh.current=0;setHud({...s,shrines:shrineCount(s.shrines)})}
       if(s.hp>0&&!panel&&!village&&!choosingSpec)for(const foe of [enemy.current,...minions.current]){
@@ -463,6 +467,7 @@ export default function Home() {
       if(dodgeFx.current>0){const phase=1-dodgeFx.current/.34;ctx.save();ctx.globalAlpha=(1-phase)*.46;ctx.strokeStyle="#d9e2d6";ctx.lineWidth=2;for(let streak=0;streak<4;streak++){const y=H*(.58+streak*.065),start=W*(.16+phase*.32),end=start+W*(.16+phase*.1);ctx.beginPath();ctx.moveTo(start,y);ctx.lineTo(end,y-5);ctx.stroke()}ctx.restore()}
       const attackPhase=attackFx.current?Math.sin(attackFx.current/.28*Math.PI):0;const swing=attackPhase*(s.spec==="bow"?-12:s.spec==="arcane"?18:38);const guarding=parryFx.current>0;const guardLift=guarding?(1-parryFx.current/.46)*52:0;
       const shake=shakeFx.current?Math.sin(t*.09)*shakeFx.current:0;ctx.save();ctx.translate(W*.64+swing+shake,H*.78-swing*.6-guardLift+shake*.35);if(s.spec==="bow"){ctx.rotate(-.18+swing*.004);ctx.strokeStyle="#6e4b2e";ctx.lineWidth=5;ctx.beginPath();ctx.arc(22,2,55,-1.15,1.15);ctx.stroke();ctx.strokeStyle="#dbc99b";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(44,-47);ctx.lineTo(70,2);ctx.lineTo(44,51);ctx.stroke();ctx.fillStyle="#d7b06a";ctx.fillRect(25,0,76,2)}else if(s.spec==="arcane"){const pulse=4+Math.sin(t*.012)*3;ctx.rotate(-.42+swing*.005);ctx.fillStyle="#30213a";ctx.fillRect(-4,-3,90,7);ctx.fillStyle="#9b6cb0";ctx.fillRect(6,-2,76,2);ctx.fillStyle=`rgba(225,125,255,${.65+spellFx.current})`;ctx.beginPath();ctx.arc(88,0,8+pulse,0,Math.PI*2);ctx.fill()}else{ctx.rotate(guarding?-1.22+swing*.008:-.62+swing*.012);ctx.fillStyle="#211724";ctx.fillRect(-5,-2,15,8);ctx.fillStyle="#c0aeb1";ctx.fillRect(8,0,92,5);ctx.fillStyle="#f2d89c";ctx.fillRect(8,0,88,1)}ctx.restore();
+      if(potionFx.current>0){const drink=1-potionFx.current/.78,lift=Math.sin(Math.min(1,drink)*Math.PI);ctx.save();ctx.translate(W*(.72-.12*lift),H*(.88-.26*lift));ctx.rotate(-.35*lift);ctx.fillStyle="#351d27";ctx.fillRect(-12,-4,34,9);ctx.fillStyle="#7d2633";ctx.fillRect(18,-18,16,25);ctx.fillStyle="#dc6054";ctx.fillRect(21,-15,10,16);ctx.fillStyle="#f4c47d";ctx.fillRect(23,-21,6,6);ctx.restore()}
       if(s.spec==="bow"&&attackFx.current>0){const flight=1-attackFx.current/.28;ctx.save();ctx.globalAlpha=Math.max(0,1-flight*.82);ctx.strokeStyle="#f6d98c";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W*.7-flight*W*.2,H*.66+flight*H*.14);ctx.lineTo(W*.51,H*.51);ctx.stroke();ctx.fillStyle="#fff0b0";ctx.fillRect(W*.5-2,H*.5-1,7,2);ctx.restore()}
       if(parryFx.current>0){const r=34+(1-parryFx.current/.46)*18;ctx.strokeStyle=perfectFx.current>0?"#ffe49a":"#9db5d5";ctx.lineWidth=5;ctx.beginPath();ctx.arc(W*.78,H*.73,r,Math.PI*.45,Math.PI*1.55);ctx.stroke();ctx.strokeStyle=perfectFx.current>0?"rgba(255,230,140,.55)":"rgba(142,190,235,.35)";ctx.lineWidth=2;ctx.beginPath();ctx.arc(W*.78,H*.73,r+8,Math.PI*.5,Math.PI*1.48);ctx.stroke()}
       if(impactFx.current>0){const power=impactFx.current/.34;ctx.save();ctx.translate(W/2,H/2);ctx.strokeStyle=`rgba(255,${Math.floor(170+power*75)},${Math.floor(95+power*130)},${power})`;ctx.lineWidth=2+power*3;for(let spark=0;spark<8;spark++){const a=spark*Math.PI/4+t*.01,len=8+power*20;ctx.beginPath();ctx.moveTo(Math.cos(a)*5,Math.sin(a)*5);ctx.lineTo(Math.cos(a)*len,Math.sin(a)*len);ctx.stroke()}ctx.restore()}
@@ -477,7 +482,7 @@ export default function Home() {
 
   const hold=(code:string,on:boolean)=>{keys.current[code]=on};
   const holdAction=(action:"forward"|"back"|"left"|"right",on:boolean)=>hold(bindingsRef.current[action],on);
-  const potion=()=>{if(state.current.potions&&state.current.hp<100){state.current.potions--;state.current.hp=Math.min(100,state.current.hp+45);sync();setMessage("La potion réchauffe votre sang.")}};
+  const potion=()=>{const s=state.current;if(panel||potionFx.current>0)return;if(!s.potions){setMessage("Votre ceinture ne contient plus de potion.");return}if(s.hp>=100){setMessage("Votre vitalité est déjà pleine.");return}s.potions--;pendingPotion.current=true;potionStartHp.current=s.hp;potionFx.current=.78;staminaDelay.current=Math.max(staminaDelay.current,.78);sync();setMessage("BOIRE — restez à couvert jusqu’à la dernière gorgée.")};
   const revive=()=>{const s=state.current;const inCastle=s.quest>=7,checkpoint=!inCastle&&s.checkpoint?SHRINES[s.checkpoint-1]:null;s.x=inCastle?CASTLE_REST.x:checkpoint?checkpoint.x:3.5;s.y=inCastle?CASTLE_REST.y:checkpoint?checkpoint.y+1.05:16.5;s.a=inCastle?Math.PI/2:-Math.PI/2;s.hp=100;s.mana=100;s.stamina=100;sync();setMessage(inCastle?"Vous reprenez conscience à l’ancrage du château.":checkpoint?`Vous reprenez conscience à la ${checkpoint.name}.`:"Vous reprenez conscience près du chemin des ruines.")};
   const shiftSky=()=>{worldTime.current=worldTime.current<.5?.73:.24;setMessage(worldTime.current<.5?"L’aube éclaire de nouveau les plaines.":"La nuit enveloppe Cendreval.")};
   const restoreForTest=()=>{const s=state.current;s.hp=100;s.mana=100;s.stamina=100;s.arrows=22;s.potions=Math.max(3,s.potions);sync();setMessage("Ressources restaurées — à toi de jouer.")};
@@ -514,6 +519,7 @@ export default function Home() {
       {hud.quest===0&&<div className="exploration-ledger"><span>CHRONIQUE DES PLAINES</span><b>Mémoires retrouvées · {shrineCount(hud.lore)}/3</b><small>{hud.shrines<3?"Cherchez les stèles aux lueurs dorées entre les bornes.":"La posture dorée du Gardien cède aux défenses parfaites."}</small></div>}
       <div className="control-ribbon"><span><b>{bindingLabel(bindings.interact)}</b> Interagir</span><span><b>{bindingLabel(bindings.parry)}</b> Parade</span><span><b>{bindingLabel(bindings.dodge)}</b> Esquive</span><span><b>{bindingLabel(bindings.lockOn)}</b> Cible</span><span><b>Échap</b> Pause</span></div>
       <div className="message" role="status" aria-live="polite">{message}</div>
+      {potionFx.current>0&&<div className="drink-state"><span>POTION CARMIN</span><b>NE ROMPEZ PAS LE GESTE</b><i><em style={{width:`${(1-potionFx.current/.78)*100}%`}}/></i></div>}
       {parryFx.current>0&&<div className={`guard-state ${perfectFx.current>0?"perfect":""}`}>{perfectFx.current>0?"FENÊTRE PARFAITE":"GARDE LEVÉE"}</div>}
       {started&&!mouseLook&&!panel&&!village&&!choosingSpec&&<button className="capture-hint" onClick={lockCursor}><b>◉ REGARD LIBRE</b><span>Cliquez pour reprendre la caméra</span></button>}
       {started&&guideOpen&&hud.quest===0&&<aside className="first-steps"><button aria-label="Fermer l’aide" onClick={()=>{setGuideOpen(false);localStorage.setItem("cendreval-guide-dismissed","1")}}>×</button><span>PREMIERS PAS</span><b>{hud.shrines<3?"Réveillez les bornes" : "Le Gardien vous attend"}</b><small>{hud.shrines<3?"Suivez l’orbe en haut de l’écran. Approchez une borne et pressez E : elle soigne et sauvegarde votre route.":enemy.current.hit>.42?"Le Gardien vacille : avancez et frappez avant qu’il ne retrouve sa garde.":enemy.current.telegraph>0?enemy.current.intent==="crush"?"Il lève son arme : décalez-vous à l’impact avec Shift + Q/D.":"Son arme se tend : déclenchez votre parade au dernier instant (MB3).":"Restez face à lui. Sa posture et le cercle au sol annoncent toujours le prochain coup."}</small><div><i className={hud.shrines>0?"done":""}>1</i><i className={hud.shrines>1?"done":""}>2</i><i className={hud.shrines>2?"done":""}>3</i></div></aside>}
