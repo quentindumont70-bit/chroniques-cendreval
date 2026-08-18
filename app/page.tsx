@@ -301,7 +301,10 @@ export default function Home() {
     return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("pointerdown",mouseDown);removeEventListener("pointerup",mouseUp);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock);removeEventListener("blur",blur)};
   },[ability,applyBindings,capture,captureMouse,choosingSpec,clearInput,dodge,interact,lockCursor,panel,parry,primaryAttack,save,shootBow,started,strike,village]);
 
-  useEffect(()=>{clearInput();document.exitPointerLock?.()},[clearInput,panel,village,choosingSpec]);
+  useEffect(()=>{
+    clearInput();
+    if(panel||village||choosingSpec)document.exitPointerLock?.();
+  },[clearInput,panel,village,choosingSpec]);
 
   useEffect(()=>{
     if(!started) return;
