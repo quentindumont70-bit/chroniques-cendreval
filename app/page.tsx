@@ -148,7 +148,11 @@ export default function Home() {
   const [abilityReady,setAbilityReady] = useState(true);
   const sensitivityRef = useRef(1);
   const [hud,setHud] = useState({...START});
-  const lockCursor = useCallback(()=>{try{Promise.resolve(canvasRef.current?.requestPointerLock?.()).catch(()=>undefined)}catch{return}},[]);
+  const lockCursor = useCallback(()=>{
+    const canvas=canvasRef.current;
+    if(!canvas?.requestPointerLock){setMouseLook(true);return}
+    try{Promise.resolve(canvas.requestPointerLock()).catch(()=>setMouseLook(true))}catch{setMouseLook(true)}
+  },[]);
   const [message,setMessage] = useState("Les ruines murmurent votre nom…");
 
   const sync = useCallback(() => {activeMap=mapForQuest(state.current.quest);setHud({...state.current,shrines:shrineCount(state.current.shrines)})}, []);
@@ -297,7 +301,16 @@ export default function Home() {
       if(e.button!==0){e.preventDefault();e.stopPropagation()}
     };
     const mouseUp=(e:PointerEvent)=>{keys.current[`Mouse${e.button}`]=false};
-    const move=(e:MouseEvent)=>{if(started&&document.pointerLockElement===canvasRef.current&&!panel&&!village&&!choosingSpec)state.current.a+=e.movementX*.0024*sensitivityRef.current};
+    const move=(e:MouseEvent)=>{
+      if(!started||panel||village||choosingSpec)return;
+      const canvas=canvasRef.current;
+      if(document.pointerLockElement===canvas){state.current.a+=e.movementX*.0024*sensitivityRef.current;return}
+      if(canvas?.requestPointerLock)return;
+      const target=e.target as Element|null;
+      if(!target?.closest?.(".stage")||target.closest?.("button,input,select,textarea,a")){lastMouseX.current=null;return}
+      if(lastMouseX.current!==null)state.current.a+=(e.clientX-lastMouseX.current)*.0024*sensitivityRef.current;
+      lastMouseX.current=e.clientX;
+    };
     const lock=()=>{if(document.pointerLockElement!==canvasRef.current){clearInput();lastMouseX.current=null}setMouseLook(document.pointerLockElement===canvasRef.current)};
     const blur=()=>clearInput();
     addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("pointerdown",mouseDown);addEventListener("pointerup",mouseUp);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("blur",blur);

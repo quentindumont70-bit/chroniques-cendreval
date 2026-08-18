@@ -52,10 +52,13 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /VOIE DU VEILLEUR/);
   assert.match(page, /control-ribbon/);
   assert.match(page, /bindingLabel\(bindings\.attack\)/);
-  assert.match(page, /canvasRef\.current\?\.requestPointerLock/);
+  assert.match(page, /canvas\.requestPointerLock\(\)/);
 assert.match(page, /const onGameSurface=Boolean/);
 assert.match(page, /target\?\.closest\?\.\("\.stage"\)/);
 assert.match(page, /onGameSurface&&!onControl/);
+assert.match(page, /if\(!canvas\?\.requestPointerLock\)\{setMouseLook\(true\);return\}/);
+assert.match(page, /if\(canvas\?\.requestPointerLock\)return/);
+assert.match(page, /e\.clientX-lastMouseX\.current/);
   assert.match(page, /if\(!captured\)/);
 assert.match(page, /canvasRef\.current\?\.focus\(\);lockCursor\(\)/);
 assert.match(page, /if\(panel\|\|village\|\|choosingSpec\)document\.exitPointerLock/);
@@ -73,7 +76,7 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /queuedAttack/);
   assert.match(page, /bars\$\{hud\.hp<30/);
   assert.match(page, /OUVERTURE · RIPOSTE LOURDE/);
-  assert.match(page, /Promise\.resolve\(canvasRef\.current\?\.requestPointerLock/);
+  assert.match(page, /Promise\.resolve\(canvas\.requestPointerLock\(\)\)/);
   assert.match(page, /aria-live="polite"/);
   assert.match(page, /foe\.hit<\.42/);
   assert.match(page, /guardianDeath/);
