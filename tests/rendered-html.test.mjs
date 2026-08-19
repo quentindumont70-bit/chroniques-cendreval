@@ -56,9 +56,15 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
 assert.match(page, /const onGameSurface=Boolean/);
 assert.match(page, /target\?\.closest\?\.\("\.stage"\)/);
 assert.match(page, /onGameSurface&&!onControl/);
-assert.match(page, /if\(!canvas\?\.requestPointerLock\)\{setMouseLook\(true\);return\}/);
-assert.match(page, /if\(canvas\?\.requestPointerLock\)return/);
+assert.match(page, /pointerFallback\.current=true;setMouseLook\(true\)/);
 assert.match(page, /e\.clientX-lastMouseX\.current/);
+assert.match(page, /e\.clientY-lastMouseY\.current/);
+assert.match(page, /cameraPitch\.current-e\.movementY/);
+assert.match(page, /ctx\.translate\(0,cameraPitch\.current\*H\*\.28\)/);
+assert.match(page, /pointerlockerror/);
+assert.match(page, /suppressCapturedClick\.current=true/);
+assert.match(page, /addEventListener\("click",blockCapturedClick,true\)/);
+assert.match(page, /stopImmediatePropagation/);
   assert.match(page, /if\(!captured\)/);
 assert.match(page, /canvasRef\.current\?\.focus\(\);lockCursor\(\)/);
 assert.match(page, /if\(panel\|\|village\|\|choosingSpec\)document\.exitPointerLock/);

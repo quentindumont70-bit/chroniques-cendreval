@@ -94,6 +94,10 @@ export default function Home() {
   const state = useRef<Save>({...START});
   const keys = useRef<Record<string,boolean>>({});
   const lastMouseX = useRef<number|null>(null);
+  const lastMouseY = useRef<number|null>(null);
+  const cameraPitch = useRef(0);
+  const pointerFallback = useRef(false);
+  const suppressCapturedClick = useRef(false);
   const enemy = useRef<Foe>({x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien",kind:"brute"});
   const minions = useRef<Foe[]>([
     {x:6.5,y:5.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre",kind:"melee"},
@@ -150,8 +154,8 @@ export default function Home() {
   const [hud,setHud] = useState({...START});
   const lockCursor = useCallback(()=>{
     const canvas=canvasRef.current;
-    if(!canvas?.requestPointerLock){setMouseLook(true);return}
-    try{Promise.resolve(canvas.requestPointerLock()).catch(()=>setMouseLook(true))}catch{setMouseLook(true)}
+    if(!canvas?.requestPointerLock){pointerFallback.current=true;setMouseLook(true);return}
+    try{Promise.resolve(canvas.requestPointerLock()).then(()=>{pointerFallback.current=false}).catch(()=>{pointerFallback.current=true;setMouseLook(true)})}catch{pointerFallback.current=true;setMouseLook(true)}
   },[]);
   const [message,setMessage] = useState("Les ruines murmurent votre nom…");
 
@@ -291,7 +295,7 @@ export default function Home() {
     const up=(e:KeyboardEvent)=>{keys.current[e.code]=false};
     const mouseDown=(e:PointerEvent)=>{
       const input=`Mouse${e.button}`;
-      if(capture){e.preventDefault();e.stopPropagation();applyBindings({...bindingsRef.current,[capture]:input});setCapture(null);setMessage(`Commande associée à ${bindingLabel(input)}.`);return}
+      if(capture){e.preventDefault();e.stopPropagation();suppressCapturedClick.current=true;applyBindings({...bindingsRef.current,[capture]:input});setCapture(null);setMessage(`Commande associée à ${bindingLabel(input)}.`);return}
       const target=e.target as Element|null;
       const onGameSurface=Boolean(target?.closest?.(".stage"));
       const onControl=Boolean(target?.closest?.("button,input,select,textarea,a"));
@@ -301,20 +305,22 @@ export default function Home() {
       if(e.button!==0){e.preventDefault();e.stopPropagation()}
     };
     const mouseUp=(e:PointerEvent)=>{keys.current[`Mouse${e.button}`]=false};
+    const blockCapturedClick=(e:MouseEvent)=>{if(!suppressCapturedClick.current)return;suppressCapturedClick.current=false;e.preventDefault();e.stopImmediatePropagation()};
     const move=(e:MouseEvent)=>{
       if(!started||panel||village||choosingSpec)return;
       const canvas=canvasRef.current;
-      if(document.pointerLockElement===canvas){state.current.a+=e.movementX*.0024*sensitivityRef.current;return}
-      if(canvas?.requestPointerLock)return;
+      if(document.pointerLockElement===canvas){state.current.a+=e.movementX*.0024*sensitivityRef.current;cameraPitch.current=Math.max(-.65,Math.min(.65,cameraPitch.current-e.movementY*.0024*sensitivityRef.current));return}
+      if(!pointerFallback.current)return;
       const target=e.target as Element|null;
-      if(!target?.closest?.(".stage")||target.closest?.("button,input,select,textarea,a")){lastMouseX.current=null;return}
-      if(lastMouseX.current!==null)state.current.a+=(e.clientX-lastMouseX.current)*.0024*sensitivityRef.current;
-      lastMouseX.current=e.clientX;
+      if(!target?.closest?.(".stage")||target.closest?.("button,input,select,textarea,a")){lastMouseX.current=null;lastMouseY.current=null;return}
+      if(lastMouseX.current!==null&&lastMouseY.current!==null){state.current.a+=(e.clientX-lastMouseX.current)*.0024*sensitivityRef.current;cameraPitch.current=Math.max(-.65,Math.min(.65,cameraPitch.current-(e.clientY-lastMouseY.current)*.0024*sensitivityRef.current))}
+      lastMouseX.current=e.clientX;lastMouseY.current=e.clientY;
     };
     const lock=()=>{if(document.pointerLockElement!==canvasRef.current){clearInput();lastMouseX.current=null}setMouseLook(document.pointerLockElement===canvasRef.current)};
+    const lockError=()=>{pointerFallback.current=true;lastMouseX.current=null;lastMouseY.current=null;setMouseLook(true)};
     const blur=()=>clearInput();
-    addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("pointerdown",mouseDown);addEventListener("pointerup",mouseUp);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("blur",blur);
-    return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("pointerdown",mouseDown);removeEventListener("pointerup",mouseUp);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock);removeEventListener("blur",blur)};
+    addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("pointerdown",mouseDown);addEventListener("pointerup",mouseUp);addEventListener("click",blockCapturedClick,true);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("pointerlockerror",lockError);addEventListener("blur",blur);
+    return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("pointerdown",mouseDown);removeEventListener("pointerup",mouseUp);removeEventListener("click",blockCapturedClick,true);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock);removeEventListener("pointerlockerror",lockError);removeEventListener("blur",blur)};
   },[ability,applyBindings,capture,captureMouse,choosingSpec,clearInput,dodge,interact,lockCursor,panel,parry,primaryAttack,save,shootBow,started,strike,village]);
 
   useEffect(()=>{
@@ -378,6 +384,8 @@ export default function Home() {
       const inHalls=s.quest>=10;
       const inDungeon=s.quest>=12;
       const inThrone=s.quest>=14;
+      ctx.fillStyle=inThrone?"#0b091b":inDungeon?"#120d17":inCourt?"#17141e":"#263c66";ctx.fillRect(0,0,W,H);
+      ctx.save();ctx.translate(0,cameraPitch.current*H*.28);
       const sky=ctx.createLinearGradient(0,0,0,H/2);sky.addColorStop(0,inThrone?"#090b1d":inDungeon?"#130e19":inCourt?"#181625":"#314d82");sky.addColorStop(.55,inThrone?"#282259":inDungeon?"#3a202b":inCourt?"#4a4154":"#8ca6c7");sky.addColorStop(1,inThrone?"#8c4966":inDungeon?"#6e3534":inCourt?"#786b66":"#c4b88f");ctx.fillStyle=sky;ctx.fillRect(0,0,W,H/2);
       const horizon=horizonRef.current;
       if(inHalls){ctx.fillStyle=inThrone?"#120f2a":inDungeon?"#1f101b":"#211c25";ctx.fillRect(0,0,W,H*.5);ctx.fillStyle=inThrone?"rgba(107,88,234,.24)":inDungeon?"rgba(204,63,53,.2)":"rgba(163,110,78,.18)";for(let x=-8;x<W+14;x+=34){ctx.fillRect(x,0,16,H*.42);ctx.fillRect(x-5,H*.3,26,4)}ctx.fillStyle=inThrone?"#6f63be":inDungeon?"#9f3837":"#6b5761";ctx.fillRect(0,H*.37,W,5);for(let x=0;x<W;x+=36)ctx.fillRect(x,H*.25,5,H*.17);if(inThrone){ctx.fillStyle="rgba(227,198,255,.25)";for(let x=17;x<W;x+=74){ctx.fillRect(x,H*.12,3,H*.32);ctx.fillRect(x-3,H*.1,9,3)}}}else if(horizon&&!inCourt){const pan=Math.sin(s.a)*12;ctx.drawImage(horizon,pan-14,0,W+28,H*.59)}else{
@@ -473,6 +481,8 @@ export default function Home() {
         const dx=e.x-s.x,dy=e.y-s.y,dist=Math.hypot(dx,dy);let ang=Math.atan2(dy,dx)-s.a;ang=Math.atan2(Math.sin(ang),Math.cos(ang));const column=Math.max(0,Math.min(W-1,Math.floor((ang/FOV+.5)*W)));
         if(Math.abs(ang)<FOV*.7&&dist<zbuf[column]){const size=Math.min(130,150/dist),cx=(.5+ang/FOV)*W,base=H/2+size*.52,fade=Math.min(1,guardianDeath/.62);ctx.save();ctx.globalAlpha=fade;ctx.translate(Math.floor(cx-size/2),Math.floor(base-size*(.27+.73*fade)));ctx.scale(1+.2*(1-fade),.3+.7*fade);const sprite=guardianRef.current;if(sprite)ctx.drawImage(sprite,0,0,sprite.width,sprite.height,0,0,size,size);else{ctx.fillStyle="#241826";ctx.fillRect(size*.25,size*.2,size*.5,size*.72)}ctx.globalAlpha=fade*.48;ctx.fillStyle="#e0a360";for(let ash=0;ash<8;ash++)ctx.fillRect(size*(.12+ash*.1),size*(.08+(ash%3)*.07+(1-fade)*.35),Math.max(1,size*.025),Math.max(1,size*.025));ctx.restore()}
       }
+
+      ctx.restore();
 
       const daylight=Math.max(.08,Math.sin(worldTime.current*Math.PI*2)*.78+.22);
       if(daylight<.45){ctx.fillStyle=`rgba(3,8,28,${.64*(.48-daylight)/.4})`;ctx.fillRect(0,0,W,H);ctx.fillStyle=`rgba(220,235,255,${(.45-daylight)*1.8})`;for(let star=0;star<36;star++){const sx=(star*83)%W,sy=(star*47)%Math.floor(H*.43);ctx.fillRect(sx,sy,star%3?1:2,1)}}
