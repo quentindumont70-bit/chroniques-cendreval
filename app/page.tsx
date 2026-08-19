@@ -98,6 +98,7 @@ export default function Home() {
   const cameraPitch = useRef(0);
   const pointerFallback = useRef(false);
   const suppressCapturedClick = useRef(false);
+  const fallbackLook = useRef({x:0,y:0,inside:false});
   const enemy = useRef<Foe>({x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien",kind:"brute"});
   const minions = useRef<Foe[]>([
     {x:6.5,y:5.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre",kind:"melee"},
@@ -300,9 +301,10 @@ export default function Home() {
       const onGameSurface=Boolean(target?.closest?.(".stage"));
       const onControl=Boolean(target?.closest?.("button,input,select,textarea,a"));
       const captured=document.pointerLockElement===canvasRef.current;
-      if(!captured){if(started&&!panel&&!village&&onGameSurface&&!onControl){e.preventDefault();captureMouse()}return}
+      const fallbackActive=pointerFallback.current&&onGameSurface&&!onControl;
+      if(!captured&&!fallbackActive){if(started&&!panel&&!village&&onGameSurface&&!onControl){e.preventDefault();captureMouse()}return}
       keys.current[input]=true;trigger(input);
-      if(e.button!==0){e.preventDefault();e.stopPropagation()}
+      e.preventDefault();if(e.button!==0)e.stopPropagation()
     };
     const mouseUp=(e:PointerEvent)=>{keys.current[`Mouse${e.button}`]=false};
     const blockCapturedClick=(e:MouseEvent)=>{if(!suppressCapturedClick.current)return;suppressCapturedClick.current=false;e.preventDefault();e.stopImmediatePropagation()};
@@ -312,15 +314,19 @@ export default function Home() {
       if(document.pointerLockElement===canvas){state.current.a+=e.movementX*.0024*sensitivityRef.current;cameraPitch.current=Math.max(-.65,Math.min(.65,cameraPitch.current-e.movementY*.0024*sensitivityRef.current));return}
       if(!pointerFallback.current)return;
       const target=e.target as Element|null;
-      if(!target?.closest?.(".stage")||target.closest?.("button,input,select,textarea,a")){lastMouseX.current=null;lastMouseY.current=null;return}
+      if(!target?.closest?.(".stage")||target.closest?.("button,input,select,textarea,a")){lastMouseX.current=null;lastMouseY.current=null;fallbackLook.current={x:0,y:0,inside:false};return}
+      const rect=canvas.getBoundingClientRect(),nx=Math.max(-1,Math.min(1,(e.clientX-rect.left)/rect.width*2-1)),ny=Math.max(-1,Math.min(1,(e.clientY-rect.top)/rect.height*2-1));
+      const edge=(value:number)=>Math.abs(value)>.68?Math.sign(value)*Math.pow((Math.abs(value)-.68)/.32,1.45):0;
+      fallbackLook.current={x:edge(nx),y:edge(ny),inside:true};
       if(lastMouseX.current!==null&&lastMouseY.current!==null){state.current.a+=(e.clientX-lastMouseX.current)*.0024*sensitivityRef.current;cameraPitch.current=Math.max(-.65,Math.min(.65,cameraPitch.current-(e.clientY-lastMouseY.current)*.0024*sensitivityRef.current))}
       lastMouseX.current=e.clientX;lastMouseY.current=e.clientY;
     };
     const lock=()=>{if(document.pointerLockElement!==canvasRef.current){clearInput();lastMouseX.current=null}setMouseLook(document.pointerLockElement===canvasRef.current)};
     const lockError=()=>{pointerFallback.current=true;lastMouseX.current=null;lastMouseY.current=null;setMouseLook(true)};
-    const blur=()=>clearInput();
-    addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("pointerdown",mouseDown);addEventListener("pointerup",mouseUp);addEventListener("click",blockCapturedClick,true);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("pointerlockerror",lockError);addEventListener("blur",blur);
-    return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("pointerdown",mouseDown);removeEventListener("pointerup",mouseUp);removeEventListener("click",blockCapturedClick,true);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock);removeEventListener("pointerlockerror",lockError);removeEventListener("blur",blur)};
+    const blockAux=(e:MouseEvent)=>{const target=e.target as Element|null;if(started&&!panel&&!village&&target?.closest?.(".stage")){e.preventDefault();e.stopPropagation()}};
+    const blur=()=>{clearInput();fallbackLook.current={x:0,y:0,inside:false}};
+    addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("pointerdown",mouseDown);addEventListener("pointerup",mouseUp);addEventListener("click",blockCapturedClick,true);addEventListener("auxclick",blockAux,true);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("pointerlockerror",lockError);addEventListener("blur",blur);
+    return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("pointerdown",mouseDown);removeEventListener("pointerup",mouseUp);removeEventListener("click",blockCapturedClick,true);removeEventListener("auxclick",blockAux,true);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock);removeEventListener("pointerlockerror",lockError);removeEventListener("blur",blur)};
   },[ability,applyBindings,capture,captureMouse,choosingSpec,clearInput,dodge,interact,lockCursor,panel,parry,primaryAttack,save,shootBow,started,strike,village]);
 
   useEffect(()=>{
@@ -345,6 +351,7 @@ export default function Home() {
         if(keys.current[bindingsRef.current.back])move-=1;
         if(keys.current[bindingsRef.current.left])strafe-=1;if(keys.current[bindingsRef.current.right])strafe+=1;
         s.a+=turn*dt*2.15;
+        if(pointerFallback.current&&fallbackLook.current.inside){s.a+=fallbackLook.current.x*dt*2.65*sensitivityRef.current;cameraPitch.current=Math.max(-.65,Math.min(.65,cameraPitch.current-fallbackLook.current.y*dt*1.9*sensitivityRef.current))}
         const responsiveness=1-Math.exp(-dt*(move||strafe?15:10));movement.current.forward+=(move-movement.current.forward)*responsiveness;movement.current.strafe+=(strafe-movement.current.strafe)*responsiveness;
         const speed=dt*(potionFx.current>0?.72:2.35), dx=(Math.cos(s.a)*movement.current.forward+Math.cos(s.a+Math.PI/2)*movement.current.strafe)*speed, dy=(Math.sin(s.a)*movement.current.forward+Math.sin(s.a+Math.PI/2)*movement.current.strafe)*speed;
         if(!wallAt(s.x+dx,s.y))s.x+=dx;if(!wallAt(s.x,s.y+dy))s.y+=dy;
@@ -466,7 +473,7 @@ export default function Home() {
         const dx=e.x-s.x,dy=e.y-s.y,dist=Math.hypot(dx,dy);let ang=Math.atan2(dy,dx)-s.a;ang=Math.atan2(Math.sin(ang),Math.cos(ang));
         if(Math.abs(ang)<FOV*.7 && dist<zbuf[Math.max(0,Math.min(W-1,Math.floor((ang/FOV+.5)*W)))]){
           const size=Math.min(130,150/dist),cx=(.5+ang/FOV)*W,base=H/2+size*.52,telegraphCharge=e.telegraph>0?1-e.telegraph/(e.intent==="crush"?.82:.64):0;
-          if(e.telegraph>0){ctx.save();ctx.translate(cx,base-size*.04);ctx.scale(1,.28);ctx.strokeStyle=e.intent==="crush"?`rgba(246,176,78,${.34+.42*telegraphCharge})`:`rgba(220,75,72,${.24+.38*telegraphCharge})`;ctx.lineWidth=Math.max(1,size*.025);ctx.beginPath();ctx.arc(0,0,size*(e.intent==="crush"?.5:.38+telegraphCharge*.14),0,Math.PI*2);ctx.stroke();if(e.intent==="crush"){ctx.globalAlpha=.25+.32*telegraphCharge;ctx.fillStyle="#e59445";ctx.fillRect(-size*.09,-size*.22,size*.18,size*.22)}ctx.restore()}
+          if(e.telegraph>0){ctx.save();ctx.translate(cx,base-size*.04);ctx.scale(1,.28);ctx.strokeStyle=e.intent==="crush"?`rgba(246,176,78,${.34+.42*telegraphCharge})`:`rgba(220,75,72,${.24+.38*telegraphCharge})`;ctx.lineWidth=Math.max(1,size*.025);ctx.beginPath();ctx.arc(0,0,size*(e.intent==="crush"?.5:.38+telegraphCharge*.14),0,Math.PI*2);ctx.stroke();if(e.intent==="crush"){ctx.globalAlpha=.25+.32*telegraphCharge;ctx.fillStyle="#e59445";ctx.fillRect(-size*.09,-size*.22,size*.18,size*.22)}ctx.restore();ctx.save();ctx.translate(cx,base-size*.62);ctx.strokeStyle=e.intent==="crush"?"rgba(255,196,92,.82)":"rgba(255,91,91,.82)";for(let ghost=0;ghost<3;ghost++){ctx.globalAlpha=.18+ghost*.19+telegraphCharge*.16;ctx.lineWidth=1+ghost;ctx.beginPath();if(e.intent==="crush"){ctx.moveTo(-size*.08,-size*(.34-ghost*.08));ctx.lineTo(size*.06,size*(.18+telegraphCharge*.22))}else ctx.arc(0,size*.14,size*(.24+ghost*.07),-2.55,-.35+telegraphCharge*.75);ctx.stroke()}if(telegraphCharge>.72){ctx.fillStyle=`rgba(255,235,173,${(telegraphCharge-.72)*2.8})`;ctx.fillRect(-size*.34,-size*.55,size*.68,2)}ctx.restore()}
           const idle=Math.sin(t*.007+e.x*1.7)*size*.04,attack=e.telegraph>0?0:Math.max(0,Math.min(1,(e.cooldown-.68)/.47)),attackSwing=Math.sin(attack*Math.PI);ctx.save();ctx.translate(Math.floor(cx-size/2),Math.floor(base-size+idle));if(e.telegraph>0){const charge=1-e.telegraph/(e.intent==="crush"?.82:.64);ctx.translate(0,charge*size*.18);ctx.scale(1+charge*.12,1-charge*.07);ctx.rotate((e.intent==="sweep"?-.32:.24)*charge)}else if(attack>0){ctx.translate(0,-attackSwing*size*.28);ctx.scale(1+attackSwing*.12,1-attackSwing*.08);ctx.rotate((e.intent==="sweep"?-.46:.32)*attackSwing)}
           const sprite=guardianRef.current;
           if(sprite){ctx.drawImage(sprite,0,0,sprite.width,sprite.height,0,0,size,size);if(!allShrinesAwake(s.shrines)){ctx.fillStyle="rgba(72,124,186,.48)";ctx.fillRect(0,0,size,size);ctx.strokeStyle="rgba(158,223,255,.78)";ctx.lineWidth=2;ctx.beginPath();ctx.arc(size/2,size/2,size*.43,0,Math.PI*2);ctx.stroke()}if(e.telegraph>0){ctx.fillStyle="rgba(179,25,35,.24)";ctx.fillRect(0,0,size,size)}if(e.hit){ctx.fillStyle="rgba(255,235,181,.30)";ctx.fillRect(0,0,size,size)}}else{const u=size/16;ctx.fillStyle=e.hit?"#fff0c4":e.telegraph>0?"#9f2b37":"#16101b";ctx.fillRect(4*u,3*u,8*u,12*u);ctx.fillStyle="#696075";ctx.fillRect(5*u,2*u,6*u,7*u);ctx.fillRect(3*u,7*u,10*u,6*u);ctx.fillStyle="#c4463d";ctx.fillRect(6*u,5*u,1.5*u,u);ctx.fillRect(9*u,5*u,1.5*u,u);ctx.fillStyle="#a87a42";ctx.fillRect(1*u,6*u,3*u,2*u);ctx.fillRect(12*u,6*u,3*u,2*u);ctx.fillStyle="#3b3146";ctx.fillRect(4*u,13*u,3*u,3*u);ctx.fillRect(9*u,13*u,3*u,3*u)}ctx.restore();
@@ -496,7 +503,8 @@ export default function Home() {
       if(abilityFx.current>0){const palette=s.spec==="blade"?[180,210,255]:s.spec==="bow"?[225,190,105]:[222,90,255];ctx.strokeStyle=`rgba(${palette[0]},${palette[1]},${palette[2]},${abilityFx.current*.68})`;ctx.lineWidth=3;ctx.beginPath();ctx.arc(W/2,H/2,32+(1-abilityFx.current/.7)*72,0,Math.PI*2);ctx.stroke()}
       if(dodgeFx.current>0){const phase=1-dodgeFx.current/.34;ctx.save();ctx.globalAlpha=(1-phase)*.46;ctx.strokeStyle="#d9e2d6";ctx.lineWidth=2;for(let streak=0;streak<4;streak++){const y=H*(.58+streak*.065),start=W*(.16+phase*.32),end=start+W*(.16+phase*.1);ctx.beginPath();ctx.moveTo(start,y);ctx.lineTo(end,y-5);ctx.stroke()}ctx.restore()}
       const attackPhase=attackFx.current?Math.sin(attackFx.current/.28*Math.PI):0;const swing=attackPhase*(s.spec==="bow"?-12:s.spec==="arcane"?18:38);const guarding=parryFx.current>0;const guardLift=guarding?(1-parryFx.current/.46)*52:0;
-      const shake=shakeFx.current?Math.sin(t*.09)*shakeFx.current:0;ctx.save();ctx.translate(W*.64+swing+shake,H*.78-swing*.6-guardLift+shake*.35);if(s.spec==="bow"){ctx.rotate(-.18+swing*.004);ctx.strokeStyle="#6e4b2e";ctx.lineWidth=5;ctx.beginPath();ctx.arc(22,2,55,-1.15,1.15);ctx.stroke();ctx.strokeStyle="#dbc99b";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(44,-47);ctx.lineTo(70,2);ctx.lineTo(44,51);ctx.stroke();ctx.fillStyle="#d7b06a";ctx.fillRect(25,0,76,2)}else if(s.spec==="arcane"){const pulse=4+Math.sin(t*.012)*3;ctx.rotate(-.42+swing*.005);ctx.fillStyle="#30213a";ctx.fillRect(-4,-3,90,7);ctx.fillStyle="#9b6cb0";ctx.fillRect(6,-2,76,2);ctx.fillStyle=`rgba(225,125,255,${.65+spellFx.current})`;ctx.beginPath();ctx.arc(88,0,8+pulse,0,Math.PI*2);ctx.fill()}else{ctx.rotate(guarding?-1.22+swing*.008:-.62+swing*.012);ctx.fillStyle="#211724";ctx.fillRect(-5,-2,15,8);ctx.fillStyle="#c0aeb1";ctx.fillRect(8,0,92,5);ctx.fillStyle="#f2d89c";ctx.fillRect(8,0,88,1)}ctx.restore();
+      const locomotion=Math.min(1,Math.abs(movement.current.forward)+Math.abs(movement.current.strafe)),weaponBob=Math.sin(t*.012)*2+Math.sin(t*.021)*locomotion*4,weaponSway=Math.cos(t*.008)*2.4;
+      const shake=shakeFx.current?Math.sin(t*.09)*shakeFx.current:0;ctx.save();ctx.translate(W*.64+swing+shake+weaponSway,H*.78-swing*.6-guardLift+shake*.35+weaponBob);if(s.spec==="bow"){ctx.rotate(-.18+swing*.004);ctx.strokeStyle="#6e4b2e";ctx.lineWidth=5;ctx.beginPath();ctx.arc(22,2,55,-1.15,1.15);ctx.stroke();ctx.strokeStyle="#dbc99b";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(44,-47);ctx.lineTo(70,2);ctx.lineTo(44,51);ctx.stroke();ctx.fillStyle="#d7b06a";ctx.fillRect(25,0,76,2)}else if(s.spec==="arcane"){const pulse=4+Math.sin(t*.012)*3;ctx.rotate(-.42+swing*.005);ctx.fillStyle="#30213a";ctx.fillRect(-4,-3,90,7);ctx.fillStyle="#9b6cb0";ctx.fillRect(6,-2,76,2);ctx.fillStyle=`rgba(225,125,255,${.65+spellFx.current})`;ctx.beginPath();ctx.arc(88,0,8+pulse,0,Math.PI*2);ctx.fill()}else{ctx.rotate(guarding?-1.22+swing*.008:-.62+swing*.012);ctx.fillStyle="#211724";ctx.fillRect(-5,-2,15,8);ctx.fillStyle="#c0aeb1";ctx.fillRect(8,0,92,5);ctx.fillStyle="#f2d89c";ctx.fillRect(8,0,88,1)}ctx.restore();
       if(potionFx.current>0){const drink=1-potionFx.current/.78,lift=Math.sin(Math.min(1,drink)*Math.PI);ctx.save();ctx.translate(W*(.72-.12*lift),H*(.88-.26*lift));ctx.rotate(-.35*lift);ctx.fillStyle="#351d27";ctx.fillRect(-12,-4,34,9);ctx.fillStyle="#7d2633";ctx.fillRect(18,-18,16,25);ctx.fillStyle="#dc6054";ctx.fillRect(21,-15,10,16);ctx.fillStyle="#f4c47d";ctx.fillRect(23,-21,6,6);ctx.restore()}
       if(s.spec==="bow"&&attackFx.current>0){const flight=1-attackFx.current/.28;ctx.save();ctx.globalAlpha=Math.max(0,1-flight*.82);ctx.strokeStyle="#f6d98c";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W*.7-flight*W*.2,H*.66+flight*H*.14);ctx.lineTo(W*.51,H*.51);ctx.stroke();ctx.fillStyle="#fff0b0";ctx.fillRect(W*.5-2,H*.5-1,7,2);ctx.restore()}
       if(parryFx.current>0){const r=34+(1-parryFx.current/.46)*18;ctx.strokeStyle=perfectFx.current>0?"#ffe49a":"#9db5d5";ctx.lineWidth=5;ctx.beginPath();ctx.arc(W*.78,H*.73,r,Math.PI*.45,Math.PI*1.55);ctx.stroke();ctx.strokeStyle=perfectFx.current>0?"rgba(255,230,140,.55)":"rgba(142,190,235,.35)";ctx.lineWidth=2;ctx.beginPath();ctx.arc(W*.78,H*.73,r+8,Math.PI*.5,Math.PI*1.48);ctx.stroke()}
@@ -538,7 +546,7 @@ export default function Home() {
   return <main className="game-shell">
     <div className="grain" />
     <header><div className="brand"><span>CHRONIQUES DE</span><strong>CENDREVAL</strong></div><div className="chapter">{village?"VALBRUME · LE VILLAGE DES BRUMES":hud.quest>=14?"ACTE IV · LA TOUR DES CENDRES":hud.quest>=12?"ACTE III · LE DONJON NOIR":hud.quest>=7?"ACTE II · LE CHÂTEAU NOIR":"ACTE I · LES PLAINES DE CENDREVAL"}</div></header>
-    <section className="stage" aria-label="Jeu en vue subjective">
+    <section className={`stage${started&&!panel&&!village&&!choosingSpec?" playing":""}`} aria-label="Jeu en vue subjective">
       <canvas ref={canvasRef} width={W} height={H} tabIndex={0} onPointerDown={captureMouse} onContextMenu={e=>e.preventDefault()} />
       {started&&<div className="hud-frame" aria-hidden="true"><i/><i/><i/><i/></div>}
       {!started&&!choosingSpec&&<div className="start-screen"><div className="sigil">ᛉ</div><h1>CENDREVAL</h1><p>Au-delà des plaines, le château noir veille.<br/>Votre légende commence sous un ciel ouvert.</p><button onClick={()=>setChoosingSpec(true)}>NOUVELLE PARTIE</button><button className="secondary" onClick={load}>CONTINUER</button><small>Cliquez dans le jeu pour diriger la caméra à la souris</small></div>}
