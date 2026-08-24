@@ -188,6 +188,12 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /requestFullscreen/);
   assert.match(page, /document\.exitFullscreen/);
   assert.match(page, /setPanel\("pause"\)/);
+  assert.match(page, /inputPulse/);
+  assert.match(page, /performance\.now\(\)-pulse>1500/);
+  assert.match(page, /pointercancel/);
+  assert.match(page, /fullscreenchange/);
+  assert.match(page, /visibilitychange/);
+  assert.match(page, /pagehide/);
   assert.match(page, /panel\|\|village\|\|choosingSpec\?" paused"/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);

@@ -93,6 +93,7 @@ export default function Home() {
   const shadowRef = useRef<HTMLImageElement|null>(null);
   const state = useRef<Save>({...START});
   const keys = useRef<Record<string,boolean>>({});
+  const inputPulse = useRef<Record<string,number>>({});
   const lastMouseX = useRef<number|null>(null);
   const lastMouseY = useRef<number|null>(null);
   const cameraPitch = useRef(0);
@@ -169,7 +170,7 @@ export default function Home() {
   const gainXp = useCallback((amount:number)=>{const s=state.current;s.xp+=amount;while(s.xp>=s.level*40){s.xp-=s.level*40;s.level++;s.talent++;s.hp=100;s.mana=100;s.stamina=100;setMessage(`Niveau ${s.level} atteint — un point de talent disponible !`)}sync()},[sync]);
   useEffect(()=>{lockedTarget.current=null;setLocked(false)},[hud.quest]);
   const applyBindings = useCallback((next:Bindings)=>{bindingsRef.current=next;setBindings(next);localStorage.setItem("cendreval-bindings",JSON.stringify(next))},[]);
-  const clearInput = useCallback(()=>{keys.current={};movement.current={forward:0,strafe:0};queuedAttack.current=null},[]);
+  const clearInput = useCallback(()=>{keys.current={};inputPulse.current={};movement.current={forward:0,strafe:0};queuedAttack.current=null;fallbackLook.current={x:0,y:0,inside:false}},[]);
   const captureMouse = useCallback(()=>{if(started&&!panel&&!village&&!choosingSpec)lockCursor()},[choosingSpec,lockCursor,panel,started,village]);
   const save = useCallback(() => {
     localStorage.setItem("cendreval-save", JSON.stringify(state.current));
@@ -293,12 +294,12 @@ export default function Home() {
     };
     const down=(e:KeyboardEvent)=>{
       if(capture){e.preventDefault();if(e.code==="Escape"){setCapture(null);setMessage("Association annulée.");return}applyBindings({...bindingsRef.current,[capture]:e.code});setCapture(null);return}
-      keys.current[e.code]=true;
+      keys.current[e.code]=true;inputPulse.current[e.code]=performance.now();
       trigger(e.code);
       if(e.code==="Space")e.preventDefault();
       if(e.code==="Escape"){e.preventDefault();clearInput();if(panel==="pause"){setPanel(null);lockCursor()}else{setPanel("pause");document.exitPointerLock?.();if(document.fullscreenElement)document.exitFullscreen?.()}}
     };
-    const up=(e:KeyboardEvent)=>{keys.current[e.code]=false};
+    const up=(e:KeyboardEvent)=>{keys.current[e.code]=false;delete inputPulse.current[e.code]};
     const mouseDown=(e:PointerEvent)=>{
       const input=`Mouse${e.button}`;
       if(capture){e.preventDefault();e.stopPropagation();suppressCapturedClick.current=true;applyBindings({...bindingsRef.current,[capture]:input});setCapture(null);setMessage(`Commande associée à ${bindingLabel(input)}.`);return}
@@ -308,10 +309,11 @@ export default function Home() {
       const captured=document.pointerLockElement===canvasRef.current;
       const fallbackActive=pointerFallback.current&&onGameSurface&&!onControl;
       if(!captured&&!fallbackActive){if(started&&!panel&&!village&&onGameSurface&&!onControl){e.preventDefault();captureMouse()}return}
-      keys.current[input]=true;trigger(input);
+      keys.current[input]=true;inputPulse.current[input]=performance.now();trigger(input);
       e.preventDefault();if(e.button!==0)e.stopPropagation()
     };
-    const mouseUp=(e:PointerEvent)=>{keys.current[`Mouse${e.button}`]=false};
+    const mouseUp=(e:PointerEvent)=>{const input=`Mouse${e.button}`;keys.current[input]=false;delete inputPulse.current[input]};
+    const pointerCancel=()=>clearInput();
     const blockCapturedClick=(e:MouseEvent)=>{if(!suppressCapturedClick.current)return;suppressCapturedClick.current=false;e.preventDefault();e.stopImmediatePropagation()};
     const move=(e:MouseEvent)=>{
       if(!started||panel||village||choosingSpec)return;
@@ -329,9 +331,11 @@ export default function Home() {
     const lock=()=>{const captured=document.pointerLockElement===canvasRef.current;if(!captured){clearInput();lastMouseX.current=null;if(started&&!panel&&!village&&!choosingSpec&&!pointerFallback.current)setPanel("pause")}setMouseLook(captured||pointerFallback.current)};
     const lockError=()=>{pointerFallback.current=true;lastMouseX.current=null;lastMouseY.current=null;setMouseLook(true)};
     const blockAux=(e:MouseEvent)=>{const target=e.target as Element|null;if(started&&!panel&&!village&&target?.closest?.(".stage")){e.preventDefault();e.stopPropagation()}};
-    const blur=()=>{clearInput();fallbackLook.current={x:0,y:0,inside:false}};
-    addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("pointerdown",mouseDown);addEventListener("pointerup",mouseUp);addEventListener("click",blockCapturedClick,true);addEventListener("auxclick",blockAux,true);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("pointerlockerror",lockError);addEventListener("blur",blur);
-    return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("pointerdown",mouseDown);removeEventListener("pointerup",mouseUp);removeEventListener("click",blockCapturedClick,true);removeEventListener("auxclick",blockAux,true);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock);removeEventListener("pointerlockerror",lockError);removeEventListener("blur",blur)};
+    const blur=()=>clearInput();
+    const visibility=()=>{if(document.hidden)clearInput()};
+    const fullscreen=()=>clearInput();
+    addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("pointerdown",mouseDown);addEventListener("pointerup",mouseUp);addEventListener("pointercancel",pointerCancel);addEventListener("click",blockCapturedClick,true);addEventListener("auxclick",blockAux,true);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("pointerlockerror",lockError);addEventListener("fullscreenchange",fullscreen);document.addEventListener("visibilitychange",visibility);addEventListener("pagehide",blur);addEventListener("blur",blur);
+    return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("pointerdown",mouseDown);removeEventListener("pointerup",mouseUp);removeEventListener("pointercancel",pointerCancel);removeEventListener("click",blockCapturedClick,true);removeEventListener("auxclick",blockAux,true);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock);removeEventListener("pointerlockerror",lockError);removeEventListener("fullscreenchange",fullscreen);document.removeEventListener("visibilitychange",visibility);removeEventListener("pagehide",blur);removeEventListener("blur",blur)};
   },[ability,applyBindings,capture,captureMouse,choosingSpec,clearInput,dodge,interact,lockCursor,panel,parry,primaryAttack,save,shootBow,started,strike,village]);
 
   useEffect(()=>{
@@ -349,6 +353,7 @@ export default function Home() {
       const s=state.current;
       if(!panel&&!village&&!choosingSpec&&s.hp>0)worldTime.current=(worldTime.current+dt*.006)%1;
       if(s.hp>0&&!panel&&!village&&!choosingSpec&&staggerFx.current===0){
+        for(const code of [bindingsRef.current.forward,bindingsRef.current.back,bindingsRef.current.left,bindingsRef.current.right,bindingsRef.current.turnLeft,bindingsRef.current.turnRight]){const pulse=inputPulse.current[code];if(keys.current[code]&&pulse&&performance.now()-pulse>1500){keys.current[code]=false;delete inputPulse.current[code]}}
         let turn=0,move=0,strafe=0;
         if(keys.current[bindingsRef.current.turnLeft])turn-=1;
         if(keys.current[bindingsRef.current.turnRight])turn+=1;
