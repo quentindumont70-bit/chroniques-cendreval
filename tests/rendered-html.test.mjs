@@ -194,6 +194,11 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /fullscreenchange/);
   assert.match(page, /visibilitychange/);
   assert.match(page, /pagehide/);
+  assert.match(page, /const firstDuel=/);
+  assert.match(page, /createRadialGradient/);
+  assert.match(page, /for\(let mist=0;mist<4;mist\+\+\)/);
+  assert.match(page, /for\(let ash=0;ash<34;ash\+\+\)/);
+  assert.match(page, /e\.boss&&e\.hp<=35/);
   assert.match(page, /panel\|\|village\|\|choosingSpec\?" paused"/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
