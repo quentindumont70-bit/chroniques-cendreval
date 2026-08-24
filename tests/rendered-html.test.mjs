@@ -78,7 +78,7 @@ assert.match(page, /if\(panel\|\|village\|\|choosingSpec\)document\.exitPointerL
 assert.doesNotMatch(page, /clearInput\(\);document\.exitPointerLock/);
 assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(started/);
   assert.match(page, /const idle=Math\.sin/);
-  assert.match(page, /shade\.telegraph>0\?0/);
+  assert.match(page, /attack=\(shade\.strike\?\?0\)>0/);
   assert.match(page, /impactFx\.current/);
   assert.match(page, /shakeFx\.current/);
   assert.match(page, /const movement = useRef/);
@@ -165,6 +165,17 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(css, /drink-state/);
   assert.match(page, /GARDE ÉBRANLÉE/);
   assert.match(page, /foe\.intent==="crush"/);
+  assert.match(page, /strike\?:number/);
+  assert.match(page, /impactDone\?:boolean/);
+  assert.match(page, /foe\.strike=foe\.intent==="crush"\?\.32/);
+  assert.match(page, /const impactAt=/);
+  assert.match(page, /guardianPhase\.current=2/);
+  assert.match(page, /phase-transition/);
+  assert.match(page, /FRAPPE ACTIVE/);
+  assert.match(page, /RÉCUPÉRATION/);
+  assert.match(page, /hitsTaken/);
+  assert.match(page, /RANG \{duelRecord\.current\.hitsTaken/);
+  assert.match(page, /S — SANS BLESSURE/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);
@@ -184,6 +195,9 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(css, /duel-record/);
   assert.match(css, /posture-meter/);
   assert.match(css, /combat-lesson/);
+  assert.match(css, /phase-transition/);
+  assert.match(css, /guardianStrike/);
+  assert.match(css, /duel-rank/);
   assert.match(css, /exploration-ledger/);
   assert.match(css, /class-passive/);
   assert.match(css, /lock-state/);
