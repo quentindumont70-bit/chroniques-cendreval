@@ -199,6 +199,14 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /for\(let mist=0;mist<4;mist\+\+\)/);
   assert.match(page, /for\(let ash=0;ash<34;ash\+\+\)/);
   assert.match(page, /e\.boss&&e\.hp<=35/);
+  assert.match(page, /duelIntroFx/);
+  assert.match(page, /duel-intro/);
+  assert.match(page, /GARDIEN DES RUINES/);
+  assert.match(page, /DUEL SCELLÉ/);
+  assert.doesNotMatch(page, /les ombres jaillissent des ruines/);
+  assert.match(page, /Math\.sin\(progress\*Math\.PI\)/);
+  assert.match(page, /const pain=hurtFx\.current\/\.25/);
+  assert.match(page, /s\.hp>0&&s\.hp<30/);
   assert.match(page, /panel\|\|village\|\|choosingSpec\?" paused"/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
@@ -228,6 +236,8 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(css, /html:has\(\.stage\.playing\)/);
   assert.match(css, /stage\.paused/);
   assert.match(css, /cursor:default!important/);
+  assert.match(css, /duel-intro/);
+  assert.match(css, /@keyframes duelIntro/);
   assert.match(css, /exploration-ledger/);
   assert.match(css, /class-passive/);
   assert.match(css, /lock-state/);
