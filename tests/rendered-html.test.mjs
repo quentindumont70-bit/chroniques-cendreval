@@ -188,6 +188,7 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /requestFullscreen/);
   assert.match(page, /document\.exitFullscreen/);
   assert.match(page, /setPanel\("pause"\)/);
+  assert.match(page, /panel\|\|village\|\|choosingSpec\?" paused"/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);
@@ -214,6 +215,8 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(css, /guard-break/);
   assert.match(css, /stage:fullscreen/);
   assert.match(css, /html:has\(\.stage\.playing\)/);
+  assert.match(css, /stage\.paused/);
+  assert.match(css, /cursor:default!important/);
   assert.match(css, /exploration-ledger/);
   assert.match(css, /class-passive/);
   assert.match(css, /lock-state/);

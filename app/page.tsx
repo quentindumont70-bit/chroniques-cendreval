@@ -555,7 +555,7 @@ export default function Home() {
   return <main className="game-shell">
     <div className="grain" />
     <header><div className="brand"><span>CHRONIQUES DE</span><strong>CENDREVAL</strong></div><div className="chapter">{village?"VALBRUME · LE VILLAGE DES BRUMES":hud.quest>=14?"ACTE IV · LA TOUR DES CENDRES":hud.quest>=12?"ACTE III · LE DONJON NOIR":hud.quest>=7?"ACTE II · LE CHÂTEAU NOIR":"ACTE I · LES PLAINES DE CENDREVAL"}</div></header>
-    <section className={`stage${started&&!panel&&!village&&!choosingSpec?" playing":""}`} aria-label="Jeu en vue subjective">
+    <section className={`stage${started&&!panel&&!village&&!choosingSpec?" playing":""}${panel||village||choosingSpec?" paused":""}`} aria-label="Jeu en vue subjective">
       <canvas ref={canvasRef} width={W} height={H} tabIndex={0} onPointerDown={captureMouse} onContextMenu={e=>e.preventDefault()} />
       {started&&<div className="hud-frame" aria-hidden="true"><i/><i/><i/><i/></div>}
       {!started&&!choosingSpec&&<div className="start-screen"><div className="sigil">ᛉ</div><h1>CENDREVAL</h1><p>Au-delà des plaines, le château noir veille.<br/>Votre légende commence sous un ciel ouvert.</p><button onClick={()=>setChoosingSpec(true)}>NOUVELLE PARTIE</button><button className="secondary" onClick={load}>CONTINUER</button><small>Cliquez dans le jeu pour diriger la caméra à la souris</small></div>}
