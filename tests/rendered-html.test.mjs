@@ -157,7 +157,7 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /foe\.death=\.62/);
   assert.match(page, /staminaDelay/);
   assert.match(page, /TROP ÉPUISÉ/);
-  assert.match(page, /if\(staminaDelay\.current===0\)s\.stamina/);
+  assert.match(page, /if\(staminaDelay\.current===0&&staggerFx\.current===0\)s\.stamina/);
   assert.match(page, /hudRefresh\.current>=\.1/);
   assert.match(page, /GORGÉE INTERROMPUE/);
   assert.match(page, /potionStartHp/);
@@ -176,6 +176,12 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /hitsTaken/);
   assert.match(page, /RANG \{duelRecord\.current\.hitsTaken/);
   assert.match(page, /S — SANS BLESSURE/);
+  assert.match(page, /intent\?:"sweep"\|"crush"\|"lunge"\|"shot"/);
+  assert.match(page, /foe\.followup/);
+  assert.match(page, /ENCHAÎNEMENT — le Gardien/);
+  assert.match(page, /SECOND TEMPS · DÉCALEZ-VOUS/);
+  assert.match(page, /GARDE ROMPUE/);
+  assert.match(page, /staggerFx\.current/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);
@@ -198,6 +204,8 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(css, /phase-transition/);
   assert.match(css, /guardianStrike/);
   assert.match(css, /duel-rank/);
+  assert.match(css, /attack-warning\.lunge/);
+  assert.match(css, /guard-break/);
   assert.match(css, /exploration-ledger/);
   assert.match(css, /class-passive/);
   assert.match(css, /lock-state/);
