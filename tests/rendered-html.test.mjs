@@ -182,6 +182,12 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /SECOND TEMPS · DÉCALEZ-VOUS/);
   assert.match(page, /GARDE ROMPUE/);
   assert.match(page, /staggerFx\.current/);
+  assert.match(page, /ACTION ENGAGÉE/);
+  assert.match(page, /SOIF PUNIE/);
+  assert.match(page, /healPunish\?1\.28/);
+  assert.match(page, /requestFullscreen/);
+  assert.match(page, /document\.exitFullscreen/);
+  assert.match(page, /setPanel\("pause"\)/);
   assert.match(page, /checkpoint/);
   assert.match(page, /checkpoint ancré dans les ruines/);
   assert.match(page, /setCombatSummary\(false\);setVillage\(true\)/);
@@ -206,6 +212,8 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(css, /duel-rank/);
   assert.match(css, /attack-warning\.lunge/);
   assert.match(css, /guard-break/);
+  assert.match(css, /stage:fullscreen/);
+  assert.match(css, /html:has\(\.stage\.playing\)/);
   assert.match(css, /exploration-ledger/);
   assert.match(css, /class-passive/);
   assert.match(css, /lock-state/);
