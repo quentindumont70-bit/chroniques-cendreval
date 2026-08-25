@@ -116,6 +116,9 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /death-attempt/);
   assert.match(page, /boss-wound-state/);
   assert.match(page, /lock-reticle/);
+  assert.match(page, /damagePop/);
+  assert.match(page, /kind:execution\?"execution":"damage"/);
+  assert.match(page, /executions\?\?0/);
   assert.match(page, /enemy\.current\.telegraph\/\(enemy\.current\.intent/);
   assert.match(page, /attackSwing/);
   assert.match(page, /guardianAttack/);
@@ -244,6 +247,8 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(css, /defense-keys/);
   assert.match(css, /death-attempt/);
   assert.match(css, /lock-reticle/);
+  assert.match(css, /damage-pop/);
+  assert.match(css, /damageRise/);
   assert.match(css, /attack-warning i/);
   assert.match(css, /canvas\{cursor:none\}/);
   assert.match(css, /combat-cue/);
