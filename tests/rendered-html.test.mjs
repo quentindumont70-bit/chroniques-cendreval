@@ -112,6 +112,10 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /EXÉCUTION DU SCEAU/);
   assert.match(page, /duelFinalTime/);
   assert.match(page, /TEMPS DU DUEL/);
+  assert.match(page, /defense-keys/);
+  assert.match(page, /death-attempt/);
+  assert.match(page, /boss-wound-state/);
+  assert.match(page, /lock-reticle/);
   assert.match(page, /enemy\.current\.telegraph\/\(enemy\.current\.intent/);
   assert.match(page, /attackSwing/);
   assert.match(page, /guardianAttack/);
@@ -236,6 +240,10 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(css, /feel-settings/);
   assert.match(css, /execution-window/);
   assert.match(css, /duel-time/);
+  assert.match(css, /bossBarGlint/);
+  assert.match(css, /defense-keys/);
+  assert.match(css, /death-attempt/);
+  assert.match(css, /lock-reticle/);
   assert.match(css, /attack-warning i/);
   assert.match(css, /canvas\{cursor:none\}/);
   assert.match(css, /combat-cue/);
