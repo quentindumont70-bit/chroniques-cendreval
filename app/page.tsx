@@ -99,7 +99,6 @@ export default function Home() {
   const cameraPitch = useRef(0);
   const pointerFallback = useRef(false);
   const suppressCapturedClick = useRef(false);
-  const fallbackLook = useRef({x:0,y:0,inside:false});
   const enemy = useRef<Foe>({x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien",kind:"brute"});
   const minions = useRef<Foe[]>([
     {x:6.5,y:5.5,hp:34,alive:true,hit:0,cooldown:0,telegraph:0,boss:false,name:"ombre",kind:"melee"},
@@ -172,7 +171,7 @@ export default function Home() {
   const gainXp = useCallback((amount:number)=>{const s=state.current;s.xp+=amount;while(s.xp>=s.level*40){s.xp-=s.level*40;s.level++;s.talent++;s.hp=100;s.mana=100;s.stamina=100;setMessage(`Niveau ${s.level} atteint — un point de talent disponible !`)}sync()},[sync]);
   useEffect(()=>{lockedTarget.current=null;setLocked(false)},[hud.quest]);
   const applyBindings = useCallback((next:Bindings)=>{bindingsRef.current=next;setBindings(next);localStorage.setItem("cendreval-bindings",JSON.stringify(next))},[]);
-  const clearInput = useCallback(()=>{keys.current={};inputPulse.current={};movement.current={forward:0,strafe:0};queuedAttack.current=null;fallbackLook.current={x:0,y:0,inside:false}},[]);
+  const clearInput = useCallback(()=>{keys.current={};inputPulse.current={};movement.current={forward:0,strafe:0};queuedAttack.current=null;lastMouseX.current=null;lastMouseY.current=null},[]);
   const captureMouse = useCallback(()=>{if(started&&!panel&&!village&&!choosingSpec)lockCursor()},[choosingSpec,lockCursor,panel,started,village]);
   const save = useCallback(() => {
     localStorage.setItem("cendreval-save", JSON.stringify(state.current));
@@ -323,10 +322,7 @@ export default function Home() {
       if(document.pointerLockElement===canvas){state.current.a+=e.movementX*.0024*sensitivityRef.current;cameraPitch.current=Math.max(-.65,Math.min(.65,cameraPitch.current-e.movementY*.0024*sensitivityRef.current));return}
       if(!pointerFallback.current)return;
       const target=e.target as Element|null;
-      if(!target?.closest?.(".stage")||target.closest?.("button,input,select,textarea,a")){lastMouseX.current=null;lastMouseY.current=null;fallbackLook.current={x:0,y:0,inside:false};return}
-      const rect=canvas.getBoundingClientRect(),nx=Math.max(-1,Math.min(1,(e.clientX-rect.left)/rect.width*2-1)),ny=Math.max(-1,Math.min(1,(e.clientY-rect.top)/rect.height*2-1));
-      const edge=(value:number)=>Math.abs(value)>.68?Math.sign(value)*Math.pow((Math.abs(value)-.68)/.32,1.45):0;
-      fallbackLook.current={x:edge(nx),y:edge(ny),inside:true};
+      if(!target?.closest?.(".stage")||target.closest?.("button,input,select,textarea,a")){lastMouseX.current=null;lastMouseY.current=null;return}
       if(lastMouseX.current!==null&&lastMouseY.current!==null){state.current.a+=(e.clientX-lastMouseX.current)*.0024*sensitivityRef.current;cameraPitch.current=Math.max(-.65,Math.min(.65,cameraPitch.current-(e.clientY-lastMouseY.current)*.0024*sensitivityRef.current))}
       lastMouseX.current=e.clientX;lastMouseY.current=e.clientY;
     };
@@ -363,7 +359,6 @@ export default function Home() {
         if(keys.current[bindingsRef.current.back])move-=1;
         if(keys.current[bindingsRef.current.left])strafe-=1;if(keys.current[bindingsRef.current.right])strafe+=1;
         s.a+=turn*dt*2.15;
-        if(pointerFallback.current&&fallbackLook.current.inside){s.a+=fallbackLook.current.x*dt*2.65*sensitivityRef.current;cameraPitch.current=Math.max(-.65,Math.min(.65,cameraPitch.current-fallbackLook.current.y*dt*1.9*sensitivityRef.current))}
         const responsiveness=1-Math.exp(-dt*(move||strafe?15:10));movement.current.forward+=(move-movement.current.forward)*responsiveness;movement.current.strafe+=(strafe-movement.current.strafe)*responsiveness;
         const actionWeight=potionFx.current>0?.31:attackFx.current>.09||spellFx.current>.08?.52:parryFx.current>.18?.68:1,speed=dt*2.35*actionWeight, dx=(Math.cos(s.a)*movement.current.forward+Math.cos(s.a+Math.PI/2)*movement.current.strafe)*speed, dy=(Math.sin(s.a)*movement.current.forward+Math.sin(s.a+Math.PI/2)*movement.current.strafe)*speed;
         if(!wallAt(s.x+dx,s.y))s.x+=dx;if(!wallAt(s.x,s.y+dy))s.y+=dy;
