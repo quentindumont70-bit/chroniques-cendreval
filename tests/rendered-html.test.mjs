@@ -104,6 +104,10 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /playCombatSound\("perfect"\)/);
   assert.match(page, /playCombatSound\("victory"\)/);
   assert.match(page, /duel-cadence/);
+  assert.match(page, /cendreval-audio-volume/);
+  assert.match(page, /cendreval-shake-scale/);
+  assert.match(page, /mistakeCoach/);
+  assert.match(page, /shakeScaleRef\.current/);
   assert.match(page, /enemy\.current\.telegraph\/\(enemy\.current\.intent/);
   assert.match(page, /attackSwing/);
   assert.match(page, /guardianAttack/);
@@ -224,6 +228,8 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(css, /guardian-state/);
   assert.match(css, /duel-cadence/);
   assert.match(css, /victoryHalo/);
+  assert.match(css, /mistake-coach/);
+  assert.match(css, /feel-settings/);
   assert.match(css, /attack-warning i/);
   assert.match(css, /canvas\{cursor:none\}/);
   assert.match(css, /combat-cue/);
