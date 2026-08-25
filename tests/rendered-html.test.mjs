@@ -99,6 +99,11 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /telegraphCharge/);
   assert.match(page, /riposteReady/);
   assert.match(page, /guardian-state/);
+  assert.match(page, /type CombatSound/);
+  assert.match(page, /new window\.AudioContext/);
+  assert.match(page, /playCombatSound\("perfect"\)/);
+  assert.match(page, /playCombatSound\("victory"\)/);
+  assert.match(page, /duel-cadence/);
   assert.match(page, /enemy\.current\.telegraph\/\(enemy\.current\.intent/);
   assert.match(page, /attackSwing/);
   assert.match(page, /guardianAttack/);
@@ -217,6 +222,8 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(css, /control-ribbon/);
   assert.match(css, /pause-panel/);
   assert.match(css, /guardian-state/);
+  assert.match(css, /duel-cadence/);
+  assert.match(css, /victoryHalo/);
   assert.match(css, /attack-warning i/);
   assert.match(css, /canvas\{cursor:none\}/);
   assert.match(css, /combat-cue/);
