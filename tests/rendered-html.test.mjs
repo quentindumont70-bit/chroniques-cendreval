@@ -92,6 +92,10 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /aria-live="polite"/);
   assert.match(page, /foe\.hit<\.42/);
   assert.match(page, /guardianDeath/);
+  assert.match(page, /SE RELEVER · REJOUER LE DUEL/);
+  assert.match(page, /clearInput\(\);setPanel\(null\);setLocked\(false\)/);
+  assert.match(page, /cameraPitch\.current=0/);
+  assert.match(page, /duelTimer\.current=0/);
   assert.match(page, /queuedAttack\.current=null/);
   assert.match(page, /dodgeFx\.current>0/);
   assert.match(page, /perfectImpactFx/);
