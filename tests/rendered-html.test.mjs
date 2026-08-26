@@ -98,6 +98,8 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /riposteReady/);
   assert.match(page, /guardian-state/);
   assert.match(page, /type CombatSound/);
+  assert.match(page, /"sweep"\|"lunge"\|"slam"/);
+  assert.match(page, /playCombatSound\(foe\.intent==="slam"\?"slam"/);
   assert.match(page, /new window\.AudioContext/);
   assert.match(page, /playCombatSound\("perfect"\)/);
   assert.match(page, /playCombatSound\("victory"\)/);
@@ -127,6 +129,11 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /RUPTURE DE CENDRE/);
   assert.match(page, /timing-callout/);
   assert.match(page, /PAREZ MAINTENANT/);
+  assert.match(page, /GARDE LEVÉE TÔT/);
+  assert.match(page, /ESQUIVE TROP TÔT/);
+  assert.match(page, /defenseTap/);
+  assert.match(page, /defense-result parried/);
+  assert.match(page, /defense-result dodged/);
   assert.match(page, /100-Math\.max/);
   assert.match(page, /ONDE IMBLOCABLE/);
   assert.match(page, /foe\.intent==="slam"\?15/);
@@ -267,6 +274,12 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(css, /attack-warning \.timing-track/);
   assert.match(css, /timing-track/);
   assert.match(css, /timing-callout/);
+  assert.match(css, /timing-track u/);
+  assert.match(css, /defense-result/);
+  assert.match(css, /@keyframes defenseResult/);
+  assert.match(css, /Couloirs HUD du duel/);
+  assert.match(css, /defense-keys\{top:176px\}/);
+  assert.match(css, /posture-meter\{top:202px\}/);
   assert.match(css, /canvas\{cursor:none\}/);
   assert.match(css, /combat-cue/);
   assert.match(css, /bars\.critical/);
