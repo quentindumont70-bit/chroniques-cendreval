@@ -127,9 +127,12 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /main gauche matérialise la garde/);
   assert.match(page, /damagePop\.current\.kind==="execution"/);
   assert.match(page, /RUPTURE DE CENDRE/);
+  assert.match(page, /timing-callout/);
+  assert.match(page, /PAREZ MAINTENANT/);
+  assert.match(page, /100-Math\.max/);
   assert.match(page, /ONDE IMBLOCABLE/);
   assert.match(page, /foe\.intent==="slam"\?15/);
-  assert.match(page, /enemy\.current\.telegraph\/\(enemy\.current\.intent/);
+  assert.match(page, /enemy\.current\.telegraph\/duration/);
   assert.match(page, /attackSwing/);
   assert.match(page, /guardianAttack/);
   assert.match(page, /const recoil=dt/);
@@ -261,7 +264,9 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(css, /duel-focus/);
   assert.match(css, /attack-warning\.slam/);
   assert.match(css, /damageRise/);
-  assert.match(css, /attack-warning i/);
+  assert.match(css, /attack-warning \.timing-track/);
+  assert.match(css, /timing-track/);
+  assert.match(css, /timing-callout/);
   assert.match(css, /canvas\{cursor:none\}/);
   assert.match(css, /combat-cue/);
   assert.match(css, /bars\.critical/);
