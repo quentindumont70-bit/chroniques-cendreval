@@ -126,6 +126,9 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /e\.intent==="lunge"/);
   assert.match(page, /main gauche matérialise la garde/);
   assert.match(page, /damagePop\.current\.kind==="execution"/);
+  assert.match(page, /RUPTURE DE CENDRE/);
+  assert.match(page, /ONDE IMBLOCABLE/);
+  assert.match(page, /foe\.intent==="slam"\?15/);
   assert.match(page, /enemy\.current\.telegraph\/\(enemy\.current\.intent/);
   assert.match(page, /attackSwing/);
   assert.match(page, /guardianAttack/);
@@ -193,7 +196,7 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /foe\.intent==="crush"/);
   assert.match(page, /strike\?:number/);
   assert.match(page, /impactDone\?:boolean/);
-  assert.match(page, /foe\.strike=foe\.intent==="crush"\?\.32/);
+  assert.match(page, /foe\.strike=foe\.intent==="slam"\?\.38:foe\.intent==="crush"\?\.32/);
   assert.match(page, /const impactAt=/);
   assert.match(page, /guardianPhase\.current=2/);
   assert.match(page, /phase-transition/);
@@ -202,7 +205,7 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /hitsTaken/);
   assert.match(page, /RANG \{duelRecord\.current\.hitsTaken/);
   assert.match(page, /S — SANS BLESSURE/);
-  assert.match(page, /intent\?:"sweep"\|"crush"\|"lunge"\|"shot"/);
+  assert.match(page, /intent\?:"sweep"\|"crush"\|"lunge"\|"slam"\|"shot"/);
   assert.match(page, /foe\.followup/);
   assert.match(page, /ENCHAÎNEMENT — le Gardien/);
   assert.match(page, /SECOND TEMPS · DÉCALEZ-VOUS/);
@@ -256,6 +259,7 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(css, /lock-reticle/);
   assert.match(css, /damage-pop/);
   assert.match(css, /duel-focus/);
+  assert.match(css, /attack-warning\.slam/);
   assert.match(css, /damageRise/);
   assert.match(css, /attack-warning i/);
   assert.match(css, /canvas\{cursor:none\}/);
