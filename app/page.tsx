@@ -550,6 +550,17 @@ export default function Home() {
         }
       }
 
+      // Le langage de forme reste lisible même quand le sprite est loin ou noyé dans les effets.
+      if(e.alive&&e.boss&&e.telegraph>0&&allShrinesAwake(s.shrines)){
+        const dx=e.x-s.x,dy=e.y-s.y,dist=Math.hypot(dx,dy);let ang=Math.atan2(dy,dx)-s.a;ang=Math.atan2(Math.sin(ang),Math.cos(ang));
+        if(Math.abs(ang)<FOV*.7){const size=Math.min(130,150/dist),cx=(.5+ang/FOV)*W,base=H/2+size*.52,charge=1-e.telegraph/(e.telegraphMax??attackDuration(e.intent));ctx.save();ctx.translate(cx,base);ctx.globalAlpha=.18+charge*.62;ctx.lineWidth=Math.max(1,size*.018);ctx.strokeStyle=e.intent==="slam"?"#ff684f":e.intent==="lunge"?"#e9f1ff":"#ffd17b";
+          if(e.intent==="slam"){for(let ring=0;ring<3;ring++){ctx.beginPath();ctx.ellipse(0,0,size*(.25+ring*.16+charge*.08),size*(.055+ring*.025),0,0,Math.PI*2);ctx.stroke()}for(let ray=0;ray<6;ray++){const a=ray*Math.PI/3;ctx.beginPath();ctx.moveTo(Math.cos(a)*size*.18,Math.sin(a)*size*.04);ctx.lineTo(Math.cos(a)*size*(.62+charge*.12),Math.sin(a)*size*.14);ctx.stroke()}}
+          else if(e.intent==="lunge"){ctx.beginPath();ctx.moveTo(-size*.7,0);ctx.lineTo(size*(.18+charge*.45),0);ctx.stroke();ctx.beginPath();ctx.moveTo(size*(.18+charge*.45),0);ctx.lineTo(size*(.05+charge*.35),-size*.09);ctx.moveTo(size*(.18+charge*.45),0);ctx.lineTo(size*(.05+charge*.35),size*.09);ctx.stroke()}
+          else if(e.intent==="crush"){ctx.beginPath();ctx.moveTo(-size*.22,-size*(.78-charge*.18));ctx.lineTo(0,size*.08);ctx.lineTo(size*.22,-size*(.78-charge*.18));ctx.stroke();ctx.fillStyle=`rgba(255,191,91,${.08+charge*.18})`;ctx.fillRect(-size*.2,-size*.72,size*.4,size*.78)}
+          else{ctx.beginPath();ctx.arc(0,-size*.28,size*(.5+charge*.08),Math.PI*.08,Math.PI*.92);ctx.stroke();ctx.beginPath();ctx.moveTo(-size*.48,-size*.21);ctx.lineTo(-size*.57,-size*.31);ctx.moveTo(size*.48,-size*.21);ctx.lineTo(size*.57,-size*.31);ctx.stroke()}
+          ctx.restore();}
+      }
+
       // Une arme vectorielle superposée rend chaque pose du Gardien lisible même sur le sprite pixelisé.
       if(e.alive&&e.boss&&allShrinesAwake(s.shrines)){
         const dx=e.x-s.x,dy=e.y-s.y,dist=Math.hypot(dx,dy);let ang=Math.atan2(dy,dx)-s.a;ang=Math.atan2(Math.sin(ang),Math.cos(ang));const column=Math.max(0,Math.min(W-1,Math.floor((ang/FOV+.5)*W)));
@@ -566,6 +577,8 @@ export default function Home() {
 
       const guardianStrikeDuration=e.intent==="slam"?.38:e.intent==="crush"?.32:e.intent==="lunge"?.27:.22,guardianAttack=(e.strike??0)>0?1-(e.strike??0)/guardianStrikeDuration:0;
       if(e.alive&&e.telegraph===0&&guardianAttack>0){const dx=e.x-s.x,dy=e.y-s.y,dist=Math.hypot(dx,dy),target=Math.atan2(dy,dx),diff=Math.abs(Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a))),swing=Math.sin(guardianAttack*Math.PI);if(dist<3.2&&diff<FOV*.72){const x=W/2+Math.sin(target-s.a)*W*.22,y=H*.55;ctx.save();ctx.translate(x,y);ctx.rotate((target-s.a)+Math.PI/2);ctx.strokeStyle=`rgba(255,${Math.floor(150+95*swing)},${Math.floor(82+110*swing)},${.22+.68*swing})`;ctx.lineWidth=2+5*swing;ctx.beginPath();ctx.arc(0,0,18+38*swing,-1.1,1.1);ctx.stroke();ctx.restore()}}
+
+      if(e.alive&&e.boss&&(e.strike??0)>0){const progress=guardianAttack,flash=Math.sin(Math.min(1,progress)*Math.PI);ctx.save();ctx.globalAlpha=.12+flash*.2;ctx.fillStyle=e.intent==="slam"?"#c3382f":e.intent==="lunge"?"#d9e6f2":"#d49b55";if(e.intent==="slam"){ctx.fillRect(0,H*.68,W,H*.32)}else if(e.intent==="lunge"){ctx.beginPath();ctx.moveTo(W*.5,H*.5);ctx.lineTo(W,H*.38);ctx.lineTo(W,H*.62);ctx.closePath();ctx.fill()}else{ctx.beginPath();ctx.arc(W*.5,H*.58,W*(.2+.2*flash),Math.PI*1.08,Math.PI*1.92);ctx.lineWidth=8+flash*18;ctx.strokeStyle=ctx.fillStyle;ctx.stroke()}ctx.restore()}
 
       const guardianDeath=e.death??0;
       if(!e.alive&&guardianDeath>0){

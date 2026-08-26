@@ -166,6 +166,9 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /PARADES PARFAITES/);
   assert.match(page, /guardianPosture/);
   assert.match(page, /exchangeResult/);
+  assert.match(page, /Le langage de forme reste lisible/);
+  assert.match(page, /e\.intent==="lunge"/);
+  assert.match(page, /ctx\.ellipse/);
   assert.match(page, /PARADE PARFAITE/);
   assert.match(page, /ENDURANCE CRITIQUE/);
   assert.match(page, /POSTURE DU GARDIEN/);
