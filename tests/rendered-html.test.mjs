@@ -147,6 +147,9 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /e\.reaction=execution\?"execution"/);
   assert.match(page, /RIPOSTE CONFIRMÉE/);
   assert.match(page, /ARMURE EMBRASÉE/);
+  assert.match(page, /openingReady=e\.hit>​?\.42|openingReady=e\.hit>\.42/);
+  assert.match(page, /meleeReach=openingReady\?2\.25:1\.65/);
+  assert.match(page, /const step=Math\.min\(\.48,d-1\.28\)/);
   assert.match(page, /const recoil=dt/);
   assert.match(page, /perfectDodgeFx/);
   assert.doesNotMatch(page, /hoverLook/);
