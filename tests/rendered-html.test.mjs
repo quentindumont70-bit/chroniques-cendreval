@@ -132,6 +132,9 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /GARDE LEVÉE TÔT/);
   assert.match(page, /ESQUIVE TROP TÔT/);
   assert.match(page, /defenseTap/);
+  assert.match(page, /telegraphMax\?:number/);
+  assert.match(page, /foe\.telegraphMax=foe\.telegraph/);
+  assert.match(page, /e\.telegraphMax\?\?attackDuration/);
   assert.match(page, /defense-result parried/);
   assert.match(page, /defense-result dodged/);
   assert.match(page, /100-Math\.max/);
