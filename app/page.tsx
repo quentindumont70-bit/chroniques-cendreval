@@ -526,6 +526,19 @@ export default function Home() {
         }
       }
 
+      // Une arme vectorielle superposée rend chaque pose du Gardien lisible même sur le sprite pixelisé.
+      if(e.alive&&e.boss&&allShrinesAwake(s.shrines)){
+        const dx=e.x-s.x,dy=e.y-s.y,dist=Math.hypot(dx,dy);let ang=Math.atan2(dy,dx)-s.a;ang=Math.atan2(Math.sin(ang),Math.cos(ang));const column=Math.max(0,Math.min(W-1,Math.floor((ang/FOV+.5)*W)));
+        if(Math.abs(ang)<FOV*.7&&dist<zbuf[column]){const size=Math.min(130,150/dist),cx=(.5+ang/FOV)*W,base=H/2+size*.52,strikeDuration=e.intent==="crush"?.32:e.intent==="lunge"?.27:.22,strikeProgress=(e.strike??0)>0?1-(e.strike??0)/strikeDuration:0,swing=Math.sin(Math.min(1,strikeProgress)*Math.PI),charge=e.telegraph>0?1-e.telegraph/(e.intent==="crush"?.82:e.intent==="lunge"?.34:.64):0,recover=e.telegraph===0&&(e.strike??0)===0&&e.cooldown>0?Math.min(1,e.cooldown/1.15):0;
+          ctx.save();ctx.translate(cx,base-size*.58);ctx.lineCap="square";ctx.shadowColor=e.hp<=35?"#ff493f":"#ffc06b";ctx.shadowBlur=(charge+swing)*9;
+          const weaponAlpha=e.telegraph>0?.48+charge*.48:(e.strike??0)>0?.62+swing*.38:.34;ctx.strokeStyle=`rgba(255,${e.hp<=35?112:199},${e.hp<=35?76:116},${weaponAlpha})`;ctx.fillStyle=ctx.strokeStyle;ctx.lineWidth=Math.max(2,size*.035);
+          if(e.intent==="crush"){const lean=e.telegraph>0?charge:strikeProgress;const x=-size*.03+lean*size*.12,y0=-size*(.28-.5*lean),y1=size*(.12+.4*lean);for(let ghost=0;ghost<(e.telegraph>0?3:1);ghost++){ctx.globalAlpha=weaponAlpha*(1-ghost*.22);ctx.beginPath();ctx.moveTo(x-ghost*size*.055,y0+ghost*size*.035);ctx.lineTo(x+ghost*size*.025,y1);ctx.stroke()}ctx.globalAlpha=weaponAlpha;ctx.fillRect(x-size*.11,y0-size*.035,size*.22,size*.07)}
+          else if(e.intent==="lunge"){const reach=e.telegraph>0?charge:strikeProgress;ctx.globalAlpha=weaponAlpha;ctx.beginPath();ctx.moveTo(-size*(.27-.16*reach),size*.02);ctx.lineTo(size*(.08+.56*reach),-size*(.05+.03*swing));ctx.stroke();ctx.beginPath();ctx.moveTo(size*(.08+.56*reach),-size*(.05+.03*swing));ctx.lineTo(size*(.01+.44*reach),-size*.13);ctx.lineTo(size*(.01+.44*reach),size*.02);ctx.closePath();ctx.fill()}
+          else {const arc=e.telegraph>0?-.9+charge*.72:-.18+strikeProgress*2.35;for(let ghost=0;ghost<(e.telegraph>0?3:2);ghost++){ctx.globalAlpha=weaponAlpha*(1-ghost*.26);ctx.beginPath();ctx.arc(0,size*.12,size*(.28+ghost*.055),arc-1.08,arc+.18);ctx.stroke()}ctx.globalAlpha=weaponAlpha;const tipX=Math.cos(arc)*size*.42,tipY=size*.12+Math.sin(arc)*size*.42;ctx.fillRect(tipX-size*.08,tipY-size*.025,size*.16,size*.05)}
+          if(recover>.18){ctx.globalAlpha=.18+recover*.18;ctx.strokeStyle="#d7b987";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(-size*.2,size*.3);ctx.lineTo(size*.18,size*(.3+recover*.08));ctx.stroke()}ctx.restore();
+        }
+      }
+
       const guardianStrikeDuration=e.intent==="crush"?.32:e.intent==="lunge"?.27:.22,guardianAttack=(e.strike??0)>0?1-(e.strike??0)/guardianStrikeDuration:0;
       if(e.alive&&e.telegraph===0&&guardianAttack>0){const dx=e.x-s.x,dy=e.y-s.y,dist=Math.hypot(dx,dy),target=Math.atan2(dy,dx),diff=Math.abs(Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a))),swing=Math.sin(guardianAttack*Math.PI);if(dist<3.2&&diff<FOV*.72){const x=W/2+Math.sin(target-s.a)*W*.22,y=H*.55;ctx.save();ctx.translate(x,y);ctx.rotate((target-s.a)+Math.PI/2);ctx.strokeStyle=`rgba(255,${Math.floor(150+95*swing)},${Math.floor(82+110*swing)},${.22+.68*swing})`;ctx.lineWidth=2+5*swing;ctx.beginPath();ctx.arc(0,0,18+38*swing,-1.1,1.1);ctx.stroke();ctx.restore()}}
 
