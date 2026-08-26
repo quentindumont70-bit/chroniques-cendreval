@@ -165,6 +165,9 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /duelRecord/);
   assert.match(page, /PARADES PARFAITES/);
   assert.match(page, /guardianPosture/);
+  assert.match(page, /exchangeResult/);
+  assert.match(page, /PARADE PARFAITE/);
+  assert.match(page, /ENDURANCE CRITIQUE/);
   assert.match(page, /POSTURE DU GARDIEN/);
   assert.match(page, /guardianBeat/);
   assert.match(page, /RITUEL DU GARDIEN/);
@@ -302,6 +305,9 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(css, /combat-lesson/);
   assert.match(css, /phase-transition/);
   assert.match(css, /guardianStrike/);
+  assert.match(css, /exchange-result/);
+  assert.match(css, /target-lock/);
+  assert.match(css, /stamina-danger/);
   assert.match(css, /duel-rank/);
   assert.match(css, /attack-warning\.lunge/);
   assert.match(css, /guard-break/);
