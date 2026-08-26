@@ -208,6 +208,9 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /TIR D’OPPORTUNITÉ/);
   assert.match(page, /FLAMME AMPLIFIÉE/);
   assert.match(page, /attackPhase/);
+  assert.match(page, /comboDirection/);
+  assert.match(page, /ripostePose/);
+  assert.match(page, /perfectImpactFx\.current\/\.52/);
   assert.match(page, /guardianPosture\.current-\(opening\?30:10\)/);
   assert.match(page, /shade\.kind==="ranged"\?"#efc269"/);
   assert.match(page, /charge\*\.5/);
