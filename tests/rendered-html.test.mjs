@@ -119,6 +119,9 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /damagePop/);
   assert.match(page, /kind:execution\?"execution":"damage"/);
   assert.match(page, /executions\?\?0/);
+  assert.match(page, /SANG-FROID PARFAIT/);
+  assert.match(page, /MEILLEUR SANG-FROID/);
+  assert.match(page, /focusStrike\?10:0/);
   assert.match(page, /enemy\.current\.telegraph\/\(enemy\.current\.intent/);
   assert.match(page, /attackSwing/);
   assert.match(page, /guardianAttack/);
@@ -248,6 +251,7 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(css, /death-attempt/);
   assert.match(css, /lock-reticle/);
   assert.match(css, /damage-pop/);
+  assert.match(css, /duel-focus/);
   assert.match(css, /damageRise/);
   assert.match(css, /attack-warning i/);
   assert.match(css, /canvas\{cursor:none\}/);
