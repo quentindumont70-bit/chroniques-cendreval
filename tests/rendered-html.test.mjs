@@ -124,6 +124,8 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /focusStrike\?10:0/);
   assert.match(page, /arme vectorielle superposée/);
   assert.match(page, /e\.intent==="lunge"/);
+  assert.match(page, /main gauche matérialise la garde/);
+  assert.match(page, /damagePop\.current\.kind==="execution"/);
   assert.match(page, /enemy\.current\.telegraph\/\(enemy\.current\.intent/);
   assert.match(page, /attackSwing/);
   assert.match(page, /guardianAttack/);
