@@ -143,6 +143,10 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /enemy\.current\.telegraph\/duration/);
   assert.match(page, /attackSwing/);
   assert.match(page, /guardianAttack/);
+  assert.match(page, /reaction\?:"light"\|"pierce"\|"arcane"\|"riposte"\|"execution"/);
+  assert.match(page, /e\.reaction=execution\?"execution"/);
+  assert.match(page, /RIPOSTE CONFIRMÉE/);
+  assert.match(page, /ARMURE EMBRASÉE/);
   assert.match(page, /const recoil=dt/);
   assert.match(page, /perfectDodgeFx/);
   assert.doesNotMatch(page, /hoverLook/);
