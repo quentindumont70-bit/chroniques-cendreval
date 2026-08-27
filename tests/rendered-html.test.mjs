@@ -33,6 +33,11 @@ test("keeps the rendered shell tied to the game rather than the starter", async 
   assert.match(page, /cendreval-save/);
   assert.match(page, /Mouse3/);
   assert.match(page, /PARADE PARFAITE/);
+  assert.match(page, /holdingGuard/);
+  assert.match(page, /GARDE MAINTENUE/);
+  assert.match(page, /GARDE ÉPUISÉE/);
+  assert.match(page, /LE GARDIEN LIT VOTRE GARDE/);
+  assert.match(page, /blockCost/);
   assert.match(page, /RIPOSTE/);
   assert.match(page, /DONJON NOIR/);
   assert.match(page, /MANUEL DU VEILLEUR/);
