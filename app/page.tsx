@@ -96,13 +96,11 @@ export default function Home() {
   const state = useRef<Save>({...START});
   const keys = useRef<Record<string,boolean>>({});
   const inputPulse = useRef<Record<string,number>>({});
-  const lastMouseX = useRef<number|null>(null);
-  const lastMouseY = useRef<number|null>(null);
   const cameraPitch = useRef(0);
   const audioRef = useRef<AudioContext|null>(null);
   const audioVolumeRef = useRef(.8);
   const shakeScaleRef = useRef(1);
-  const pointerFallback = useRef(false);
+  const pointerLockPending = useRef(false);
   const suppressCapturedClick = useRef(false);
   const enemy = useRef<Foe>({x:10.5,y:8.5,hp:70,alive:true,hit:0,cooldown:0,telegraph:0,boss:true,name:"gardien",kind:"brute"});
   const minions = useRef<Foe[]>([
@@ -185,12 +183,14 @@ export default function Home() {
   const lockCursor = useCallback(()=>{
     const canvas=canvasRef.current;
     if(!canvas)return;
+    if(document.pointerLockElement===canvas||pointerLockPending.current)return;
     playCombatSound("ready");
     canvas.focus();
     setMouseLook(false);
-    const failed=()=>{pointerFallback.current=true;lastMouseX.current=null;lastMouseY.current=null;setMouseLook(true);setMessage("MODE SOURIS COMPATIBLE — la caméra suit vos mouvements dans le cadre du jeu.")};
+    const failed=()=>{pointerLockPending.current=false;setMouseLook(false);setPanel("pause");setMessage("CAPTURE SOURIS REFUSÉE — cliquez sur REPRENDRE pour verrouiller réellement le curseur.")};
     if(!canvas.requestPointerLock){failed();return}
-    try{const request=canvas.requestPointerLock();if(request instanceof Promise)request.then(()=>{pointerFallback.current=false}).catch(failed)}catch{failed()}
+    pointerLockPending.current=true;
+    try{const request=canvas.requestPointerLock({unadjustedMovement:true});if(request instanceof Promise)request.then(()=>{pointerLockPending.current=false}).catch(()=>{try{const retry=canvas.requestPointerLock();if(retry instanceof Promise)retry.then(()=>{pointerLockPending.current=false}).catch(failed)}catch{failed()}})}catch{try{const retry=canvas.requestPointerLock();if(retry instanceof Promise)retry.then(()=>{pointerLockPending.current=false}).catch(failed)}catch{failed()}}
   },[playCombatSound]);
   const [message,setMessage] = useState("Les ruines murmurent votre nom…");
 
@@ -198,7 +198,7 @@ export default function Home() {
   const gainXp = useCallback((amount:number)=>{const s=state.current;s.xp+=amount;while(s.xp>=s.level*40){s.xp-=s.level*40;s.level++;s.talent++;s.hp=100;s.mana=100;s.stamina=100;setMessage(`Niveau ${s.level} atteint — un point de talent disponible !`)}sync()},[sync]);
   useEffect(()=>{lockedTarget.current=null;setLocked(false)},[hud.quest]);
   const applyBindings = useCallback((next:Bindings)=>{bindingsRef.current=next;setBindings(next);localStorage.setItem("cendreval-bindings",JSON.stringify(next))},[]);
-  const clearInput = useCallback(()=>{keys.current={};inputPulse.current={};movement.current={forward:0,strafe:0};queuedAttack.current=null;lastMouseX.current=null;lastMouseY.current=null},[]);
+  const clearInput = useCallback(()=>{keys.current={};inputPulse.current={};movement.current={forward:0,strafe:0};queuedAttack.current=null},[]);
   const captureMouse = useCallback(()=>{if(started&&!panel&&!village&&!choosingSpec)lockCursor()},[choosingSpec,lockCursor,panel,started,village]);
   const save = useCallback(() => {
     localStorage.setItem("cendreval-save", JSON.stringify(state.current));
@@ -343,8 +343,7 @@ export default function Home() {
       const onGameSurface=Boolean(target?.closest?.(".stage"));
       const onControl=Boolean(target?.closest?.("button,input,select,textarea,a"));
       const captured=document.pointerLockElement===canvasRef.current;
-      const fallbackActive=pointerFallback.current&&onGameSurface&&!onControl;
-      if(!captured&&!fallbackActive){if(started&&!panel&&!village&&onGameSurface&&!onControl){e.preventDefault();captureMouse()}return}
+      if(!captured){if(started&&!panel&&!village&&onGameSurface&&!onControl){e.preventDefault();captureMouse()}return}
       keys.current[input]=true;inputPulse.current[input]=performance.now();trigger(input);
       e.preventDefault();if(e.button!==0)e.stopPropagation()
     };
@@ -355,14 +354,9 @@ export default function Home() {
       if(!started||panel||village||choosingSpec)return;
       const canvas=canvasRef.current;
       if(document.pointerLockElement===canvas){state.current.a+=e.movementX*.0024*sensitivityRef.current;cameraPitch.current=Math.max(-.65,Math.min(.65,cameraPitch.current-e.movementY*.0024*sensitivityRef.current));return}
-      if(!pointerFallback.current)return;
-      const target=e.target as Element|null;
-      if(!target?.closest?.(".stage")||target.closest?.("button,input,select,textarea,a")){lastMouseX.current=null;lastMouseY.current=null;return}
-      if(lastMouseX.current!==null&&lastMouseY.current!==null){state.current.a+=(e.clientX-lastMouseX.current)*.0024*sensitivityRef.current;cameraPitch.current=Math.max(-.65,Math.min(.65,cameraPitch.current-(e.clientY-lastMouseY.current)*.0024*sensitivityRef.current))}
-      lastMouseX.current=e.clientX;lastMouseY.current=e.clientY;
     };
-    const lock=()=>{const captured=document.pointerLockElement===canvasRef.current;if(captured)pointerFallback.current=false;if(!captured){clearInput();if(started&&!panel&&!village&&!choosingSpec&&!pointerFallback.current)setPanel("pause")}setMouseLook(captured||pointerFallback.current)};
-    const lockError=()=>{clearInput();pointerFallback.current=true;setMouseLook(true);setMessage("MODE SOURIS COMPATIBLE — déplacez la souris dans le décor.")};
+    const lock=()=>{pointerLockPending.current=false;const captured=document.pointerLockElement===canvasRef.current;if(!captured){clearInput();if(started&&!panel&&!village&&!choosingSpec)setPanel("pause")}setMouseLook(captured)};
+    const lockError=()=>{pointerLockPending.current=false;clearInput();setMouseLook(false);if(started&&!panel&&!village&&!choosingSpec)setPanel("pause");setMessage("CAPTURE SOURIS REFUSÉE — utilisez REPRENDRE pour réessayer.")};
     const blockAux=(e:MouseEvent)=>{const target=e.target as Element|null;if(started&&!panel&&!village&&target?.closest?.(".stage")){e.preventDefault();e.stopPropagation()}};
     const blur=()=>clearInput();
     const visibility=()=>{if(document.hidden)clearInput()};
@@ -667,7 +661,7 @@ export default function Home() {
     <div className="grain" />
     <header><div className="brand"><span>CHRONIQUES DE</span><strong>CENDREVAL</strong></div><div className="chapter">{village?"VALBRUME · LE VILLAGE DES BRUMES":hud.quest>=14?"ACTE IV · LA TOUR DES CENDRES":hud.quest>=12?"ACTE III · LE DONJON NOIR":hud.quest>=7?"ACTE II · LE CHÂTEAU NOIR":"ACTE I · LES PLAINES DE CENDREVAL"}</div></header>
     <section className={`stage${started&&mouseLook&&!panel&&!village&&!choosingSpec?" playing":""}${panel||village||choosingSpec?" paused":""}`} aria-label="Jeu en vue subjective">
-      <canvas ref={canvasRef} width={W} height={H} tabIndex={0} onPointerDown={captureMouse} onContextMenu={e=>e.preventDefault()} />
+      <canvas ref={canvasRef} width={W} height={H} tabIndex={0} onContextMenu={e=>e.preventDefault()} />
       {started&&<div className="hud-frame" aria-hidden="true"><i/><i/><i/><i/></div>}
       {!started&&!choosingSpec&&<div className="start-screen"><div className="sigil">ᛉ</div><h1>CENDREVAL</h1><p>Au-delà des plaines, le château noir veille.<br/>Votre légende commence sous un ciel ouvert.</p><button onClick={()=>setChoosingSpec(true)}>NOUVELLE PARTIE</button><button className="secondary" onClick={load}>CONTINUER</button><small>Cliquez dans le jeu pour diriger la caméra à la souris</small></div>}
       {choosingSpec&&<div className="start-screen spec-select"><span className="eyebrow">CHOISISSEZ VOTRE VOIE</span><h1>VOTRE LÉGENDE</h1><div className="spec-cards"><button onClick={()=>chooseSpec("blade")}><b>⚔ LAME</b><small>Combat rapproché et endurance renforcée.</small></button><button onClick={()=>chooseSpec("bow")}><b>⌁ RÔDEUR</b><small>Arc, distance et vingt-deux flèches.</small></button><button onClick={()=>chooseSpec("arcane")}><b>✦ ARCANES</b><small>Mana maximum pour la flamme ancienne.</small></button></div><button className="secondary" onClick={()=>setChoosingSpec(false)}>RETOUR</button></div>}
