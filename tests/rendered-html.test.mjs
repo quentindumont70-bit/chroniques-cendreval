@@ -244,6 +244,11 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /FEINTE DU GARDIEN/);
   assert.match(page, /foe\.feinted=true/);
   assert.match(page, /PHASE II DIRECTE/);
+  assert.match(page, /guardianOrbit/);
+  assert.match(page, /guardianLastStand/);
+  assert.match(page, /prepareLastStand/);
+  assert.match(page, /DERNIER SOUFFLE/);
+  assert.match(css, /phase-transition\.last-stand/);
   assert.match(page, /bodyGain/);
   assert.match(page, /for\(let mote=0;mote<34;mote\+\+\)/);
   assert.match(page, /phase-transition/);
