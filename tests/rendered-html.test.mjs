@@ -235,6 +235,11 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /foe\.strike=foe\.intent==="slam"\?\.38:foe\.intent==="crush"\?\.32/);
   assert.match(page, /const impactAt=/);
   assert.match(page, /guardianPhase\.current=2/);
+  assert.match(page, /FEINTE DU GARDIEN/);
+  assert.match(page, /foe\.feinted=true/);
+  assert.match(page, /PHASE II DIRECTE/);
+  assert.match(page, /bodyGain/);
+  assert.match(page, /for\(let mote=0;mote<34;mote\+\+\)/);
   assert.match(page, /phase-transition/);
   assert.match(page, /FRAPPE ACTIVE/);
   assert.match(page, /RÉCUPÉRATION/);
