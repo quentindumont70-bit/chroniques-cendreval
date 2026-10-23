@@ -249,6 +249,12 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /prepareLastStand/);
   assert.match(page, /DERNIER SOUFFLE/);
   assert.match(css, /phase-transition\.last-stand/);
+  assert.match(page, /touchLook/);
+  assert.match(page, /e\.pointerType==="touch"/);
+  assert.match(page, /addEventListener\("pointermove",pointerMove/);
+  assert.match(page, /assetUrl\("cendreval-plains-v2\.png"\)/);
+  assert.match(css, /\(pointer:coarse\)/);
+  assert.match(css, /touch-action:none/);
   assert.match(page, /bodyGain/);
   assert.match(page, /for\(let mote=0;mote<34;mote\+\+\)/);
   assert.match(page, /phase-transition/);

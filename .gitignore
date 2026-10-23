@@ -35,6 +35,8 @@ yarn-error.log*
 .vercel
 
 /dist/
+/pages-dist/
+/.openai/*.tar.gz
 /.wrangler/
 /outputs/
 /work/

@@ -82,6 +82,7 @@ function shrineCount(mask:number){return [0,1,2].filter(index=>mask&(1<<index)).
 function allShrinesAwake(mask:number){return (mask&7)===7}
 function targetScore(foe:Foe,s:Save){const angle=Math.atan2(foe.y-s.y,foe.x-s.x),diff=Math.abs(Math.atan2(Math.sin(angle-s.a),Math.cos(angle-s.a)));return diff*12+Math.hypot(foe.x-s.x,foe.y-s.y)}
 function attackDuration(intent:Foe["intent"]){return intent==="slam"?1.02:intent==="crush"?.82:intent==="lunge"?.34:intent==="shot"?.72:.64}
+function assetUrl(name:string){return typeof document==="undefined"?`/${name}`:new URL(name,document.baseURI).toString()}
 
 function wallAt(x:number, y:number) {
   const row = activeMap[Math.floor(y)];
@@ -97,6 +98,7 @@ export default function Home() {
   const keys = useRef<Record<string,boolean>>({});
   const inputPulse = useRef<Record<string,number>>({});
   const cameraPitch = useRef(0);
+  const touchLook = useRef<{id:number;x:number;y:number}|null>(null);
   const audioRef = useRef<AudioContext|null>(null);
   const audioVolumeRef = useRef(.8);
   const shakeScaleRef = useRef(1);
@@ -304,13 +306,13 @@ export default function Home() {
 
   useEffect(()=>{
     const horizon=new Image();
-    horizon.src="/cendreval-plains-v2.png";
+    horizon.src=assetUrl("cendreval-plains-v2.png");
     horizon.onload=()=>{horizonRef.current=horizon};
     const guardian=new Image();
-    guardian.src="/ash-warden-v1.png";
+    guardian.src=assetUrl("ash-warden-v1.png");
     guardian.onload=()=>{const clean=document.createElement("canvas");clean.width=guardian.naturalWidth;clean.height=guardian.naturalHeight;const cleanCtx=clean.getContext("2d")!;cleanCtx.drawImage(guardian,0,0);const pixels=cleanCtx.getImageData(0,0,clean.width,clean.height);for(let p=0;p<pixels.data.length;p+=4){const r=pixels.data[p],g=pixels.data[p+1],b=pixels.data[p+2];if(g>135&&g>r*1.32&&g>b*1.32)pixels.data[p+3]=0}cleanCtx.putImageData(pixels,0,0);guardianRef.current=clean};
     const shadow=new Image();
-    shadow.src="/shadow-pixel.png";
+    shadow.src=assetUrl("shadow-pixel.png");
     shadow.onload=()=>{shadowRef.current=shadow};
   },[]);
 
@@ -345,13 +347,15 @@ export default function Home() {
       const target=e.target as Element|null;
       const onGameSurface=Boolean(target?.closest?.(".stage"));
       const onControl=Boolean(target?.closest?.("button,input,select,textarea,a"));
+      if(e.pointerType==="touch"){if(started&&!panel&&!village&&onGameSurface&&!onControl){touchLook.current={id:e.pointerId,x:e.clientX,y:e.clientY};e.preventDefault()}return}
       const captured=document.pointerLockElement===canvasRef.current;
       if(!captured){if(started&&!panel&&!village&&onGameSurface&&!onControl){e.preventDefault();captureMouse()}return}
       keys.current[input]=true;inputPulse.current[input]=performance.now();trigger(input);
       e.preventDefault();if(e.button!==0)e.stopPropagation()
     };
-    const mouseUp=(e:PointerEvent)=>{const input=`Mouse${e.button}`;keys.current[input]=false;delete inputPulse.current[input]};
-    const pointerCancel=()=>clearInput();
+    const mouseUp=(e:PointerEvent)=>{if(e.pointerType==="touch"){if(touchLook.current?.id===e.pointerId)touchLook.current=null;return}const input=`Mouse${e.button}`;keys.current[input]=false;delete inputPulse.current[input]};
+    const pointerMove=(e:PointerEvent)=>{const look=touchLook.current;if(e.pointerType!=="touch"||!look||look.id!==e.pointerId||panel||village||choosingSpec)return;const dx=e.clientX-look.x,dy=e.clientY-look.y;state.current.a+=dx*.0052*sensitivityRef.current;cameraPitch.current=Math.max(-.65,Math.min(.65,cameraPitch.current-dy*.0046*sensitivityRef.current));touchLook.current={id:e.pointerId,x:e.clientX,y:e.clientY};e.preventDefault()};
+    const pointerCancel=(e:PointerEvent)=>{if(touchLook.current?.id===e.pointerId)touchLook.current=null;clearInput()};
     const blockCapturedClick=(e:MouseEvent)=>{if(!suppressCapturedClick.current)return;suppressCapturedClick.current=false;e.preventDefault();e.stopImmediatePropagation()};
     const move=(e:MouseEvent)=>{
       if(!started||panel||village||choosingSpec)return;
@@ -364,8 +368,8 @@ export default function Home() {
     const blur=()=>clearInput();
     const visibility=()=>{if(document.hidden)clearInput()};
     const fullscreen=()=>clearInput();
-    addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("pointerdown",mouseDown);addEventListener("pointerup",mouseUp);addEventListener("pointercancel",pointerCancel);addEventListener("click",blockCapturedClick,true);addEventListener("auxclick",blockAux,true);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("pointerlockerror",lockError);addEventListener("fullscreenchange",fullscreen);document.addEventListener("visibilitychange",visibility);addEventListener("pagehide",blur);addEventListener("blur",blur);
-    return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("pointerdown",mouseDown);removeEventListener("pointerup",mouseUp);removeEventListener("pointercancel",pointerCancel);removeEventListener("click",blockCapturedClick,true);removeEventListener("auxclick",blockAux,true);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock);removeEventListener("pointerlockerror",lockError);removeEventListener("fullscreenchange",fullscreen);document.removeEventListener("visibilitychange",visibility);removeEventListener("pagehide",blur);removeEventListener("blur",blur)};
+    addEventListener("keydown",down);addEventListener("keyup",up);addEventListener("pointerdown",mouseDown);addEventListener("pointermove",pointerMove,{passive:false});addEventListener("pointerup",mouseUp);addEventListener("pointercancel",pointerCancel);addEventListener("click",blockCapturedClick,true);addEventListener("auxclick",blockAux,true);addEventListener("mousemove",move);addEventListener("pointerlockchange",lock);addEventListener("pointerlockerror",lockError);addEventListener("fullscreenchange",fullscreen);document.addEventListener("visibilitychange",visibility);addEventListener("pagehide",blur);addEventListener("blur",blur);
+    return()=>{removeEventListener("keydown",down);removeEventListener("keyup",up);removeEventListener("pointerdown",mouseDown);removeEventListener("pointermove",pointerMove);removeEventListener("pointerup",mouseUp);removeEventListener("pointercancel",pointerCancel);removeEventListener("click",blockCapturedClick,true);removeEventListener("auxclick",blockAux,true);removeEventListener("mousemove",move);removeEventListener("pointerlockchange",lock);removeEventListener("pointerlockerror",lockError);removeEventListener("fullscreenchange",fullscreen);document.removeEventListener("visibilitychange",visibility);removeEventListener("pagehide",blur);removeEventListener("blur",blur)};
   },[ability,applyBindings,capture,captureMouse,choosingSpec,clearInput,dodge,interact,lockCursor,panel,parry,primaryAttack,save,shootBow,started,strike,village]);
 
   useEffect(()=>{
