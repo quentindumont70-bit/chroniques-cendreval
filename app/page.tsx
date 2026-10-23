@@ -208,7 +208,7 @@ export default function Home() {
   const gainXp = useCallback((amount:number)=>{const s=state.current;s.xp+=amount;while(s.xp>=s.level*40){s.xp-=s.level*40;s.level++;s.talent++;s.hp=100;s.mana=100;s.stamina=100;setMessage(`Niveau ${s.level} atteint — un point de talent disponible !`)}sync()},[sync]);
   useEffect(()=>{lockedTarget.current=null;setLocked(false)},[hud.quest]);
   const applyBindings = useCallback((next:Bindings)=>{bindingsRef.current=next;setBindings(next);localStorage.setItem("cendreval-bindings",JSON.stringify(next))},[]);
-  const clearInput = useCallback(()=>{keys.current={};inputPulse.current={};analog.current={forward:0,strafe:0};movement.current={forward:0,strafe:0};queuedAttack.current=null},[]);
+  const clearInput = useCallback(()=>{keys.current={};inputPulse.current={};analog.current={forward:0,strafe:0};movement.current={forward:0,strafe:0};analog.current={forward:0,strafe:0};touchLook.current=null;queuedAttack.current=null},[]);
   const captureMouse = useCallback(()=>{if(started&&!panel&&!village&&!choosingSpec)lockCursor()},[choosingSpec,lockCursor,panel,started,village]);
   const save = useCallback(() => {
     localStorage.setItem("cendreval-save", JSON.stringify(state.current));
@@ -502,12 +502,31 @@ export default function Home() {
         const ray=s.a-FOV/2+(x/W)*FOV; let d=.02,hit=0;
         while(d<18&&!hit){d+=.025;hit=wallAt(s.x+Math.cos(ray)*d,s.y+Math.sin(ray)*d)}
         d*=Math.cos(ray-s.a);zbuf[x]=d;
-        const wh=Math.min(H*1.6,(hit===1&&!inCourt?H*.38:H)/d);const top=(H-wh)/2;
+        const hitX=s.x+Math.cos(ray)*d/Math.cos(ray-s.a),hitY=s.y+Math.sin(ray)*d/Math.cos(ray-s.a);
+        const natural=!inCourt&&(hit===1||hit===2);
+        const ridge=natural?.78+Math.sin(hitX*1.8+hitY*.7)*.19+Math.sin(hitY*3.1-hitX*.9)*.09:1;
+        const ruin=!inCourt&&hit===3;
+        const merlon=ruin&&(Math.floor((hitX+hitY)*4)%3===0)?.12:0;
+        const wh=Math.min(H*1.6,(hit===1&&!inCourt?H*.38:ruin?H*(.72+merlon):H)*ridge/d);const top=natural?H/2+H*.19/d-wh:ruin?H/2+H*.5/d-wh:(H-wh)/2;
         const side=(Math.floor(s.x+Math.cos(ray)*d*8)+Math.floor(s.y+Math.sin(ray)*d*8))%2;
         const shade=Math.max(20,155-d*9)+(side?8:0);
         const colors=hit===2?[shade*.16,shade*.42,shade*.19]:hit===3?[shade*.38,shade*.39,shade*.42]:inThrone?[shade*.26,shade*.22,shade*.48]:inDungeon?[shade*.4,shade*.16,shade*.18]:inHalls?[shade*.33,shade*.25,shade*.24]:inCourt?[shade*.35,shade*.31,shade*.34]:[shade*.42,shade*.36,shade*.31];
         ctx.fillStyle=`rgb(${colors[0]},${colors[1]},${colors[2]})`;ctx.fillRect(x,top,1,wh);
-        if(x%13===0){ctx.fillStyle="rgba(10,5,10,.22)";ctx.fillRect(x,top,1,wh)}
+        if(natural){
+          const fog=Math.min(.6,d/22);ctx.fillStyle=`rgba(153,169,148,${fog})`;ctx.fillRect(x,top,1,wh);
+          ctx.fillStyle="rgba(194,195,133,.24)";ctx.fillRect(x,top,1,Math.max(1,wh*.035));
+          for(let seam=1;seam<4;seam++){const line=top+wh*(seam*.24)+Math.sin(hitX*3+hitY*2+seam)*wh*.04;ctx.fillStyle="rgba(17,32,28,.18)";ctx.fillRect(x,line,1,Math.max(1,wh*.025))}
+        }else if(ruin){
+          const stoneShade=Math.max(62,147-d*5)+Math.sin(hitX*5+hitY*7)*7;
+          ctx.fillStyle=`rgb(${stoneShade*.9},${stoneShade*.94},${stoneShade*.83})`;ctx.fillRect(x,top,1,wh);
+          const course=Math.max(3,26/d),along=(hitX+hitY)*5;
+          for(let by=top;by<top+wh;by+=course){
+            ctx.fillStyle="rgba(28,38,34,.42)";ctx.fillRect(x,by,1,1);
+            if(((along+Math.floor((by-top)/course)*.5)%1+1)%1<.12)ctx.fillRect(x,by,1,course);
+          }
+          ctx.fillStyle="#b6b58a";ctx.fillRect(x,top,1,1);
+          ctx.fillStyle="rgba(44,67,40,.5)";ctx.fillRect(x,top+wh*.79,1,wh*.21);
+        }else if(x%13===0){ctx.fillStyle="rgba(10,5,10,.22)";ctx.fillRect(x,top,1,wh)}
       }
 
       // Ombres errantes : elles suivent le joueur et apparaissent comme des sprites dans le couloir.

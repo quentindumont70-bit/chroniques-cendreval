@@ -1,8 +1,46 @@
-// Low resolution world-space scenery: no network assets or per-frame allocations.
+// Low resolution world-space scenery with cached terrain and atmospheric perspective.
 const wrap = (a:number) => Math.atan2(Math.sin(a), Math.cos(a));
 let ground: HTMLCanvasElement | undefined;
 let pixels: ImageData | undefined;
 let panorama: HTMLCanvasElement | undefined;
+// Terrain stays outside the walkable basin; combat positions retain a level footing.
+const TERRAIN_SIZE=256, TERRAIN_STEP=.5, TERRAIN_ORIGIN=-54;
+let terrainHeight:Float32Array|undefined;
+let terrainLight:Float32Array|undefined;
+function elevation(x:number,y:number){
+  const outside=Math.max(0,Math.max(-x,x-20,-y,y-20));
+  const rise=1-Math.exp(-outside*.14);
+  return rise*(4.8+3.2*Math.sin(x*.13+y*.09)**2+5.4*Math.sin(x*.21-y*.16)**2);
+}
+function prepareTerrain(){
+  if(terrainHeight)return;
+  terrainHeight=new Float32Array(TERRAIN_SIZE*TERRAIN_SIZE);
+  terrainLight=new Float32Array(terrainHeight.length);
+  for(let iy=0;iy<TERRAIN_SIZE;iy++)for(let ix=0;ix<TERRAIN_SIZE;ix++){
+    const x=TERRAIN_ORIGIN+ix*TERRAIN_STEP,y=TERRAIN_ORIGIN+iy*TERRAIN_STEP,i=iy*TERRAIN_SIZE+ix;
+    terrainHeight[i]=elevation(x,y);
+    terrainLight[i]=Math.max(.42,Math.min(1.18,.8+(elevation(x+.5,y)-elevation(x-.5,y))*.32-(elevation(x,y+.5)-elevation(x,y-.5))*.28));
+  }
+}
+function drawTerrain(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number){
+  prepareTerrain();
+  // Far-to-near columns give overlapping slopes real perspective and movement parallax.
+  for(let col=0;col<213;col++){
+    const ray=yaw+(col/213-.5)*Math.PI/3,cos=Math.cos(ray),sin=Math.sin(ray),correct=Math.cos(ray-yaw);
+    let bottom=123;
+    for(let d=65;d>2;d-=Math.max(.35,d*.035)){
+      const wx=x+cos*d,wy=y+sin*d;
+      const ix=Math.floor((wx-TERRAIN_ORIGIN)/TERRAIN_STEP),iy=Math.floor((wy-TERRAIN_ORIGIN)/TERRAIN_STEP);
+      if(ix<0||ix>=TERRAIN_SIZE||iy<0||iy>=TERRAIN_SIZE)continue;
+      const i=iy*TERRAIN_SIZE+ix,h=terrainHeight![i];
+      if(h<.08)continue;
+      const top=Math.floor(120+(.5-h)*100/(d*correct)),fog=Math.min(.86,d/78),light=terrainLight![i];
+      const rock=h>4.2,red=(rock?97:52)*light,green=(rock?100:79)*light,blue=(rock?92:66)*light;
+      ctx.fillStyle=`rgb(${Math.round(red*(1-fog)+157*fog)},${Math.round(green*(1-fog)+169*fog)},${Math.round(blue*(1-fog)+157*fog)})`;
+      ctx.fillRect(col*2,top,2,Math.max(1,bottom-top));bottom=Math.max(bottom,top+1);
+    }
+  }
+}
 export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw:number, time:number, art:HTMLImageElement|null) {
   const w=426, h=240, horizon=120, fov=Math.PI/3;
   const sky=ctx.createLinearGradient(0,0,0,horizon);
@@ -58,6 +96,7 @@ export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw
     // Keep the painted castle at the gate bearing; close scenery still moves independently.
     ctx.drawImage(panorama,Math.floor(w/2+angle/fov*w-640*.575),0);
   }
+  drawTerrain(ctx,x,y,yaw);
   const mist=ctx.createLinearGradient(0,96,0,125);mist.addColorStop(0,"#bdc5b000");mist.addColorStop(.7,"#bdc5b055");mist.addColorStop(1,"#bdc5b000");ctx.fillStyle=mist;ctx.fillRect(0,96,w,29);
 }
 export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number){
@@ -70,11 +109,14 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const wx=x+depth*(cos-sin*side),wy=y+depth*(sin+cos*side);
       const hx=Math.floor(wx*22),hy=Math.floor(wy*22),hash=((Math.imul(hx,374761393)^Math.imul(hy,668265263))>>>0)%23;
       const progress=Math.max(0,Math.min(1,(16.5-wy)/13)),pathX=3.5+13*progress+Math.sin(progress*6)*.65;
-      const path=Math.abs(wx-pathX)<.36;
+      const pathDistance=Math.abs(wx-pathX),path=pathDistance<.36;
+      const rolling=Math.sin(wx*.72+wy*.23)*Math.cos(wy*.61)*.5+.5;
+      const light=.78+rolling*.3;
+      const edge=pathDistance<.49;
       const stone=hash>19,shade=hash*.85;
-      const base=path?[109+shade,100+shade,73+shade]:stone?[69+shade,78+shade,64+shade]:[39+shade,62+shade,45+shade];
+      const base=path?[119+shade,108+shade,80+shade]:edge?[78+shade,83+shade,54+shade]:stone?[68+shade,78+shade,63+shade]:[40+shade,65+shade,45+shade];
       const i=(row*213+col)*4;
-      data[i]=base[0]*(1-fog)+145*fog;data[i+1]=base[1]*(1-fog)+157*fog;data[i+2]=base[2]*(1-fog)+137*fog;data[i+3]=255;
+      data[i]=base[0]*light*(1-fog)+145*fog;data[i+1]=base[1]*light*(1-fog)+157*fog;data[i+2]=base[2]*light*(1-fog)+137*fog;data[i+3]=255;
     }
   }
   ground.getContext("2d")!.putImageData(pixels!,0,0);ctx.drawImage(ground,0,120,426,120);
