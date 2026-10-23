@@ -250,6 +250,9 @@ assert.doesNotMatch(page, /keys\.current\[input\]=true;trigger\(input\);\s*if\(s
   assert.match(page, /DERNIER SOUFFLE/);
   assert.match(css, /phase-transition\.last-stand/);
   assert.match(page, /touchLook/);
+  assert.match(page, /function touchControlsActive/);
+  assert.match(page, /window\.innerWidth<=900/);
+  assert.match(page, /if\(touchControlsActive\(\)\)\{pointerLockPending\.current=false;canvas\.focus\(\);setMouseLook\(true\);return\}/);
   assert.match(page, /e\.pointerType==="touch"/);
   assert.match(page, /addEventListener\("pointermove",pointerMove/);
   assert.match(page, /assetUrl\("cendreval-plains-v2\.png"\)/);

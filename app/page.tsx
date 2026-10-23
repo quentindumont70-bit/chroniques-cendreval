@@ -83,6 +83,7 @@ function allShrinesAwake(mask:number){return (mask&7)===7}
 function targetScore(foe:Foe,s:Save){const angle=Math.atan2(foe.y-s.y,foe.x-s.x),diff=Math.abs(Math.atan2(Math.sin(angle-s.a),Math.cos(angle-s.a)));return diff*12+Math.hypot(foe.x-s.x,foe.y-s.y)}
 function attackDuration(intent:Foe["intent"]){return intent==="slam"?1.02:intent==="crush"?.82:intent==="lunge"?.34:intent==="shot"?.72:.64}
 function assetUrl(name:string){return typeof document==="undefined"?`/${name}`:new URL(name,document.baseURI).toString()}
+function touchControlsActive(){return typeof window!=="undefined"&&(window.matchMedia("(pointer: coarse)").matches||window.innerWidth<=900)}
 
 function wallAt(x:number, y:number) {
   const row = activeMap[Math.floor(y)];
@@ -188,6 +189,7 @@ export default function Home() {
   const lockCursor = useCallback(()=>{
     const canvas=canvasRef.current;
     if(!canvas)return;
+    if(touchControlsActive()){pointerLockPending.current=false;canvas.focus();setMouseLook(true);return}
     if(document.pointerLockElement===canvas||pointerLockPending.current)return;
     playCombatSound("ready");
     canvas.focus();
@@ -362,8 +364,8 @@ export default function Home() {
       const canvas=canvasRef.current;
       if(document.pointerLockElement===canvas){state.current.a+=e.movementX*.0024*sensitivityRef.current;cameraPitch.current=Math.max(-.65,Math.min(.65,cameraPitch.current-e.movementY*.0024*sensitivityRef.current));return}
     };
-    const lock=()=>{pointerLockPending.current=false;const captured=document.pointerLockElement===canvasRef.current;if(!captured){clearInput();if(started&&!panel&&!village&&!choosingSpec)setPanel("pause")}setMouseLook(captured)};
-    const lockError=()=>{pointerLockPending.current=false;clearInput();setMouseLook(false);if(started&&!panel&&!village&&!choosingSpec)setPanel("pause");setMessage("CAPTURE SOURIS REFUSÉE — utilisez REPRENDRE pour réessayer.")};
+    const lock=()=>{pointerLockPending.current=false;if(touchControlsActive()){setMouseLook(true);return}const captured=document.pointerLockElement===canvasRef.current;if(!captured){clearInput();if(started&&!panel&&!village&&!choosingSpec)setPanel("pause")}setMouseLook(captured)};
+    const lockError=()=>{pointerLockPending.current=false;clearInput();if(touchControlsActive()){setMouseLook(true);return}setMouseLook(false);if(started&&!panel&&!village&&!choosingSpec)setPanel("pause");setMessage("CAPTURE SOURIS REFUSÉE — utilisez REPRENDRE pour réessayer.")};
     const blockAux=(e:MouseEvent)=>{const target=e.target as Element|null;if(started&&!panel&&!village&&target?.closest?.(".stage")){e.preventDefault();e.stopPropagation()}};
     const blur=()=>clearInput();
     const visibility=()=>{if(document.hidden)clearInput()};
