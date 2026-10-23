@@ -2,7 +2,8 @@
 const wrap = (a:number) => Math.atan2(Math.sin(a), Math.cos(a));
 let ground: HTMLCanvasElement | undefined;
 let pixels: ImageData | undefined;
-export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw:number, time:number) {
+let panorama: HTMLCanvasElement | undefined;
+export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw:number, time:number, art:HTMLImageElement|null) {
   const w=426, h=240, horizon=120, fov=Math.PI/3;
   const sky=ctx.createLinearGradient(0,0,0,horizon);
   sky.addColorStop(0,"#263749"); sky.addColorStop(.58,"#8b9294"); sky.addColorStop(1,"#dbc7a0");
@@ -27,7 +28,7 @@ export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw
   }
   // The castle shares its bearing with the actual gate instead of following the camera.
   const dx=16.5-x,dy=3.5-y,dist=Math.hypot(dx,dy),angle=wrap(Math.atan2(dy,dx)-yaw);
-  if(Math.abs(angle)<fov){
+  if(!art&&Math.abs(angle)<fov){
     const cx=w/2+angle/fov*w,size=Math.min(1.5,Math.max(.55,11/Math.max(3,dist)));
     ctx.save();ctx.translate(Math.floor(cx),111);ctx.scale(size,size);
     ctx.fillStyle="#344b49";
@@ -44,6 +45,18 @@ export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw
     ctx.fillStyle="#a98757";ctx.fillRect(-6,-67,1,15);
     ctx.fillStyle="#8f4a40";ctx.beginPath();ctx.moveTo(-5,-67);ctx.lineTo(8,-64+Math.sin(time*.002)*2);ctx.lineTo(-5,-61);ctx.fill();
     ctx.restore();
+  }
+  if(art){
+    if(!panorama){
+      panorama=document.createElement("canvas");panorama.width=640;panorama.height=126;
+      const paint=panorama.getContext("2d")!;paint.imageSmoothingEnabled=false;
+      paint.drawImage(art,0,0,art.naturalWidth,art.naturalHeight*.57,0,0,640,126);
+      paint.globalCompositeOperation="destination-in";
+      const edge=paint.createLinearGradient(0,0,640,0);edge.addColorStop(0,"#0000");edge.addColorStop(.08,"#000");edge.addColorStop(.92,"#000");edge.addColorStop(1,"#0000");paint.fillStyle=edge;paint.fillRect(0,0,640,126);
+      const base=paint.createLinearGradient(0,0,0,126);base.addColorStop(0,"#000");base.addColorStop(.8,"#000");base.addColorStop(1,"#0000");paint.fillStyle=base;paint.fillRect(0,0,640,126);
+    }
+    // Keep the painted castle at the gate bearing; close scenery still moves independently.
+    ctx.drawImage(panorama,Math.floor(w/2+angle/fov*w-640*.575),0);
   }
   const mist=ctx.createLinearGradient(0,96,0,125);mist.addColorStop(0,"#bdc5b000");mist.addColorStop(.7,"#bdc5b055");mist.addColorStop(1,"#bdc5b000");ctx.fillStyle=mist;ctx.fillRect(0,96,w,29);
 }
