@@ -111,3 +111,11 @@ Trois découvertes facultatives donnent vie aux accessoires : feu du dernier pè
 Le journal affiche les lieux retrouvés et des indices pour les autres. Une boussole indique la direction pendant l’exploration et s’efface durant le duel. Fumées discrètes, braises et lanternes complètent les détails animés. Le vent varie doucement, le bois reçoit de rares notes d’oiseaux et le puits un léger son d’eau, coupés en présence d’une menace proche. Les commandes audio stables ne sont plus renvoyées au moteur sonore à chaque image.
 
 Se relever remet à zéro les trois recharges et l’exposition ; les découvertes déjà acquises restent enregistrées. Les anciennes sauvegardes démarrent avec zéro découverte sans changer leur progression.
+
+## Prêt pour la première session · 0.4.3
+
+Les options regroupent volume, secousses, fréquence visée, définition et commandes dans un panneau défilant ; le bouton de fermeture reste accessible après défilement. L’aide affiche les gestes sur mobile et les raccourcis réellement configurés sur PC. Les boutons latéraux sont nommés 4 et 5. Réassigner une touche utilisée libère son ancienne action, affichée « Non assignée » ; les paramètres de commandes endommagés sont filtrés au chargement.
+
+Une barre de vie discrète identifie les ennemis ordinaires visés ou récemment touchés. Un arc cuivré bref indique la direction d’un coup reçu, sans flash supplémentaire ni modification de la parade.
+
+Options → Votre chronique : export JSON de la progression et import avec aperçu, annulation et vérification. Les fichiers anciens sans enveloppe restent acceptés ; format inconnu, données incompatibles ou fichier illisible sont refusés sans modifier la partie. L’import conserve une copie de la partie actuelle dans un emplacement distinct des sauvegardes automatiques, exportable depuis les options jusqu’au prochain import. Après validation, le jeu revient à l’accueil : Continuer charge la progression importée. Les commandes, le volume et la qualité graphique restent locaux à l’appareil. Les données importées sont normalisées comme toute sauvegarde, notamment les ressources et la position.

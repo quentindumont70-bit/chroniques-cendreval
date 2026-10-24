@@ -54,3 +54,9 @@ Trois points d’exploration récompensés, journal enrichi et boussole discrèt
 Validation : 26 tests de règles/contenu et 40 contrôles existants réussis. Nouveau parcours navigateur : découverte des trois lieux par interaction tactile, absence de récompenses répétées, conservation après rechargement, journal, menace empêchant la fouille, mort et réinitialisation des compétences : réussi, sans erreur JavaScript. Émulation mobile Chromium ; écoute et ressenti sur appareils physiques restent à confirmer.
 
 Parcours complet supplémentaire avec le Rôdeur jusqu’à la récompense, la relique et l’achat au marchand : réussi.
+
+## Finition 0.4.3 · Prêt à jouer
+
+Options réunies avec fermeture accessible après défilement, aide PC/mobile adaptée, attribution de commandes sans doublons et filtrage des réglages abîmés. Vie des ennemis ordinaires et direction des dégâts mieux lisibles. Export/import de progression avec aperçu, annulation, normalisation et copie avant import séparée des sauvegardes automatiques.
+
+Validation : 28 tests de règles/contenu réussis, 40 contrôles existants réussis, essais des six classes/dix-huit compétences, découvertes et reprise après mort réussis. Nouveau test navigateur dédié à l’aide PC, l’export réel, l’import et son annulation, le refus d’un fichier invalide, la copie de secours et les options mobiles. Parcours complet Arcanes jusqu’à la récompense, relique et marchand réussi. Aucune erreur JavaScript observée. Chromium et émulation tactile ; les appareils physiques restent à éprouver pendant l’essai utilisateur.
