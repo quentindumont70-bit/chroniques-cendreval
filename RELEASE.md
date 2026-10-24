@@ -60,3 +60,13 @@ Parcours complet supplémentaire avec le Rôdeur jusqu’à la récompense, la r
 Options réunies avec fermeture accessible après défilement, aide PC/mobile adaptée, attribution de commandes sans doublons et filtrage des réglages abîmés. Vie des ennemis ordinaires et direction des dégâts mieux lisibles. Export/import de progression avec aperçu, annulation, normalisation et copie avant import séparée des sauvegardes automatiques.
 
 Validation : 28 tests de règles/contenu réussis, 40 contrôles existants réussis, essais des six classes/dix-huit compétences, découvertes et reprise après mort réussis. Nouveau test navigateur dédié à l’aide PC, l’export réel, l’import et son annulation, le refus d’un fichier invalide, la copie de secours et les options mobiles. Parcours complet Arcanes jusqu’à la récompense, relique et marchand réussi. Aucune erreur JavaScript observée. Chromium et émulation tactile ; les appareils physiques restent à éprouver pendant l’essai utilisateur.
+
+## Finition 0.4.4 · Rythme et esquive
+
+Esquive au clavier prenant en compte avant/arrière et les commandes réassignées, diagonales normalisées et direction conservée pendant la préparation. Une esquive déjà active ne peut être relancée. Les attaques et compétences attendent sa fin.
+
+Récupération partagée entre lame, arc et magie : alterner les armes ne permet plus de frapper instantanément. Une commande tardive prépare une seule attaque, y compris à l’arc ; parade et esquive préparées passent avant cette attaque. La pause annule les commandes en attente. Six cadences d’attaque de classe, avec un coût d’endurance supérieur pour le Chevalier du sang et des étincelles adaptées aux lanceurs.
+
+Enchaînements de trois frappes qui reviennent au premier coup, recommencent sur une nouvelle cible et se rompent après un coup reçu. Troisième frappe plus marquée visuellement, traînée carmin du Chevalier du sang et couleur d’étincelle propre à chaque classe. Manuel de combat utilisant les raccourcis configurés.
+
+Validation : typecheck et 31 tests de règles/contenu réussis ; 40 contrôles navigateur existants, six classes/dix-huit compétences, export/import et options mobiles réussis. Tests navigateur dédiés aux directions clavier, esquives répétées, récupération commune, commandes précoces/tardives, direction mémorisée et pause. Parcours complet Arcanes jusqu’à Valbrume, relique et marchand réussi. Aucune erreur JavaScript observée. Chromium et émulation tactile ; ressenti et performances physiques à confirmer sur les appareils du joueur.

@@ -22,3 +22,13 @@ export function skillCooldown(skill:Skill,stats:Stats){return skill.cooldown*(1-
 export function enemyDefenses(boss:boolean,kind:string){return{armor:boss?18:kind==='brute'?24:8,magicResist:boss?14:kind==='ranged'?18:6}}
 export function actualLifeSteal(damage:number,targetHp:number,fraction:number){return Math.min(Math.max(0,damage),Math.max(0,targetHp))*Math.max(0,Math.min(1,fraction))}
 export function skillState(cooldown:number,mana:number,cost:number):'cooldown'|'empty'|'ready'{return cooldown>0?'cooldown':mana<cost?'empty':'ready'}
+
+/** Basic attack cadence is independent of visual effect duration and rendering FPS. */
+export function basicAttackProfile(id:ClassId){return {
+ blade:{recovery:.28,stamina:10,sparkDamage:12},
+ bow:{recovery:.38,stamina:10,sparkDamage:12},
+ arcane:{recovery:.3,stamina:10,sparkDamage:12},
+ hex:{recovery:.34,stamina:10,sparkDamage:11},
+ cantor:{recovery:.32,stamina:10,sparkDamage:10},
+ reaver:{recovery:.34,stamina:12,sparkDamage:12}
+}[id]}

@@ -119,3 +119,9 @@ Les options regroupent volume, secousses, fréquence visée, définition et comm
 Une barre de vie discrète identifie les ennemis ordinaires visés ou récemment touchés. Un arc cuivré bref indique la direction d’un coup reçu, sans flash supplémentaire ni modification de la parade.
 
 Options → Votre chronique : export JSON de la progression et import avec aperçu, annulation et vérification. Les fichiers anciens sans enveloppe restent acceptés ; format inconnu, données incompatibles ou fichier illisible sont refusés sans modifier la partie. L’import conserve une copie de la partie actuelle dans un emplacement distinct des sauvegardes automatiques, exportable depuis les options jusqu’au prochain import. Après validation, le jeu revient à l’accueil : Continuer charge la progression importée. Les commandes, le volume et la qualité graphique restent locaux à l’appareil. Les données importées sont normalisées comme toute sauvegarde, notamment les ressources et la position.
+
+### Rythme des combats · 0.4.4
+
+Les attaques de base partagent une récupération de 0,28 à 0,40 seconde selon la classe et le type de frappe. Dans les 0,18 dernières secondes, une seule attaque peut être préparée ; elle est annulée par une défense préparée ou une pause. L’arc bénéficie du même mécanisme. L’esquive prend la direction clavier/pouce au moment de la commande ; sans direction elle part en arrière. Une esquive ne peut être renouvelée pendant ses 0,34 seconde d’activité, et aucune attaque ou compétence ne part pendant ce geste.
+
+Les frappes rapprochées réussies sur la même cible forment un cycle 1–2–3–1. Changer de cible, manquer sa frappe, subir un coup direct ou laisser passer la fenêtre relance la série au premier coup. Les temps du combat utilisent des secondes, indépendamment de la fréquence de rendu.

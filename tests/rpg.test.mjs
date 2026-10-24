@@ -23,3 +23,24 @@ import {portableProgress,readPortableProgress} from '../app/progress.ts';
 test('portable save roundtrip accepts current and legacy formats while rejecting wrong files',()=>{const profile={x:3.5,y:16.5,hp:80,quest:0,classId:'hex',discoveryMask:5};assert.deepEqual(JSON.parse(readPortableProgress(portableProgress(profile))),profile);assert.deepEqual(JSON.parse(readPortableProgress(JSON.stringify(profile))),profile);for(const raw of ['{}','[]','null','{broken',JSON.stringify({format:'other',version:1,profile}),JSON.stringify({format:'cendreval-save',version:2,profile}),JSON.stringify({x:3,y:4,hp:'100',quest:0})])assert.throws(()=>readPortableProgress(raw));assert.throws(()=>readPortableProgress(' '.repeat(512001)))});
 import {sanitizeBindings,assignBinding} from '../app/input-settings.ts';
 test('binding assignment removes ambiguous duplicates and corrupted settings use defaults',()=>{const defaults={attack:'Mouse0',ability:'KeyF',ability2:'KeyG'};const next=assignBinding(defaults,'ability2','Mouse0');assert.equal(next.attack,'');assert.equal(next.ability2,'Mouse0');assert.equal(defaults.attack,'Mouse0');assert.deepEqual(sanitizeBindings({attack:{bad:true},ability:null,ability2:'<script>'},defaults),defaults);assert.deepEqual(sanitizeBindings(null,defaults),defaults);const duplicated=sanitizeBindings({attack:'Mouse4',ability:'Mouse4'},defaults);assert.equal(duplicated.attack,'Mouse4');assert.equal(duplicated.ability,'')});
+
+import {combatDirection,nextComboStep,canBufferAttack} from '../app/combat-flow.ts';
+import {basicAttackProfile} from '../app/rpg.ts';
+test('keyboard dodge follows rebound controls and normalizes mixed diagonal intent',()=>{
+ const binds={forward:'ArrowUp',back:'ArrowDown',left:'ArrowLeft',right:'ArrowRight'},zero={forward:0,strafe:0};
+ assert.deepEqual(combatDirection({ArrowUp:true},binds,zero),{forward:1,strafe:0});
+ assert.deepEqual(combatDirection({ArrowDown:true},binds,zero),{forward:-1,strafe:0});
+ assert.deepEqual(combatDirection({ArrowUp:true,ArrowDown:true},binds,zero),zero);
+ assert.deepEqual(combatDirection({},binds,{forward:-.5,strafe:.5}),{forward:-.5,strafe:.5});
+ const diagonal=combatDirection({ArrowUp:true,ArrowRight:true},binds,{forward:1,strafe:1});
+ assert(Math.abs(Math.hypot(diagonal.forward,diagonal.strafe)-1)<1e-9);assert(diagonal.forward>0&&diagonal.strafe>0);
+});
+test('three-hit chain cycles and restarts on timeout or target change',()=>{
+ assert.deepEqual([1,2,3].map(step=>nextComboStep(step,.5,true)),[2,3,1]);
+ assert.equal(nextComboStep(2,0,true),1);assert.equal(nextComboStep(2,.5,false),1);
+});
+test('only late attacks are buffered and all six class cadences have bounded resource costs',()=>{
+ assert.equal(canBufferAttack(.18),true);assert.equal(canBufferAttack(.181),false);assert.equal(canBufferAttack(0),false);
+ for(const id of Object.keys(CLASSES)){const p=basicAttackProfile(id);assert(p.recovery>=.28&&p.recovery<=.4);assert(p.stamina>=10&&p.stamina<=12);assert(p.sparkDamage>=10&&p.sparkDamage<=12)}
+ assert(basicAttackProfile('reaver').recovery>basicAttackProfile('blade').recovery);
+});
