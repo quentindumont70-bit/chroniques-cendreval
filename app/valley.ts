@@ -1,8 +1,10 @@
+import {routeDistance} from "./world-art";
 // Low resolution world-space scenery with cached terrain and atmospheric perspective.
 const wrap = (a:number) => Math.atan2(Math.sin(a), Math.cos(a));
 let ground: HTMLCanvasElement | undefined;
 let pixels: ImageData | undefined;
 let panorama: HTMLCanvasElement | undefined;
+let pathGrid:Float32Array|undefined;
 // Terrain stays outside the walkable basin; combat positions retain a level footing.
 const TERRAIN_SIZE=256, TERRAIN_STEP=.5, TERRAIN_ORIGIN=-54;
 let terrainHeight:Float32Array|undefined;
@@ -47,7 +49,7 @@ export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw
   sky.addColorStop(0,"#263749"); sky.addColorStop(.58,"#8b9294"); sky.addColorStop(1,"#dbc7a0");
   ctx.fillStyle=sky;ctx.fillRect(0,0,w,horizon);
   const sunAngle=wrap(-1.85-yaw), sunX=w/2+sunAngle/fov*w;
-  if(Math.abs(sunAngle)<fov){
+  if(!art&&Math.abs(sunAngle)<fov){
     const glow=ctx.createRadialGradient(sunX,38,2,sunX,38,70);
     glow.addColorStop(0,"#f4dfad99");glow.addColorStop(1,"#f4dfad00");
     ctx.fillStyle=glow;ctx.fillRect(sunX-70,0,140,horizon);
@@ -100,6 +102,7 @@ export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw
   const mist=ctx.createLinearGradient(0,96,0,125);mist.addColorStop(0,"#bdc5b000");mist.addColorStop(.7,"#bdc5b055");mist.addColorStop(1,"#bdc5b000");ctx.fillStyle=mist;ctx.fillRect(0,96,w,29);
 }
 export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number){
+  if(!pathGrid){pathGrid=new Float32Array(160*160);for(let gy=0;gy<160;gy++)for(let gx=0;gx<160;gx++)pathGrid[gy*160+gx]=routeDistance(gx/8,gy/8)}
   if(!ground){ground=document.createElement("canvas");ground.width=213;ground.height=60;pixels=ground.getContext("2d")!.createImageData(213,60)}
   const data=pixels!.data,cos=Math.cos(yaw),sin=Math.sin(yaw),plane=Math.tan(Math.PI/6);
   for(let row=0;row<60;row++){
@@ -108,11 +111,11 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const side=(col/213*2-1)*plane;
       const wx=x+depth*(cos-sin*side),wy=y+depth*(sin+cos*side);
       const hx=Math.floor(wx*22),hy=Math.floor(wy*22),hash=((Math.imul(hx,374761393)^Math.imul(hy,668265263))>>>0)%23;
-      const progress=Math.max(0,Math.min(1,(16.5-wy)/13)),pathX=3.5+13*progress+Math.sin(progress*6)*.65;
-      const pathDistance=Math.abs(wx-pathX),path=pathDistance<.36;
+      const gx=Math.floor(wx*8),gy=Math.floor(wy*8);
+      const pathDistance=gx>=0&&gy>=0&&gx<160&&gy<160?pathGrid[gy*160+gx]:10,path=pathDistance<.43;
       const rolling=Math.sin(wx*.72+wy*.23)*Math.cos(wy*.61)*.5+.5;
       const light=.78+rolling*.3;
-      const edge=pathDistance<.49;
+      const edge=pathDistance<.58;
       const stone=hash>19,shade=hash*.85;
       const base=path?[119+shade,108+shade,80+shade]:edge?[78+shade,83+shade,54+shade]:stone?[68+shade,78+shade,63+shade]:[40+shade,65+shade,45+shade];
       const i=(row*213+col)*4;
