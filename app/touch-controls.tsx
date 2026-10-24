@@ -1,7 +1,7 @@
 "use client";
 import {useEffect,useRef} from "react";
 import type {PointerEvent} from "react";
-type Props={onMove:(f:number,s:number)=>void;onLook:(x:number,y:number)=>void;onAttack:()=>void;onAbility:()=>void;onGuard:(held:boolean)=>void;onDodge:(f:number,s:number)=>void;onInteract:()=>void;onPotion:()=>void;onWake:()=>void};
+type Props={abilityCooldown:number;onMove:(f:number,s:number)=>void;onLook:(x:number,y:number)=>void;onAttack:()=>void;onAbility:()=>void;onGuard:(held:boolean)=>void;onDodge:(f:number,s:number)=>void;onInteract:()=>void;onPotion:()=>void;onWake:()=>void};
 type Finger={id:number;x:number;y:number;lastX:number;lastY:number;time:number;max:number;peakX:number;peakY:number;peakAt:number;dodgeAt:number;guard:boolean;dodged:boolean;looking:boolean;double:boolean};
 const HOLD_MS=140,TAP_MS=180;
 export default function TouchControls(props:Props){
@@ -48,5 +48,5 @@ export default function TouchControls(props:Props){
       else timers.current[side]=setTimeout(()=>{timers.current[side]=null;if(side==="right")latest.current.onAttack();else latest.current.onInteract()},TAP_MS);
     }
   };
-  return <div ref={surface} className="thumb-surface" role="group" aria-label="Commandes gestuelles aux deux pouces" onPointerDown={down} onPointerMove={move} onPointerUp={e=>end(e)} onPointerCancel={e=>end(e,true)} onLostPointerCapture={e=>end(e,true)} onContextMenu={e=>e.preventDefault()}><div className="thumb-ring" ref={ring}><span ref={knob}/></div><div className="thumb-caption left">GLISSER · MARCHER<small>aller-retour bref · esquive</small></div><div className="thumb-caption right">GLISSER · REGARDER<small>tap · frappe / maintenir · garde</small></div><div className="thumb-guard">GARDE</div></div>;
+  return <div ref={surface} className="thumb-surface" role="group" aria-label="Commandes gestuelles aux deux pouces" onPointerDown={down} onPointerMove={move} onPointerUp={e=>end(e)} onPointerCancel={e=>end(e,true)} onLostPointerCapture={e=>end(e,true)} onContextMenu={e=>e.preventDefault()}><div className="thumb-ring" ref={ring}><span ref={knob}/></div><div className="thumb-caption left">GLISSER · MARCHER<small>aller-retour bref · esquive</small></div><div className="thumb-caption right">GLISSER · REGARDER<small>tap · frappe / maintenir · garde</small></div><div className={`thumb-power${props.abilityCooldown===0?" ready":""}`} aria-label={props.abilityCooldown===0?"Pouvoir prêt":`Pouvoir dans ${props.abilityCooldown} secondes`}><b>✦</b><span>{props.abilityCooldown===0?"POUVOIR PRÊT":`${props.abilityCooldown} s`}</span></div><div className="thumb-guard">GARDE</div></div>;
 }

@@ -57,3 +57,19 @@ Les sprites sont dessinés sans lissage. Les bornes et la lame du joueur sont du
 Le tap du mage lance désormais une étincelle gratuite (12 dégâts de base), qui rend 3 mana lorsqu’elle touche. La mana se régénère naturellement à 5 points par seconde pendant le jeu ; la pause suspend cette récupération. Le pouvoir consomme toujours 25 mana, et la flamme secondaire au clavier 15. Les bornes restaurent toute la réserve. La barre de mana et le menu Gestes expliquent cette récupération. Les attaques rapprochées peuvent être mises en attente, y compris celles du mage.
 
 Les taps attendent 180 ms, et le second contact annule immédiatement le tap simple en attente afin d’éviter une frappe parasite pendant un double tap légèrement plus lent. La caméra répond dès 8 pixels de glissement. Le sol et le ciel couvrent maintenant les 48 pixels supplémentaires nécessaires à l’inclinaison maximale, sans exposer la couleur de fond sous la carte.
+
+## Chronique I — passe de finition 0.3
+
+Le premier chapitre forme une boucle complète : choix de voie, arrivée dans la vallée, sacoche du chariot en option, trois bornes, duel à deux phases, écran de victoire, accueil de Valbrume et récompense persistante.
+
+- Les attaques et les pouvoirs respectent les murs ; les ennemis cherchent un passage lorsque la poursuite directe est obstruée.
+- L’esquive parcourt 1,08 unité en 180 ms, avec déplacement balayé et glissement contre les murs. La fenêtre de riposte après parade parfaite est adaptée au délai des gestes tactiles.
+- Rôdeur sans munitions : attaque de proximité et récupération d’une flèche toutes les 2,8 secondes jusqu’à un minimum de six. Mage : attaque de base gratuite, récupération passive et par impact.
+- Ambiance procédurale discrète (vent, nappes, pas), réglable avec le volume du jeu. Les signaux de combat restent prioritaires. Les réglages absents conservent leur vraie valeur par défaut.
+- Pause automatique et sauvegarde lors de la perte de focus. Sauvegarde périodique toutes les 12 secondes, aux bornes et aux événements de progression importants.
+- Sauvegarde validée au chargement : ressources bornées, classes connues, position replacée hors des murs et récupération de la copie de secours si le fichier principal est illisible. Le stockage bloqué signale clairement que la partie ne peut pas être enregistrée.
+- Interface du duel épurée ; pouvoir prêt visible sans bouton supplémentaire. L’outil Test est déplacé dans le menu de pause. L’écran de victoire prend la priorité sur tous les messages de combat.
+
+Commandes de vérification : `npm test`, `npm run typecheck:game`, puis `tests/game-smoke.cjs` pour les interactions tactiles. `tests/full-level.cjs` joue le chapitre par les commandes normales ; `CENDREVAL_CLASS=LAME`, `RÔDEUR` ou `ARCANES` choisit la voie, et `CENDREVAL_PORT` permet d’isoler les parcours. La lecture du progrès sauvegardé sert uniquement à observer les positions et les résultats ; aucun raccourci de combat ni modification des statistiques n’est utilisé dans ce parcours complet.
+
+La publication GitHub Pages lance maintenant le typage et les tests avant de déployer.
