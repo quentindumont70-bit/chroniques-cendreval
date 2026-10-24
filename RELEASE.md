@@ -46,3 +46,11 @@ Validation 0.4.0 : 19 tests de règles et de contenu réussis ; 36 contrôles ex
 Nouveaux accessoires peints, texture de pierre des ruines, effets et armes de classe distincts, recharge et exposition lisibles. Optimisation du découpage des sprites contre les murs et cache du terrain/sol à caméra fixe. Objectifs Auto 60/120/240 et compteur mesuré, sans garantie de fréquence matérielle. Les données de progression et les raccourcis sont conservés.
 
 Validation 0.4.1 : 23 tests de règles et de contenu, 40 contrôles navigateur (dont options de fréquence, nouveaux assets et compteur FPS réel), essais des six classes/dix-huit compétences, et parcours complet Lame jusqu’à Valbrume : réussis, sans erreur JavaScript observée. Vérification visuelle des captures de la vallée, du boss et des fiches. Les performances physiques à 120/240 Hz restent à mesurer sur la machine du joueur.
+
+## Finition 0.4.2 · Les histoires de la vallée
+
+Trois points d’exploration récompensés, journal enrichi et boussole discrète, détails animés du camp et des lanternes, ambiance sonore locale avec mises à jour audio réduites. Récompenses uniques sauvegardées ; fouille bloquée par une menace proche. Reprise après la mort nettoyant compétences et exposition sans effacer les découvertes.
+
+Validation : 26 tests de règles/contenu et 40 contrôles existants réussis. Nouveau parcours navigateur : découverte des trois lieux par interaction tactile, absence de récompenses répétées, conservation après rechargement, journal, menace empêchant la fouille, mort et réinitialisation des compétences : réussi, sans erreur JavaScript. Émulation mobile Chromium ; écoute et ressenti sur appareils physiques restent à confirmer.
+
+Parcours complet supplémentaire avec le Rôdeur jusqu’à la récompense, la relique et l’achat au marchand : réussi.

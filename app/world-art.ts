@@ -26,7 +26,7 @@ export const LIVING_PROPS:Prop[]=[
 {x:6.4,y:16.7,frame:1,height:3.6,living:true},{x:4.5,y:12.5,frame:0,height:2.8,living:true},
 {x:8.7,y:14.4,frame:5,height:.5,living:true},{x:6.4,y:13.8,frame:4,height:.45,living:true},
 {x:13.4,y:14.4,frame:7,height:1.7,living:true},{x:14.2,y:10.8,frame:2,height:1.55,living:true},
-{x:16.8,y:9.5,frame:1,height:3.4,living:true},{x:12.7,y:7.4,frame:6,height:2.2,living:true},
+{x:16.8,y:9.5,frame:1,height:3.4,living:true},{x:13.4,y:7.4,frame:6,height:2.2,living:true},
 {x:7.4,y:6.7,frame:0,height:2.6,living:true},{x:9.5,y:4.6,frame:2,height:1.6,living:true},
 {x:11.8,y:5.6,frame:6,height:2.3,living:true},{x:16.1,y:4.6,frame:0,height:3,living:true},
 ...Array.from({length:16},(_,i)=>({x:3.1+(i*3.13)%13.6,y:4.1+(i*2.17)%12.4,frame:i%3===0?5:4,height:i%3===0?.42:.35,living:true}))];
@@ -47,6 +47,8 @@ export function drawWorldProps(ctx:CanvasRenderingContext2D,atlas:HTMLImageEleme
 
   ctx.restore();
   if(p.living&&p.d<8&&p.d*Math.cos(a)<z[Math.max(0,Math.min(425,Math.floor(cx)))]){
+   if(p.frame===3){const ex=cx-size*.16,ey=foot-size*.15;ctx.fillStyle=`rgba(237,177,91,${.55+Math.sin(time*.012)*.12})`;ctx.fillRect(ex,ey,Math.max(.6,size*.025),Math.max(.7,size*.035));for(let i=0;i<4;i++){const life=((time*.00018+i*.27)%1);ctx.fillStyle=`rgba(190,183,162,${(1-life)*.13})`;ctx.fillRect(ex+Math.sin(time*.001+i)*size*.02-life*size*.04,ey-life*size*.25,size*(.02+life*.04),size*(.02+life*.04))}}
+   if(p.frame===1||p.frame===2){const light=.7+Math.sin(time*.006+p.x)*.1;ctx.fillStyle=`rgba(244,193,109,${light})`;ctx.fillRect(cx+(p.frame===1?size*.16:0),top+size*(p.frame===1?.53:.43),Math.max(.6,size*.012),Math.max(.7,size*.022))}
    if(p.frame===5){ctx.fillStyle='rgba(240,211,130,.7)';for(let i=0;i<3;i++){const phase=time*.0006+i*2.1+p.x;ctx.fillRect(cx+Math.sin(phase)*size*.3,foot-size*.3-Math.cos(phase*.7)*size*.12,Math.max(.5,size*.012),Math.max(.5,size*.012))}}
    if(p.frame===6){const flutter=Math.sin(time*.004+p.x)*size*.035;ctx.strokeStyle='rgba(179,91,84,.65)';ctx.lineWidth=Math.max(.5,size*.015);ctx.beginPath();ctx.moveTo(cx+size*.12,top+size*.28);ctx.lineTo(cx+size*.25+flutter,top+size*.4);ctx.lineTo(cx+size*.22,top+size*.56);ctx.stroke()}
   }
