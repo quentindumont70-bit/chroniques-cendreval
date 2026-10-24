@@ -32,3 +32,11 @@ La troisième personne et une refonte en vrai moteur 3D ne font pas partie de ce
 La passe 0.3.1 affine le poids des impacts, la continuité caméra–garde et les transitions de pose du Gardien. Les défenses engagées en récupération ne sont plus perdues, et une attaque pendant la transformation du Gardien ne dépense plus les ressources du joueur.
 
 La qualité visuelle propose maintenant Auto, Rétro, HD 1080p et Ultra 4K. Le rendu Ultra utilise réellement une surface 3840 × 2160 ; les atlas principaux doublent leur définition sur chaque axe, le sol et les murs sont échantillonnés plus finement. Le choix est persistant et Auto ajuste la charge. Les dimensions des quatre modes et des nouvelles images, ainsi que la persistance du choix, sont contrôlées dans le navigateur. Les performances Ultra sur appareil physique restent à mesurer.
+
+## Extension 0.4.0 · Grimoire des voies
+
+Six classes et dix-huit compétences, statistiques effectives et fiche de personnage détaillée. Les trois voies supplémentaires possèdent leurs propres profils et combinaisons de compétences ; leurs armes utilisent encore les trois familles visuelles existantes. Première passe d’équilibrage, à confronter au ressenti en jeu.
+
+Correctifs PC : reprise après Échap, capture souris refusée sans blocage et interception des boutons latéraux du navigateur, y compris lors d’une association. Tests dédiés : six identités sauvegardées, dix-huit compétences, gestes directionnels, coûts, recharges suspendues, fiche de personnage et régressions de souris. Les contrôles natifs d’un pilote Windows hors navigateur ne sont pas accessibles à l’application web.
+
+Validation 0.4.0 : 19 tests de règles et de contenu réussis ; 36 contrôles existants réussis ; test navigateur dédié réussi pour les six classes, dix-huit compétences, reprise, boutons latéraux et gestes directionnels, sans erreur JavaScript. Parcours complet Arcanes jusqu’à la récompense, relique et marchand réussi. Tests effectués dans Chromium, avec émulation tactile pour le mobile.

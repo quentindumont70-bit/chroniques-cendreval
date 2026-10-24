@@ -2,8 +2,8 @@
 import {useEffect,useRef} from "react";
 import {TOUCH_GUARD_DELAY} from "./parry-cue";
 import type {PointerEvent} from "react";
-type Props={guardOnRest:boolean;abilityCooldown:number;onMove:(f:number,s:number)=>void;onLook:(x:number,y:number)=>void;onAttack:()=>void;onAbility:()=>void;onGuard:(held:boolean)=>void;onDodge:(f:number,s:number)=>void;onInteract:()=>void;onPotion:()=>void;onWake:()=>void};
-type Finger={id:number;x:number;y:number;lastX:number;lastY:number;time:number;max:number;peakX:number;peakY:number;peakAt:number;dodgeAt:number;guard:boolean;dodged:boolean;looking:boolean;double:boolean;guardX:number;guardY:number};
+type Props={guardOnRest:boolean;abilityCooldown:number;onMove:(f:number,s:number)=>void;onLook:(x:number,y:number)=>void;onAttack:()=>void;onAbility:(slot?:number)=>void;onGuard:(held:boolean)=>void;onDodge:(f:number,s:number)=>void;onInteract:()=>void;onPotion:()=>void;onWake:()=>void};
+type Finger={id:number;x:number;y:number;lastX:number;lastY:number;time:number;max:number;peakX:number;peakY:number;peakAt:number;dodgeAt:number;guard:boolean;dodged:boolean;looking:boolean;double:boolean;skill?:number;guardX:number;guardY:number};
 const HOLD_MS=TOUCH_GUARD_DELAY*1000,TAP_MS=180;
 export default function TouchControls(props:Props){
   const latest=useRef(props);latest.current=props;
@@ -34,6 +34,7 @@ export default function TouchControls(props:Props){
       // A deliberate out-and-back gesture, never an ordinary sustained walk.
       if(f.max>=42&&dist<18&&performance.now()-f.peakAt<240&&performance.now()-f.dodgeAt>450){f.dodged=true;f.dodgeAt=performance.now();f.peakAt=-Infinity;cancel("left");const len=Math.hypot(f.peakX,f.peakY);latest.current.onDodge(-f.peakY/len,f.peakX/len)}
     }else{
+      if(f.double&&dist>28){cancel("hold");f.skill=dy<0?1:2;f.lastX=e.clientX;f.lastY=e.clientY;return}
       // A broad drag leaves guard; parking the thumb brings it back without a lift.
       if(f.guard&&Math.hypot(e.clientX-f.guardX,e.clientY-f.guardY)>24){f.guard=false;f.looking=true;latest.current.onGuard(false);surface.current?.removeAttribute("data-guard")}
       const beginning=!f.looking&&!f.guard&&dist>8;
@@ -48,6 +49,7 @@ export default function TouchControls(props:Props){
     e.stopPropagation();const f=fingers.current[side]!;fingers.current[side]=null;
     if(side==="left"){latest.current.onMove(0,0);if(ring.current)ring.current.style.opacity="0"}else{cancel("hold");if(f.guard)latest.current.onGuard(false);surface.current?.removeAttribute("data-guard")}
     if(aborted){cancel(side);return}
+    if(side==="right"&&f.double&&f.skill!==undefined){latest.current.onAbility(f.skill);return}
     if(!f.guard&&!f.dodged&&!f.looking&&f.max<12&&performance.now()-f.time<HOLD_MS){
       if(f.double){cancel(side);if(side==="right")latest.current.onAbility();else latest.current.onPotion()}
       else timers.current[side]=setTimeout(()=>{timers.current[side]=null;if(side==="right")latest.current.onAttack();else latest.current.onInteract()},TAP_MS);

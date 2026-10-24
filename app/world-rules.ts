@@ -18,6 +18,7 @@ export function decodeProgress<T extends Record<string,unknown>>(raw:string,defa
  for(const key of ['hp','mana','stamina'])clamp(key,0,100);
  for(const [key,max] of [['shadeMask',3],['quest',16],['shrines',7],['lore',7],['checkpoint',3],['enemyHp',400],['potions',99],['arrows',30],['level',99],['gold',999999],['talent',99],['xp',9999],['echoTier',5],['echoBest',5]] as const)clamp(key,0,max,true);
  if(!['blade','bow','arcane'].includes(String(result.spec)))result.spec=defaults.spec;
+ if('classId' in defaults){const ids=['blade','bow','arcane','hex','cantor','reaver'];result.classId=ids.includes(String(input.classId))?input.classId:result.spec;result.spec=['hex','cantor'].includes(String(result.classId))?'arcane':result.classId==='reaver'?'blade':result.classId}
  if(!['none','iron','oak','ember'].includes(String(result.relic)))result.relic='none';
  if(!['none','ward','fury','focus'].includes(String(result.courtBoon)))result.courtBoon='none';
  if(!input.wardenVersion&&result.quest===0)result.enemyHp=Math.round(Number(result.enemyHp)*220/70);
