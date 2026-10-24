@@ -18,3 +18,7 @@ export type DamageResult={amount:number;critical:boolean;mitigated:number};
 /** Flat penetration cannot make resistance negative. 100 effective resistance halves damage. */
 export function resolveDamage(base:number,stats:Stats,defense:{armor:number;magicResist:number},magic:boolean,roll=1,exposed=false):DamageResult{const resistance=Math.max(0,(magic?defense.magicResist:defense.armor)-(magic?stats.magicPen:stats.armorPen));const critical=roll<Math.max(0,Math.min(.75,stats.critChance)),raw=Math.max(0,base+stats.power)*(critical?1+Math.max(0,stats.critBonus):1)*(exposed?1.25:1);const amount=raw===0?0:Math.max(1,Math.round(raw*100/(100+resistance)));return{amount,critical,mitigated:Math.max(0,Math.round(raw)-amount)}}
 export function skillCooldown(skill:Skill,stats:Stats){return skill.cooldown*(1-Math.max(0,Math.min(.5,stats.cooldownReduction)))}
+
+export function enemyDefenses(boss:boolean,kind:string){return{armor:boss?18:kind==='brute'?24:8,magicResist:boss?14:kind==='ranged'?18:6}}
+export function actualLifeSteal(damage:number,targetHp:number,fraction:number){return Math.min(Math.max(0,damage),Math.max(0,targetHp))*Math.max(0,Math.min(1,fraction))}
+export function skillState(cooldown:number,mana:number,cost:number):'cooldown'|'empty'|'ready'{return cooldown>0?'cooldown':mana<cost?'empty':'ready'}

@@ -1,0 +1,16 @@
+import type {ClassId} from './rpg';
+export const CLASS_THEMES:Record<ClassId,{color:string;rgb:string;title:string}>={blade:{color:'#b8d8e2',rgb:'184,216,226',title:'LE SERMENT'},bow:{color:'#c4d69d',rgb:'196,214,157',title:'LA TRAQUE'},arcane:{color:'#e1b0f5',rgb:'225,176,245',title:'LA BRAISE'},hex:{color:'#bcb0f1',rgb:'188,176,241',title:'LA DETTE'},cantor:{color:'#e8d497',rgb:'232,212,151',title:'LE REQUIEM'},reaver:{color:'#ef9b9b',rgb:'239,155,155',title:'LE PACTE'}};
+export function drawClassFocus(ctx:CanvasRenderingContext2D,id:ClassId,time:number,charge:number){const theme=CLASS_THEMES[id],pulse=Math.sin(time*.007)*1.5;ctx.fillStyle='#302635';ctx.fillRect(-4,-3,90,7);ctx.fillStyle=theme.color;ctx.fillRect(6,-2,76,1);ctx.save();ctx.translate(88,0);ctx.strokeStyle=theme.color;ctx.lineWidth=2;
+ if(id==='hex'){ctx.beginPath();ctx.arc(0,0,12+pulse,.6,5.1);ctx.stroke();ctx.fillStyle='#d9d2f3';ctx.beginPath();ctx.arc(-2,0,3,0,Math.PI*2);ctx.fill();for(let i=0;i<3;i++){const a=time*.001+i*2.1;ctx.fillRect(Math.cos(a)*18,Math.sin(a)*18,2,2)}}
+ else if(id==='cantor'){ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-10,-15);ctx.lineTo(-10,10);ctx.quadraticCurveTo(0,22,10,10);ctx.lineTo(10,-15);ctx.stroke();ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(-7,-10);ctx.lineTo(7,-10);ctx.moveTo(0,-10);ctx.lineTo(0,14);ctx.stroke();ctx.fillStyle=theme.color;ctx.fillRect(-1,-17,2,3)}
+ else{ctx.rotate(time*.0005);ctx.fillStyle='#8e70a5';ctx.beginPath();ctx.moveTo(0,-13-pulse);ctx.lineTo(8,0);ctx.lineTo(0,13+pulse);ctx.lineTo(-8,0);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#fff2fa';ctx.fillRect(-1,-5,2,6)}
+ ctx.globalAlpha=.22+Math.min(.4,charge);ctx.strokeStyle=theme.color;ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,0,20+pulse,0,Math.PI*2);ctx.stroke();ctx.restore();}
+/** Short local runes and trails: no full-screen flashes, all radii bounded. */
+export function drawClassCast(ctx:CanvasRenderingContext2D,id:ClassId,slot:number,remaining:number){const p=Math.max(0,Math.min(1,1-remaining/.7)),alpha=Math.sin(p*Math.PI)*.65,theme=CLASS_THEMES[id];ctx.save();ctx.translate(213,143);ctx.strokeStyle=theme.color;ctx.fillStyle=theme.color;ctx.globalAlpha=alpha;ctx.lineWidth=1.3;const radius=18+p*56;
+ if(slot===2){for(let i=0;i<6;i++){const a=i*Math.PI/3,x=Math.cos(a)*radius,y=Math.sin(a)*radius;ctx.beginPath();ctx.moveTo(x-3,y);ctx.lineTo(x+3,y);ctx.moveTo(x,y-3);ctx.lineTo(x,y+3);ctx.stroke()}}
+ else if(id==='cantor'){for(let i=0;i<3;i++){ctx.beginPath();ctx.ellipse(0,0,radius+i*8,(radius+i*8)*.45,0,Math.PI*.1,Math.PI*.9);ctx.stroke()}}
+ else if(id==='hex'){for(let i=0;i<5;i++){const a=i*Math.PI*2/5+p*1.8;ctx.beginPath();ctx.arc(Math.cos(a)*radius,Math.sin(a)*radius*.5,4,.5,5);ctx.stroke()}}
+ else if(id==='reaver'||id==='blade'){ctx.lineWidth=2;for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(0,14,radius+i*6,-2.7+p*.5,-.4+p*.5);ctx.stroke()}}
+ else if(id==='bow'){for(let i=-2;i<=2;i++){ctx.beginPath();ctx.moveTo(i*9,18+p*12);ctx.lineTo(i*5,-radius);ctx.lineTo(i*5-3,-radius+6);ctx.stroke()}}
+ else{for(let i=0;i<8;i++){const a=i*Math.PI/4+p;ctx.beginPath();ctx.moveTo(Math.cos(a)*radius*.6,Math.sin(a)*radius*.6);ctx.lineTo(Math.cos(a)*radius,Math.sin(a)*radius);ctx.stroke()}}
+ if(slot===1){ctx.beginPath();ctx.moveTo(-8,-8);ctx.lineTo(8,8);ctx.moveTo(8,-8);ctx.lineTo(-8,8);ctx.stroke()}ctx.restore();}

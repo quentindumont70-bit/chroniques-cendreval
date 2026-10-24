@@ -6,6 +6,8 @@ let pixels: ImageData | undefined;
 let panorama: HTMLCanvasElement | undefined;
 let pathGrid:Float32Array|undefined;
 let terrainLayer:HTMLCanvasElement|undefined;
+let terrainPose:{x:number;y:number;yaw:number}|undefined;
+let groundPose:{x:number;y:number;yaw:number;cols:number}|undefined;
 // Terrain stays outside the walkable basin; combat positions retain a level footing.
 const TERRAIN_SIZE=256, TERRAIN_STEP=.5, TERRAIN_ORIGIN=-54;
 let terrainHeight:Float32Array|undefined;
@@ -44,7 +46,7 @@ function paintTerrain(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number)
     }
   }
 }
-function drawTerrain(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number){if(!terrainLayer){terrainLayer=document.createElement("canvas");terrainLayer.width=426;terrainLayer.height=150}const paint=terrainLayer.getContext("2d")!;paint.clearRect(0,0,426,150);paintTerrain(paint,x,y,yaw);ctx.drawImage(terrainLayer,0,0,426,150)}
+function drawTerrain(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number){if(!terrainLayer){terrainLayer=document.createElement("canvas");terrainLayer.width=426;terrainLayer.height=150}const paint=terrainLayer.getContext("2d")!;if(!terrainPose||terrainPose.x!==x||terrainPose.y!==y||terrainPose.yaw!==yaw){paint.clearRect(0,0,426,150);paintTerrain(paint,x,y,yaw);terrainPose={x,y,yaw}}ctx.drawImage(terrainLayer,0,0,426,150)}
 export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw:number, time:number, art:HTMLImageElement|null) {
   const w=426, h=240, horizon=120, fov=Math.PI/3;
   const sky=ctx.createLinearGradient(0,0,0,horizon);
@@ -100,11 +102,16 @@ export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw
     // Keep the painted castle at the gate bearing; close scenery still moves independently.
     ctx.drawImage(panorama,w/2+angle/fov*w-640*.575,0,640,126);
   }
+  // Distant flock: time-based wingbeats remain consistent at any refresh rate.
+  ctx.strokeStyle='rgba(47,61,65,.55)';ctx.lineWidth=.7;
+  for(let i=0;i<5;i++){const bearing=wrap(-1.1+time*.000014+i*.025-yaw);if(Math.abs(bearing)>fov*.6)continue;const bx=w/2+bearing/fov*w,by=39+i%3*3+Math.sin(time*.0004+i)*2,wing=Math.sin(time*.006+i)*1.6;ctx.beginPath();ctx.moveTo(bx-2,by-wing);ctx.lineTo(bx,by);ctx.lineTo(bx+2,by-wing);ctx.stroke()}
   drawTerrain(ctx,x,y,yaw);
   const mist=ctx.createLinearGradient(0,96,0,125);mist.addColorStop(0,"#bdc5b000");mist.addColorStop(.7,"#bdc5b055");mist.addColorStop(1,"#bdc5b000");ctx.fillStyle=mist;ctx.fillRect(0,96,w,29);
 }
 export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number,detail=1){
   const cols=detail>=3?852:detail>=2?426:213,rows=detail>=3?336:detail>=2?168:84,step=168/rows;
+  if(ground&&groundPose&&groundPose.x===x&&groundPose.y===y&&groundPose.yaw===yaw&&groundPose.cols===cols){ctx.drawImage(ground,0,120,426,168);return}
+  groundPose={x,y,yaw,cols};
   if(!pathGrid){pathGrid=new Float32Array(160*160);for(let gy=0;gy<160;gy++)for(let gx=0;gx<160;gx++)pathGrid[gy*160+gx]=routeDistance(gx/8,gy/8)}
   if(!ground||ground.width!==cols){ground=document.createElement("canvas");ground.width=cols;ground.height=rows;pixels=ground.getContext("2d")!.createImageData(cols,rows)}
   const data=pixels!.data,cos=Math.cos(yaw),sin=Math.sin(yaw),plane=Math.tan(Math.PI/6);

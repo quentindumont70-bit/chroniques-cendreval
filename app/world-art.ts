@@ -1,4 +1,4 @@
-type Prop={x:number;y:number;frame:number;height:number};
+type Prop={x:number;y:number;frame:number;height:number;living?:boolean};
 // Authored landmarks: pilgrim approach, birch grove, old graves and the Warden's court.
 export const VALLEY_PROPS:Prop[]=[
  {x:2.1,y:17.8,frame:0,height:3.2},{x:5.8,y:18.3,frame:1,height:3.0},
@@ -20,20 +20,37 @@ export const VALLEY_PROPS:Prop[]=[
  {x:14.5,y:5.0,frame:3,height:2.7},{x:17.3,y:5.4,frame:5,height:1.6},
  ...Array.from({length:22},(_,i)=>({x:2.4+(i*3.71)%15,y:3.5+(i*2.29)%14,frame:6,height:.25+(i%3)*.08})),
 ];
+// Scenery sits beside the route; decorative objects never alter collision or objectives.
+export const LIVING_PROPS:Prop[]=[
+{x:3.0,y:17.6,frame:3,height:1.6,living:true},{x:5.8,y:15.8,frame:2,height:1.65,living:true},
+{x:6.4,y:16.7,frame:1,height:3.6,living:true},{x:4.5,y:12.5,frame:0,height:2.8,living:true},
+{x:8.7,y:14.4,frame:5,height:.5,living:true},{x:6.4,y:13.8,frame:4,height:.45,living:true},
+{x:13.4,y:14.4,frame:7,height:1.7,living:true},{x:14.2,y:10.8,frame:2,height:1.55,living:true},
+{x:16.8,y:9.5,frame:1,height:3.4,living:true},{x:12.7,y:7.4,frame:6,height:2.2,living:true},
+{x:7.4,y:6.7,frame:0,height:2.6,living:true},{x:9.5,y:4.6,frame:2,height:1.6,living:true},
+{x:11.8,y:5.6,frame:6,height:2.3,living:true},{x:16.1,y:4.6,frame:0,height:3,living:true},
+...Array.from({length:16},(_,i)=>({x:3.1+(i*3.13)%13.6,y:4.1+(i*2.17)%12.4,frame:i%3===0?5:4,height:i%3===0?.42:.35,living:true}))];
+/** Merge adjacent visible columns: one draw call per exposed span rather than per two pixels. */
+export function visibleSpans(left:number,width:number,depth:number,z:Float32Array){const spans:[number,number][]=[];let start=-1;const end=Math.min(z.length,Math.ceil(left+width));for(let x=Math.max(0,Math.floor(left));x<end;x++){const visible=depth<=z[x]+.12;if(visible&&start<0)start=x;if(!visible&&start>=0){spans.push([start,x]);start=-1}}if(start>=0)spans.push([start,end]);return spans}
 export const ROUTE=[[3.5,16.5],[7.5,14.5],[10.5,12.8],[15.5,10.5],[12.8,7],[8.5,5.5],[10.5,8.5],[14.5,5],[16.5,3.5]];
 export function routeDistance(x:number,y:number){let best=100;for(let i=1;i<ROUTE.length;i++){const a=ROUTE[i-1],b=ROUTE[i],dx=b[0]-a[0],dy=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/(dx*dx+dy*dy)));best=Math.min(best,Math.hypot(x-a[0]-t*dx,y-a[1]-t*dy))}return best}
 export function drawAtlas(ctx:CanvasRenderingContext2D,atlas:HTMLImageElement,frame:number,x:number,y:number,w:number,h:number){const matrix=ctx.getTransform(),scale=Math.max(1,Math.hypot(matrix.a,matrix.b)),snap=(v:number)=>Math.round(v*scale)/scale;const sw=atlas.naturalWidth/4,sh=atlas.naturalHeight/2;ctx.drawImage(atlas,(frame%4)*sw,Math.floor(frame/4)*sh,sw,sh,snap(x),snap(y),snap(w),snap(h))}
-export function drawWorldProps(ctx:CanvasRenderingContext2D,atlas:HTMLImageElement|null,x:number,y:number,yaw:number,z:Float32Array,time:number){
+export function drawWorldProps(ctx:CanvasRenderingContext2D,atlas:HTMLImageElement|null,x:number,y:number,yaw:number,z:Float32Array,time:number,livingAtlas:HTMLImageElement|null=null){
  if(!atlas)return;
- const ordered=VALLEY_PROPS.map(p=>({...p,d:Math.hypot(p.x-x,p.y-y)})).sort((a,b)=>b.d-a.d);
+ const ordered=[...VALLEY_PROPS,...(livingAtlas?LIVING_PROPS:[])].map(p=>({...p,d:Math.hypot(p.x-x,p.y-y)})).sort((a,b)=>b.d-a.d);
  for(const p of ordered){if(p.d<.45)continue;const a=Math.atan2(Math.sin(Math.atan2(p.y-y,p.x-x)-yaw),Math.cos(Math.atan2(p.y-y,p.x-x)-yaw));if(Math.abs(a)>Math.PI/3)continue;
   const size=Math.min(270,120*p.height/p.d),cx=(.5+a/(Math.PI/3))*426,foot=120+60/p.d,left=cx-size/2,top=foot-size*.94;
-  const sw=atlas.naturalWidth/4,sh=atlas.naturalHeight/2,sourceX=(p.frame%4)*sw,sourceY=Math.floor(p.frame/4)*sh;
+  const source=p.living?livingAtlas!:atlas;const sw=source.naturalWidth/4,sh=source.naturalHeight/2,sourceX=(p.frame%4)*sw,sourceY=Math.floor(p.frame/4)*sh;
   ctx.save();ctx.globalAlpha=Math.min(1,.64+3/p.d);
   // Slice sprites against walls, so a tree cannot show through a ruin.
-  for(let sx=Math.max(0,Math.floor(left));sx<Math.min(426,left+size);sx+=2){if(p.d*Math.cos(a)>z[sx]+.12)continue;const u=(sx-left)/size;ctx.drawImage(atlas,sourceX+u*sw,sourceY,Math.min(2/size*sw,sw-u*sw),sh,sx,Math.round(top),2,Math.round(size))}
+  for(const [from,to]of visibleSpans(left,size,p.d*Math.cos(a),z)){const sx=Math.max(left,from),ex=Math.min(left+size,to),u=(sx-left)/size;ctx.drawImage(source,sourceX+u*sw,sourceY,(ex-sx)/size*sw,sh,sx,top,ex-sx,size)}
+
   ctx.restore();
-  if(p.frame===5&&p.d<9&&p.d<z[Math.max(0,Math.min(425,Math.floor(cx)))]){const flicker=.65+.1*Math.sin(time*.006+p.x);ctx.fillStyle=`rgba(255,191,94,${flicker})`;ctx.fillRect(Math.round(cx+size*.08),Math.round(top+size*.39),Math.max(1,size*.025),Math.max(1,size*.04))}
+  if(p.living&&p.d<8&&p.d*Math.cos(a)<z[Math.max(0,Math.min(425,Math.floor(cx)))]){
+   if(p.frame===5){ctx.fillStyle='rgba(240,211,130,.7)';for(let i=0;i<3;i++){const phase=time*.0006+i*2.1+p.x;ctx.fillRect(cx+Math.sin(phase)*size*.3,foot-size*.3-Math.cos(phase*.7)*size*.12,Math.max(.5,size*.012),Math.max(.5,size*.012))}}
+   if(p.frame===6){const flutter=Math.sin(time*.004+p.x)*size*.035;ctx.strokeStyle='rgba(179,91,84,.65)';ctx.lineWidth=Math.max(.5,size*.015);ctx.beginPath();ctx.moveTo(cx+size*.12,top+size*.28);ctx.lineTo(cx+size*.25+flutter,top+size*.4);ctx.lineTo(cx+size*.22,top+size*.56);ctx.stroke()}
+  }
+  if(!p.living&&p.frame===5&&p.d<9&&p.d<z[Math.max(0,Math.min(425,Math.floor(cx)))]){const flicker=.65+.1*Math.sin(time*.006+p.x);ctx.fillStyle=`rgba(255,191,94,${flicker})`;ctx.fillRect(Math.round(cx+size*.08),Math.round(top+size*.39),Math.max(1,size*.025),Math.max(1,size*.04))}
  }
 }
 

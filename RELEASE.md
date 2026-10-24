@@ -40,3 +40,9 @@ Six classes et dix-huit compétences, statistiques effectives et fiche de person
 Correctifs PC : reprise après Échap, capture souris refusée sans blocage et interception des boutons latéraux du navigateur, y compris lors d’une association. Tests dédiés : six identités sauvegardées, dix-huit compétences, gestes directionnels, coûts, recharges suspendues, fiche de personnage et régressions de souris. Les contrôles natifs d’un pilote Windows hors navigateur ne sont pas accessibles à l’application web.
 
 Validation 0.4.0 : 19 tests de règles et de contenu réussis ; 36 contrôles existants réussis ; test navigateur dédié réussi pour les six classes, dix-huit compétences, reprise, boutons latéraux et gestes directionnels, sans erreur JavaScript. Parcours complet Arcanes jusqu’à la récompense, relique et marchand réussi. Tests effectués dans Chromium, avec émulation tactile pour le mobile.
+
+## Finition 0.4.1 · Monde vivant
+
+Nouveaux accessoires peints, texture de pierre des ruines, effets et armes de classe distincts, recharge et exposition lisibles. Optimisation du découpage des sprites contre les murs et cache du terrain/sol à caméra fixe. Objectifs Auto 60/120/240 et compteur mesuré, sans garantie de fréquence matérielle. Les données de progression et les raccourcis sont conservés.
+
+Validation 0.4.1 : 23 tests de règles et de contenu, 40 contrôles navigateur (dont options de fréquence, nouveaux assets et compteur FPS réel), essais des six classes/dix-huit compétences, et parcours complet Lame jusqu’à Valbrume : réussis, sans erreur JavaScript observée. Vérification visuelle des captures de la vallée, du boss et des fiches. Les performances physiques à 120/240 Hz restent à mesurer sur la machine du joueur.

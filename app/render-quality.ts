@@ -8,3 +8,6 @@ export function resolveRenderSize(quality:RenderQuality,cssWidth:number,pixelRat
  return{width:426*scale,height:240*scale,detail:scale>=3?2:1};
 }
 export function lighterRenderSize(current:RenderSize):RenderSize{const scale=Math.max(1,Math.round(current.width/426)-1);return{width:426*scale,height:240*scale,detail:scale>=3?2:1}}
+
+export function missesFrameBudget(meanMs:number,target:number){return meanMs>1000/Math.max(30,Math.min(240,target))*1.18}
+export function measuredFps(frames:number,elapsedMs:number){return elapsedMs>0?Math.max(0,Math.round(frames*1000/elapsedMs)):0}
