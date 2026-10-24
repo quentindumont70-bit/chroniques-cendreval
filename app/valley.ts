@@ -103,9 +103,9 @@ export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw
 }
 export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number){
   if(!pathGrid){pathGrid=new Float32Array(160*160);for(let gy=0;gy<160;gy++)for(let gx=0;gx<160;gx++)pathGrid[gy*160+gx]=routeDistance(gx/8,gy/8)}
-  if(!ground){ground=document.createElement("canvas");ground.width=213;ground.height=60;pixels=ground.getContext("2d")!.createImageData(213,60)}
+  if(!ground){ground=document.createElement("canvas");ground.width=213;ground.height=84;pixels=ground.getContext("2d")!.createImageData(213,84)}
   const data=pixels!.data,cos=Math.cos(yaw),sin=Math.sin(yaw),plane=Math.tan(Math.PI/6);
-  for(let row=0;row<60;row++){
+  for(let row=0;row<84;row++){
     const depth=60/(row*2+1),fog=Math.min(.87,depth/24);
     for(let col=0;col<213;col++){
       const side=(col/213*2-1)*plane;
@@ -122,5 +122,5 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       data[i]=base[0]*light*(1-fog)+145*fog;data[i+1]=base[1]*light*(1-fog)+157*fog;data[i+2]=base[2]*light*(1-fog)+137*fog;data[i+3]=255;
     }
   }
-  ground.getContext("2d")!.putImageData(pixels!,0,0);ctx.drawImage(ground,0,120,426,120);
+  ground.getContext("2d")!.putImageData(pixels!,0,0);ctx.drawImage(ground,0,120,426,168);
 }

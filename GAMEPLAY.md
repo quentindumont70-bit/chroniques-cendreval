@@ -18,7 +18,7 @@ Sur mobile : paysage recommandé. Le menu **Gestes** reste accessible pour retro
 | Droite | Double tap | Capacité de la voie |
 | Droite | Maintenir sans glisser | Parade puis garde maintenue |
 
-Les taps simples attendent 210 ms pour distinguer un double tap sans déclencher une attaque parasite. Le maintien engage la garde après 140 ms ; la fenêtre parfaite tactile dure 200 ms. Une caméra légèrement ajustable reste disponible pendant la garde. Le déplacement ne déclenche jamais d’esquive sur un simple relâchement. Une boucle brève du pouce permet d’esquiver même après un déplacement prolongé.
+Les taps simples attendent 180 ms pour distinguer un double tap sans déclencher une attaque parasite. Le maintien engage la garde après 140 ms ; la fenêtre parfaite tactile dure 200 ms. Une caméra légèrement ajustable reste disponible pendant la garde. Le déplacement ne déclenche jamais d’esquive sur un simple relâchement. Une boucle brève du pouce permet d’esquiver même après un déplacement prolongé.
 
 ## Le signal de défense
 
@@ -51,3 +51,9 @@ Images créées avec l’outil imagegen intégré puis préparées en WebP pour 
 - `public/cendreval-horizon-v3.webp` : château, montagnes et ciel doré ; arbres de premier plan retirés pour laisser la parallaxe aux accessoires du monde.
 
 Les sprites sont dessinés sans lissage. Les bornes et la lame du joueur sont du pixel art rendu par Canvas.
+
+## Fluidité et ressources du mage
+
+Le tap du mage lance désormais une étincelle gratuite (12 dégâts de base), qui rend 3 mana lorsqu’elle touche. La mana se régénère naturellement à 5 points par seconde pendant le jeu ; la pause suspend cette récupération. Le pouvoir consomme toujours 25 mana, et la flamme secondaire au clavier 15. Les bornes restaurent toute la réserve. La barre de mana et le menu Gestes expliquent cette récupération. Les attaques rapprochées peuvent être mises en attente, y compris celles du mage.
+
+Les taps attendent 180 ms, et le second contact annule immédiatement le tap simple en attente afin d’éviter une frappe parasite pendant un double tap légèrement plus lent. La caméra répond dès 8 pixels de glissement. Le sol et le ciel couvrent maintenant les 48 pixels supplémentaires nécessaires à l’inclinaison maximale, sans exposer la couleur de fond sous la carte.

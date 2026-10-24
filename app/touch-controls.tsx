@@ -2,8 +2,8 @@
 import {useEffect,useRef} from "react";
 import type {PointerEvent} from "react";
 type Props={onMove:(f:number,s:number)=>void;onLook:(x:number,y:number)=>void;onAttack:()=>void;onAbility:()=>void;onGuard:(held:boolean)=>void;onDodge:(f:number,s:number)=>void;onInteract:()=>void;onPotion:()=>void;onWake:()=>void};
-type Finger={id:number;x:number;y:number;lastX:number;lastY:number;time:number;max:number;peakX:number;peakY:number;peakAt:number;dodgeAt:number;guard:boolean;dodged:boolean;looking:boolean};
-const HOLD_MS=140,TAP_MS=210;
+type Finger={id:number;x:number;y:number;lastX:number;lastY:number;time:number;max:number;peakX:number;peakY:number;peakAt:number;dodgeAt:number;guard:boolean;dodged:boolean;looking:boolean;double:boolean};
+const HOLD_MS=140,TAP_MS=180;
 export default function TouchControls(props:Props){
   const latest=useRef(props);latest.current=props;
   const fingers=useRef<{left:Finger|null;right:Finger|null}>({left:null,right:null});
@@ -16,7 +16,7 @@ export default function TouchControls(props:Props){
     e.preventDefault();e.stopPropagation();latest.current.onWake();
     const box=e.currentTarget.getBoundingClientRect(),side=e.clientX<box.left+box.width*.5?"left":"right";
     if(fingers.current[side])return;
-    const f:Finger={id:e.pointerId,x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,time:performance.now(),max:0,peakX:0,peakY:0,peakAt:-Infinity,dodgeAt:-Infinity,guard:false,dodged:false,looking:false};fingers.current[side]=f;e.currentTarget.setPointerCapture(e.pointerId);
+    const f:Finger={id:e.pointerId,x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,time:performance.now(),max:0,peakX:0,peakY:0,peakAt:-Infinity,dodgeAt:-Infinity,guard:false,dodged:false,looking:false,double:Boolean(timers.current[side])};if(f.double)cancel(side);fingers.current[side]=f;e.currentTarget.setPointerCapture(e.pointerId);
     if(side==="left"&&ring.current){ring.current.style.left=`${f.x-box.left}px`;ring.current.style.top=`${f.y-box.top}px`;ring.current.style.opacity=".65";if(knob.current)knob.current.style.transform="translate(-50%,-50%)"}
     if(side==="right"){cancel("hold");timers.current.hold=setTimeout(()=>{timers.current.hold=null;if(fingers.current.right===f&&!f.looking&&f.max<12){cancel("right");f.guard=true;latest.current.onGuard(true);surface.current?.setAttribute("data-guard","true")}},HOLD_MS)}
   };
@@ -32,8 +32,9 @@ export default function TouchControls(props:Props){
       // A deliberate out-and-back gesture, never an ordinary sustained walk.
       if(f.max>=42&&dist<18&&performance.now()-f.peakAt<240&&performance.now()-f.dodgeAt>450){f.dodged=true;f.dodgeAt=performance.now();f.peakAt=-Infinity;cancel("left");const len=Math.hypot(f.peakX,f.peakY);latest.current.onDodge(-f.peakY/len,f.peakX/len)}
     }else{
-      if(!f.guard&&dist>12){f.looking=true;cancel("hold");cancel("right")}
-      if(f.looking||f.guard)latest.current.onLook((e.clientX-f.lastX)*(f.guard?.35:1),(e.clientY-f.lastY)*(f.guard?.35:1));
+      const beginning=!f.looking&&!f.guard&&dist>8;
+      if(beginning){f.looking=true;cancel("hold");cancel("right")}
+      if(f.looking||f.guard)latest.current.onLook((e.clientX-(beginning?f.x:f.lastX))*(f.guard?.35:1),(e.clientY-(beginning?f.y:f.lastY))*(f.guard?.35:1));
     }
     f.lastX=e.clientX;f.lastY=e.clientY;
   };
@@ -43,7 +44,7 @@ export default function TouchControls(props:Props){
     if(side==="left"){latest.current.onMove(0,0);if(ring.current)ring.current.style.opacity="0"}else{cancel("hold");latest.current.onGuard(false);surface.current?.removeAttribute("data-guard")}
     if(aborted){cancel(side);return}
     if(!f.guard&&!f.dodged&&!f.looking&&f.max<12&&performance.now()-f.time<HOLD_MS){
-      if(timers.current[side]){cancel(side);if(side==="right")latest.current.onAbility();else latest.current.onPotion()}
+      if(f.double){cancel(side);if(side==="right")latest.current.onAbility();else latest.current.onPotion()}
       else timers.current[side]=setTimeout(()=>{timers.current[side]=null;if(side==="right")latest.current.onAttack();else latest.current.onInteract()},TAP_MS);
     }
   };
