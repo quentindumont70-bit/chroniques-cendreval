@@ -18,7 +18,7 @@ Sur mobile : paysage recommandé. Le menu **Gestes** reste accessible pour retro
 | Droite | Double tap | Capacité de la voie |
 | Droite | Maintenir sans glisser | Parade puis garde maintenue |
 
-Les taps simples attendent 180 ms pour distinguer un double tap sans déclencher une attaque parasite. Le maintien engage la garde après 140 ms ; la fenêtre parfaite tactile dure 200 ms. Une caméra légèrement ajustable reste disponible pendant la garde. Le déplacement ne déclenche jamais d’esquive sur un simple relâchement. Une boucle brève du pouce permet d’esquiver même après un déplacement prolongé.
+Les taps simples attendent 180 ms pour distinguer un double tap sans déclencher une attaque parasite. Le maintien engage la garde après 140 ms ; la fenêtre parfaite tactile dure 260 ms. Une caméra légèrement ajustable reste disponible pendant la garde. Le déplacement ne déclenche jamais d’esquive sur un simple relâchement. Une boucle brève du pouce permet d’esquiver même après un déplacement prolongé.
 
 ## Le signal de défense
 
@@ -73,3 +73,15 @@ Le premier chapitre forme une boucle complète : choix de voie, arrivée dans la
 Commandes de vérification : `npm test`, `npm run typecheck:game`, puis `tests/game-smoke.cjs` pour les interactions tactiles. `tests/full-level.cjs` joue le chapitre par les commandes normales ; `CENDREVAL_CLASS=LAME`, `RÔDEUR` ou `ARCANES` choisit la voie, et `CENDREVAL_PORT` permet d’isoler les parcours. La lecture du progrès sauvegardé sert uniquement à observer les positions et les résultats ; aucun raccourci de combat ni modification des statistiques n’est utilisé dans ce parcours complet.
 
 La publication GitHub Pages lance maintenant le typage et les tests avant de déployer.
+
+## Finition du ressenti 0.3.1
+
+En présence d’un ennemi proche, immobiliser le pouce droit après avoir dirigé la caméra lève la garde ; un glissement ample la relâche et reprend la caméra, sans relever le pouce. Ce comportement ne s’active pas en exploration sans menace. Le maintien initial reste disponible partout. Une garde demandée pendant la récupération d’une frappe est conservée jusqu’à son ouverture ; une esquive demandée en fin de frappe conserve sa direction. Relâcher la garde ou déplacer largement la caméra annule la défense en attente.
+
+Les coups du joueur possèdent maintenant un départ, un impact matériel court et une impulsion verticale discrète. Les textures sonores d’impact restent sous le signal de timing. Les anticipations lourdes du Gardien passent par deux poses, suivies d’une pose de récupération ; la transformation garde Sulfuras visible avant l’apparition des Thunderfury.
+
+## Rendu HD et Ultra
+
+Dans Pause → Commandes → Qualité visuelle, choisir Auto, Rétro (426 × 240), HD (1920 × 1080) ou Ultra (3840 × 2160). Le choix est conservé après rechargement. Auto tient compte de la taille d’écran et réduit progressivement la résolution si le temps moyen des images dépasse 28 ms. Les modes manuels restent fixes.
+
+Les atlas du Gardien et des accessoires utilisent des poses de 384 × 384 au lieu de 192 × 192, à partir des sources originales plus détaillées. Le panorama conserve davantage de sa définition source ; le sol et les murs possèdent davantage d’échantillons en HD/Ultra. Le format 4K décrit la surface de rendu : les sprites conservent volontairement leurs pixels visibles et leur définition propre. Ultra consomme davantage de ressources ; Auto est recommandé sur téléphone.

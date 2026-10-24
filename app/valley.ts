@@ -5,6 +5,7 @@ let ground: HTMLCanvasElement | undefined;
 let pixels: ImageData | undefined;
 let panorama: HTMLCanvasElement | undefined;
 let pathGrid:Float32Array|undefined;
+let terrainLayer:HTMLCanvasElement|undefined;
 // Terrain stays outside the walkable basin; combat positions retain a level footing.
 const TERRAIN_SIZE=256, TERRAIN_STEP=.5, TERRAIN_ORIGIN=-54;
 let terrainHeight:Float32Array|undefined;
@@ -24,7 +25,7 @@ function prepareTerrain(){
     terrainLight[i]=Math.max(.42,Math.min(1.18,.8+(elevation(x+.5,y)-elevation(x-.5,y))*.32-(elevation(x,y+.5)-elevation(x,y-.5))*.28));
   }
 }
-function drawTerrain(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number){
+function paintTerrain(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number){
   prepareTerrain();
   // Far-to-near columns give overlapping slopes real perspective and movement parallax.
   for(let col=0;col<213;col++){
@@ -43,6 +44,7 @@ function drawTerrain(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number){
     }
   }
 }
+function drawTerrain(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number){if(!terrainLayer){terrainLayer=document.createElement("canvas");terrainLayer.width=426;terrainLayer.height=150}const paint=terrainLayer.getContext("2d")!;paint.clearRect(0,0,426,150);paintTerrain(paint,x,y,yaw);ctx.drawImage(terrainLayer,0,0,426,150)}
 export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw:number, time:number, art:HTMLImageElement|null) {
   const w=426, h=240, horizon=120, fov=Math.PI/3;
   const sky=ctx.createLinearGradient(0,0,0,horizon);
@@ -88,27 +90,28 @@ export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw
   }
   if(art){
     if(!panorama){
-      panorama=document.createElement("canvas");panorama.width=640;panorama.height=126;
+      panorama=document.createElement("canvas");panorama.width=1920;panorama.height=378;
       const paint=panorama.getContext("2d")!;paint.imageSmoothingEnabled=false;
-      paint.drawImage(art,0,0,art.naturalWidth,art.naturalHeight*.57,0,0,640,126);
+      paint.drawImage(art,0,0,art.naturalWidth,art.naturalHeight*.57,0,0,1920,378);
       paint.globalCompositeOperation="destination-in";
-      const edge=paint.createLinearGradient(0,0,640,0);edge.addColorStop(0,"#0000");edge.addColorStop(.08,"#000");edge.addColorStop(.92,"#000");edge.addColorStop(1,"#0000");paint.fillStyle=edge;paint.fillRect(0,0,640,126);
-      const base=paint.createLinearGradient(0,0,0,126);base.addColorStop(0,"#000");base.addColorStop(.8,"#000");base.addColorStop(1,"#0000");paint.fillStyle=base;paint.fillRect(0,0,640,126);
+      const edge=paint.createLinearGradient(0,0,1920,0);edge.addColorStop(0,"#0000");edge.addColorStop(.08,"#000");edge.addColorStop(.92,"#000");edge.addColorStop(1,"#0000");paint.fillStyle=edge;paint.fillRect(0,0,1920,378);
+      const base=paint.createLinearGradient(0,0,0,378);base.addColorStop(0,"#000");base.addColorStop(.8,"#000");base.addColorStop(1,"#0000");paint.fillStyle=base;paint.fillRect(0,0,1920,378);
     }
     // Keep the painted castle at the gate bearing; close scenery still moves independently.
-    ctx.drawImage(panorama,Math.floor(w/2+angle/fov*w-640*.575),0);
+    ctx.drawImage(panorama,w/2+angle/fov*w-640*.575,0,640,126);
   }
   drawTerrain(ctx,x,y,yaw);
   const mist=ctx.createLinearGradient(0,96,0,125);mist.addColorStop(0,"#bdc5b000");mist.addColorStop(.7,"#bdc5b055");mist.addColorStop(1,"#bdc5b000");ctx.fillStyle=mist;ctx.fillRect(0,96,w,29);
 }
-export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number){
+export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number,detail=1){
+  const cols=detail>=3?852:detail>=2?426:213,rows=detail>=3?336:detail>=2?168:84,step=168/rows;
   if(!pathGrid){pathGrid=new Float32Array(160*160);for(let gy=0;gy<160;gy++)for(let gx=0;gx<160;gx++)pathGrid[gy*160+gx]=routeDistance(gx/8,gy/8)}
-  if(!ground){ground=document.createElement("canvas");ground.width=213;ground.height=84;pixels=ground.getContext("2d")!.createImageData(213,84)}
+  if(!ground||ground.width!==cols){ground=document.createElement("canvas");ground.width=cols;ground.height=rows;pixels=ground.getContext("2d")!.createImageData(cols,rows)}
   const data=pixels!.data,cos=Math.cos(yaw),sin=Math.sin(yaw),plane=Math.tan(Math.PI/6);
-  for(let row=0;row<84;row++){
-    const depth=60/(row*2+1),fog=Math.min(.87,depth/24);
-    for(let col=0;col<213;col++){
-      const side=(col/213*2-1)*plane;
+  for(let row=0;row<rows;row++){
+    const depth=60/(row*step+step*.5),fog=Math.min(.87,depth/24);
+    for(let col=0;col<cols;col++){
+      const side=((col+.5)/cols*2-1)*plane;
       const wx=x+depth*(cos-sin*side),wy=y+depth*(sin+cos*side);
       const hx=Math.floor(wx*22),hy=Math.floor(wy*22),hash=((Math.imul(hx,374761393)^Math.imul(hy,668265263))>>>0)%23;
       const gx=Math.floor(wx*8),gy=Math.floor(wy*8);
@@ -116,9 +119,10 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const rolling=Math.sin(wx*.72+wy*.23)*Math.cos(wy*.61)*.5+.5;
       const light=.78+rolling*.3;
       const edge=pathDistance<.58;
-      const stone=hash>19,shade=hash*.85;
+      const fineX=Math.floor(wx*140),fineY=Math.floor(wy*140),fine=((Math.imul(fineX,374761393)^Math.imul(fineY,668265263))>>>0)%23,near=Math.max(0,Math.min(1,(4-depth)/3));
+      const stone=(near>.4?fine:hash)>20,shade=hash*.55+near*(fine*.4-4);
       const base=path?[119+shade,108+shade,80+shade]:edge?[78+shade,83+shade,54+shade]:stone?[68+shade,78+shade,63+shade]:[40+shade,65+shade,45+shade];
-      const i=(row*213+col)*4;
+      const i=(row*cols+col)*4;
       data[i]=base[0]*light*(1-fog)+145*fog;data[i+1]=base[1]*light*(1-fog)+157*fog;data[i+2]=base[2]*light*(1-fog)+137*fog;data[i+3]=255;
     }
   }

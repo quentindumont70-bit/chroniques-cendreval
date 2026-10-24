@@ -1,6 +1,6 @@
 # Chronique I · Le Serment brisé
 
-Version 0.3.0 — premier niveau et Gardien des ruines.
+Version 0.3.1 — premier niveau et Gardien des ruines.
 
 ## Périmètre livré
 
@@ -24,7 +24,11 @@ La troisième personne et une refonte en vrai moteur 3D ne font pas partie de ce
 
 ## Vérifications réalisées pour cette livraison
 
-- 14 tests de règles, de cartes, de sauvegarde et de contenu du paquet : réussis.
-- 25 contrôles d’interaction : réussis, dont parade au signal, deux pouces, ressources vides, copie de secours, pause et commandes PC. La capture PC est vérifiée avec les deltas relatifs du pointeur.
+- 15 tests de règles, de cartes, de sauvegarde et de contenu du paquet : réussis.
+- 36 contrôles d’interaction : réussis, dont parade au signal, deux pouces, ressources vides, copie de secours, pause et commandes PC. La capture PC est vérifiée avec les deltas relatifs du pointeur.
 - Parcours complet avec Lame, Rôdeur et Arcanes : réussis. Un dernier parcours de la version finale vérifie en plus la relique et l’achat au marchand.
 - Typage du jeu : réussi. Aucune erreur JavaScript observée pendant ces parcours.
+
+La passe 0.3.1 affine le poids des impacts, la continuité caméra–garde et les transitions de pose du Gardien. Les défenses engagées en récupération ne sont plus perdues, et une attaque pendant la transformation du Gardien ne dépense plus les ressources du joueur.
+
+La qualité visuelle propose maintenant Auto, Rétro, HD 1080p et Ultra 4K. Le rendu Ultra utilise réellement une surface 3840 × 2160 ; les atlas principaux doublent leur définition sur chaque axe, le sol et les murs sont échantillonnés plus finement. Le choix est persistant et Auto ajuste la charge. Les dimensions des quatre modes et des nouvelles images, ainsi que la persistance du choix, sont contrôlées dans le navigateur. Les performances Ultra sur appareil physique restent à mesurer.

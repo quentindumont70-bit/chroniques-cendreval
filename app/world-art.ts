@@ -22,7 +22,7 @@ export const VALLEY_PROPS:Prop[]=[
 ];
 export const ROUTE=[[3.5,16.5],[7.5,14.5],[10.5,12.8],[15.5,10.5],[12.8,7],[8.5,5.5],[10.5,8.5],[14.5,5],[16.5,3.5]];
 export function routeDistance(x:number,y:number){let best=100;for(let i=1;i<ROUTE.length;i++){const a=ROUTE[i-1],b=ROUTE[i],dx=b[0]-a[0],dy=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/(dx*dx+dy*dy)));best=Math.min(best,Math.hypot(x-a[0]-t*dx,y-a[1]-t*dy))}return best}
-export function drawAtlas(ctx:CanvasRenderingContext2D,atlas:HTMLImageElement,frame:number,x:number,y:number,w:number,h:number){const sw=atlas.naturalWidth/4,sh=atlas.naturalHeight/2;ctx.drawImage(atlas,(frame%4)*sw,Math.floor(frame/4)*sh,sw,sh,Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
+export function drawAtlas(ctx:CanvasRenderingContext2D,atlas:HTMLImageElement,frame:number,x:number,y:number,w:number,h:number){const matrix=ctx.getTransform(),scale=Math.max(1,Math.hypot(matrix.a,matrix.b)),snap=(v:number)=>Math.round(v*scale)/scale;const sw=atlas.naturalWidth/4,sh=atlas.naturalHeight/2;ctx.drawImage(atlas,(frame%4)*sw,Math.floor(frame/4)*sh,sw,sh,snap(x),snap(y),snap(w),snap(h))}
 export function drawWorldProps(ctx:CanvasRenderingContext2D,atlas:HTMLImageElement|null,x:number,y:number,yaw:number,z:Float32Array,time:number){
  if(!atlas)return;
  const ordered=VALLEY_PROPS.map(p=>({...p,d:Math.hypot(p.x-x,p.y-y)})).sort((a,b)=>b.d-a.d);
