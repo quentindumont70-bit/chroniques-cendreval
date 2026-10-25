@@ -46,6 +46,20 @@ export const VALLEY_PROPS:Prop[]=[
   const side=i%2===0?3.2:16.8,phase=i*2.399963229728653;
   return {x:side+Math.sin(phase)*1.1,y:1.5+((i*4.31)%17),frame:i%9===0?2:6,height:i%9===0?.4:.34+(i%4)*.08};
  }),
+ // Deliberate roadside compositions: alternating mossy boulders, flowers and low grass.
+ // Keep them off the pilgrimage trail so combat and shrine approach remain readable.
+ ...Array.from({length:48},(_,i)=>{
+  const side=i%2===0?2.5:17.5,phase=i*2.399963229728653;
+  const x=side+Math.sin(phase)*.7,y=2+((i*3.83)%16);
+  return {x,y,frame:i%6===0?2:6,height:i%6===0?.52:.26+(i%4)*.06};
+ }),
+ // Landmark flower beds guide the eye between the first shrines.
+ ...Array.from({length:36},(_,i)=>{
+  const cluster=i%3,phase=i*2.399963229728653;
+  const cx=[6.2,12.7,15.8][cluster],cy=[15.2,11.8,7.9][cluster];
+  const r=.55+(i%7)*.12;
+  return {x:cx+Math.cos(phase)*r,y:cy+Math.sin(phase)*r,frame:i%4===0?2:6,height:i%4===0?.42:.24+(i%3)*.06};
+ }),
  // Flowering meadows and scattered stones break up the flat walkable field.
  ...Array.from({length:90},(_,i)=>{const x=2+((i*7.37)%16),y=2+((i*5.19)%16);return{x,y,frame:i%8===0?2:6,height:i%8===0?.35+(i%3)*.08:.24+(i%4)*.05}}),
 ];
