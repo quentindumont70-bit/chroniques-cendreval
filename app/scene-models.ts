@@ -10,6 +10,11 @@ export function sceneryModel(frame:number,living:boolean,h:number,detailed:boole
  if(detailed){for(let root=0;root<5;root++){const a=root*Math.PI*2/5;add(b(Math.cos(a)*.065,Math.sin(a)*.065,.005,.18,.055,.055,birch?'#9ea596':'#56432e',a))}
  for(let section=0;section<5;section++){const z=.08+section*.115;add(b(Math.sin(section*1.6)*.015,Math.cos(section*1.3)*.012,z,(oak?.12:.085)*(1-section*.09),(.1-section*.009),.12,birch?(section%2?'#d8d5b9':'#b4baa5'):(section%2?'#75583d':'#60482f'),section*.19))}}
 for(let k=0;k<3;k++){const a=k*2.1;ornament(b(Math.cos(a)*.055,Math.sin(a)*.055,0,.16,.035,.04,wood,a))}for(let j=0;j<(detailed?6:2);j++)ornament(b(.002,-.039,.1+j*.08,.067,.009,.012,birch?'#5d665c':'#a1855d'));
+  // Forked lower limbs interrupt the straight pole silhouette on every quality tier.
+  for(let limb=0;limb<(detailed?5:3);limb++){
+   const a=limb*2.399+.4,z=.3+(limb%3)*.11,reach=oak?.28:.2;
+   add(b(Math.cos(a)*reach*.42,Math.sin(a)*reach*.42,z,reach,.045,.043,birch?'#aeb4a1':'#5b4733',a));
+  }
   if(kind==='pine'){
   // Layered radial boughs replace the flat stacked-plate silhouette.
   // Keep the distant version lightweight while breaking the square outline.
