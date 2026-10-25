@@ -66,3 +66,12 @@ test('rotating the camera reverses the visible world without changing props',()=
  assert.deepEqual(selectScenery(props,camera,1).map(p=>p.i),[0]);
  assert.deepEqual(selectScenery(props,{...camera,yaw:Math.PI},1).map(p=>p.i),[1]);
 });
+
+test('mobile first-person view favors tree silhouettes over decorative ground cover',()=>{
+ const plants=Array.from({length:80},(_,i)=>({x:2+i*.05,y:(i%7-3)*.1,height:.25}));
+ const trees=Array.from({length:30},(_,i)=>({x:4+i*.12,y:(i%7-3)*.13,height:3}));
+ const props=[...plants,...trees];
+ const visible=selectScenery(props,camera,1);
+ assert.equal(visible.length,18);
+ assert(visible.filter(p=>p.i>=plants.length).length>=12,'woodland must dominate the limited mobile prop budget');
+});
