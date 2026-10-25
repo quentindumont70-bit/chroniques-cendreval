@@ -33,6 +33,15 @@ for(let k=0;k<3;k++){const a=k*2.1;ornament(b(Math.cos(a)*.055,Math.sin(a)*.055,
     ['#3f6543','#648455','#879761','#536f46'][frond%4],a);
    fern.motion='leaf';add(fern);
   }
+  // Uneven crownlets create a broken, organic skyline rather than one square canopy.
+  if(!detailed&&kind!=='pine'){
+   for(let crownlet=0;crownlet<5;crownlet++){
+    const a=crownlet*2.39996323,r=(oak?.27:.21)*(crownlet%2?.85:1.15);
+    const part=b(Math.cos(a)*r,Math.sin(a)*r,.74+(crownlet%3)*.075,
+     .18,.15,.11,['#53774d','#83965e','#688b57','#a0aa72','#426b4d'][crownlet],a);
+    part.motion='leaf';add(part);
+   }
+  }
   if(kind==='pine'){
   // Layered radial boughs replace the flat stacked-plate silhouette.
   // Keep the distant version lightweight while breaking the square outline.
