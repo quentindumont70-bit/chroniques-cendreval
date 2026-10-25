@@ -39,6 +39,12 @@ for(let k=0;k<3;k++){const a=k*2.1;ornament(b(Math.cos(a)*.055,Math.sin(a)*.055,
     const crown=b((layer-1)*.045,layer%2*.035,z,spread*2,spread*1.65,.17,colors[layer%colors.length]);
     crown.motion='leaf';add(crown);
    }
+   // Small offset leaf clusters soften the silhouette without adding expensive full trees.
+   for(let tuft=0;tuft<8;tuft++){
+    const angle=tuft*2.39996323,r=radius*(.62+(tuft%3)*.13),z=.61+(tuft%4)*.083;
+    const leaf=b(Math.cos(angle)*r,Math.sin(angle)*r,z,.13,.115,.105,colors[(tuft+1)%colors.length],angle);
+    leaf.motion='leaf';add(leaf);
+   }
    for(let twig=0;twig<4;twig++){
     const a=twig*Math.PI/2+.35,r=radius*.75;
     add(b(Math.cos(a)*r,Math.sin(a)*r,.67+(twig%2)*.13,.17,.16,.14,colors[twig],a));
