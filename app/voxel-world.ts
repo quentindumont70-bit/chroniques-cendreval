@@ -23,6 +23,12 @@ function project(camera:Camera,x:number,y:number,z:number):Point|null{const dx=x
 export function projectVoxelPoint(camera:Camera,x:number,y:number,z:number){return project(camera,x,y,z)}
 
 function facesForVoxel(camera:Camera,v:Voxel,out:Face[]){
+  // Coarse camera-space rejection before projecting five faces per tiny leaf.
+  const dx=v.x-camera.x,dy=v.y-camera.y,forward=dx*Math.cos(camera.yaw)+dy*Math.sin(camera.yaw);
+  const radius=Math.hypot(v.sx,v.sy)*.72;
+  if(forward+radius<=.08)return;
+  const lateral=-dx*Math.sin(camera.yaw)+dy*Math.cos(camera.yaw);
+  if(Math.abs(lateral)>Math.max(.12,forward)*Math.tan(camera.fov*.6)+radius)return;
   const yaw=v.yaw??0,c=Math.cos(yaw),s=Math.sin(yaw),hx=v.sx/2,hy=v.sy/2;
   const corners:[[number,number,number],[number,number,number],[number,number,number],[number,number,number],[number,number,number],[number,number,number],[number,number,number],[number,number,number]]=[[-hx,-hy,0],[hx,-hy,0],[hx,hy,0],[-hx,hy,0],[-hx,-hy,v.sz],[hx,-hy,v.sz],[hx,hy,v.sz],[-hx,hy,v.sz]];
   const world=corners.map(([lx,ly,lz])=>[v.x+lx*c-ly*s,v.y+lx*s+ly*c,v.z+lz] as [number,number,number]);
