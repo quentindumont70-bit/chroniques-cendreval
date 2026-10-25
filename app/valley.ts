@@ -109,7 +109,7 @@ export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw
   const mist=ctx.createLinearGradient(0,96,0,125);mist.addColorStop(0,"#bdc5b000");mist.addColorStop(.7,"#bdc5b055");mist.addColorStop(1,"#bdc5b000");ctx.fillStyle=mist;ctx.fillRect(0,96,w,29);
 }
 export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number,detail=1){
-  const cols=detail>=3?852:detail>=2?426:213,rows=detail>=3?336:detail>=2?168:84,step=120/rows;
+  const cols=detail>=3?852:detail>=2?426:213,rows=detail>=3?240:detail>=2?120:60,step=120/rows;
   if(ground&&groundPose&&groundPose.x===x&&groundPose.y===y&&groundPose.yaw===yaw&&groundPose.cols===cols){ctx.drawImage(ground,0,120,426,120);return}
   groundPose={x,y,yaw,cols};
   if(!pathGrid){pathGrid=new Float32Array(160*160);for(let gy=0;gy<160;gy++)for(let gx=0;gx<160;gx++)pathGrid[gy*160+gx]=routeDistance(gx/8,gy/8)}
