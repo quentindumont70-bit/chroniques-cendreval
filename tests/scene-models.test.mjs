@@ -47,3 +47,12 @@ test('mobile deciduous canopies have layered crowns and exposed limbs',()=>{
   assert(tree.some(v=>v.z>.6&&v.z<1.7&&v.sx>.3&&v.sy<.2),'forked branch should break trunk silhouette');
  }
 });
+
+test('mobile tree crowns have independently animated outer leaf clusters',()=>{
+ for(const [frame,living] of [[1,false],[1,true]]){
+  const tree=sceneryModel(frame,living,3,false);
+  const animated=tree.filter(v=>v.motion==='leaf');
+  assert(animated.length>=12,'canopy should have a layered outer silhouette');
+  assert(new Set(animated.map(v=>v.x.toFixed(2))).size>=5,'outer clusters must not collapse to one column');
+ }
+});
