@@ -124,6 +124,12 @@ Le décor proche et les combattants ne regardent plus toujours la caméra comme 
 
 Les silhouettes de combat restent lisibles par leur géométrie : arc transversal pour les tireurs, masse lourde pour les brutes, Sulfuras en phase I et paire d’armes bleutées en phase II. Les mouvements de charge et de frappe déplacent les segments d’arme. Le mode Auto affiche les modèles les plus proches en priorité ; les modes plus détaillés élargissent ce budget.
 
+### Cohérence de la caméra · 0.5.1
+
+Les armes tenues sont maintenant construites par faces en espace caméra. La lame montre son épaisseur et son reflet supérieur ; l’arc est composé de branches distinctes ; chaque foyer magique conserve un volume propre à la classe. La parade lève une coque épaisse avec nervures séparées. Ces pièces suivent exactement le balancement, les combos, le recul et les animations déjà utilisés par le combat.
+
+Les mémoires, l’ancrage et la porte du château partagent l’occlusion des murs. Les corps vaincus s’affaissent en géométrie sombre avant dissipation. Les anciens atlas restent disponibles comme archives artistiques mais ne sont plus demandés au chargement, réduisant le transfert initial d’environ 2,4 Mo.
+
 Options → Votre chronique : export JSON de la progression et import avec aperçu, annulation et vérification. Les fichiers anciens sans enveloppe restent acceptés ; format inconnu, données incompatibles ou fichier illisible sont refusés sans modifier la partie. L’import conserve une copie de la partie actuelle dans un emplacement distinct des sauvegardes automatiques, exportable depuis les options jusqu’au prochain import. Après validation, le jeu revient à l’accueil : Continuer charge la progression importée. Les commandes, le volume et la qualité graphique restent locaux à l’appareil. Les données importées sont normalisées comme toute sauvegarde, notamment les ressources et la position.
 
 ### Rythme des combats · 0.4.4

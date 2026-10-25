@@ -76,3 +76,9 @@ Validation : typecheck et 31 tests de règles/contenu réussis ; 40 contrôles n
 Les arbres, rochers, arches, chariots, lanternes, stèles, petits sanctuaires et bornes de la vallée sont maintenant assemblés en volumes à faces distinctes. Leur silhouette et leurs faces visibles changent quand la caméra tourne autour ; ils partagent le tampon de profondeur des murs. Les ombres de combat et le Gardien sont également segmentés en volumes articulés. Sulfuras possède un manche et une tête séparés ; la phase II porte deux armes lumineuses indépendantes.
 
 Le rendu reste un moteur logiciel dans Canvas, sans dépendance WebGL. Il conserve les pixels nets et la compatibilité du jeu publié. Auto limite le nombre de modèles visibles et leur complexité ; HD et Ultra augmentent la densité. Les modèles statiques sont mis en cache et les objets hors champ ou trop lointains sont écartés avant projection. Cette tranche ne convertit pas encore le panorama, l’arme en vue subjective ni tous les effets en géométrie.
+
+## Cohérence volumétrique 0.5.1 · Main, monuments et cendres
+
+L’arme en vue subjective expose maintenant ses faces éclairées : lame et garde épaisses, arc segmenté, flèche en volume, foyers de magie polyédriques. Le bouclier de parade est une coque à plusieurs épaisseurs. Balancement, attaque, garde et secousse déplacent le même assemblage au lieu de substituer une image.
+
+Les pierres de mémoire, le feu d’ancrage et la porte noire rejoignent le tampon de profondeur du monde. Les silhouettes vaincues se tassent en segments de cendre avant de disparaître, y compris le Gardien ; aucun atlas de mort ne revient au dernier instant. Les six anciens atlas de personnages et d’accessoires restent archivés dans le paquet, mais ne sont plus téléchargés par le jeu. Au démarrage, seuls le panorama et la texture de maçonnerie sont encore chargés comme images de décor.
