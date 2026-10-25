@@ -130,6 +130,9 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const edge=pathDistance<.58;
       const shoulder=pathDistance>=.43&&pathDistance<.9;
       const pathWear=Math.sin(wx*3.4+wy*.8)*Math.sin(wy*2.6-wx*.5);
+      // Foot-worn twin ruts follow the pilgrimage route, giving the road a traveled texture.
+      const rut=path&&pathDistance>.16&&pathDistance<.31;
+      const roadCracks=path&&Math.sin(wx*7.1+wy*3.7)*Math.cos(wy*5.9-wx*2.2)>.84;
       const fineX=Math.floor(wx*140),fineY=Math.floor(wy*140),fine=((Math.imul(fineX,374761393)^Math.imul(fineY,668265263))>>>0)%23,near=Math.max(0,Math.min(1,(4-depth)/3));
       const stone=(near>.4?fine:hash)>20,shade=hash*.55+near*(fine*.4-4);
       const gravel=path&&fine>18,grassTuft=!path&&fine>19&&depth<8;
@@ -144,6 +147,8 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const damp=!path&&deep&&Math.sin(wx*1.4+wy*.8)>.2;
       const base=path?[119+shade+pathWear*7,108+shade+pathWear*6,80+shade+pathWear*5]:edge?[78+shade,83+shade,54+shade]:shoulder?[59+shade,76+shade,49+shade]:stone?[68+shade,78+shade,63+shade]:dry?[67+shade,83+shade,49+shade]:deep?[34+shade,61+shade,47+shade]:[40+shade,65+shade,45+shade];
       const i=(row*cols+col)*4;
+      if(rut){base[0]-=15;base[1]-=13;base[2]-=10}
+      if(roadCracks){base[0]-=17;base[1]-=16;base[2]-=12}
       if(gravel){base[0]+=12;base[1]+=10;base[2]+=8}
       if(grassTuft){base[0]+=7;base[1]+=17;base[2]+=5}
       if(damp){base[0]-=5;base[1]-=4;base[2]+=5}
