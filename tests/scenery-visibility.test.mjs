@@ -55,3 +55,14 @@ test('large canopies remain visible at the camera edge but remote props do not',
  assert(!selected.includes(2),'behind player');
  assert(!selected.includes(3),'tiny ground cover outside frustum');
 });
+
+test('selection is depth ordered and stable with equidistant props',()=>{
+ const props=[{x:5,y:0,height:3},{x:2,y:0,height:.3},{x:5,y:0,height:.4},{x:3,y:0,height:3}];
+ const result=selectScenery(props,camera,1);
+ assert.deepEqual(result.map(p=>p.i),[1,3,0,2]);
+});
+test('rotating the camera reverses the visible world without changing props',()=>{
+ const props=[{x:4,y:0,height:3},{x:-4,y:0,height:3}];
+ assert.deepEqual(selectScenery(props,camera,1).map(p=>p.i),[0]);
+ assert.deepEqual(selectScenery(props,{...camera,yaw:Math.PI},1).map(p=>p.i),[1]);
+});
