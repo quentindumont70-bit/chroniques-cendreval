@@ -81,3 +81,9 @@ test('low-detail deciduous treetops break the skyline into distinct crownlets',(
   assert(new Set(high.map(v=>v.y.toFixed(2))).size>=3,'crownlets must have spatial depth');
  }
 });
+
+test('mobile meadow flowers are visible without desktop detail',()=>{
+ const meadow=sceneryModel(6,false,.4,false);
+ assert(meadow.length>=9,'grass should form a layered patch');
+ assert(meadow.some(v=>v.color==='#c7b4d2'||v.color==='#ead59c'),'flower petals must remain visible on mobile');
+});
