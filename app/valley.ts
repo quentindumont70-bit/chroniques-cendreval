@@ -134,11 +134,14 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const stone=(near>.4?fine:hash)>20,shade=hash*.55+near*(fine*.4-4);
       const gravel=path&&fine>18,grassTuft=!path&&fine>19&&depth<8;
       const meadow=Math.sin(wx*.38-wy*.53)+Math.cos(wx*.57+wy*.32),dry=meadow>.85,deep=meadow<-.75;
+      // Broad woodland shadows create depth beneath the distant treeline without extra draw calls.
+      const canopyShadow=Math.max(0,Math.sin(wx*.49+wy*.18)*Math.cos(wy*.43-wx*.11));
+      const shadow=!path&&pathDistance>1.2?1-canopyShadow*.23:1;
       const base=path?[119+shade+pathWear*7,108+shade+pathWear*6,80+shade+pathWear*5]:edge?[78+shade,83+shade,54+shade]:shoulder?[59+shade,76+shade,49+shade]:stone?[68+shade,78+shade,63+shade]:dry?[67+shade,83+shade,49+shade]:deep?[34+shade,61+shade,47+shade]:[40+shade,65+shade,45+shade];
       const i=(row*cols+col)*4;
       if(gravel){base[0]+=12;base[1]+=10;base[2]+=8}
       if(grassTuft){base[0]+=7;base[1]+=17;base[2]+=5}
-      data[i]=base[0]*light*(1-fog)+145*fog;data[i+1]=base[1]*light*(1-fog)+157*fog;data[i+2]=base[2]*light*(1-fog)+137*fog;data[i+3]=255;
+      data[i]=base[0]*light*shadow*(1-fog)+145*fog;data[i+1]=base[1]*light*shadow*(1-fog)+157*fog;data[i+2]=base[2]*light*shadow*(1-fog)+137*fog;data[i+3]=255;
     }
   }
   ground.getContext("2d")!.putImageData(pixels!,0,0);ctx.drawImage(ground,0,120,426,168);
