@@ -1,5 +1,7 @@
 type Prop={x:number;y:number;frame:number;height:number;living?:boolean};
 // Authored landmarks: pilgrim approach, birch grove, old graves and the Warden's court.
+// Curated verge vegetation: seeded positions keep paths open while filling the empty midground.
+const VERGE_GROVES:Prop[]=Array.from({length:72},(_,i)=>{const band=i%4,phase=i*2.399963229728653,radial=.35+(i%7)*.17;const x=band===0?1.1+Math.sin(phase)*.85:band===1?18.8+Math.sin(phase)*.9:2.2+((i*3.71)%15.6);const y=band===2?1.3+Math.cos(phase)*.85:band===3?18.6+Math.cos(phase)*.9:2+((i*2.43)%16);return{x:x+Math.sin(phase)*radial*.28,y:y+Math.cos(phase)*radial*.28,frame:i%6===0?1:i%5===0?2:0,height:i%6===0?2.6+(i%4)*.22:i%5===0?.45:.55+(i%5)*.14}});
 export const VALLEY_PROPS:Prop[]=[
  {x:2.1,y:17.8,frame:0,height:3.2},{x:5.8,y:18.3,frame:1,height:3.0},
  {x:2.0,y:14.1,frame:0,height:3.0},{x:3.0,y:12.0,frame:0,height:2.8},
@@ -19,6 +21,7 @@ export const VALLEY_PROPS:Prop[]=[
  {x:11.3,y:4.1,frame:2,height:.8},{x:12.7,y:3.3,frame:0,height:3.1},
  {x:14.5,y:5.0,frame:3,height:2.7},{x:17.3,y:5.4,frame:5,height:1.6},
  ...Array.from({length:22},(_,i)=>({x:2.4+(i*3.71)%15,y:3.5+(i*2.29)%14,frame:6,height:.25+(i%3)*.08})),
+ ...VERGE_GROVES,
 ];
 // Scenery sits beside the route; decorative objects never alter collision or objectives.
 export const LIVING_PROPS:Prop[]=[
