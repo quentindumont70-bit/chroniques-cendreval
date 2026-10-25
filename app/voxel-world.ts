@@ -63,7 +63,7 @@ export function drawVoxelWorld(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:F
  // Avoid allocating and sorting every world prop on each animation frame.
  // Only nearby props inside the camera frustum enter the small distance-sorted shortlist.
  const selected=selectScenery(SCENE_PROPS,camera,detail);
- for(const item of selected){const source=MODEL_TIERS[detail>=2&&item.d<7?1:0][item.i];for(const voxel of source){if(voxel.motion==='flame'){const pulse=.82+Math.sin(time*.009+item.i+voxel.x*7)*.18;voxels.push({...voxel,sz:voxel.sz*pulse})}else if(voxel.motion==='leaf'||voxel.motion==='banner'){const gust=Math.sin(time*.00034+item.i*.73)*.5+.5;
+ for(const item of selected){const source=MODEL_TIERS[detail>=2&&item.d<7?1:0][item.i];const gust=Math.sin(time*.00034+item.i*.73)*.5+.5;for(const voxel of source){if(voxel.motion==='flame'){const pulse=.82+Math.sin(time*.009+item.i+voxel.x*7)*.18;voxels.push({...voxel,sz:voxel.sz*pulse})}else if(voxel.motion==='leaf'||voxel.motion==='banner'){
  const wave=Math.sin(time*.0015+item.i*.71+voxel.z*3)*(.003+gust*.011);
  voxels.push({...voxel,x:voxel.x+wave,y:voxel.y+wave*.4})}else voxels.push(voxel)}}
  voxels.push(...valleyLife(time,camera.x,camera.y,detail,combat));drawFaces(ctx,camera,voxels,zbuf)}
