@@ -6,7 +6,8 @@ export function appendLootEvents(feed:LootFeed,drops:readonly LootItem[],source:
  const counts=new Map<string,{item:LootItem;count:number}>();
  for(const item of drops){const previous=counts.get(item.id);counts.set(item.id,{item,count:(previous?.count??0)+1})}
  const next=[...feed];
- for(const {item,count} of counts.values())next.push({id:`${at}:${item.id}:${next.length}`,itemId:item.id,name:item.name,rarity:item.rarity,count,source:source.slice(0,80),at});
+ const sequence=feed.reduce((max,event)=>Math.max(max,Number(event.id.split(":").at(-1))||0),-1)+1;
+ for(const {item,count} of counts.values())next.push({id:`${at}:${item.id}:${sequence+next.length-feed.length}`,itemId:item.id,name:item.name,rarity:item.rarity,count,source:source.slice(0,80),at});
  return next.slice(-MAX_EVENTS);
 }
 export function lootAnnouncement(event:LootEvent):string{
