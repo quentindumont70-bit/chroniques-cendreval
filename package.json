@@ -10,10 +10,10 @@
     "build": "vinext build",
     "build:pages": "vite build --config github-pages/vite.config.ts",
     "start": "vinext start",
-    "test": "npm run build:pages && node --test tests/world.test.mjs tests/rules.test.mjs tests/rendered-html.test.mjs tests/rpg.test.mjs tests/loot.test.mjs && node --test tests/inventory.test.mjs",
+    "test": "npm run build:pages && node --test tests/world.test.mjs tests/rules.test.mjs tests/rendered-html.test.mjs tests/rpg.test.mjs tests/loot.test.mjs && node --test tests/inventory.test.mjs && node --test tests/equipment-effects.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
-    "typecheck:game": "tsc --noEmit --strict --jsx react-jsx --target ES2022 --module ESNext --moduleResolution bundler --esModuleInterop --skipLibCheck --lib DOM,ES2022 app/page.tsx app/valley.ts app/world-art.ts app/voxel-world.ts app/view-weapon.ts app/world-map.ts app/raycast.ts app/parry-cue.ts app/touch-controls.tsx app/world-rules.ts app/progress.ts app/ambience.ts app/loot.ts app/inventory.ts app/loot-inventory.tsx"
+    "typecheck:game": "tsc --noEmit --strict --jsx react-jsx --target ES2022 --module ESNext --moduleResolution bundler --esModuleInterop --skipLibCheck --lib DOM,ES2022 app/page.tsx app/valley.ts app/world-art.ts app/voxel-world.ts app/view-weapon.ts app/world-map.ts app/raycast.ts app/parry-cue.ts app/touch-controls.tsx app/world-rules.ts app/progress.ts app/ambience.ts app/loot.ts app/inventory.ts app/loot-inventory.tsx app/equipment-effects.ts"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
