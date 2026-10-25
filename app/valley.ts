@@ -135,6 +135,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       }
       const bankNoise=Math.sin(wx*5.1+wy*2.7)*Math.cos(wy*4.3-wx*1.6)*.055;
       const path=pathDistance<.43+bankNoise;
+      const borderBlend=Math.max(0,Math.min(1,(pathDistance-.35-bankNoise)/.52));
       const rolling=Math.sin(wx*.72+wy*.23)*Math.cos(wy*.61)*.5+.5;
       const broad=Math.sin(wx*.21+wy*.31)*Math.cos(wy*.27-wx*.17);
       const micro=Math.sin(wx*2.8+wy*.6)*Math.sin(wy*2.1-wx*.7);
@@ -167,6 +168,8 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       let green=path?108+pathWear*6:edge?83:shoulder?76:stone?78:dry?83:deep?61:65;
       let blue=path?80+pathWear*5:edge?54:shoulder?49:stone?63:dry?49:deep?47:45;
       red+=shade;green+=shade;blue+=shade;
+      // Mix road shoulders into meadow pigments instead of leaving hard flat bands.
+      if(!path&&borderBlend<1){const blend=borderBlend*borderBlend*(3-2*borderBlend);red=red*(.68+.32*blend)+14*(1-blend);green=green*(.78+.22*blend)+8*(1-blend);blue=blue*(.8+.2*blend)+3*(1-blend)}
       const i=(row*cols+col)*4;
       if(rut){red-=15;green-=13;blue-=10}
       if(roadCracks){red-=17;green-=16;blue-=12}
