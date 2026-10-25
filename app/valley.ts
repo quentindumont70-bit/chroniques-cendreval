@@ -130,7 +130,8 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const edge=pathDistance<.58;
       const fineX=Math.floor(wx*140),fineY=Math.floor(wy*140),fine=((Math.imul(fineX,374761393)^Math.imul(fineY,668265263))>>>0)%23,near=Math.max(0,Math.min(1,(4-depth)/3));
       const stone=(near>.4?fine:hash)>20,shade=hash*.55+near*(fine*.4-4);
-      const base=path?[119+shade,108+shade,80+shade]:edge?[78+shade,83+shade,54+shade]:stone?[68+shade,78+shade,63+shade]:[40+shade,65+shade,45+shade];
+      const meadow=Math.sin(wx*.38-wy*.53)+Math.cos(wx*.57+wy*.32),dry=meadow>.85,deep=meadow<-.75;
+      const base=path?[119+shade,108+shade,80+shade]:edge?[78+shade,83+shade,54+shade]:stone?[68+shade,78+shade,63+shade]:dry?[67+shade,83+shade,49+shade]:deep?[34+shade,61+shade,47+shade]:[40+shade,65+shade,45+shade];
       const i=(row*cols+col)*4;
       data[i]=base[0]*light*(1-fog)+145*fog;data[i+1]=base[1]*light*(1-fog)+157*fog;data[i+2]=base[2]*light*(1-fog)+137*fog;data[i+3]=255;
     }
