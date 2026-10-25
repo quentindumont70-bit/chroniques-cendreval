@@ -34,3 +34,16 @@ test('wildlife is deterministic and remains near the player',()=>{
  assert(valleyLife(12500,-500,-500,2,false).length===0);
  assert(valleyLife(12500,7,13,1,true).length<valleyLife(12500,7,13,2,false).length);
 });
+
+test('new woodland islands add tree silhouettes without escaping the valley',()=>{
+ const trees=VALLEY_PROPS.filter(p=>(p.frame===0||p.frame===1)&&p.height>=2.6);
+ assert(trees.length>=40,'woodland should have enough substantial tree silhouettes');
+ assert(trees.some(p=>p.x<4)&&trees.some(p=>p.x>16),'trees must frame both sides of the route');
+});
+test('mobile deciduous canopies have layered crowns and exposed limbs',()=>{
+ for(const living of [false,true]){
+  const tree=sceneryModel(1,living,3,false);
+  assert(tree.filter(v=>v.z>1.5&&v.sx>.35).length>=3,'layered crown should remain visible on mobile');
+  assert(tree.some(v=>v.z>.6&&v.z<1.7&&v.sx>.3&&v.sy<.2),'forked branch should break trunk silhouette');
+ }
+});
