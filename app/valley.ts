@@ -156,19 +156,23 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const damp=!path&&deep&&Math.sin(wx*1.4+wy*.8)>.2;
       const flowerScatter=!path&&depth<9&&fine===11&&hash>15;
       const sunlitSeeds=!path&&depth<10&&fine===17&&dry;
-      const base=path?[119+shade+pathWear*7,108+shade+pathWear*6,80+shade+pathWear*5]:edge?[78+shade,83+shade,54+shade]:shoulder?[59+shade,76+shade,49+shade]:stone?[68+shade,78+shade,63+shade]:dry?[67+shade,83+shade,49+shade]:deep?[34+shade,61+shade,47+shade]:[40+shade,65+shade,45+shade];
+      // Scalar channels avoid allocating a fresh RGB array for every ground pixel.
+      let red=path?119+pathWear*7:edge?78:shoulder?59:stone?68:dry?67:deep?34:40;
+      let green=path?108+pathWear*6:edge?83:shoulder?76:stone?78:dry?83:deep?61:65;
+      let blue=path?80+pathWear*5:edge?54:shoulder?49:stone?63:dry?49:deep?47:45;
+      red+=shade;green+=shade;blue+=shade;
       const i=(row*cols+col)*4;
-      if(rut){base[0]-=15;base[1]-=13;base[2]-=10}
-      if(roadCracks){base[0]-=17;base[1]-=16;base[2]-=12}
-      if(gravel){base[0]+=12;base[1]+=10;base[2]+=8}
-      if(grassTuft){base[0]+=7;base[1]+=17;base[2]+=5}
-      if(woodlandEdge){base[0]-=7;base[1]-=4;base[2]-=2}
-      if(damp){base[0]-=5;base[1]-=4;base[2]+=5}
-      if(pebbles){base[0]+=24;base[1]+=24;base[2]+=20}
-      if(mossPatch){base[0]-=4;base[1]+=13;base[2]-=3}
-      if(flowerScatter){base[0]+=45;base[1]+=22;base[2]+=49}
-      if(sunlitSeeds){base[0]+=37;base[1]+=34;base[2]+=11}
-      data[i]=base[0]*light*shadow*slopeLight*(1-fog)+145*fog;data[i+1]=base[1]*light*shadow*slopeLight*(1-fog)+157*fog;data[i+2]=base[2]*light*shadow*slopeLight*(1-fog)+137*fog;data[i+3]=255;
+      if(rut){red-=15;green-=13;blue-=10}
+      if(roadCracks){red-=17;green-=16;blue-=12}
+      if(gravel){red+=12;green+=10;blue+=8}
+      if(grassTuft){red+=7;green+=17;blue+=5}
+      if(woodlandEdge){red-=7;green-=4;blue-=2}
+      if(damp){red-=5;green-=4;blue+=5}
+      if(pebbles){red+=24;green+=24;blue+=20}
+      if(mossPatch){red-=4;green+=13;blue-=3}
+      if(flowerScatter){red+=45;green+=22;blue+=49}
+      if(sunlitSeeds){red+=37;green+=34;blue+=11}
+      data[i]=red*light*shadow*slopeLight*(1-fog)+145*fog;data[i+1]=green*light*shadow*slopeLight*(1-fog)+157*fog;data[i+2]=blue*light*shadow*slopeLight*(1-fog)+137*fog;data[i+3]=255;
     }
   }
   ground.getContext("2d")!.putImageData(pixels!,0,0);ctx.drawImage(ground,0,120,426,120);
