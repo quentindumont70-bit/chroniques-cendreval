@@ -22,6 +22,18 @@ export const VALLEY_PROPS:Prop[]=[
  {x:14.5,y:5.0,frame:3,height:2.7},{x:17.3,y:5.4,frame:5,height:1.6},
  ...Array.from({length:22},(_,i)=>({x:2.4+(i*3.71)%15,y:3.5+(i*2.29)%14,frame:6,height:.25+(i%3)*.08})),
  ...VERGE_GROVES,
+ // Hand-distributed woodland edge: clustered understory, fallen stone and flower patches.
+ // Stable coordinates prevent flicker between frames and keep the central pilgrim route clear.
+ ...Array.from({length:84},(_,i)=>{
+  const side=i%2===0?1:19,angle=i*2.399963229728653;
+  const x=side+(Math.sin(angle)*1.55),y=1.5+((i*3.17)%17);
+  return {x:Math.max(.4,Math.min(19.6,x)),y,frame:i%11===0?2:i%5===0?7:6,height:i%11===0?.55:.17+(i%5)*.055};
+ }),
+ ...Array.from({length:48},(_,i)=>{
+  const angle=i*2.399963229728653,r=.5+(i%9)*.19;
+  const cx=i%3===0?4.1:i%3===1?15.8:11.8,cy=i%3===0?6.3:i%3===1?16.4:3.2;
+  return {x:cx+Math.cos(angle)*r,y:cy+Math.sin(angle)*r,frame:i%7===0?2:6,height:i%7===0?.34:.16+(i%4)*.035};
+ }),
  // Flowering meadows and scattered stones break up the flat walkable field.
  ...Array.from({length:90},(_,i)=>{const x=2+((i*7.37)%16),y=2+((i*5.19)%16);return{x,y,frame:i%8===0?2:6,height:i%8===0?.35+(i%3)*.08:.24+(i%4)*.05}}),
 ];
