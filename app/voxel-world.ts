@@ -1,5 +1,6 @@
 import {LIVING_PROPS,VALLEY_PROPS,visibleSpans} from "./world-art";
 import {sceneryModel,valleyLife} from "./scene-models";
+import {selectScenery} from "./scenery-visibility";
 
 export type Voxel={x:number;y:number;z:number;sx:number;sy:number;sz:number;color:string;yaw?:number;glow?:boolean;motion?:"leaf"|"flame"|"banner"};
 type Camera={x:number;y:number;yaw:number;width:number;height:number;fov:number;eye?:number};
@@ -53,30 +54,10 @@ function scaled(model:Voxel[],factor:number){return model.map(v=>({...v,x:v.x*fa
 const SCENE_PROPS=[...VALLEY_PROPS,...LIVING_PROPS];
 const MODEL_TIERS=[false,true].map(detailed=>SCENE_PROPS.map((p,i)=>translated(scaled(sceneryModel(p.frame,Boolean(p.living),p.height,detailed),.34),p.x,p.y,(i*.83)%Math.PI)));
 /** Voxel scenery has real side and top faces: walking around an object changes its silhouette. */
-export function drawVoxelWorld(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:Float32Array,time:number,detail=1,combat=false){const voxels:Voxel[]=[],limit=detail>=3?54:detail>=2?34:18,maxDistance=detail>=2?24:14;
+export function drawVoxelWorld(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:Float32Array,time:number,detail=1,combat=false){const voxels:Voxel[]=[];
  // Avoid allocating and sorting every world prop on each animation frame.
  // Only nearby props inside the camera frustum enter the small distance-sorted shortlist.
- const visible:{i:number;d:number}[]=[];
- const tall:{i:number;d:number}[]=[];
- const forwardX=Math.cos(camera.yaw),forwardY=Math.sin(camera.yaw),cosLimit=Math.cos(camera.fov*.76);
- for(let i=0;i<SCENE_PROPS.length;i++){
-  const p=SCENE_PROPS[i],dx=p.x-camera.x,dy=p.y-camera.y,d2=dx*dx+dy*dy;
-  if(d2<=.3025||d2>=maxDistance*maxDistance)continue;
-  const forward=dx*forwardX+dy*forwardY;
-  if(forward<=0||forward*forward<=d2*cosLimit*cosLimit)continue;
-  const d=Math.sqrt(d2),target=p.height>=1.65?tall:visible;
-  // Reserve a fixed portion of the mobile budget for trees and landmarks.
-  // Dense ground cover must not crowd out the silhouettes that give the valley depth.
-  const quota=target===tall?Math.max(6,Math.floor(limit*.55)):limit;
-  let position=target.length;
-  while(position>0&&target[position-1].d>d)position--;
-  if(position>=quota)continue;
-  target.splice(position,0,{i,d});
-  if(target.length>quota)target.pop();
- }
- // Fill tall slots first, then ground detail: nearest grass cannot evict every tree.
- const tallBudget=Math.min(tall.length,Math.max(6,Math.floor(limit*.55)));
- const selected=[...tall.slice(0,tallBudget),...visible.slice(0,limit-tallBudget)];
+ const selected=selectScenery(SCENE_PROPS,camera,detail);
  for(const item of selected){const source=MODEL_TIERS[detail>=2&&item.d<7?1:0][item.i];for(const voxel of source){if(voxel.motion==='flame'){const pulse=.82+Math.sin(time*.009+item.i+voxel.x*7)*.18;voxels.push({...voxel,sz:voxel.sz*pulse})}else if(voxel.motion==='leaf'||voxel.motion==='banner'){const wave=Math.sin(time*.0015+item.i+voxel.z*3)*.008;voxels.push({...voxel,x:voxel.x+wave,y:voxel.y+wave*.4})}else voxels.push(voxel)}}
  voxels.push(...valleyLife(time,camera.x,camera.y,detail,combat));drawFaces(ctx,camera,voxels,zbuf)}
 
