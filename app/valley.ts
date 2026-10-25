@@ -133,13 +133,14 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
         const b=pathGrid[k+160]!*(1-tx)+pathGrid[k+161]!*tx;
         pathDistance=a*(1-ty)+b*ty;
       }
-      const path=pathDistance<.43;
+      const bankNoise=Math.sin(wx*5.1+wy*2.7)*Math.cos(wy*4.3-wx*1.6)*.055;
+      const path=pathDistance<.43+bankNoise;
       const rolling=Math.sin(wx*.72+wy*.23)*Math.cos(wy*.61)*.5+.5;
       const broad=Math.sin(wx*.21+wy*.31)*Math.cos(wy*.27-wx*.17);
       const micro=Math.sin(wx*2.8+wy*.6)*Math.sin(wy*2.1-wx*.7);
       const light=.72+rolling*.25+broad*.075+micro*.035;
-      const edge=pathDistance<.58;
-      const shoulder=pathDistance>=.43&&pathDistance<.9;
+      const edge=pathDistance<.58+bankNoise;
+      const shoulder=pathDistance>=.43+bankNoise&&pathDistance<.9+bankNoise;
       const pathWear=Math.sin(wx*3.4+wy*.8)*Math.sin(wy*2.6-wx*.5);
       // Foot-worn twin ruts follow the pilgrimage route, giving the road a traveled texture.
       const rut=path&&pathDistance>.16&&pathDistance<.31;
