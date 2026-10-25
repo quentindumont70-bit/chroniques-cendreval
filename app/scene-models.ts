@@ -11,7 +11,23 @@ export function sceneryModel(frame:number,living:boolean,h:number,detailed:boole
  for(let section=0;section<5;section++){const z=.08+section*.115;add(b(Math.sin(section*1.6)*.015,Math.cos(section*1.3)*.012,z,(oak?.12:.085)*(1-section*.09),(.1-section*.009),.12,birch?(section%2?'#d8d5b9':'#b4baa5'):(section%2?'#75583d':'#60482f'),section*.19))}}
 for(let k=0;k<3;k++){const a=k*2.1;ornament(b(Math.cos(a)*.055,Math.sin(a)*.055,0,.16,.035,.04,wood,a))}for(let j=0;j<(detailed?6:2);j++)ornament(b(.002,-.039,.1+j*.08,.067,.009,.012,birch?'#5d665c':'#a1855d'));
   if(kind==='pine'){if(detailed){for(let needle=0;needle<18;needle++){const a=needle*2.399,level=needle%5,r=.17+(4-level)*.043,z=.29+level*.135;const tuft=b(Math.cos(a)*r,Math.sin(a)*r,z,.14,.11,.055,needle%3===0?'#7b9566':needle%3===1?'#3d624c':'#547957',a);tuft.motion='leaf';add(tuft)}}for(let level=0;level<5;level++){const width=.46-level*.07,z=.32+level*.135;add(b(0,0,z,width,width*.78,.105,['#314f42','#3b614b','#537957','#67865a','#8b9d67'][level],level*.51));if(detailed)for(let side=0;side<3;side++){const a=side*2.1+level*.7;const part=b(Math.cos(a)*width*.32,Math.sin(a)*width*.32,z-.035,width*.45,width*.35,.085,side===0?'#77915b':'#456b4c',a);part.motion='leaf';add(part)}}add(b(0,0,.94,.065,.065,.08,'#98a36a'))}
-  else{if(detailed){ // Layered branch forks and clustered canopy give a legible silhouette at close range.
+  else{
+  // Full distant canopy for birches and oaks: low detail must never mean a bare trunk.
+  // Broad overlapping crowns preserve the species silhouette without close-range voxel cost.
+  if(!detailed){
+   const radius=oak?.31:.23;
+   const colors=birch?['#77966a','#a6b487','#547c60','#8caa77']:['#405f43','#648454','#81985c','#50734a'];
+   for(let layer=0;layer<3;layer++){
+    const z=.58+layer*.135,spread=radius*(layer===1?1.18:layer===2?.72:1);
+    const crown=b((layer-1)*.045,layer%2*.035,z,spread*2,spread*1.65,.17,colors[layer]);
+    crown.motion='leaf';add(crown);
+   }
+   for(let twig=0;twig<4;twig++){
+    const a=twig*Math.PI/2+.35,r=radius*.75;
+    add(b(Math.cos(a)*r,Math.sin(a)*r,.67+(twig%2)*.13,.17,.16,.14,colors[twig],a));
+   }
+  }
+  if(detailed){ // Layered branch forks and clustered canopy give a legible silhouette at close range.
    for(let branch=0;branch<7;branch++){const a=branch*2.399,reach=(oak?.24:.17)*(1+branch%3*.16),height=.38+(branch%4)*.115;add(b(Math.cos(a)*reach*.42,Math.sin(a)*reach*.42,height,reach*.9,.035,.034,birch?'#a6ac97':'#69513c',a));for(let leaf=0;leaf<4;leaf++){const theta=a+leaf*1.57,r=reach*(.7+leaf*.09),tip=b(Math.cos(a)*reach+Math.cos(theta)*r*.35,Math.sin(a)*reach+Math.sin(theta)*r*.35,height+.07+(leaf%2)*.06,.12,.11,.085,['#405f43','#688957','#96a66b','#54734c'][leaf]);tip.motion='leaf';add(tip)}}}
    const count=detailed?25:7;for(let i=0;i<count;i++){const a=i*2.399,r=(i%4)*.054,z=.6+(i%3)*.11,spread=oak?.21:.15;const part=b(Math.cos(a)*r,Math.sin(a)*r,z,spread*(1+(i%2)*.24),spread,.105+((i*7)%3)*.025,['#54734b','#7d9259','#a3ae73','#658551'][i%4],a*.14);part.motion='leaf';add(part)}if(oak){add(b(.11,0,.45,.2,.035,.045,wood,.2),b(.22,0,.38,.015,.015,.15,iron));lantern(.22,0,.28)}}};
  if(living){switch(frame){
