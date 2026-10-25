@@ -7,13 +7,17 @@ export function selectScenery(props:readonly SceneryProp[],camera:SceneryCamera,
  const tall:SceneryChoice[]=[],small:SceneryChoice[]=[];
  const tallQuota=Math.max(6,Math.floor(limit*.55));
  const fx=Math.cos(camera.yaw),fy=Math.sin(camera.yaw);
- const cosLimit=Math.cos(camera.fov*.76),cosSquared=cosLimit*cosLimit;
+ const halfFov=camera.fov*.76,tanLimit=Math.tan(halfFov);
  const maxSquared=maxDistance*maxDistance;
  for(let i=0;i<props.length;i++){
   const p=props[i],dx=p.x-camera.x,dy=p.y-camera.y,d2=dx*dx+dy*dy;
   if(d2<=.3025||d2>=maxSquared)continue;
   const forward=dx*fx+dy*fy;
-  if(forward<=0||forward*forward<=d2*cosSquared)continue;
+  // Large crowns remain visible even when the trunk is just beyond the screen edge.
+  const radius=p.height>=1.65?Math.min(1.5,p.height*.19):Math.min(.35,p.height*.15);
+  if(forward+radius<=0)continue;
+  const lateral=Math.abs(-dx*fy+dy*fx);
+  if(lateral>Math.max(0,forward)*tanLimit+radius)continue;
   const d=Math.sqrt(d2),group=p.height>=1.65?tall:small;
   const quota=limit;
   let index=group.length;
