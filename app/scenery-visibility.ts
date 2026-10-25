@@ -5,7 +5,7 @@ export type SceneryChoice={i:number;d:number};
 export function selectScenery(props:readonly SceneryProp[],camera:SceneryCamera,detail:number):SceneryChoice[]{
  const limit=detail>=3?54:detail>=2?34:18,maxDistance=detail>=2?24:14;
  const tall:SceneryChoice[]=[],small:SceneryChoice[]=[];
- const tallQuota=Math.max(6,Math.floor(limit*.55));
+ const tallQuota=Math.max(6,Math.floor(limit*.67));
  const fx=Math.cos(camera.yaw),fy=Math.sin(camera.yaw);
  const halfFov=camera.fov*.76,tanLimit=Math.tan(halfFov);
  const maxSquared=maxDistance*maxDistance;
@@ -27,7 +27,7 @@ export function selectScenery(props:readonly SceneryProp[],camera:SceneryCamera,
   group.splice(index,0,{i,d});
   if(group.length>quota)group.pop();
  }
- // Reserve silhouettes, then fill any unused flower slots with additional trees.
+ // Give the first-person valley a strong woodland silhouette before filling gaps with ground cover.
  const reserved=Math.min(tall.length,tallQuota);
  const flowers=small.slice(0,limit-reserved);
  const remaining=limit-reserved-flowers.length;
