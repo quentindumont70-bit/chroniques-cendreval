@@ -31,7 +31,7 @@ function projectWithLens(camera:Camera,x:number,y:number,z:number,c:number,s:num
 function facesForVoxel(camera:Camera,v:Voxel,out:Face[],cameraCos:number,cameraSin:number,focal:number,frustumSlope:number){
   // Coarse camera-space rejection before projecting five faces per tiny leaf.
   const dx=v.x-camera.x,dy=v.y-camera.y,forward=dx*cameraCos+dy*cameraSin;
-  const radius=Math.hypot(v.sx,v.sy)*.72;
+  const radius=Math.max(v.sx,v.sy)*.72;
   if(forward+radius<=.08)return;
   const lateral=-dx*cameraSin+dy*cameraCos;
   if(Math.abs(lateral)>Math.max(.12,forward)*frustumSlope+radius)return;
