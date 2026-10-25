@@ -56,3 +56,11 @@ test('mobile tree crowns have independently animated outer leaf clusters',()=>{
   assert(new Set(animated.map(v=>v.x.toFixed(2))).size>=5,'outer clusters must not collapse to one column');
  }
 });
+
+test('low-detail trunks include root geometry and contrasting bark',()=>{
+ for(const [frame,living] of [[0,false],[1,false],[1,true]]){
+  const tree=sceneryModel(frame,living,3,false);
+  assert(tree.filter(v=>v.z<.3&&v.sx>.15).length>=4,'tree base should have visible roots');
+  assert(new Set(tree.filter(v=>v.z<1.4).map(v=>v.color)).size>=3,'tree trunk should not be a plain column');
+ }
+});
