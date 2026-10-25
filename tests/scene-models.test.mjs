@@ -87,3 +87,14 @@ test('mobile meadow flowers are visible without desktop detail',()=>{
  assert(meadow.length>=9,'grass should form a layered patch');
  assert(meadow.some(v=>v.color==='#c7b4d2'||v.color==='#ead59c'),'flower petals must remain visible on mobile');
 });
+
+test('roadside compositions populate both edges of the playable valley',()=>{
+ const cover=VALLEY_PROPS.filter(p=>p.frame===6&&p.height>=.25);
+ assert(cover.length>=130,'ground cover should be substantial');
+ assert(cover.some(p=>p.x<4)&&cover.some(p=>p.x>16),'ground cover must frame both sides');
+});
+test('mobile boulders have moss caps instead of bare uniform stone',()=>{
+ const rock=sceneryModel(2,false,.5,false);
+ assert(rock.some(v=>v.color==='#61784c'),'moss must be visible at mobile detail');
+ assert(rock.some(v=>v.color==='#8a9a68'),'rock needs contrasting moss highlights');
+});
