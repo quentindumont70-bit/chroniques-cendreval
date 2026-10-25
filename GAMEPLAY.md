@@ -118,6 +118,12 @@ Les options regroupent volume, secousses, fréquence visée, définition et comm
 
 Une barre de vie discrète identifie les ennemis ordinaires visés ou récemment touchés. Un arc cuivré bref indique la direction d’un coup reçu, sans flash supplémentaire ni modification de la parade.
 
+## Volumes pixel-art · 0.5.0
+
+Le décor proche et les combattants ne regardent plus toujours la caméra comme des cartes peintes. Le moteur projette des assemblages de boîtes orientées, choisit les faces visibles, applique une lumière par face et les coupe derrière les murs. Tourner autour d’un arbre, d’une arche, d’une borne ou d’un ennemi révèle donc ses côtés et son dessus. La taille des volumes est raccordée à l’échelle historique du raycaster pour garder les distances de combat et le cadrage du niveau.
+
+Les silhouettes de combat restent lisibles par leur géométrie : arc transversal pour les tireurs, masse lourde pour les brutes, Sulfuras en phase I et paire d’armes bleutées en phase II. Les mouvements de charge et de frappe déplacent les segments d’arme. Le mode Auto affiche les modèles les plus proches en priorité ; les modes plus détaillés élargissent ce budget.
+
 Options → Votre chronique : export JSON de la progression et import avec aperçu, annulation et vérification. Les fichiers anciens sans enveloppe restent acceptés ; format inconnu, données incompatibles ou fichier illisible sont refusés sans modifier la partie. L’import conserve une copie de la partie actuelle dans un emplacement distinct des sauvegardes automatiques, exportable depuis les options jusqu’au prochain import. Après validation, le jeu revient à l’accueil : Continuer charge la progression importée. Les commandes, le volume et la qualité graphique restent locaux à l’appareil. Les données importées sont normalisées comme toute sauvegarde, notamment les ressources et la position.
 
 ### Rythme des combats · 0.4.4

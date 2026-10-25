@@ -6,7 +6,7 @@ Version 0.3.1 — premier niveau et Gardien des ruines.
 
 Une tranche jouable en vue subjective : exploration des plaines, trois voies de combat, objectif des trois bornes, découverte facultative au chariot, Gardien Sulfuras / doubles Thunderfury, victoire et récompense à Valbrume. Les chapitres ultérieurs déjà présents dans le dépôt restent hors de cette passe de finition.
 
-La direction artistique conserve le rendu pixel art 16 bits, le panorama distant et les accessoires en profondeur. Le soin porte sur la lisibilité, la continuité de la progression et les sensations de contrôle ; ce moteur 2,5D n’est pas une reproduction technique d’un jeu AAA moderne.
+La direction artistique conserve le rendu pixel art, le panorama distant et une scène logicielle en perspective. Depuis la 0.5.0, les personnages, bornes et accessoires proches sont construits en volumes plutôt qu’en panneaux plats. Le sol, les murs et ces modèles partagent la même caméra ; le panorama reste une toile distante.
 
 ## Critères d’acceptation
 
@@ -20,7 +20,7 @@ La direction artistique conserve le rendu pixel art 16 bits, le panorama distant
 
 Les tests tactiles utilisent Chromium en émulation mobile. Le ressenti et le mixage audio sur un iPhone physique/Safari, la latence réelle de l’écran et la chauffe sur une longue session ne peuvent pas être certifiés depuis cet environnement. Le paysage reste le format recommandé ; les menus et gestes restent utilisables en portrait.
 
-La troisième personne et une refonte en vrai moteur 3D ne font pas partie de cette livraison.
+La troisième personne ne fait pas partie de cette livraison. La conversion volumétrique est engagée, mais les effets, l’arme tenue et quelques transitions de mort emploient encore des éléments 2D.
 
 ## Vérifications réalisées pour cette livraison
 
@@ -70,3 +70,9 @@ Récupération partagée entre lame, arc et magie : alterner les armes ne permet
 Enchaînements de trois frappes qui reviennent au premier coup, recommencent sur une nouvelle cible et se rompent après un coup reçu. Troisième frappe plus marquée visuellement, traînée carmin du Chevalier du sang et couleur d’étincelle propre à chaque classe. Manuel de combat utilisant les raccourcis configurés.
 
 Validation : typecheck et 31 tests de règles/contenu réussis ; 40 contrôles navigateur existants, six classes/dix-huit compétences, export/import et options mobiles réussis. Tests navigateur dédiés aux directions clavier, esquives répétées, récupération commune, commandes précoces/tardives, direction mémorisée et pause. Parcours complet Arcanes jusqu’à Valbrume, relique et marchand réussi. Aucune erreur JavaScript observée. Chromium et émulation tactile ; ressenti et performances physiques à confirmer sur les appareils du joueur.
+
+## Passage volumétrique 0.5.0 · Première tranche 3D
+
+Les arbres, rochers, arches, chariots, lanternes, stèles, petits sanctuaires et bornes de la vallée sont maintenant assemblés en volumes à faces distinctes. Leur silhouette et leurs faces visibles changent quand la caméra tourne autour ; ils partagent le tampon de profondeur des murs. Les ombres de combat et le Gardien sont également segmentés en volumes articulés. Sulfuras possède un manche et une tête séparés ; la phase II porte deux armes lumineuses indépendantes.
+
+Le rendu reste un moteur logiciel dans Canvas, sans dépendance WebGL. Il conserve les pixels nets et la compatibilité du jeu publié. Auto limite le nombre de modèles visibles et leur complexité ; HD et Ultra augmentent la densité. Les modèles statiques sont mis en cache et les objets hors champ ou trop lointains sont écartés avant projection. Cette tranche ne convertit pas encore le panorama, l’arme en vue subjective ni tous les effets en géométrie.
