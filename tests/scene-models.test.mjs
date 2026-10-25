@@ -64,3 +64,20 @@ test('low-detail trunks include root geometry and contrasting bark',()=>{
   assert(new Set(tree.filter(v=>v.z<1.4).map(v=>v.color)).size>=3,'tree trunk should not be a plain column');
  }
 });
+
+test('forest trees carry low ground cover on both detail tiers',()=>{
+ for(const detailed of [false,true])for(const [frame,living] of [[0,false],[1,false],[1,true]]){
+  const model=sceneryModel(frame,living,3,detailed);
+  const ferns=model.filter(v=>v.z<.2&&v.motion==='leaf');
+  assert(ferns.length>=4,'forest floor should be grounded by fern fronds');
+  assert(new Set(ferns.map(v=>v.color)).size>=3,'ferns should not be monochrome');
+ }
+});
+test('low-detail deciduous treetops break the skyline into distinct crownlets',()=>{
+ for(const living of [false,true]){
+  const model=sceneryModel(1,living,3,false);
+  const high=model.filter(v=>v.motion==='leaf'&&v.z>2.1);
+  assert(high.length>=5,'treetop should retain small irregular crownlets');
+  assert(new Set(high.map(v=>v.y.toFixed(2))).size>=3,'crownlets must have spatial depth');
+ }
+});
