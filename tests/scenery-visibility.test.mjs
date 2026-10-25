@@ -41,3 +41,17 @@ test('unused tree slots are filled with close ground details',()=>{
  assert.equal(selected.length,18);
  assert(selected.every(c=>flowers[c.i].height<1.65));
 });
+
+test('large canopies remain visible at the camera edge but remote props do not',()=>{
+ const props=[
+  {x:5,y:6.3,height:5},
+  {x:5,y:9,height:5},
+  {x:-5,y:0,height:5},
+  {x:5,y:6.3,height:.2},
+ ];
+ const selected=selectScenery(props,camera,2).map(c=>c.i);
+ assert(selected.includes(0),'large canopy near the edge must survive culling');
+ assert(!selected.includes(1),'far outside frustum');
+ assert(!selected.includes(2),'behind player');
+ assert(!selected.includes(3),'tiny ground cover outside frustum');
+});
