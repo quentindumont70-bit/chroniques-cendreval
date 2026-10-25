@@ -28,3 +28,16 @@ test('distance budgets grow with desktop detail without exceeding their limits',
   assert(selected.every(c=>c.d<=(detail>=2?24:14)));
  }
 });
+
+test('unused flower slots are filled with extra tree silhouettes',()=>{
+ const trees=Array.from({length:30},(_,i)=>({x:2+i*.2,y:(i%3-1)*.12,height:2.8}));
+ const selected=selectScenery(trees,camera,1);
+ assert.equal(selected.length,18);
+ assert(selected.every(c=>trees[c.i].height>1.65));
+});
+test('unused tree slots are filled with close ground details',()=>{
+ const flowers=Array.from({length:30},(_,i)=>({x:2+i*.2,y:(i%3-1)*.12,height:.4}));
+ const selected=selectScenery(flowers,camera,1);
+ assert.equal(selected.length,18);
+ assert(selected.every(c=>flowers[c.i].height<1.65));
+});
