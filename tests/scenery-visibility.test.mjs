@@ -44,10 +44,10 @@ test('unused tree slots are filled with close ground details',()=>{
 
 test('large canopies remain visible at the camera edge but remote props do not',()=>{
  const props=[
-  {x:5,y:6.3,height:5},
-  {x:5,y:9,height:5},
+  {x:5,y:13.2,height:5},
+  {x:5,y:19,height:5},
   {x:-5,y:0,height:5},
-  {x:5,y:6.3,height:.2},
+  {x:5,y:13.2,height:.2},
  ];
  const selected=selectScenery(props,camera,2).map(c=>c.i);
  assert(selected.includes(0),'large canopy near the edge must survive culling');
