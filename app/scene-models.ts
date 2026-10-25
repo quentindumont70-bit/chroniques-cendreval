@@ -54,7 +54,7 @@ for(let k=0;k<3;k++){const a=k*2.1;ornament(b(Math.cos(a)*.055,Math.sin(a)*.055,
     needle.motion='leaf';add(needle);
    }
   }
-  if(detailed){for(let needle=0;needle<18;needle++){const a=needle*2.399,level=needle%5,r=.17+(4-level)*.043,z=.29+level*.135;const tuft=b(Math.cos(a)*r,Math.sin(a)*r,z,.14,.11,.055,needle%3===0?'#7b9566':needle%3===1?'#3d624c':'#547957',a);tuft.motion='leaf';add(tuft)}}for(let level=0;level<5;level++){const width=.46-level*.07,z=.32+level*.135;add(b(0,0,z,width,width*.78,.105,['#314f42','#3b614b','#537957','#67865a','#8b9d67'][level],level*.51));if(detailed)for(let side=0;side<3;side++){const a=side*2.1+level*.7;const part=b(Math.cos(a)*width*.32,Math.sin(a)*width*.32,z-.035,width*.45,width*.35,.085,side===0?'#77915b':'#456b4c',a);part.motion='leaf';add(part)}}add(b(0,0,.94,.065,.065,.08,'#98a36a'))}
+  if(detailed){for(let needle=0;needle<18;needle++){const a=needle*2.399,level=needle%5,r=.17+(4-level)*.043,z=.29+level*.135;const tuft=b(Math.cos(a)*r,Math.sin(a)*r,z,.14,.11,.055,needle%3===0?'#7b9566':needle%3===1?'#3d624c':'#547957',a);tuft.motion='leaf';add(tuft)}}for(let level=0;level<5;level++){const width=.34-level*.048,z=.32+level*.135;add(b(0,0,z,width,width*.78,.075,['#314f42','#3b614b','#537957','#67865a','#8b9d67'][level],level*.51));if(detailed)for(let side=0;side<3;side++){const a=side*2.1+level*.7;const part=b(Math.cos(a)*width*.32,Math.sin(a)*width*.32,z-.035,width*.45,width*.35,.085,side===0?'#77915b':'#456b4c',a);part.motion='leaf';add(part)}}add(b(0,0,.94,.065,.065,.08,'#98a36a'))}
   else{
   // Full distant canopy for birches and oaks: low detail must never mean a bare trunk.
   // Broad overlapping crowns preserve the species silhouette without close-range voxel cost.
