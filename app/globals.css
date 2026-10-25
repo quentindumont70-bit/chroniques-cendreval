@@ -146,3 +146,7 @@ html:has(.stage.playing),html:has(.stage.playing) *{cursor:none!important}.stage
 /* iPhone landscape: quest text must never be cropped by a fixed-height HUD slot. */
 .stage .quest{height:auto;min-height:56px;overflow:visible;white-space:normal;overflow-wrap:break-word;line-height:1.45}
 @media(max-width:900px),(pointer:coarse){.stage .quest{height:auto;min-height:48px;max-height:none;overflow:visible;white-space:normal;overflow-wrap:break-word;padding-bottom:10px}}
+
+/* Quest objective: content-sized card, including user-resized HUD layouts. */
+.stage .quest{height:auto!important;min-height:56px;max-height:none!important;overflow:visible!important;white-space:normal;overflow-wrap:anywhere;line-height:1.5}
+@media(max-width:900px),(pointer:coarse){.stage .quest{height:auto!important;min-height:48px;max-height:none!important;padding-bottom:12px}}
