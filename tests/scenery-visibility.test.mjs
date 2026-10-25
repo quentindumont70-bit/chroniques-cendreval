@@ -75,3 +75,12 @@ test('mobile first-person view favors tree silhouettes over decorative ground co
  assert.equal(visible.length,18);
  assert(visible.filter(p=>p.i>=plants.length).length>=12,'woodland must dominate the limited mobile prop budget');
 });
+
+test('nearby tree crowns do not cover the entire first-person sky',()=>{
+ const props=[{x:.8,y:0,height:3.5},{x:1.4,y:0,height:3},{x:2.4,y:0,height:3},{x:.8,y:.3,height:.3}];
+ const selected=selectScenery(props,camera,1).map(v=>v.i);
+ assert(!selected.includes(0),'a tree inside the camera should be culled');
+ assert(!selected.includes(1),'large near-field crown should not swallow the skyline');
+ assert(selected.includes(2),'a readable tree further away must remain');
+ assert(selected.includes(3),'nearby low vegetation must still render');
+});
