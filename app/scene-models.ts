@@ -63,7 +63,7 @@ for(let k=0;k<3;k++){const a=k*2.1;ornament(b(Math.cos(a)*.055,Math.sin(a)*.055,
    const colors=birch?['#77966a','#a6b487','#547c60','#8caa77']:['#405f43','#648454','#81985c','#50734a'];
    for(let layer=0;layer<4;layer++){
     const z=.55+layer*.115,spread=radius*(layer===1?1.18:layer===2?.85:layer===3?.52:1);
-    const crown=b((layer-1)*.045,layer%2*.035,z,spread*2,spread*1.65,.17,colors[layer%colors.length]);
+    const crown=b((layer-1)*.045,layer%2*.035,z,spread*1.45,spread*1.22,.12,colors[layer%colors.length],layer*.37);
     crown.motion='leaf';add(crown);
    }
    // Small offset leaf clusters soften the silhouette without adding expensive full trees.
