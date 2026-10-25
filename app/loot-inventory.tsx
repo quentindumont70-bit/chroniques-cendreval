@@ -10,6 +10,7 @@ export default function LootInventory({value,onChange}:{value:InventoryState;onC
  const [filter,setFilter]=useState("all");
  const [selected,setSelected]=useState<string|null>(null);
  const [sort,setSort]=useState<"rarity"|"name"|"power">("rarity");
+ const [compare,setCompare]=useState(true);
  const entries=useMemo(()=>catalog.filter(item=>(value.items[item.id]??0)>0&&(filter==="all"||item.slot===filter)).sort((a,b)=>sort==="name"?a.name.localeCompare(b.name,"fr"):sort==="power"?b.power-a.power:({common:0,uncommon:1,rare:2,epic:3,legendary:4}[b.rarity]-{common:0,uncommon:1,rare:2,epic:3,legendary:4}[a.rarity])),[value,filter,sort]);
  const active=catalog.find(item=>item.id===selected);
  const power=equipmentPower(value,catalog);
@@ -26,6 +27,8 @@ export default function LootInventory({value,onChange}:{value:InventoryState;onC
  <strong style={{color:colors[active.rarity]}}>{active.name}</strong><p>{active.description}</p><small>{rarityLabel(active.rarity)} · {active.slot==="material"?"Matériau":slotName[active.slot]} · Puissance +{active.power}</small>
  {active.slot!=="material"&&<div style={{marginTop:8}}><button type="button" onClick={()=>onChange(equipItem(value,active))} disabled={value.equipped[active.slot]===active.id}>{value.equipped[active.slot]===active.id?"Équipé":"Équiper"}</button></div>}
  </div>}
+ <label style={{display:"flex",alignItems:"center",gap:8,marginTop:12,fontSize:13}}><input type="checkbox" checked={compare} onChange={event=>setCompare(event.target.checked)}/>Comparer avec mon équipement</label>
+ {compare&&active&&active.slot!=="material"&&(value.items[active.id]??0)>0&&<div role="status" style={{fontSize:13,padding:"8px 10px",marginTop:8,border:"1px solid #71614b",borderRadius:6,background:"#201d20"}}>{(()=>{const equipped=catalog.find(item=>item.id===value.equipped[active.slot]);const difference=active.power-(equipped?.power??0);return <><strong>{difference>0?`▲ +${difference}`:difference<0?`▼ ${difference}`:"= 0"} puissance</strong> par rapport à {equipped?.name??"un emplacement vide"}{value.equipped[active.slot]===active.id?" · Déjà équipé":""}</>})()}</div>}
  <h4>Statistiques de l’équipement</h4><p style={{fontSize:13}}>Lame : +{equipmentAttackBonus(value,"melee")} · Arc : +{equipmentAttackBonus(value,"bow")} · Magie : +{equipmentAttackBonus(value,"magic")} · Protection : {equipmentDamageReduction(value)}</p>
  <h4>Emplacements</h4><div style={{display:"grid",gap:6}}>{(["weapon","armor","trinket"] as EquipmentSlot[]).map(slot=><div key={slot} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8}}><span>{slotName[slot]} : {catalog.find(item=>item.id===value.equipped[slot])?.name??"Vide"}</span>{value.equipped[slot]&&<button type="button" onClick={()=>onChange(unequipItem(value,slot))}>Retirer</button>}</div>)}</div>
  </section>;
