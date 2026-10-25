@@ -22,6 +22,8 @@ export const VALLEY_PROPS:Prop[]=[
  {x:14.5,y:5.0,frame:3,height:2.7},{x:17.3,y:5.4,frame:5,height:1.6},
  ...Array.from({length:22},(_,i)=>({x:2.4+(i*3.71)%15,y:3.5+(i*2.29)%14,frame:6,height:.25+(i%3)*.08})),
  ...VERGE_GROVES,
+ // Flowering meadows and scattered stones break up the flat walkable field.
+ ...Array.from({length:90},(_,i)=>{const x=2+((i*7.37)%16),y=2+((i*5.19)%16);return{x,y,frame:i%8===0?2:6,height:i%8===0?.35+(i%3)*.08:.24+(i%4)*.05}}),
 ];
 // Scenery sits beside the route; decorative objects never alter collision or objectives.
 export const LIVING_PROPS:Prop[]=[
