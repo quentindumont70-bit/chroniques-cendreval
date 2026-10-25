@@ -9,9 +9,10 @@ export function selectScenery(props:readonly SceneryProp[],camera:SceneryCamera,
  const fx=Math.cos(camera.yaw),fy=Math.sin(camera.yaw);
  const halfFov=camera.fov*.76,tanLimit=Math.tan(halfFov);
  const maxSquared=maxDistance*maxDistance;
+ const nearSquared=.3025;
  for(let i=0;i<props.length;i++){
   const p=props[i],dx=p.x-camera.x,dy=p.y-camera.y,d2=dx*dx+dy*dy;
-  if(d2<=.3025||d2>=maxSquared)continue;
+  if(d2<=nearSquared||d2>=maxSquared)continue;
   const forward=dx*fx+dy*fy;
   // Large crowns remain visible even when the trunk is just beyond the screen edge.
   const radius=p.height>=1.65?Math.min(1.5,p.height*.19):Math.min(.35,p.height*.15);
@@ -30,5 +31,8 @@ export function selectScenery(props:readonly SceneryProp[],camera:SceneryCamera,
  const reserved=Math.min(tall.length,tallQuota);
  const flowers=small.slice(0,limit-reserved);
  const remaining=limit-reserved-flowers.length;
- return [...tall.slice(0,reserved),...flowers,...tall.slice(reserved,reserved+remaining)];
+ const selected=[...tall.slice(0,reserved),...flowers,...tall.slice(reserved,reserved+remaining)];
+ // Keep painter-friendly nearest-first order for consistent animation and debugging.
+ selected.sort((a,b)=>a.d-b.d||a.i-b.i);
+ return selected;
 }
