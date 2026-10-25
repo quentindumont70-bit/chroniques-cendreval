@@ -22,6 +22,9 @@ export function selectScenery(props:readonly SceneryProp[],camera:SceneryCamera,
   group.splice(index,0,{i,d});
   if(group.length>quota)group.pop();
  }
+ // Reserve silhouettes, then fill any unused flower slots with additional trees.
  const reserved=Math.min(tall.length,tallQuota);
- return [...tall.slice(0,reserved),...small.slice(0,limit-reserved)];
+ const flowers=small.slice(0,limit-reserved);
+ const remaining=limit-reserved-flowers.length;
+ return [...tall.slice(0,reserved),...flowers,...tall.slice(reserved,reserved+remaining)];
 }
