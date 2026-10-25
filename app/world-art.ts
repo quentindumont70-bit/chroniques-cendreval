@@ -34,6 +34,18 @@ export const VALLEY_PROPS:Prop[]=[
   const cx=i%3===0?4.1:i%3===1?15.8:11.8,cy=i%3===0?6.3:i%3===1?16.4:3.2;
   return {x:cx+Math.cos(angle)*r,y:cy+Math.sin(angle)*r,frame:i%7===0?2:6,height:i%7===0?.34:.16+(i%4)*.035};
  }),
+ // Forest islands flank the central route: a few readable crowns instead of a wall of props.
+ ...Array.from({length:36},(_,i)=>{
+  const side=i%2===0?1:19,angle=i*2.399963229728653;
+  const x=Math.max(.8,Math.min(19.2,side+Math.sin(angle)*2.15));
+  const y=1.2+((i*3.37)%17.5);
+  return {x,y,frame:i%4===0?1:0,height:2.6+(i%5)*.22};
+ }),
+ // Low, uneven thickets give the path a soft silhouette without blocking combat.
+ ...Array.from({length:64},(_,i)=>{
+  const side=i%2===0?3.2:16.8,phase=i*2.399963229728653;
+  return {x:side+Math.sin(phase)*1.1,y:1.5+((i*4.31)%17),frame:i%9===0?2:6,height:i%9===0?.4:.34+(i%4)*.08};
+ }),
  // Flowering meadows and scattered stones break up the flat walkable field.
  ...Array.from({length:90},(_,i)=>{const x=2+((i*7.37)%16),y=2+((i*5.19)%16);return{x,y,frame:i%8===0?2:6,height:i%8===0?.35+(i%3)*.08:.24+(i%4)*.05}}),
 ];
