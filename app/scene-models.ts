@@ -26,6 +26,13 @@ for(let k=0;k<3;k++){const a=k*2.1;ornament(b(Math.cos(a)*.055,Math.sin(a)*.055,
    const a=limb*2.399+.4,z=.3+(limb%3)*.11,reach=oak?.28:.2;
    add(b(Math.cos(a)*reach*.42,Math.sin(a)*reach*.42,z,reach,.045,.043,birch?'#aeb4a1':'#5b4733',a));
   }
+  // Ground-hugging ferns and moss visually anchor trees to the forest floor.
+  for(let frond=0;frond<(detailed?7:4);frond++){
+   const a=frond*2.39996323,r=.16+(frond%3)*.045;
+   const fern=b(Math.cos(a)*r,Math.sin(a)*r,.012,.19,.045,.027,
+    ['#3f6543','#648455','#879761','#536f46'][frond%4],a);
+   fern.motion='leaf';add(fern);
+  }
   if(kind==='pine'){
   // Layered radial boughs replace the flat stacked-plate silhouette.
   // Keep the distant version lightweight while breaking the square outline.
