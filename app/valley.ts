@@ -124,7 +124,9 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const gx=Math.floor(wx*8),gy=Math.floor(wy*8);
       const pathDistance=gx>=0&&gy>=0&&gx<160&&gy<160?pathGrid[gy*160+gx]:10,path=pathDistance<.43;
       const rolling=Math.sin(wx*.72+wy*.23)*Math.cos(wy*.61)*.5+.5;
-      const light=.78+rolling*.3;
+      const broad=Math.sin(wx*.21+wy*.31)*Math.cos(wy*.27-wx*.17);
+      const micro=Math.sin(wx*2.8+wy*.6)*Math.sin(wy*2.1-wx*.7);
+      const light=.72+rolling*.25+broad*.075+micro*.035;
       const edge=pathDistance<.58;
       const fineX=Math.floor(wx*140),fineY=Math.floor(wy*140),fine=((Math.imul(fineX,374761393)^Math.imul(fineY,668265263))>>>0)%23,near=Math.max(0,Math.min(1,(4-depth)/3));
       const stone=(near>.4?fine:hash)>20,shade=hash*.55+near*(fine*.4-4);
