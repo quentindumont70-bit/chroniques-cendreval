@@ -23,12 +23,12 @@ function project(camera:Camera,x:number,y:number,z:number):Point|null{const dx=x
 /** Returns the screen position of a world point. Kept public so interaction markers use the same lens. */
 export function projectVoxelPoint(camera:Camera,x:number,y:number,z:number){return project(camera,x,y,z)}
 
-function facesForVoxel(camera:Camera,v:Voxel,out:Face[]){
+function facesForVoxel(camera:Camera,v:Voxel,out:Face[],cameraCos:number,cameraSin:number){
   // Coarse camera-space rejection before projecting five faces per tiny leaf.
-  const dx=v.x-camera.x,dy=v.y-camera.y,forward=dx*Math.cos(camera.yaw)+dy*Math.sin(camera.yaw);
+  const dx=v.x-camera.x,dy=v.y-camera.y,forward=dx*cameraCos+dy*cameraSin;
   const radius=Math.hypot(v.sx,v.sy)*.72;
   if(forward+radius<=.08)return;
-  const lateral=-dx*Math.sin(camera.yaw)+dy*Math.cos(camera.yaw);
+  const lateral=-dx*cameraSin+dy*cameraCos;
   if(Math.abs(lateral)>Math.max(.12,forward)*Math.tan(camera.fov*.6)+radius)return;
   const yaw=v.yaw??0,c=Math.cos(yaw),s=Math.sin(yaw),hx=v.sx/2,hy=v.sy/2;
   const corners:[[number,number,number],[number,number,number],[number,number,number],[number,number,number],[number,number,number],[number,number,number],[number,number,number],[number,number,number]]=[[-hx,-hy,0],[hx,-hy,0],[hx,hy,0],[-hx,hy,0],[-hx,-hy,v.sz],[hx,-hy,v.sz],[hx,hy,v.sz],[-hx,hy,v.sz]];
@@ -38,7 +38,7 @@ function facesForVoxel(camera:Camera,v:Voxel,out:Face[]){
 }
 
 function drawFaces(ctx:CanvasRenderingContext2D,camera:Camera,voxels:Voxel[],zbuf:Float32Array,alpha=1){
- const faces:Face[]=[];for(const voxel of voxels)facesForVoxel(camera,voxel,faces);faces.sort((a,b)=>b.depth-a.depth);ctx.save();ctx.globalAlpha=alpha;ctx.lineJoin="round";
+ const faces:Face[]=[],cameraCos=Math.cos(camera.yaw),cameraSin=Math.sin(camera.yaw);for(const voxel of voxels)facesForVoxel(camera,voxel,faces,cameraCos,cameraSin);faces.sort((a,b)=>b.depth-a.depth);ctx.save();ctx.globalAlpha=alpha;ctx.lineJoin="round";
  for(const face of faces){const xs=face.points.map(p=>p.x),ys=face.points.map(p=>p.y),left=Math.floor(Math.min(...xs)),right=Math.ceil(Math.max(...xs)),top=Math.min(...ys),bottom=Math.max(...ys);if(right<0||left>=camera.width||bottom< -48||top>=camera.height+48)continue;
  const spans=visibleSpans(left,right-left,face.depth,zbuf);if(!spans.length)continue;ctx.save();if(spans.length>1||spans[0][0]>Math.max(0,left)||spans[0][1]<Math.min(camera.width,right)){ctx.beginPath();for(const [from,to]of spans)ctx.rect(from,-48,to-from,camera.height+96);ctx.clip()}
  ctx.beginPath();ctx.moveTo(face.points[0].x,face.points[0].y);for(let i=1;i<face.points.length;i++)ctx.lineTo(face.points[i].x,face.points[i].y);ctx.closePath();ctx.fillStyle=face.color;ctx.fill();ctx.strokeStyle=face.glow?(face.cool?"rgba(151,235,255,.86)":"rgba(255,226,151,.8)"):"rgba(15,28,26,.18)";ctx.lineWidth=face.glow?.7:.35;ctx.stroke();
