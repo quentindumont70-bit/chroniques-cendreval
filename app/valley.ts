@@ -145,6 +145,8 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const ridge=Math.sin(wx*.17+wy*.27)*Math.cos(wy*.19-wx*.12);
       const slopeLight=1+ridge*.095;
       const damp=!path&&deep&&Math.sin(wx*1.4+wy*.8)>.2;
+      const flowerScatter=!path&&depth<9&&fine===11&&hash>15;
+      const sunlitSeeds=!path&&depth<10&&fine===17&&dry;
       const base=path?[119+shade+pathWear*7,108+shade+pathWear*6,80+shade+pathWear*5]:edge?[78+shade,83+shade,54+shade]:shoulder?[59+shade,76+shade,49+shade]:stone?[68+shade,78+shade,63+shade]:dry?[67+shade,83+shade,49+shade]:deep?[34+shade,61+shade,47+shade]:[40+shade,65+shade,45+shade];
       const i=(row*cols+col)*4;
       if(rut){base[0]-=15;base[1]-=13;base[2]-=10}
@@ -154,6 +156,8 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       if(damp){base[0]-=5;base[1]-=4;base[2]+=5}
       if(pebbles){base[0]+=24;base[1]+=24;base[2]+=20}
       if(mossPatch){base[0]-=4;base[1]+=13;base[2]-=3}
+      if(flowerScatter){base[0]+=45;base[1]+=22;base[2]+=49}
+      if(sunlitSeeds){base[0]+=37;base[1]+=34;base[2]+=11}
       data[i]=base[0]*light*shadow*slopeLight*(1-fog)+145*fog;data[i+1]=base[1]*light*shadow*slopeLight*(1-fog)+157*fog;data[i+2]=base[2]*light*shadow*slopeLight*(1-fog)+137*fog;data[i+3]=255;
     }
   }
