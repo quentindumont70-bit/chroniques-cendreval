@@ -128,11 +128,13 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const micro=Math.sin(wx*2.8+wy*.6)*Math.sin(wy*2.1-wx*.7);
       const light=.72+rolling*.25+broad*.075+micro*.035;
       const edge=pathDistance<.58;
+      const shoulder=pathDistance>=.43&&pathDistance<.9;
+      const pathWear=Math.sin(wx*3.4+wy*.8)*Math.sin(wy*2.6-wx*.5);
       const fineX=Math.floor(wx*140),fineY=Math.floor(wy*140),fine=((Math.imul(fineX,374761393)^Math.imul(fineY,668265263))>>>0)%23,near=Math.max(0,Math.min(1,(4-depth)/3));
       const stone=(near>.4?fine:hash)>20,shade=hash*.55+near*(fine*.4-4);
       const gravel=path&&fine>18,grassTuft=!path&&fine>19&&depth<8;
       const meadow=Math.sin(wx*.38-wy*.53)+Math.cos(wx*.57+wy*.32),dry=meadow>.85,deep=meadow<-.75;
-      const base=path?[119+shade,108+shade,80+shade]:edge?[78+shade,83+shade,54+shade]:stone?[68+shade,78+shade,63+shade]:dry?[67+shade,83+shade,49+shade]:deep?[34+shade,61+shade,47+shade]:[40+shade,65+shade,45+shade];
+      const base=path?[119+shade+pathWear*7,108+shade+pathWear*6,80+shade+pathWear*5]:edge?[78+shade,83+shade,54+shade]:shoulder?[59+shade,76+shade,49+shade]:stone?[68+shade,78+shade,63+shade]:dry?[67+shade,83+shade,49+shade]:deep?[34+shade,61+shade,47+shade]:[40+shade,65+shade,45+shade];
       const i=(row*cols+col)*4;
       if(gravel){base[0]+=12;base[1]+=10;base[2]+=8}
       if(grassTuft){base[0]+=7;base[1]+=17;base[2]+=5}
