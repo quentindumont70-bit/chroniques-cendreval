@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import ts from 'typescript';
+const source=readFileSync(new URL('../app/progress.ts',import.meta.url),'utf8');
+const module={exports:{}};
+new Function('module','exports',ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText)(module,module.exports);
+const {portableAdventure,readPortableAdventure,portableProgress}=module.exports;
+const character={x:3,y:5,hp:95,quest:4};
+test('v2 exports preserve progression and inventory',()=>{const bag={version:1,items:{crown:1},equipped:{trinket:'crown'}};const read=readPortableAdventure(portableAdventure(character,bag));assert.deepEqual(JSON.parse(read.profile),character);assert.deepEqual(read.inventory,bag)});
+test('v1 save still imports with no inventory override',()=>{const read=readPortableAdventure(portableProgress(character));assert.deepEqual(JSON.parse(read.profile),character);assert.equal(read.inventory,undefined)});
+test('malformed or unknown versions rejected',()=>{assert.throws(()=>readPortableAdventure('oops'));assert.throws(()=>readPortableAdventure('{"format":"cendreval-save","version":99}'));assert.throws(()=>readPortableAdventure('{"x":"invalid","y":5,"hp":95,"quest":4}'))});
