@@ -45,7 +45,7 @@ function scaled(model:Voxel[],factor:number){return model.map(v=>({...v,x:v.x*fa
 const SCENE_PROPS=[...VALLEY_PROPS,...LIVING_PROPS];
 const MODEL_TIERS=[false,true].map(detailed=>SCENE_PROPS.map((p,i)=>translated(scaled(sceneryModel(p.frame,Boolean(p.living),p.height,detailed),.34),p.x,p.y,(i*.83)%Math.PI)));
 /** Voxel scenery has real side and top faces: walking around an object changes its silhouette. */
-export function drawVoxelWorld(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:Float32Array,time:number,detail=1,combat=false){const voxels:Voxel[]=[],limit=detail>=3?36:detail>=2?26:18,maxDistance=detail>=2?24:14;
+export function drawVoxelWorld(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:Float32Array,time:number,detail=1,combat=false){const voxels:Voxel[]=[],limit=detail>=3?54:detail>=2?34:18,maxDistance=detail>=2?24:14;
  const visible=SCENE_PROPS.map((p,i)=>{const dx=p.x-camera.x,dy=p.y-camera.y,d=Math.hypot(dx,dy),angle=Math.atan2(Math.sin(Math.atan2(dy,dx)-camera.yaw),Math.cos(Math.atan2(dy,dx)-camera.yaw));return{p,i,d,angle}}).filter(item=>item.d>.55&&item.d<maxDistance&&Math.abs(item.angle)<camera.fov*.76).sort((a,b)=>a.d-b.d).slice(0,limit);
  for(const item of visible){const source=MODEL_TIERS[detail>=2&&item.d<7?1:0][item.i];for(const voxel of source){if(voxel.motion==='flame'){const pulse=.82+Math.sin(time*.009+item.i+voxel.x*7)*.18;voxels.push({...voxel,sz:voxel.sz*pulse})}else if(voxel.motion==='leaf'||voxel.motion==='banner'){const wave=Math.sin(time*.0015+item.i+voxel.z*3)*.008;voxels.push({...voxel,x:voxel.x+wave,y:voxel.y+wave*.4})}else voxels.push(voxel)}}
  voxels.push(...valleyLife(time,camera.x,camera.y,detail,combat));drawFaces(ctx,camera,voxels,zbuf)}
