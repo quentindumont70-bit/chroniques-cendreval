@@ -137,3 +137,11 @@ Options → Votre chronique : export JSON de la progression et import avec aper�
 Les attaques de base partagent une récupération de 0,28 à 0,40 seconde selon la classe et le type de frappe. Dans les 0,18 dernières secondes, une seule attaque peut être préparée ; elle est annulée par une défense préparée ou une pause. L’arc bénéficie du même mécanisme. L’esquive prend la direction clavier/pouce au moment de la commande ; sans direction elle part en arrière. Une esquive ne peut être renouvelée pendant ses 0,34 seconde d’activité, et aucune attaque ou compétence ne part pendant ce geste.
 
 Les frappes rapprochées réussies sur la même cible forment un cycle 1–2–3–1. Changer de cible, manquer sa frappe, subir un coup direct ou laisser passer la fenêtre relance la série au premier coup. Les temps du combat utilisent des secondes, indépendamment de la fréquence de rendu.
+
+## Codex et interface (0.6)
+
+Ouvrir **CODEX** dans le menu Pause (ou le livre à droite de la barre sur ordinateur). Le jeu reste en pause pendant la configuration. Chaque classe conserve ses trois sorts dans l'ordre choisi. Glisser un sort vers un emplacement du codex, ou toucher sa fiche puis l'emplacement : les sorts échangent leur place. Les touches F/G/H et les gestes I/II/III correspondent aux emplacements ; les temps de recharge restent attachés aux sorts. Le bouton Réassigner de chaque emplacement capture une touche ou un bouton de souris.
+
+L'onglet **INTERFACE** permet de déplacer et redimensionner trois blocs : objectif, ressources, barre de sorts. Utiliser l'aperçu ou les curseurs ; Rétablir remet la disposition par défaut. Les profils tactile et ordinateur sont distincts et persistent localement. La barre tactile indique les recharges sans intercepter les gestes des pouces. Les blocs sont ramenés dans le cadre après une rotation de l'écran.
+
+Les recharges ont un masque circulaire et un compte à rebours, avec un bref signal de disponibilité. Le mana et sa régénération restent visibles pour toutes les classes ; le rôdeur conserve le nombre de flèches sur le bloc de ressources. La disposition n'est pas incluse dans l'export de progression.

@@ -82,3 +82,13 @@ Le rendu reste un moteur logiciel dans Canvas, sans dépendance WebGL. Il conser
 L’arme en vue subjective expose maintenant ses faces éclairées : lame et garde épaisses, arc segmenté, flèche en volume, foyers de magie polyédriques. Le bouclier de parade est une coque à plusieurs épaisseurs. Balancement, attaque, garde et secousse déplacent le même assemblage au lieu de substituer une image.
 
 Les pierres de mémoire, le feu d’ancrage et la porte noire rejoignent le tampon de profondeur du monde. Les silhouettes vaincues se tassent en segments de cendre avant de disparaître, y compris le Gardien ; aucun atlas de mort ne revient au dernier instant. Les six anciens atlas de personnages et d’accessoires restent archivés dans le paquet, mais ne sont plus téléchargés par le jeu. Au démarrage, seuls le panorama et la texture de maçonnerie sont encore chargés comme images de décor.
+
+## Arsenal et vallée vivante 0.6.0
+
+Barre d'action à trois sorts, icônes pixel originales, recharges circulaires, compte à rebours et signal de disponibilité. Codex décrivant les compétences de la classe et permettant leur permutation par glisser-déposer ou sélection tactile, avec raccourcis par emplacement. Les recharges suivent les sorts, même après permutation ; les gestes suivent les emplacements. Éditeur de position et d'échelle pour objectif, ressources et barre, avec profils ordinateur/tactile distincts, stockage local et maintien dans le cadre. Le mana du rôdeur est visible en même temps que ses flèches. La garde relève aussi l'arme subjective.
+
+Silhouettes de décor réécrites : pins étagés, bouleaux, chêne à lanterne, arches, chariot, fleurs, champignons, mémorial, puits et campement. Chaque niveau de détail conserve un modèle complet. Feuillage, fanion et flammes animés ; papillons, oiseaux et braises discrets. L'animation du décor s'arrête en pause. Occlusion des faces par portions de mur et correction des lueurs cyan de phase II.
+
+Le rendu reste logiciel Canvas, avec des volumes cubiques et un panorama ; cette livraison n'est ni une certification AAA ni une garantie de 240 FPS. Les arbres de talents et les tables de butin rares ne sont pas encore implémentés. Les tests tactiles automatisés utilisent Chromium, pas Safari sur un iPhone physique.
+
+Validation : compilation Pages, vérification TypeScript et 35 tests unitaires réussis. Tests navigateur du codex (glisser-déposer réel, touches, gestes après permutation, persistance, rotation et pause), six classes/dix-huit compétences, reprise, boutons latéraux et récupération de combat réussis. Parcours tactile complet Arcanes, trois bornes, Gardien, récompense et marchand réussi, sans erreur JavaScript observée.
