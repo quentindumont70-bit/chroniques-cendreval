@@ -121,8 +121,16 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const side=((col+.5)/cols*2-1)*plane;
       const wx=x+depth*(cos-sin*side),wy=y+depth*(sin+cos*side);
       const hx=Math.floor(wx*22),hy=Math.floor(wy*22),hash=((Math.imul(hx,374761393)^Math.imul(hy,668265263))>>>0)%23;
-      const gx=Math.floor(wx*8),gy=Math.floor(wy*8);
-      const pathDistance=gx>=0&&gy>=0&&gx<160&&gy<160?pathGrid[gy*160+gx]:10,path=pathDistance<.43;
+      const gridX=wx*8,gridY=wy*8,gx=Math.floor(gridX),gy=Math.floor(gridY);
+      // Bilinear sampling prevents the path edge from becoming a staircase at oblique angles.
+      let pathDistance=10;
+      if(gx>=0&&gy>=0&&gx<159&&gy<159){
+        const tx=gridX-gx,ty=gridY-gy,k=gy*160+gx;
+        const a=pathGrid[k]!*(1-tx)+pathGrid[k+1]!*tx;
+        const b=pathGrid[k+160]!*(1-tx)+pathGrid[k+161]!*tx;
+        pathDistance=a*(1-ty)+b*ty;
+      }
+      const path=pathDistance<.43;
       const rolling=Math.sin(wx*.72+wy*.23)*Math.cos(wy*.61)*.5+.5;
       const broad=Math.sin(wx*.21+wy*.31)*Math.cos(wy*.27-wx*.17);
       const micro=Math.sin(wx*2.8+wy*.6)*Math.sin(wy*2.1-wx*.7);
