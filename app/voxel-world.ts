@@ -49,20 +49,25 @@ export function drawVoxelWorld(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:F
  // Avoid allocating and sorting every world prop on each animation frame.
  // Only nearby props inside the camera frustum enter the small distance-sorted shortlist.
  const visible:{i:number;d:number}[]=[];
+ const tall:{i:number;d:number}[]=[];
  const forwardX=Math.cos(camera.yaw),forwardY=Math.sin(camera.yaw),cosLimit=Math.cos(camera.fov*.76);
  for(let i=0;i<SCENE_PROPS.length;i++){
   const p=SCENE_PROPS[i],dx=p.x-camera.x,dy=p.y-camera.y,d2=dx*dx+dy*dy;
   if(d2<=.3025||d2>=maxDistance*maxDistance)continue;
   const forward=dx*forwardX+dy*forwardY;
   if(forward<=0||forward*forward<=d2*cosLimit*cosLimit)continue;
-  const d=Math.sqrt(d2);
-  let position=visible.length;
-  while(position>0&&visible[position-1].d>d)position--;
-  if(position>=limit)continue;
-  visible.splice(position,0,{i,d});
-  if(visible.length>limit)visible.pop();
+  const d=Math.sqrt(d2),target=p.height>=1.65?tall:visible;
+  // Reserve a fixed portion of the mobile budget for trees and landmarks.
+  // Dense ground cover must not crowd out the silhouettes that give the valley depth.
+  const quota=target===tall?Math.max(6,Math.floor(limit*.55)):limit;
+  let position=target.length;
+  while(position>0&&target[position-1].d>d)position--;
+  if(position>=quota)continue;
+  target.splice(position,0,{i,d});
+  if(target.length>quota)target.pop();
  }
- for(const item of visible){const source=MODEL_TIERS[detail>=2&&item.d<7?1:0][item.i];for(const voxel of source){if(voxel.motion==='flame'){const pulse=.82+Math.sin(time*.009+item.i+voxel.x*7)*.18;voxels.push({...voxel,sz:voxel.sz*pulse})}else if(voxel.motion==='leaf'||voxel.motion==='banner'){const wave=Math.sin(time*.0015+item.i+voxel.z*3)*.008;voxels.push({...voxel,x:voxel.x+wave,y:voxel.y+wave*.4})}else voxels.push(voxel)}}
+ const selected=[...tall,...visible].sort((a,b)=>a.d-b.d).slice(0,limit);
+ for(const item of selected){const source=MODEL_TIERS[detail>=2&&item.d<7?1:0][item.i];for(const voxel of source){if(voxel.motion==='flame'){const pulse=.82+Math.sin(time*.009+item.i+voxel.x*7)*.18;voxels.push({...voxel,sz:voxel.sz*pulse})}else if(voxel.motion==='leaf'||voxel.motion==='banner'){const wave=Math.sin(time*.0015+item.i+voxel.z*3)*.008;voxels.push({...voxel,x:voxel.x+wave,y:voxel.y+wave*.4})}else voxels.push(voxel)}}
  voxels.push(...valleyLife(time,camera.x,camera.y,detail,combat));drawFaces(ctx,camera,voxels,zbuf)}
 
 export function drawVoxelShrines(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:Float32Array,shrines:readonly{x:number;y:number}[],mask:number,time:number){const voxels:Voxel[]=[];shrines.forEach((p,index)=>{const dx=p.x-camera.x,dy=p.y-camera.y,d=Math.hypot(dx,dy),angle=Math.atan2(Math.sin(Math.atan2(dy,dx)-camera.yaw),Math.cos(Math.atan2(dy,dx)-camera.yaw));if(d<.72||d>22||Math.abs(angle)>camera.fov*.72)return;const active=Boolean(mask&(1<<index)),pulse=.96+Math.sin(time*.004+index)*.05,stone=active?"#778879":"#56645e";const model=[box(0,0,0,.68,.58,.14,"#384b43"),box(0,0,.14,.5,.42,.16,stone),box(0,0,.3,.34,.3,.72,stone),box(0,0,1.02,.48,.4,.16,"#8c8e79"),box(0,-.19,.62,.12,.05,.16,active?"#bce6ad":"#78a9bc",0,true),box(0,-.19,.62*1.01,.05,.03,.34,active?"#e5efb8":"#b3dce0",0,true)];model[4].sx*=pulse;model[5].sz*=pulse;voxels.push(...translated(scaled(model,.22),p.x,p.y,index*.7))});drawFaces(ctx,camera,voxels,zbuf)}
