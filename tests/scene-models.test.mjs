@@ -98,3 +98,13 @@ test('mobile boulders have moss caps instead of bare uniform stone',()=>{
  assert(rock.some(v=>v.color==='#61784c'),'moss must be visible at mobile detail');
  assert(rock.some(v=>v.color==='#8a9a68'),'rock needs contrasting moss highlights');
 });
+
+test('mobile crowns use compact angled foliage rather than oversized flat slabs',()=>{
+ for(const living of [false,true]){
+  const model=sceneryModel(1,living,3,false);
+  const crowns=model.filter(v=>v.motion==='leaf'&&v.z>1.5);
+  assert(crowns.length>=20,'deciduous canopy should have separated foliage clusters');
+  assert(crowns.some(v=>Math.abs(v.yaw??0)>.25),'foliage should be angled');
+  assert(crowns.filter(v=>v.sx>1.5).length===0,'avoid oversized mobile foliage plates');
+ }
+});
