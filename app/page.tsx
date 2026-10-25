@@ -593,7 +593,7 @@ export default function Home() {
         if(!shade.alive)continue;
         const dx=shade.x-s.x,dy=shade.y-s.y,dist=Math.hypot(dx,dy);let ang=Math.atan2(dy,dx)-s.a;ang=Math.atan2(Math.sin(ang),Math.cos(ang));
         const column=Math.max(0,Math.min(W-1,Math.floor((ang/FOV+.5)*W)));
-        if(Math.abs(ang)<FOV*.7&&dist<zbuf[column])drawVoxelActor(ctx,voxelCamera,zbuf,shade,t);
+        if(Math.abs(ang)<FOV*.7&&dist<zbuf[column]){drawVoxelActor(ctx,voxelCamera,zbuf,shade,t);if(shade.hit>0){const size=Math.min(98,105/Math.max(.2,dist)),cx=(.5+ang/FOV)*W,cy=H/2-size*.12+cameraPitch.current*H*.28,strength=Math.min(1,shade.hit/.55);ctx.save();ctx.globalCompositeOperation="screen";ctx.translate(cx,cy);ctx.strokeStyle=`rgba(255,230,163,${(.18+strength*.7).toFixed(3)})`;ctx.lineWidth=1+strength*4;ctx.beginPath();ctx.ellipse(0,0,size*(.2+(1-strength)*.38),size*(.15+(1-strength)*.3),0,0,Math.PI*2);ctx.stroke();for(let spark=0;spark<6;spark++){const angle=spark*Math.PI/3+t*.0002;ctx.strokeStyle=spark%2?"#ffe7b5":"#a3e4ff";ctx.globalAlpha=strength*.8;ctx.lineWidth=Math.max(1,size*.018);ctx.beginPath();ctx.moveTo(Math.cos(angle)*size*.13,Math.sin(angle)*size*.13);ctx.lineTo(Math.cos(angle)*size*(.3+strength*.17),Math.sin(angle)*size*(.3+strength*.17));ctx.stroke()}ctx.restore()}}
       }
 
       // Les corps se tassent en volumes de cendre avant de disparaître.
