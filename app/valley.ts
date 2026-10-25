@@ -116,7 +116,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
   if(!ground||ground.width!==cols){ground=document.createElement("canvas");ground.width=cols;ground.height=rows;pixels=ground.getContext("2d")!.createImageData(cols,rows)}
   const data=pixels!.data,cos=Math.cos(yaw),sin=Math.sin(yaw),plane=Math.tan(Math.PI/6);
   for(let row=0;row<rows;row++){
-    const depth=60/(row*step+step*.5),fog=Math.min(.87,depth/24);
+    const depth=60/(row*step+step*.5),fog=Math.min(.87,Math.max(0,(depth-1.2)/25));
     for(let col=0;col<cols;col++){
       const side=((col+.5)/cols*2-1)*plane;
       const wx=x+depth*(cos-sin*side),wy=y+depth*(sin+cos*side);
