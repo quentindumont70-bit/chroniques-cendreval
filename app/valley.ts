@@ -114,11 +114,12 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
   groundPose={x,y,yaw,cols};
   if(!pathGrid){pathGrid=new Float32Array(160*160);for(let gy=0;gy<160;gy++)for(let gx=0;gx<160;gx++)pathGrid[gy*160+gx]=routeDistance(gx/8,gy/8)}
   if(!ground||ground.width!==cols){ground=document.createElement("canvas");ground.width=cols;ground.height=rows;pixels=ground.getContext("2d")!.createImageData(cols,rows)}
-  const data=pixels!.data,cos=Math.cos(yaw),sin=Math.sin(yaw),plane=Math.tan(Math.PI/6);
+  const data=pixels!.data,cos=Math.cos(yaw),sin=Math.sin(yaw),plane=Math.tan(Math.PI/6),columnSide=new Float32Array(cols);
+  for(let col=0;col<cols;col++)columnSide[col]=((col+.5)/cols*2-1)*plane;
   for(let row=0;row<rows;row++){
     const depth=60/(row*step+step*.5),fog=Math.min(.87,Math.max(0,(depth-1.2)/25));
     for(let col=0;col<cols;col++){
-      const side=((col+.5)/cols*2-1)*plane;
+      const side=columnSide[col];
       const wx=x+depth*(cos-sin*side),wy=y+depth*(sin+cos*side);
       const hx=Math.floor(wx*22),hy=Math.floor(wy*22),hash=((Math.imul(hx,374761393)^Math.imul(hy,668265263))>>>0)%23;
       const gridX=wx*8,gridY=wy*8,gx=Math.floor(gridX),gy=Math.floor(gridY);
