@@ -68,7 +68,9 @@ export function drawVoxelWorld(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:F
   target.splice(position,0,{i,d});
   if(target.length>quota)target.pop();
  }
- const selected=[...tall,...visible].sort((a,b)=>a.d-b.d).slice(0,limit);
+ // Fill tall slots first, then ground detail: nearest grass cannot evict every tree.
+ const tallBudget=Math.min(tall.length,Math.max(6,Math.floor(limit*.55)));
+ const selected=[...tall.slice(0,tallBudget),...visible.slice(0,limit-tallBudget)];
  for(const item of selected){const source=MODEL_TIERS[detail>=2&&item.d<7?1:0][item.i];for(const voxel of source){if(voxel.motion==='flame'){const pulse=.82+Math.sin(time*.009+item.i+voxel.x*7)*.18;voxels.push({...voxel,sz:voxel.sz*pulse})}else if(voxel.motion==='leaf'||voxel.motion==='banner'){const wave=Math.sin(time*.0015+item.i+voxel.z*3)*.008;voxels.push({...voxel,x:voxel.x+wave,y:voxel.y+wave*.4})}else voxels.push(voxel)}}
  voxels.push(...valleyLife(time,camera.x,camera.y,detail,combat));drawFaces(ctx,camera,voxels,zbuf)}
 
