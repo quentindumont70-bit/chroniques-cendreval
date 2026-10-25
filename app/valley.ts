@@ -160,6 +160,8 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const damp=!path&&deep&&Math.sin(wx*1.4+wy*.8)>.2;
       const flowerScatter=!path&&depth<9&&fine===11&&hash>15;
       const sunlitSeeds=!path&&depth<10&&fine===17&&dry;
+      const fallenLeaves=!path&&depth<8&&hash===12&&fine>17;
+      const drySoil=!path&&pathDistance>.8&&Math.sin(wx*1.7-wy*.9)*Math.cos(wy*1.2+wx*.6)>.75;
       // Scalar channels avoid allocating a fresh RGB array for every ground pixel.
       let red=path?119+pathWear*7:edge?78:shoulder?59:stone?68:dry?67:deep?34:40;
       let green=path?108+pathWear*6:edge?83:shoulder?76:stone?78:dry?83:deep?61:65;
@@ -176,6 +178,8 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       if(mossPatch){red-=4;green+=13;blue-=3}
       if(flowerScatter){red+=45;green+=22;blue+=49}
       if(sunlitSeeds){red+=37;green+=34;blue+=11}
+      if(fallenLeaves){red+=31;green+=13;blue-=4}
+      if(drySoil){red+=12;green+=5;blue-=2}
       data[i]=red*light*shadow*slopeLight*(1-fog)+145*fog;data[i+1]=green*light*shadow*slopeLight*(1-fog)+157*fog;data[i+2]=blue*light*shadow*slopeLight*(1-fog)+137*fog;data[i+3]=255;
     }
   }
