@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {slideMove,clearSight,decodeProgress,pursuitPoint} from "./world-rules";
-import {writeProgress,storage,portableProgress,readPortableProgress} from "./progress";
+import {writeProgress,storage,portableProgress,readPortableProgress,portableAdventure,readPortableAdventure} from "./progress";
 import {createAmbience,areaName} from "./ambience";
 import {resolveRenderSize,lighterRenderSize,missesFrameBudget,measuredFps} from "./render-quality";
 import type {RenderQuality,RenderSize} from "./render-quality";
@@ -88,6 +88,7 @@ export default function Home() {
   const [areaNotice,setAreaNotice]=useState("");
   const [loadNotice,setLoadNotice]=useState("");
   const [pendingImport,setPendingImport]=useState<Save|null>(null);
+  const [pendingLootImport,setPendingLootImport]=useState<InventoryState|null>(null);
   const [saveFeedback,setSaveFeedback]=useState("");
   const replacingSave=useRef(false);
   const foeVitals=useRef(new WeakMap<Foe,number>());
@@ -720,10 +721,10 @@ export default function Home() {
   const changeSensitivity=(value:number)=>{setSensitivity(value);sensitivityRef.current=value;storage.setItem("cendreval-mouse-sensitivity",String(value))};
 
   const downloadProfile=(profile:unknown)=>{const blob=new Blob([portableProgress(profile)],{type:"application/json"}),url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download="cendreval-sauvegarde.json";document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);setSaveFeedback("Sauvegarde exportée. Vos réglages restent propres à cet appareil.")};
-  const exportSave=()=>{persist();downloadProfile(state.current)};
+  const exportSave=()=>{persist();const blob=new Blob([portableAdventure(state.current,lootRef.current)],{type:"application/json"}),url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download="cendreval-aventure.json";document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);setSaveFeedback("Progression et équipement exportés.");};
   const exportPrevious=()=>{try{downloadProfile(JSON.parse(readPortableProgress(storage.getItem("cendreval-before-import")??"null")))}catch{setSaveFeedback("La copie avant import n’est pas disponible.")}};
-  const inspectSave=async(file:File)=>{setPendingImport(null);try{if(file.size>512000)throw Error("Fichier trop volumineux.");const profile=decodeProgress(readPortableProgress(await file.text()),START,mapForQuest);setPendingImport(profile);setSaveFeedback("")}catch(error){setSaveFeedback(error instanceof Error?error.message:"Impossible de lire ce fichier.")}};
-  const importSave=()=>{if(!pendingImport)return;clearInput();if(!persist()){setSaveFeedback("Le navigateur n’a pas pu conserver la partie actuelle.");return}try{localStorage.setItem("cendreval-before-import",JSON.stringify(state.current))}catch{setSaveFeedback("Impossible de conserver la copie avant import.");return}if(!writeProgress(pendingImport)){setSaveFeedback("Le navigateur n’a pas pu enregistrer la progression.");return}replacingSave.current=true;window.location.reload()};
+  const inspectSave=async(file:File)=>{setPendingImport(null);setPendingLootImport(null);try{if(file.size>512000)throw Error("Fichier trop volumineux.");const portable=readPortableAdventure(await file.text());const profile=decodeProgress(portable.profile,START,mapForQuest);setPendingImport(profile);setPendingLootImport(portable.inventory===undefined?null:parseInventory(portable.inventory,Object.values(ITEMS)));setSaveFeedback("")}catch(error){setSaveFeedback(error instanceof Error?error.message:"Impossible de lire ce fichier.")}};
+  const importSave=()=>{if(!pendingImport)return;clearInput();if(!persist()){setSaveFeedback("Le navigateur n’a pas pu conserver la partie actuelle.");return}try{localStorage.setItem("cendreval-before-import",JSON.stringify(state.current))}catch{setSaveFeedback("Impossible de conserver la copie avant import.");return}if(!writeProgress(pendingImport)){setSaveFeedback("Le navigateur n’a pas pu enregistrer la progression.");return}if(pendingLootImport){updateLoot(pendingLootImport)}replacingSave.current=true;window.location.reload()};
 
   return <main className="game-shell">
     <div className="grain" />
