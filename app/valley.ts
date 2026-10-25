@@ -142,6 +142,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       // Broad woodland shadows create depth beneath the distant treeline without extra draw calls.
       const canopyShadow=Math.max(0,Math.sin(wx*.49+wy*.18)*Math.cos(wy*.43-wx*.11));
       const shadow=!path&&pathDistance>1.2?1-canopyShadow*.23:1;
+      const woodlandEdge=!path&&pathDistance>1.4&&Math.sin(wx*.3+wy*.44)>.6;
       const ridge=Math.sin(wx*.17+wy*.27)*Math.cos(wy*.19-wx*.12);
       const slopeLight=1+ridge*.095;
       const damp=!path&&deep&&Math.sin(wx*1.4+wy*.8)>.2;
@@ -153,6 +154,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       if(roadCracks){base[0]-=17;base[1]-=16;base[2]-=12}
       if(gravel){base[0]+=12;base[1]+=10;base[2]+=8}
       if(grassTuft){base[0]+=7;base[1]+=17;base[2]+=5}
+      if(woodlandEdge){base[0]-=7;base[1]-=4;base[2]-=2}
       if(damp){base[0]-=5;base[1]-=4;base[2]+=5}
       if(pebbles){base[0]+=24;base[1]+=24;base[2]+=20}
       if(mossPatch){base[0]-=4;base[1]+=13;base[2]-=3}
