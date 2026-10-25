@@ -9,10 +9,12 @@ export function selectScenery(props:readonly SceneryProp[],camera:SceneryCamera,
  const fx=Math.cos(camera.yaw),fy=Math.sin(camera.yaw);
  const halfFov=camera.fov*.76,tanLimit=Math.tan(halfFov);
  const maxSquared=maxDistance*maxDistance;
+ // Avoid rendering gigantic tree crowns over the camera when the player walks beneath them.
  const nearSquared=.3025;
  for(let i=0;i<props.length;i++){
   const p=props[i],dx=p.x-camera.x,dy=p.y-camera.y,d2=dx*dx+dy*dy;
   if(d2<=nearSquared||d2>=maxSquared)continue;
+  if(p.height>=2.4&&d2<2.25)continue;
   const forward=dx*fx+dy*fy;
   // Large crowns remain visible even when the trunk is just beyond the screen edge.
   const radius=p.height>=1.65?Math.min(1.5,p.height*.19):Math.min(.35,p.height*.15);
