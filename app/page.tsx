@@ -177,6 +177,7 @@ export default function Home() {
   const [hud,setHud] = useState({...START});
   const lootRef=useRef<InventoryState>(emptyInventory());
   const [lootBag,setLootBag]=useState<InventoryState>(emptyInventory());
+  const [lootNotice,setLootNotice]=useState<{name:string;rarity:string}|null>(null);
   const updateLoot=useCallback((next:InventoryState)=>{
     lootRef.current=next;setLootBag(next);
     try{localStorage.setItem("cendreval-loot-v1",JSON.stringify(next))}catch{}
@@ -184,7 +185,9 @@ export default function Home() {
   const rewardLoot=useCallback((foe:Foe)=>{
     const result=collectEnemyLoot(lootRef.current,{boss:foe.boss,name:foe.name,echoTier:/écho|echo/i.test(foe.name)?1:0});
     updateLoot(result.inventory);
+    if(result.drops.length){const best=[...result.drops].sort((a,b)=>({common:0,uncommon:1,rare:2,epic:3,legendary:4}[b.rarity]-{common:0,uncommon:1,rare:2,epic:3,legendary:4}[a.rarity]))[0];setLootNotice({name:best.name,rarity:best.rarity});}
   },[updateLoot]);
+  useEffect(()=>{if(!lootNotice)return;const timer=setTimeout(()=>setLootNotice(null),4200);return()=>clearTimeout(timer)},[lootNotice]);
   useEffect(()=>{
     try{const raw=localStorage.getItem("cendreval-loot-v1");if(raw)updateLoot(parseInventory(JSON.parse(raw),Object.values(ITEMS)))}catch{}
   },[updateLoot]);
@@ -722,6 +725,7 @@ export default function Home() {
 
   return <main className="game-shell">
     <div className="grain" />
+    {lootNotice&&<div role="status" aria-live="polite" style={{position:"fixed",zIndex:1000,top:18,left:"50%",transform:"translateX(-50%)",maxWidth:"90vw",padding:"12px 20px",border:"1px solid #c5a369",borderRadius:8,background:"rgba(20,18,27,.96)",boxShadow:"0 8px 30px #0009",color:({common:"#b7b5af",uncommon:"#77d6a1",rare:"#72b7ff",epic:"#c798ff",legendary:"#ffca65"} as Record<string,string>)[lootNotice.rarity]}}>✦ BUTIN OBTENU · {lootNotice.name}</div>}
     <header><div className="brand"><span>CHRONIQUES DE</span><strong>CENDREVAL</strong></div><div className="chapter">{village?"VALBRUME · LE VILLAGE DES BRUMES":hud.quest>=14?"ACTE IV · LA TOUR DES CENDRES":hud.quest>=12?"ACTE III · LE DONJON NOIR":hud.quest>=7?"ACTE II · LE CHÂTEAU NOIR":"ACTE I · LES PLAINES DE CENDREVAL"}</div></header>
     <section style={{"--class-accent":CLASS_THEMES[classId(hud.classId,hud.spec)].color} as CSSProperties} className={`stage${started&&mouseLook&&!panel&&!village&&!choosingSpec&&!gestureHelp&&!combatSummary?" playing":""}${panel||village||choosingSpec||gestureHelp||combatSummary?" paused":""}`} aria-label="Jeu en vue subjective">
       <canvas ref={canvasRef} width={renderSize.width} height={renderSize.height} data-render-quality={renderQuality} tabIndex={0} onContextMenu={e=>e.preventDefault()} />
