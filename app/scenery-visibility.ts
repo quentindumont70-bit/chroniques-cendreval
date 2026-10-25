@@ -15,7 +15,7 @@ export function selectScenery(props:readonly SceneryProp[],camera:SceneryCamera,
   const forward=dx*fx+dy*fy;
   if(forward<=0||forward*forward<=d2*cosSquared)continue;
   const d=Math.sqrt(d2),group=p.height>=1.65?tall:small;
-  const quota=group===tall?tallQuota:limit;
+  const quota=limit;
   let index=group.length;
   while(index>0&&group[index-1].d>d)index--;
   if(index>=quota)continue;
