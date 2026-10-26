@@ -106,3 +106,9 @@ Les statistiques alimentent le combat et la régénération réelle, ainsi que l
 ## Atlas des trésors · 26 octobre 2026
 
 Cinq ajouts au sac : catalogue des sept objets avec fiches et illustrations ; sources et probabilités issues directement des tables actives ; estimation de la probabilité d'au moins un drop sur 1 à 1 000 victoires indépendantes ; collection des objets actuellement possédés avec filtre des manquants ; objectif de chasse conservé localement et navigation tactile Sac/Codex. Les probabilités de drop et les récompenses de combat ne changent pas. Le suivi local n'est pas inclus dans l'export de personnage. Le compteur décrit le sac actuel, pas un historique de possession.
+
+## Atelier des serments · 26 octobre 2026
+
+Cinq finitions de progression : noms de branches, couleurs et emblème adaptés aux six classes ; sélection d'un rang pour prévisualiser ses gains avant achat ; bilan des bonus actifs calculé avec les statistiques du combat ; aperçu de redistribution avec annulation et remboursement explicite ; écran tactile avec états de sélection, prérequis lisibles et liaisons entre rangs. Les effets des neuf talents restent communs aux classes, sans modification de l'équilibrage ni des sauvegardes. Les acquis de voie restent séparés.
+
+Validation : compilation Pages, TypeScript et suite de tests réussis ; parcours tactile automatisé couvrant aperçu d'un rang verrouillé, trois achats, bilan critique, annulation puis confirmation du remboursement, et persistance des points.
