@@ -102,3 +102,7 @@ Trois améliorations complémentaires : recherche de nom insensible aux accents 
 Neuf talents communs aux six classes, répartis en trois branches de trois rangs : offensive (puissance, critique, pénétration), défense (armure, résistance), esprit (mana et pénétration magique). Achat séquentiel avec prérequis de niveau 2/3/4, sur les points de niveau existants. Redistribution gratuite des seuls points de ces branches ; les anciens acquis de voie ne sont pas retirés ni remboursés.
 
 Les statistiques alimentent le combat et la régénération réelle, ainsi que la fiche du personnage. Rangs sauvegardés et exportés dans le profil, anciennes parties démarrant à zéro rang, valeurs importées bornées. Interface en colonnes sur ordinateur et verticale sur téléphone, accessible depuis Pause même sans point disponible. Cette première arborescence est commune, pas encore un arbre spécialisé par classe.
+
+## Atlas des trésors · 26 octobre 2026
+
+Cinq ajouts au sac : catalogue des sept objets avec fiches et illustrations ; sources et probabilités issues directement des tables actives ; estimation de la probabilité d'au moins un drop sur 1 à 1 000 victoires indépendantes ; collection des objets actuellement possédés avec filtre des manquants ; objectif de chasse conservé localement et navigation tactile Sac/Codex. Les probabilités de drop et les récompenses de combat ne changent pas. Le suivi local n'est pas inclus dans l'export de personnage. Le compteur décrit le sac actuel, pas un historique de possession.

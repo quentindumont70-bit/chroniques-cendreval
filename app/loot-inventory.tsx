@@ -3,11 +3,13 @@ import {useMemo,useState} from "react";
 import {ITEMS,rarityLabel,type LootItem} from "./loot";
 import {equipItem,unequipItem,equipmentPower,type InventoryState,type EquipmentSlot} from "./inventory";
 import {equipmentAttackBonus,equipmentDamageReduction} from "./equipment-effects";
+import LootJournal from "./treasure-journal";
 import ItemIcon from "./item-icon";
 const catalog:LootItem[]=Object.values(ITEMS);
 const colors:Record<string,string>={common:"#b7b5af",uncommon:"#77d6a1",rare:"#72b7ff",epic:"#c798ff",legendary:"#ffca65"};
 const slotName:Record<EquipmentSlot,string>={weapon:"Arme",armor:"Armure",trinket:"Bijou"};
 export default function LootInventory({value,onChange}:{value:InventoryState;onChange:(next:InventoryState)=>void}){
+ const [tab,setTab]=useState<"bag"|"journal">("bag");
  const [filter,setFilter]=useState("all");
  const [query,setQuery]=useState("");const [rarity,setRarity]=useState("all");
  const normalized=(text:string)=>text.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("fr");
@@ -20,7 +22,7 @@ export default function LootInventory({value,onChange}:{value:InventoryState;onC
  const equippedCount=(["weapon","armor","trinket"] as EquipmentSlot[]).filter(slot=>Boolean(value.equipped[slot])).length;
  const power=equipmentPower(value,catalog);
  return <section className="loot-bag" aria-label="Butin et équipement" style={{marginTop:18,borderTop:"1px solid #8d7755",paddingTop:14}}>
- <span className="eyebrow">BUTIN · ÉQUIPEMENT</span><h3>Trésors de Cendreval</h3>
+ <nav className="treasure-tabs"><button aria-pressed={tab==="bag"} onClick={()=>setTab("bag")}>MON SAC</button><button aria-pressed={tab==="journal"} onClick={()=>setTab("journal")}>CODEX DES TRÉSORS</button></nav>{tab==="journal"?<LootJournal inventory={value}/>:<><span className="eyebrow">BUTIN · ÉQUIPEMENT</span><h3>Trésors de Cendreval</h3>
  <p style={{fontSize:13}}>Puissance équipée : <strong>+{power}</strong> · {ownedCount} objet(s) · {equippedCount}/3 emplacements · {entries.length} type(s) dans ce filtre</p>
  <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:12}}>{[["all","Tout"],["weapon","Armes"],["armor","Armures"],["trinket","Bijoux"],["material","Matériaux"]].map(([id,label])=><button key={id} type="button" aria-pressed={filter===id} onClick={()=>setFilter(id)} style={{padding:"6px 9px",border:"1px solid #8d7755",borderRadius:5,background:filter===id?"#55442c":"#201c1b",color:"#f2e4c7"}}>{label}</button>)}</div>
  <div className="loot-search"><label>Rechercher<input type="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Nom d’un trésor…"/></label><label>Rareté<select aria-label="Rareté" value={rarity} onChange={e=>setRarity(e.target.value)}><option value="all">Toutes les raretés</option>{["common","uncommon","rare","epic","legendary"].map(r=><option key={r} value={r}>{rarityLabel(r as LootItem["rarity"])}</option>)}</select></label></div>
@@ -37,5 +39,5 @@ export default function LootInventory({value,onChange}:{value:InventoryState;onC
  {compare&&active&&active.slot!=="material"&&(value.items[active.id]??0)>0&&<div role="status" style={{fontSize:13,padding:"8px 10px",marginTop:8,border:"1px solid #71614b",borderRadius:6,background:"#201d20"}}>{(()=>{const equipped=catalog.find(item=>item.id===value.equipped[active.slot as EquipmentSlot]);const difference=active.power-(equipped?.power??0);const next=equipItem(value,active);const deltas=[["Lame",equipmentAttackBonus(next,"melee")-equipmentAttackBonus(value,"melee")],["Arc",equipmentAttackBonus(next,"bow")-equipmentAttackBonus(value,"bow")],["Magie",equipmentAttackBonus(next,"magic")-equipmentAttackBonus(value,"magic")],["Protection",equipmentDamageReduction(next)-equipmentDamageReduction(value)]] as const;return <><strong>{difference>0?`▲ +${difference}`:difference<0?`▼ ${difference}`:"= 0"} puissance</strong> par rapport à {equipped?.name??"un emplacement vide"}{value.equipped[active.slot]===active.id?" · Déjà équipé":""}<div className="loot-deltas">{deltas.map(([label,n])=><span key={label} data-gain={n>0?"up":n<0?"down":"same"}>{label} : {n>0?"+":""}{n}</span>)}</div><small>Variation réelle des bonus d’équipement, arrondis et plafond de protection inclus.</small></>})()}</div>}
  <h4>Statistiques de l’équipement</h4><p style={{fontSize:13}}>Lame : +{equipmentAttackBonus(value,"melee")} · Arc : +{equipmentAttackBonus(value,"bow")} · Magie : +{equipmentAttackBonus(value,"magic")} · Protection : {equipmentDamageReduction(value)}</p>
  <h4>Emplacements</h4><div style={{display:"grid",gap:6}}>{(["weapon","armor","trinket"] as EquipmentSlot[]).map(slot=><div key={slot} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8}}><span>{slotName[slot]} : {catalog.find(item=>item.id===value.equipped[slot])?.name??"Vide"}</span>{value.equipped[slot]&&<button type="button" onClick={()=>onChange(unequipItem(value,slot))}>Retirer</button>}</div>)}</div>
- </section>;
+ </>} </section>;
 }
