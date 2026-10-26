@@ -92,3 +92,7 @@ Silhouettes de décor réécrites : pins étagés, bouleaux, chêne à lanterne,
 Le rendu reste logiciel Canvas, avec des volumes cubiques et un panorama ; cette livraison n'est ni une certification AAA ni une garantie de 240 FPS. Les arbres de talents et les tables de butin rares ne sont pas encore implémentés. Les tests tactiles automatisés utilisent Chromium, pas Safari sur un iPhone physique.
 
 Validation : compilation Pages, vérification TypeScript et 35 tests unitaires réussis. Tests navigateur du codex (glisser-déposer réel, touches, gestes après permutation, persistance, rotation et pause), six classes/dix-huit compétences, reprise, boutons latéraux et récupération de combat réussis. Parcours tactile complet Arcanes, trois bornes, Gardien, récompense et marchand réussi, sans erreur JavaScript observée.
+
+## Sac de trésors · 26 octobre 2026
+
+Trois améliorations complémentaires : recherche de nom insensible aux accents avec filtre de rareté et remise à zéro ; comparaison des variations réelles de dégâts lame/arc/magie et de protection, arrondis et plafond inclus ; sept icônes pixel originales et cibles tactiles de 44 px avec focus clavier visible. Les probabilités de butin restent inchangées. Compilation, TypeScript et suite de tests existante réussis.
