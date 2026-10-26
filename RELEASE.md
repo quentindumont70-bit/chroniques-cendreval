@@ -112,3 +112,7 @@ Cinq ajouts au sac : catalogue des sept objets avec fiches et illustrations ; so
 Cinq finitions de progression : noms de branches, couleurs et emblème adaptés aux six classes ; sélection d'un rang pour prévisualiser ses gains avant achat ; bilan des bonus actifs calculé avec les statistiques du combat ; aperçu de redistribution avec annulation et remboursement explicite ; écran tactile avec états de sélection, prérequis lisibles et liaisons entre rangs. Les effets des neuf talents restent communs aux classes, sans modification de l'équilibrage ni des sauvegardes. Les acquis de voie restent séparés.
 
 Validation : compilation Pages, TypeScript et suite de tests réussis ; parcours tactile automatisé couvrant aperçu d'un rang verrouillé, trois achats, bilan critique, annulation puis confirmation du remboursement, et persistance des points.
+
+## Correctif talents sur iPhone paysage
+
+Suppression du cumul entre largeur explicite et ancien décalage latéral de 25 %, responsable du débordement hors écran. Le dialogue est borné par les quatre bords du viewport et les zones sûres. Une barre de fermeture non défilante surmonte un corps indépendant ; le bouton Fermer reste accessible à toute position de lecture. Tests tactiles sur 844×390, 932×430, 390×844 et 1536×707 : dimensions, fermeture en haut et en bas, réouverture, rotation et Échap. Compilation, TypeScript et suite de tests réussis.
