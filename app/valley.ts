@@ -52,7 +52,7 @@ export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw
   const w=426, h=240, horizon=120, fov=Math.PI/3;
   const sky=ctx.createLinearGradient(0,0,0,horizon);
   sky.addColorStop(0,"#263749"); sky.addColorStop(.58,"#8b9294"); sky.addColorStop(1,"#dbc7a0");
-  ctx.fillStyle=sky;ctx.fillRect(0,0,w,horizon);
+  ctx.fillStyle=sky;ctx.fillRect(0,-64,w,horizon+64);
   const sunAngle=wrap(-1.85-yaw), sunX=w/2+sunAngle/fov*w;
   if(!art&&Math.abs(sunAngle)<fov){
     const glow=ctx.createRadialGradient(sunX,38,2,sunX,38,70);
@@ -101,6 +101,8 @@ export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw
       const base=paint.createLinearGradient(0,0,0,378);base.addColorStop(0,"#000");base.addColorStop(.8,"#000");base.addColorStop(1,"#0000");paint.fillStyle=base;paint.fillRect(0,0,1920,378);
     }
     // Keep the painted castle at the gate bearing; close scenery still moves independently.
+    ctx.drawImage(panorama,0,0,panorama.width,1,w/2+angle/fov*w-640*.575,-64,640,64);
+    const zenith=ctx.createLinearGradient(0,-64,0,0);zenith.addColorStop(0,"#263749");zenith.addColorStop(.45,"#263749ed");zenith.addColorStop(1,"#26374900");ctx.fillStyle=zenith;ctx.fillRect(0,-64,w,64);
     ctx.drawImage(panorama,w/2+angle/fov*w-640*.575,0,640,126);
   }
   // Distant flock: time-based wingbeats remain consistent at any refresh rate.
@@ -110,8 +112,8 @@ export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw
   const mist=ctx.createLinearGradient(0,96,0,125);mist.addColorStop(0,"#bdc5b000");mist.addColorStop(.7,"#bdc5b055");mist.addColorStop(1,"#bdc5b000");ctx.fillStyle=mist;ctx.fillRect(0,96,w,29);
 }
 export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number,detail=1){
-  const cols=detail>=3?852:detail>=2?426:213,rows=detail>=3?240:detail>=2?120:60,step=120/rows;
-  if(ground&&groundPose&&groundPose.x===x&&groundPose.y===y&&groundPose.yaw===yaw&&groundPose.cols===cols){ctx.drawImage(ground,0,120,426,120);return}
+  const cols=detail>=3?852:detail>=2?426:213,rows=detail>=3?368:detail>=2?184:92,step=184/rows;
+  if(ground&&groundPose&&groundPose.x===x&&groundPose.y===y&&groundPose.yaw===yaw&&groundPose.cols===cols){ctx.drawImage(ground,0,120,426,184);return}
   groundPose={x,y,yaw,cols};
   if(!pathGrid){pathGrid=new Float32Array(160*160);for(let gy=0;gy<160;gy++)for(let gx=0;gx<160;gx++)pathGrid[gy*160+gx]=routeDistance(gx/8,gy/8)}
   if(!ground||ground.width!==cols){ground=document.createElement("canvas");ground.width=cols;ground.height=rows;pixels=ground.getContext("2d")!.createImageData(cols,rows)}
@@ -190,5 +192,5 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       data[i]=red*light*shadow*slopeLight*(1-fog)+145*fog;data[i+1]=green*light*shadow*slopeLight*(1-fog)+157*fog;data[i+2]=blue*light*shadow*slopeLight*(1-fog)+137*fog;data[i+3]=255;
     }
   }
-  ground.getContext("2d")!.putImageData(pixels!,0,0);ctx.drawImage(ground,0,120,426,120);
+  ground.getContext("2d")!.putImageData(pixels!,0,0);ctx.drawImage(ground,0,120,426,184);
 }

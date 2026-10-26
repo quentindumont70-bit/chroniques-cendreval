@@ -116,3 +116,11 @@ Validation : compilation Pages, TypeScript et suite de tests réussis ; parcours
 ## Correctif talents sur iPhone paysage
 
 Suppression du cumul entre largeur explicite et ancien décalage latéral de 25 %, responsable du débordement hors écran. Le dialogue est borné par les quatre bords du viewport et les zones sûres. Une barre de fermeture non défilante surmonte un corps indépendant ; le bouton Fermer reste accessible à toute position de lecture. Tests tactiles sur 844×390, 932×430, 390×844 et 1536×707 : dimensions, fermeture en haut et en bas, réouverture, rotation et Échap. Compilation, TypeScript et suite de tests réussis.
+
+## Cadrage et Gardien · 26 octobre 2026
+
+Ciel prolongé au-dessus du cadre et sol texturé calculé jusqu'à 64 pixels logiques sous l'écran : les mouvements verticaux de caméra ne découvrent plus le fond bleu. La marge du sol conserve la projection au lieu d'étirer sa dernière ligne. Le raccord supérieur du panorama se fond dans la couleur du zénith.
+
+Ciblage tactile compact avec hauteur minimale de 44 px. Gardien enrichi de visière, plastron segmenté, garnitures, genouillères et pans de tissu ; marteau cerclé avec foyer lumineux, lames de phase II avec gardes et poignées. Préparation et frappe déplacent le haut du corps et les armes. Ce sont des améliorations du modèle volumétrique existant, pas une refonte de moteur ou une nouvelle animation squelettique.
+
+Validation : TypeScript, compilation et suite de règles réussis ; 40 contrôles navigateur du combat réussis ; test supplémentaire des deux extrêmes de caméra et de la taille du ciblage. Tests Chromium avec émulation tactile ; performances physiques iPhone à confirmer.

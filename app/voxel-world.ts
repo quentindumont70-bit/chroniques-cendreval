@@ -81,10 +81,27 @@ export function drawVoxelActor(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:F
   v.push(box(.17*scale,-.09*scale,1.14*scale,.05*scale,.06*scale,.045*scale,actor.phase===2?"#bceeff":"#f3a059",0,true),box(.17*scale,.09*scale,1.14*scale,.05*scale,.06*scale,.045*scale,actor.phase===2?"#bceeff":"#f3a059",0,true));
   v.push(box(0,-.2*scale,1.35*scale,.12*scale,.08*scale,.28*scale,"#302536",-.42),box(0,.2*scale,1.35*scale,.12*scale,.08*scale,.28*scale,"#302536",.42));
  }
+ // Layered armor, a closed visor and a split tabard give the guardian a distinct silhouette.
+ if(boss){const trim="#a78962",steel="#716879",dark="#24232e",ember=actor.phase===2?"#abe3e8":"#efb16c";
+ const part=(x:number,y:number,z:number,sx:number,sy:number,sz:number,color:string,glow=false)=>v.push(box(x*scale,y*scale,z*scale,sx*scale,sy*scale,sz*scale,color,0,glow));
+ part(.17,0,1.11,.07,.35,.22,dark);part(.215,0,1.2,.025,.37,.035,trim);part(.215,0,1.08,.025,.29,.035,steel);part(.23,0,1.11,.025,.035,.1,trim);
+ for(const side of [-1,1]){part(.02,side*.34,.91,.32,.26,.06,trim);part(.06,side*.39,1,.17,.13,.12,steel);part(.13,side*.17,.28,.12,.19,.15,steel);part(.19,side*.17,.32,.03,.11,.05,trim);part(.08,side*.17,.025,.28,.21,.1,dark);part(.18,side*.105,.08,.05,.14,.3,"#542b38");part(.21,side*.14,.48,.04,.12,.09,trim)}
+ for(let band=0;band<3;band++)part(.19,0,.63+band*.1,.05,.35-band*.04,.055,band===2?trim:steel);
+ part(.225,0,.79,.035,.075,.09,ember,true);part(-.22,0,.24,.06,.48,.62,"#382533");part(-.24,0,.81,.07,.42,.12,trim);
+ }
  const armZ=.65*scale+bob-charge*.1+swing*.18,reach=.34*scale+charge*.12+swing*.2;v.push(box(0,-reach,armZ,.18*scale,.16*scale,.55*scale,armor),box(0,reach,armZ,.18*scale,.16*scale,.55*scale,armor));
  if(actor.kind==="ranged"&&!boss){v.push(box(0,.52*scale,.76*scale,.6*scale,.06*scale,.85*scale,"#9d7d48"),box(0,.5*scale,.78*scale,.72*scale,.03*scale,.03*scale,"#dfd3a5",0,Boolean(actor.telegraph)));}
  else if(boss&&actor.phase===2){for(const side of [-1,1]){v.push(box(0,side*.53*scale,.64*scale,.1*scale,.08*scale,.76*scale,"#88b9c4",side*(.18+swing*.65),true),box(0,side*.53*scale,1.28*scale,.16*scale,.28*scale,.12*scale,"#d6e7df",side*(.18+swing*.65),true))}}
  else {v.push(box(0,.48*scale,.52*scale,.12*scale,.1*scale,.92*scale,boss?"#815437":"#6b5841",.2+swing*.75),box(0,.48*scale,1.3*scale,.28*scale,.5*scale,.28*scale,boss?"#d07a3d":"#79736a",.2+swing*.75,boss));}
+ if(boss){const cold=actor.phase===2,glow=cold?"#c4f2f4":"#ffd38a",metal=cold?"#718e9d":"#936546";
+ for(const side of (cold?[-1,1]:[1])){const y=side*(cold?.53:.48)*scale;
+ v.push(box(.02,y,.58*scale,.15*scale,.15*scale,.13*scale,"#262735"),box(.02,y,.7*scale,.18*scale,.18*scale,.08*scale,metal));
+ if(cold){v.push(box(0,y,1.01*scale,.14*scale,.38*scale,.055*scale,metal),box(.01,y,1.08*scale,.055*scale,.06*scale,.35*scale,glow,0,true));for(const wing of [-1,1])v.push(box(0,y+wing*.15*scale,1.05*scale,.1*scale,.07*scale,.18*scale,metal,wing*.3))}
+ else{for(const edge of [-1,1]){v.push(box(0,y+edge*.22*scale,1.31*scale,.34*scale,.075*scale,.28*scale,metal),box(.015,y+edge*.28*scale,1.39*scale,.14*scale,.09*scale,.13*scale,"#c99b5d"))}v.push(box(.16*scale,y,1.39*scale,.035*scale,.17*scale,.13*scale,glow,0,true),box(0,y,1.57*scale,.15*scale,.15*scale,.12*scale,metal))}
+ }
+ // Anticipation compresses the stance; the strike drives the chest forward.
+ for(const part of v){if(part.z>.5*scale){part.x+=(-charge*.065+swing*.1)*scale;part.z-=charge*.025*scale}if(Math.abs(part.y)>.42*scale){part.x+=swing*.15*scale;part.z+=charge*.06*scale}}
+ }
  const death=actor.death??0,fade=death>0?Math.min(1,death/.62):1,collapse=death>0?.22+.78*fade:1;if(death>0)for(const part of v){part.z*=collapse;part.sz*=collapse;part.color=part.glow?part.color:"#594752"}
  drawFaces(ctx,camera,translated(scaled(v,.3*Math.min(1,d/1.35)),actor.x,actor.y,yaw),zbuf,fade)}
 
