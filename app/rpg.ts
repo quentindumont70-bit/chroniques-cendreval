@@ -1,3 +1,5 @@
+import type {TalentRanks} from './talents';
+const talentRank=(n:unknown)=>typeof n==='number'&&Number.isFinite(n)?Math.max(0,Math.min(3,Math.floor(n))):0;
 export type ClassId='blade'|'bow'|'arcane'|'hex'|'cantor'|'reaver';
 export type Stats={armor:number;armorPen:number;magicResist:number;magicPen:number;critChance:number;critBonus:number;power:number;manaRegen:number;lifeSteal:number;cooldownReduction:number};
 export type Skill={name:string;icon:string;description:string;cost:number;cooldown:number;damage:number;range:number;magic:boolean;heal?:number;guard?:number;expose?:boolean};
@@ -13,7 +15,7 @@ export const CLASSES:Record<ClassId,Profession>={
  reaver:{name:'Chevalier du sang',icon:'♜',spec:'blade',lore:'Armure vivante du crépuscule. L’impact nourrit sa survie.',stats:stats(30,6,7,.1,{armorPen:6,lifeSteal:.08,manaRegen:3}),skills:[skill('Moisson rouge','♜','Entaille circulaire et 8 vie rendue.',15,9,30,2.8,false,{heal:8}),skill('Sceau exsangue','♢','Coup qui expose la cible pendant 5 s.',18,8,36,2.5,false,{expose:true}),skill('Pacte carmin','♥','Rend 26 vie et engage une garde de 1 s.',20,18,0,0,false,{heal:26,guard:1})]}
 };
 export function classId(value:unknown,spec:unknown='blade'):ClassId{return typeof value==='string'&&Object.hasOwn(CLASSES,value)?value as ClassId:spec==='bow'?'bow':spec==='arcane'?'arcane':'blade'}
-export function playerStats(id:ClassId,level=1):Stats{const base=CLASSES[id].stats,growth=Math.max(0,Math.min(98,Math.floor(level)-1));return{...base,power:base.power+growth*1.5,armor:base.armor+growth,magicResist:base.magicResist+growth}}
+export function playerStats(id:ClassId,level=1,ranks:TalentRanks={}):Stats{const base=CLASSES[id].stats,growth=Math.max(0,Math.min(98,Math.floor(level)-1));const m=talentRank(ranks.talentMight),w=talentRank(ranks.talentWard),sp=talentRank(ranks.talentSpirit);return{...base,power:base.power+growth*1.5+(m>=1?3:0)+(sp>=3?4:0),armor:base.armor+growth+(w>=1?6:0)+(w>=3?8:0),magicResist:base.magicResist+growth+(w>=2?6:0)+(w>=3?8:0),critChance:base.critChance+(m>=2?.03:0),armorPen:base.armorPen+(m>=3?8:0),magicPen:base.magicPen+(sp>=2?8:0),manaRegen:base.manaRegen+(sp>=1?1:0)+(sp>=3?1:0)}}
 export type DamageResult={amount:number;critical:boolean;mitigated:number};
 /** Flat penetration cannot make resistance negative. 100 effective resistance halves damage. */
 export function resolveDamage(base:number,stats:Stats,defense:{armor:number;magicResist:number},magic:boolean,roll=1,exposed=false):DamageResult{const resistance=Math.max(0,(magic?defense.magicResist:defense.armor)-(magic?stats.magicPen:stats.armorPen));const critical=roll<Math.max(0,Math.min(.75,stats.critChance)),raw=Math.max(0,base+stats.power)*(critical?1+Math.max(0,stats.critBonus):1)*(exposed?1.25:1);const amount=raw===0?0:Math.max(1,Math.round(raw*100/(100+resistance)));return{amount,critical,mitigated:Math.max(0,Math.round(raw)-amount)}}

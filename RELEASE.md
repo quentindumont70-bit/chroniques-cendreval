@@ -96,3 +96,9 @@ Validation : compilation Pages, vérification TypeScript et 35 tests unitaires r
 ## Sac de trésors · 26 octobre 2026
 
 Trois améliorations complémentaires : recherche de nom insensible aux accents avec filtre de rareté et remise à zéro ; comparaison des variations réelles de dégâts lame/arc/magie et de protection, arrondis et plafond inclus ; sept icônes pixel originales et cibles tactiles de 44 px avec focus clavier visible. Les probabilités de butin restent inchangées. Compilation, TypeScript et suite de tests existante réussis.
+
+## Trois serments · 26 octobre 2026
+
+Neuf talents communs aux six classes, répartis en trois branches de trois rangs : offensive (puissance, critique, pénétration), défense (armure, résistance), esprit (mana et pénétration magique). Achat séquentiel avec prérequis de niveau 2/3/4, sur les points de niveau existants. Redistribution gratuite des seuls points de ces branches ; les anciens acquis de voie ne sont pas retirés ni remboursés.
+
+Les statistiques alimentent le combat et la régénération réelle, ainsi que la fiche du personnage. Rangs sauvegardés et exportés dans le profil, anciennes parties démarrant à zéro rang, valeurs importées bornées. Interface en colonnes sur ordinateur et verticale sur téléphone, accessible depuis Pause même sans point disponible. Cette première arborescence est commune, pas encore un arbre spécialisé par classe.
