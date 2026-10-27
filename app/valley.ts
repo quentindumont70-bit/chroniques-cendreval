@@ -146,7 +146,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const shoulder=pathDistance>=.43+bankNoise&&pathDistance<.9+bankNoise;
       const pathWear=Math.sin(wx*3.4+wy*.8)*Math.sin(wy*2.6-wx*.5);
       // Foot-worn twin ruts follow the pilgrimage route, giving the road a traveled texture.
-      const rut=path&&pathDistance>.16&&pathDistance<.31;
+      const rut=path&&depth<15&&pathDistance>.16&&pathDistance<.31;
       const roadCracks=path&&Math.sin(wx*7.1+wy*3.7)*Math.cos(wy*5.9-wx*2.2)>.84;
       const fineX=Math.floor(wx*140),fineY=Math.floor(wy*140),fine=((Math.imul(fineX,374761393)^Math.imul(fineY,668265263))>>>0)%23,near=Math.max(0,Math.min(1,(4-depth)/3));
       const stone=(near>.4?fine:hash)>20,shade=hash*.55+near*(fine*.4-4);
