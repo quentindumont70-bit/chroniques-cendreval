@@ -161,7 +161,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const ridge=Math.sin(wx*.17+wy*.27)*Math.cos(wy*.19-wx*.12);
       const slopeLight=1+ridge*.095;
       const damp=!path&&deep&&Math.sin(wx*1.4+wy*.8)>.2;
-      const flowerScatter=!path&&depth<9&&fine===11&&hash>15;
+      const flowerScatter=!path&&depth<9&&fine===11&&hash>15&&meadow>.15;
       const sunlitSeeds=!path&&depth<10&&fine===17&&dry;
       const fallenLeaves=!path&&depth<8&&hash===12&&fine>17;
       const drySoil=!path&&pathDistance>.8&&Math.sin(wx*1.7-wy*.9)*Math.cos(wy*1.2+wx*.6)>.75;
