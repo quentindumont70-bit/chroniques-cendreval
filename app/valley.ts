@@ -156,7 +156,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const meadow=Math.sin(wx*.38-wy*.53)+Math.cos(wx*.57+wy*.32),dry=meadow>.85,deep=meadow<-.75;
       // Broad woodland shadows create depth beneath the distant treeline without extra draw calls.
       const canopyShadow=Math.max(0,Math.sin(wx*.49+wy*.18)*Math.cos(wy*.43-wx*.11));
-      const shadow=!path&&pathDistance>1.2?1-canopyShadow*.23:1;
+      const shadow=!path&&pathDistance>1.2?1-canopyShadow*(depth<8?.2:.12):1;
       const woodlandEdge=!path&&pathDistance>1.4&&Math.sin(wx*.3+wy*.44)>.6;
       const ridge=Math.sin(wx*.17+wy*.27)*Math.cos(wy*.19-wx*.12);
       const slopeLight=1+ridge*.095;
