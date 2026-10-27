@@ -1,3 +1,4 @@
+function meadowPatch(x:number,y:number){return Math.sin(x*.43+y*.17)*Math.cos(y*.37-x*.13)}
 import {routeDistance} from "./world-art";
 // Low resolution world-space scenery with cached terrain and atmospheric perspective.
 const wrap = (a:number) => Math.atan2(Math.sin(a), Math.cos(a));
@@ -140,7 +141,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const borderBlend=Math.max(0,Math.min(1,(pathDistance-.35-bankNoise)/.52));
       const rolling=Math.sin(wx*.72+wy*.23)*Math.cos(wy*.61)*.5+.5;
       const broad=Math.sin(wx*.21+wy*.31)*Math.cos(wy*.27-wx*.17);
-      const micro=Math.sin(wx*2.8+wy*.6)*Math.sin(wy*2.1-wx*.7);
+      const micro=Math.sin(wx*1.1+wy*.6)*Math.sin(wy*.9-wx*.7);
       const light=.72+rolling*.25+broad*.075+micro*.035;
       const edge=pathDistance<.58+bankNoise;
       const shoulder=pathDistance>=.43+bankNoise&&pathDistance<.9+bankNoise;
@@ -149,8 +150,8 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const rut=path&&depth<15&&pathDistance>.16&&pathDistance<.31;
       const roadCracks=path&&depth<10&&Math.sin(wx*7.1+wy*3.7)*Math.cos(wy*5.9-wx*2.2)>.84;
       const fineX=Math.floor(wx*140),fineY=Math.floor(wy*140),fine=((Math.imul(fineX,374761393)^Math.imul(fineY,668265263))>>>0)%23,near=Math.max(0,Math.min(1,(4-depth)/3));
-      const stone=(near>.4?fine:hash)>20,shade=hash*.55+near*(fine*.4-4);
-      const gravel=path&&fine>18&&pathDistance<.2,grassTuft=!path&&fine>19&&depth<8;
+      const stone=(near>.4?fine:hash)>21&&meadowPatch(wx,wy)>.65,shade=hash*.18+near*(fine*.1-1);
+      const gravel=path&&fine>18&&pathDistance<.2,grassTuft=!path&&fine>21&&depth<8&&meadowPatch(wx,wy)<-.2;
       const pebbles=path&&depth<5&&depth>1&&hash===3;
       const mossPatch=!path&&depth<7&&hash===7;
       const meadow=Math.sin(wx*.38-wy*.53)+Math.cos(wx*.57+wy*.32),dry=meadow>.85,deep=meadow<-.75;
@@ -161,10 +162,10 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const ridge=Math.sin(wx*.17+wy*.27)*Math.cos(wy*.19-wx*.12);
       const slopeLight=1+ridge*.095;
       const damp=!path&&deep&&Math.sin(wx*1.4+wy*.8)>.2;
-      const flowerScatter=!path&&depth<9&&fine===11&&hash>15&&meadow>.15;
+      const flowerScatter=!path&&depth<9&&fine===11&&hash>15&&meadowPatch(wx,wy)<-.55;
       const sunlitSeeds=!path&&depth<10&&fine===17&&dry;
       const fallenLeaves=!path&&depth<8&&hash===12&&fine>17;
-      const drySoil=!path&&pathDistance>.8&&Math.sin(wx*1.7-wy*.9)*Math.cos(wy*1.2+wx*.6)>.75;
+      const drySoil=!path&&pathDistance>.8&&meadowPatch(wx,wy)>.55;
       const grassyBank=!path&&pathDistance>.43&&pathDistance<1.15&&fine>14;
       const clayBank=!path&&pathDistance>.48&&pathDistance<.85&&dry&&hash>17;
       const roadDust=path&&depth<9&&fine===6;
