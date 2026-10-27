@@ -33,67 +33,8 @@ for(let k=0;k<3;k++){const a=k*2.1;ornament(b(Math.cos(a)*.055,Math.sin(a)*.055,
     ['#3f6543','#648455','#879761','#536f46'][frond%4],a);
    fern.motion='leaf';add(fern);
   }
-  // Uneven crownlets create a broken, organic skyline rather than one square canopy.
-  if(!detailed&&kind!=='pine'){
-   for(let crownlet=0;crownlet<5;crownlet++){
-    const a=crownlet*2.39996323,r=(oak?.27:.21)*(crownlet%2?.85:1.15);
-    const part=b(Math.cos(a)*r,Math.sin(a)*r,.74+(crownlet%3)*.075,
-     .18,.15,.11,['#53774d','#83965e','#688b57','#a0aa72','#426b4d'][crownlet],a);
-    part.motion='leaf';add(part);
-   }
-  }
-  if(kind==='pine'){
-  // Layered radial boughs replace the flat stacked-plate silhouette.
-  // Keep the distant version lightweight while breaking the square outline.
-  for(let tier=0;tier<(detailed?5:3);tier++){
-   const radius=.37-tier*.053,z=.35+tier*.14;
-   for(let side=0;side<(detailed?7:4);side++){
-    const angle=side*Math.PI*2/(detailed?7:4)+tier*.39;
-    const r=radius*.53,needle=b(Math.cos(angle)*r,Math.sin(angle)*r,z-.045,radius*.73,radius*.32,.085,
-      ['#294b3e','#41684c','#65845a','#799166'][((tier+side)%4)],angle);
-    needle.motion='leaf';add(needle);
-   }
-  }
-  if(detailed){for(let needle=0;needle<18;needle++){const a=needle*2.399,level=needle%5,r=.17+(4-level)*.043,z=.29+level*.135;const tuft=b(Math.cos(a)*r,Math.sin(a)*r,z,.14,.11,.055,needle%3===0?'#7b9566':needle%3===1?'#3d624c':'#547957',a);tuft.motion='leaf';add(tuft)}}for(let level=0;level<5;level++){const width=.34-level*.048,z=.32+level*.135;add(b(0,0,z,width,width*.78,.075,['#314f42','#3b614b','#537957','#67865a','#8b9d67'][level],level*.51));if(detailed)for(let side=0;side<3;side++){const a=side*2.1+level*.7;const part=b(Math.cos(a)*width*.32,Math.sin(a)*width*.32,z-.035,width*.45,width*.35,.085,side===0?'#77915b':'#456b4c',a);part.motion='leaf';add(part)}}add(b(0,0,.94,.065,.065,.08,'#98a36a'))}
-  else{
-  // Full distant canopy for birches and oaks: low detail must never mean a bare trunk.
-  // Broad overlapping crowns preserve the species silhouette without close-range voxel cost.
-  if(!detailed){
-   const radius=oak?.31:.23;
-   const colors=birch?['#77966a','#a6b487','#547c60','#8caa77']:['#405f43','#648454','#81985c','#50734a'];
-   for(let layer=0;layer<4;layer++){
-    const z=.55+layer*.115,spread=radius*(layer===1?1.18:layer===2?.85:layer===3?.52:1);
-    const crown=b((layer-1)*.045,layer%2*.035,z,spread*1.18,spread*.96,.11,colors[layer%colors.length],layer*.37);
-    crown.motion='leaf';add(crown);
-   }
-   // Distributed boughs fill the gaps between smaller crown plates.
-   for(let bough=0;bough<6;bough++){
-    const a=bough*2.39996323,r=radius*(.45+(bough%3)*.18);
-    const foliage=b(Math.cos(a)*r,Math.sin(a)*r,.58+(bough%3)*.105,
-      .16,.14,.12,colors[(bough+2)%colors.length],a);
-    foliage.motion='leaf';add(foliage);
-   }
-   // Fine bright leaf tips add readable texture against the castle and distant mountains.
-   for(let tip=0;tip<9;tip++){
-    const a=tip*2.39996323,r=radius*(.72+(tip%4)*.12);
-    const leaf=b(Math.cos(a)*r,Math.sin(a)*r,.68+(tip%4)*.067,
-      .072,.06,.055,colors[(tip+1)%colors.length],a);
-    leaf.motion='leaf';add(leaf);
-   }
-   // Small offset leaf clusters soften the silhouette without adding expensive full trees.
-   for(let tuft=0;tuft<11;tuft++){
-    const angle=tuft*2.39996323,r=radius*(.62+(tuft%3)*.13),z=.61+(tuft%4)*.083;
-    const leaf=b(Math.cos(angle)*r,Math.sin(angle)*r,z,.13,.115,.105,colors[(tuft+1)%colors.length],angle);
-    leaf.motion='leaf';add(leaf);
-   }
-   for(let twig=0;twig<4;twig++){
-    const a=twig*Math.PI/2+.35,r=radius*.75;
-    add(b(Math.cos(a)*r,Math.sin(a)*r,.67+(twig%2)*.13,.17,.16,.14,colors[twig],a));
-   }
-  }
-  if(detailed){ // Layered branch forks and clustered canopy give a legible silhouette at close range.
-   for(let branch=0;branch<7;branch++){const a=branch*2.399,reach=(oak?.24:.17)*(1+branch%3*.16),height=.38+(branch%4)*.115;add(b(Math.cos(a)*reach*.42,Math.sin(a)*reach*.42,height,reach*.9,.035,.034,birch?'#a6ac97':'#69513c',a));for(let leaf=0;leaf<4;leaf++){const theta=a+leaf*1.57,r=reach*(.7+leaf*.09),tip=b(Math.cos(a)*reach+Math.cos(theta)*r*.35,Math.sin(a)*reach+Math.sin(theta)*r*.35,height+.07+(leaf%2)*.06,.12,.11,.085,['#405f43','#688957','#96a66b','#54734c'][leaf]);tip.motion='leaf';add(tip)}}}
-   const count=detailed?25:7;for(let i=0;i<count;i++){const a=i*2.399,r=(i%4)*.054,z=.6+(i%3)*.11,spread=oak?.21:.15;const part=b(Math.cos(a)*r,Math.sin(a)*r,z,spread*(1+(i%2)*.24),spread,.105+((i*7)%3)*.025,['#54734b','#7d9259','#a3ae73','#658551'][i%4],a*.14);part.motion='leaf';add(part)}if(oak){add(b(.11,0,.45,.2,.035,.045,wood,.2),b(.22,0,.38,.015,.015,.15,iron));lantern(.22,0,.28)}}};
+  if(kind==='pine'){for(let tier=0;tier<4;tier++){const radius=.3-tier*.055;for(let side=0;side<4;side++){const a=side*Math.PI/2+tier*.65;const part=b(Math.cos(a)*radius*.45,Math.sin(a)*radius*.45,.36+tier*.15,radius*.9,radius*.65,.14,['#375b49','#557951','#718957','#8b9b68'][tier],a);part.motion='leaf';add(part)}}add(b(0,0,.94,.065,.065,.1,'#8d9e71'))}
+  else{const count=detailed?28:16,radius=oak?.3:.24;for(let i=0;i<count;i++){const a=i*2.399963,r=radius*Math.sqrt((i+.5)/count),z=.59+.28*(1-r/radius)+Math.sin(i*1.7)*.055;const size=.13+(i%3)*.025;const part=b(Math.cos(a)*r,Math.sin(a)*r,z,size,size*.88,.13+(i%2)*.04,['#486847','#678250','#81945e','#58774c'][i%4],a);part.motion='leaf';add(part)}for(let fork=0;fork<3;fork++){const a=fork*2.4;add(b(Math.cos(a)*.12,Math.sin(a)*.12,.53+fork*.045,.26,.035,.04,wood,a))}if(oak){add(b(.11,0,.45,.2,.035,.045,wood,.2),b(.22,0,.38,.015,.015,.15,iron));lantern(.22,0,.28)}}};
  if(living){switch(frame){
  case 0:arch();break;
  case 1:tree('oak');break;
