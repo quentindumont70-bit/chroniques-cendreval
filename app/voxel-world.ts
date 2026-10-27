@@ -8,8 +8,8 @@ type Point={x:number;y:number;d:number};
 type Face={points:Point[];depth:number;color:string;glow:boolean;cool:boolean};
 
 const FACES=[
-  {ids:[4,5,6,7],normal:[0,0,1],light:1.14},
-  {ids:[0,4,7,3],normal:[-1,0,0],light:.72},
+  {ids:[4,5,6,7],normal:[0,0,1],light:1.08},
+  {ids:[0,4,7,3],normal:[-1,0,0],light:.77},
   {ids:[1,2,6,5],normal:[1,0,0],light:.88},
   {ids:[0,1,5,4],normal:[0,-1,0],light:.8},
   {ids:[3,7,6,2],normal:[0,1,0],light:.94},
@@ -17,7 +17,7 @@ const FACES=[
 
 const palette=new Map<string,readonly[number,number,number]>();
 function rgb(hex:string):readonly[number,number,number]{let value=palette.get(hex);if(!value){const raw=hex.replace("#","");value=[parseInt(raw.slice(0,2),16),parseInt(raw.slice(2,4),16),parseInt(raw.slice(4,6),16)];palette.set(hex,value)}return value}
-function shade(hex:string,light:number,fog:number){const [r,g,b]=rgb(hex),mist=[143,153,139];return `rgb(${Math.round(r*light*(1-fog)+mist[0]*fog)},${Math.round(g*light*(1-fog)+mist[1]*fog)},${Math.round(b*light*(1-fog)+mist[2]*fog)})`}
+function shade(hex:string,light:number,fog:number){const [r,g,b]=rgb(hex),mist=[149,157,142];return `rgb(${Math.round(r*light*(1-fog)+mist[0]*fog)},${Math.round(g*light*(1-fog)+mist[1]*fog)},${Math.round(b*light*(1-fog)+mist[2]*fog)})`}
 function project(camera:Camera,x:number,y:number,z:number):Point|null{const dx=x-camera.x,dy=y-camera.y,c=Math.cos(camera.yaw),s=Math.sin(camera.yaw),d=dx*c+dy*s;if(d<=.08)return null;const side=-dx*s+dy*c,focal=camera.width/(2*Math.tan(camera.fov/2));return{x:camera.width/2+side*focal/d,y:camera.height/2-((z-(camera.eye??.16))*focal/d),d}}
 
 /** Returns the screen position of a world point. Kept public so interaction markers use the same lens. */

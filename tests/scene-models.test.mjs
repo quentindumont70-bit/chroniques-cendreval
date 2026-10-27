@@ -108,3 +108,5 @@ test('mobile crowns use compact angled foliage rather than oversized flat slabs'
   assert(crowns.filter(v=>v.sx>1.5).length===0,'avoid oversized mobile foliage plates');
  }
 });
+
+test('tree variants stay deterministic and bounded on mobile',()=>{for(const frame of [0,1]){const variants=Array.from({length:6},(_,i)=>sceneryModel(frame,false,3,false,i));assert(new Set(variants.map(v=>JSON.stringify(v))).size>=4);for(const v of variants){assert(v.length<65);assert(v.every(validVoxel))}assert.deepEqual(variants[2],sceneryModel(frame,false,3,false,2))}});

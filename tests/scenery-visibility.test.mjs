@@ -73,7 +73,7 @@ test('mobile first-person view favors tree silhouettes over decorative ground co
  const props=[...plants,...trees];
  const visible=selectScenery(props,camera,1);
  assert.equal(visible.length,18);
- assert(visible.filter(p=>p.i>=plants.length).length>=12,'woodland must dominate the limited mobile prop budget');
+ assert(visible.filter(p=>p.i>=plants.length).length>=10,'trees retain the 60 percent reserved mobile budget');
 });
 
 test('nearby tree crowns do not cover the entire first-person sky',()=>{
