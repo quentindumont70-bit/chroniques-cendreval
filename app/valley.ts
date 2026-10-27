@@ -151,7 +151,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const fineX=Math.floor(wx*140),fineY=Math.floor(wy*140),fine=((Math.imul(fineX,374761393)^Math.imul(fineY,668265263))>>>0)%23,near=Math.max(0,Math.min(1,(4-depth)/3));
       const stone=(near>.4?fine:hash)>20,shade=hash*.55+near*(fine*.4-4);
       const gravel=path&&fine>18&&pathDistance<.2,grassTuft=!path&&fine>19&&depth<8;
-      const pebbles=path&&depth<5&&hash===3;
+      const pebbles=path&&depth<5&&depth>1&&hash===3;
       const mossPatch=!path&&depth<7&&hash===7;
       const meadow=Math.sin(wx*.38-wy*.53)+Math.cos(wx*.57+wy*.32),dry=meadow>.85,deep=meadow<-.75;
       // Broad woodland shadows create depth beneath the distant treeline without extra draw calls.
