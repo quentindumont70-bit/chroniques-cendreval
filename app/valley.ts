@@ -166,6 +166,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const fallenLeaves=!path&&depth<8&&hash===12&&fine>17;
       const drySoil=!path&&pathDistance>.8&&Math.sin(wx*1.7-wy*.9)*Math.cos(wy*1.2+wx*.6)>.75;
       const grassyBank=!path&&pathDistance>.43&&pathDistance<1.15&&fine>14;
+      const clayBank=!path&&pathDistance>.48&&pathDistance<.85&&dry&&hash>17;
       const roadDust=path&&depth<9&&fine===6;
       const packedEarth=path&&pathDistance<.16&&Math.sin(wx*2.7+wy*.7)>.45;
       const amberGrass=!path&&dry&&depth<12&&fine>17;
@@ -190,6 +191,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       if(fallenLeaves){red+=31;green+=13;blue-=4}
       if(drySoil){red+=12;green+=5;blue-=2}
       if(grassyBank){red+=5;green+=20;blue+=2}
+      if(clayBank){red+=19;green+=9;blue-=4}
       if(roadDust){red+=16;green+=13;blue+=9}
       if(packedEarth){red-=8;green-=7;blue-=5}
       if(amberGrass){red+=19;green+=12;blue-=3}
