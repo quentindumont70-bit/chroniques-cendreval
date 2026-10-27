@@ -57,7 +57,7 @@ function translated(model:Voxel[],x:number,y:number,yaw:number){const c=Math.cos
 function scaled(model:Voxel[],factor:number){return model.map(v=>({...v,x:v.x*factor,y:v.y*factor,z:v.z*factor,sx:v.sx*factor,sy:v.sy*factor,sz:v.sz*factor}))}
 
 const SCENE_PROPS=[...VALLEY_PROPS,...LIVING_PROPS];
-const MODEL_TIERS=[false,true].map(detailed=>SCENE_PROPS.map((p,i)=>translated(scaled(sceneryModel(p.frame,Boolean(p.living),p.height,detailed),.34),p.x,p.y,(i*.83)%Math.PI)));
+const MODEL_TIERS=[false,true].map(detailed=>SCENE_PROPS.map((p,i)=>translated(scaled(sceneryModel(p.frame,Boolean(p.living),p.height,detailed,i%6),.34),p.x,p.y,(i*.83)%Math.PI)));
 /** Voxel scenery has real side and top faces: walking around an object changes its silhouette. */
 export function drawVoxelWorld(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:Float32Array,time:number,detail=1,combat=false){const voxels:Voxel[]=[];
  // Avoid allocating and sorting every world prop on each animation frame.

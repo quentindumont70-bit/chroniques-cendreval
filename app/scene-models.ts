@@ -2,7 +2,7 @@ import type {Voxel} from './voxel-world';
 const wood='#69513c',stone='#77857b',moss='#657c49',iron='#414953',gold='#c7a66a';
 function b(x:number,y:number,z:number,sx:number,sy:number,sz:number,color:string,yaw=0,glow=false):Voxel{return{x,y,z,sx,sy,sz,color,yaw,glow}}
 /** Authored silhouettes with complete low-detail versions, rather than truncated models. */
-export function sceneryModel(frame:number,living:boolean,h:number,detailed:boolean):Voxel[]{const v:Voxel[]=[];const add=(...parts:Voxel[])=>v.push(...parts);const ornament=(...parts:Voxel[])=>{if(detailed)add(...parts)};
+export function sceneryModel(frame:number,living:boolean,h:number,detailed:boolean,variant=0):Voxel[]{const v:Voxel[]=[];const add=(...parts:Voxel[])=>v.push(...parts);const ornament=(...parts:Voxel[])=>{if(detailed)add(...parts)};
  const arch=()=>{for(const side of [-1,1]){add(b(side*.31,0,0,.23,.3,.11,stone),b(side*.31,0,.11,.14,.2,.64,stone),b(side*.26,0,.73,.2,.23,.14,'#8c9681'),b(side*.15,0,.85,.22,.24,.12,stone));ornament(b(side*.31,-.115,.16,.025,.025,.48,gold),b(side*.37,.04,.03,.1,.17,.07,moss),b(side*.31,0,.67,.2,.27,.055,'#b2b19a'))}add(b(0,0,.94,.18,.25,.14,'#a5a58b'));ornament(b(0,-.14,.95,.055,.025,.09,gold))};
  const lantern=(x:number,y:number,z:number)=>{add(b(x,y,z,.09,.09,.12,'#d0a45a',0,true),b(x,y,z+.12,.14,.14,.025,iron),b(x,y,z-.02,.13,.13,.025,iron));ornament(b(x-.046,y-.046,z,.012,.012,.12,iron),b(x+.046,y-.046,z,.012,.012,.12,iron))};
  const tree=(kind:'pine'|'birch'|'oak')=>{const birch=kind==='birch',oak=kind==='oak';add(b(0,0,0,oak?.105:.06,oak?.1:.07,.71,birch?'#bfc2a6':wood));
@@ -33,7 +33,7 @@ for(let k=0;k<3;k++){const a=k*2.1;ornament(b(Math.cos(a)*.055,Math.sin(a)*.055,
     ['#3f6543','#648455','#879761','#536f46'][frond%4],a);
    fern.motion='leaf';add(fern);
   }
-  if(kind==='pine'){for(let tier=0;tier<4;tier++){const radius=.3-tier*.055;for(let side=0;side<4;side++){const a=side*Math.PI/2+tier*.65;const part=b(Math.cos(a)*radius*.45,Math.sin(a)*radius*.45,.36+tier*.15,radius*.9,radius*.65,.14,['#375b49','#557951','#718957','#8b9b68'][tier],a);part.motion='leaf';add(part)}}add(b(0,0,.94,.065,.065,.1,'#8d9e71'))}
+  if(kind==='pine'){for(let tier=0;tier<3+variant%2;tier++){const radius=.28+(variant%3)*.025-tier*.055;for(let side=0;side<4;side++){const a=side*Math.PI/2+tier*.65+variant*.43;const part=b(Math.cos(a)*radius*.45,Math.sin(a)*radius*.45,.36+tier*.15,radius*.9,radius*.65,.14,['#375b49','#557951','#718957','#8b9b68'][tier],a);part.motion='leaf';add(part)}}add(b(0,0,.94,.065,.065,.1,'#8d9e71'))}
   else{const count=detailed?28:16,radius=oak?.3:.24;for(let i=0;i<count;i++){const a=i*2.399963,r=radius*Math.sqrt((i+.5)/count),z=.59+.28*(1-r/radius)+Math.sin(i*1.7)*.055;const size=.13+(i%3)*.025;const part=b(Math.cos(a)*r,Math.sin(a)*r,z,size,size*.88,.13+(i%2)*.04,['#486847','#678250','#81945e','#58774c'][i%4],a);part.motion='leaf';add(part)}for(let fork=0;fork<3;fork++){const a=fork*2.4;add(b(Math.cos(a)*.12,Math.sin(a)*.12,.53+fork*.045,.26,.035,.04,wood,a))}if(oak){add(b(.11,0,.45,.2,.035,.045,wood,.2),b(.22,0,.38,.015,.015,.15,iron));lantern(.22,0,.28)}}};
  if(living){switch(frame){
  case 0:arch();break;
@@ -49,7 +49,7 @@ for(let k=0;k<3;k++){const a=k*2.1;ornament(b(Math.cos(a)*.055,Math.sin(a)*.055,
  case 5:add(b(0,0,0,.04,.05,.7,wood),b(0,0,0,.13,.14,.04,stone));lantern(0,0,.68);break;
  case 6:for(let i=0;i<(detailed?11:7);i++){const a=i*2.399,r=.09+(i%4)*.045;add(b(Math.cos(a)*r,Math.sin(a)*r,.015,.19,.035,.045,['#456a49','#78965b','#4f8051'][i%3],a));if(detailed||i%3===0){add(b(Math.cos(a)*r,Math.sin(a)*r,.045,.065,.035,.055,'#8ba56a',a));if(i%3===0)add(b(Math.cos(a)*r,Math.sin(a)*r,.075,.036,.036,.026,i%2?'#c7b4d2':'#ead59c',a))}}break;
  case 7:add(b(0,0,0,.4,.25,.09,stone),b(0,0,.09,.25,.15,.6,'#7b8c7f'),b(0,0,.69,.21,.17,.07,'#a2aa95'));ornament(b(0,-.086,.3,.035,.025,.24,gold),b(0,-.086,.43,.14,.025,.035,gold));break;}}
- return v.map(part=>({...part,x:part.x*h,y:part.y*h,z:part.z*h,sx:part.sx*h,sy:part.sy*h,sz:part.sz*h}));
+ const treeKind=(!living&&(frame===0||frame===1))||(living&&frame===1),width=treeKind?.88+(variant%4)*.08:1,height=treeKind?.93+(variant%3)*.065:1;return v.map(part=>({...part,x:part.x*h*width,y:part.y*h*width,z:part.z*h*height,sx:part.sx*h*width,sy:part.sy*h*width,sz:part.sz*h*height}));
 }
 
 /** Small world-space fauna and embers; animation uses simulation time and pauses with gameplay. */
