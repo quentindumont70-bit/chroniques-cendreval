@@ -145,10 +145,10 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const light=.72+rolling*.25+broad*.075+micro*.035;
       const edge=pathDistance<.58+bankNoise;
       const shoulder=pathDistance>=.43+bankNoise&&pathDistance<.9+bankNoise;
-      const pathWear=Math.sin(wx*3.4+wy*.8)*Math.sin(wy*2.6-wx*.5);
+      const pathWear=Math.sin(wx*.9+wy*.3)*Math.sin(wy*.7-wx*.2);
       // Foot-worn twin ruts follow the pilgrimage route, giving the road a traveled texture.
-      const rut=path&&depth<15&&pathDistance>.16&&pathDistance<.31;
-      const roadCracks=path&&depth<10&&Math.sin(wx*7.1+wy*3.7)*Math.cos(wy*5.9-wx*2.2)>.84;
+      const rut=path&&depth<15&&Math.abs(pathDistance-(.235+Math.sin(wx*.8+wy*.6)*.018))<.045;
+      const roadCracks=path&&pathDistance>.28&&depth<6&&Math.sin(wx*7.1+wy*3.7)*Math.cos(wy*5.9-wx*2.2)>.84;
       const fineX=Math.floor(wx*140),fineY=Math.floor(wy*140),fine=((Math.imul(fineX,374761393)^Math.imul(fineY,668265263))>>>0)%23,near=Math.max(0,Math.min(1,(4-depth)/3));
       const stone=(near>.4?fine:hash)>21&&meadowPatch(wx,wy)>.65,shade=hash*.18+near*(fine*.1-1);
       const gravel=path&&fine>18&&pathDistance<.2,grassTuft=!path&&fine>21&&depth<8&&meadowPatch(wx,wy)<-.2;
@@ -166,7 +166,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const sunlitSeeds=!path&&depth<10&&fine===17&&dry;
       const fallenLeaves=!path&&depth<8&&hash===12&&fine>17;
       const drySoil=!path&&pathDistance>.8&&meadowPatch(wx,wy)>.55;
-      const grassyBank=!path&&pathDistance>.43&&pathDistance<1.15&&fine>14;
+      const grassyBank=!path&&pathDistance>.43&&pathDistance<1.15&&fine>19&&meadowPatch(wx,wy)<.35;
       const clayBank=!path&&pathDistance>.48&&pathDistance<.85&&dry&&hash>17;
       const roadDust=path&&depth<9&&fine===6;
       const packedEarth=path&&pathDistance<.16&&Math.sin(wx*2.7+wy*.7)>.45;
@@ -179,7 +179,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       // Mix road shoulders into meadow pigments instead of leaving hard flat bands.
       if(!path&&borderBlend<1){const blend=borderBlend*borderBlend*(3-2*borderBlend);red=red*(.68+.32*blend)+14*(1-blend);green=green*(.78+.22*blend)+8*(1-blend);blue=blue*(.8+.2*blend)+3*(1-blend)}
       const i=(row*cols+col)*4;
-      if(rut){red-=15;green-=13;blue-=10}
+      if(rut){red-=9;green-=8;blue-=6}
       if(roadCracks){red-=17;green-=16;blue-=12}
       if(gravel){red+=12;green+=10;blue+=8}
       if(grassTuft){red+=7;green+=17;blue+=5}
