@@ -164,7 +164,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const woodlandEdge=!path&&pathDistance>1.4&&Math.sin(wx*.3+wy*.44)>.6;
       const ridge=Math.sin(wx*.17+wy*.27)*Math.cos(wy*.19-wx*.12);
       const slopeLight=1+ridge*.095;
-      const damp=!path&&deep&&Math.sin(wx*1.4+wy*.8)>.2;
+      const damp=!path&&deep&&Math.sin(wx*.55+wy*.3)>.2;
       const flowerScatter=!path&&depth<9&&fine===11&&hash>15&&meadowPatch(wx,wy)<-.55;
       const sunlitSeeds=!path&&depth<10&&fine===17&&dry;
       const fallenLeaves=!path&&depth<8&&hash===12&&fine>17;
@@ -187,11 +187,11 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       if(rut){red-=9;green-=8;blue-=6}
       if(roadCracks){red-=17;green-=16;blue-=12}
       if(gravel){red+=12;green+=10;blue+=8}
-      if(grassTuft){red+=7;green+=17;blue+=5}
+      if(grassTuft){red+=5;green+=10;blue+=4}
       if(woodlandEdge){red-=7;green-=4;blue-=2}
-      if(damp){red-=5;green-=4;blue+=5}
+      if(damp){red-=2;green-=1;blue+=3}
       if(pebbles){red+=24;green+=24;blue+=20}
-      if(mossPatch){red-=4;green+=13;blue-=3}
+      if(mossPatch){red-=2;green+=6;blue-=1}
       if(flowerScatter){red+=45;green+=22;blue+=49}
       if(sunlitSeeds){red+=14;green+=13;blue+=5}
       if(fallenLeaves){red+=14;green+=7;blue-=2}
