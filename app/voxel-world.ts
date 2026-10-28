@@ -95,7 +95,8 @@ export function drawVoxelActor(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:F
  for(const side of [-1,1]){detail(.03,side*.27,.91,.28,.18,.13,'#58635e');detail(.13,side*.17,.26,.12,.15,.17,'#626d65');detail(.07,side*.17,.02,.27,.19,.1,'#333c3b')}
  detail(.19,0,.73,.045,.33,.22,'#68736a');detail(.215,0,.78,.02,.045,.15,'#b09b70');detail(.04,0,.53,.37,.37,.06,'#292b30');detail(.23,0,.54,.03,.09,.055,'#b49b68');
  if(actor.kind==='ranged'){detail(-.14,0,.65,.14,.42,.6,'#405347');detail(-.17,.19,.6,.13,.13,.47,'#6d5942');for(let arrow=0;arrow<3;arrow++)detail(-.17,.15+arrow*.035,1.02,.015,.015,.25,'#c8b48a');detail(.17,0,1.14,.06,.27,.12,'#292e30');detail(.2,0,1.22,.06,.29,.035,'#9caa8b')}
- // BRUTE_DETAIL
+ if(actor.kind==='brute'){for(const side of [-1,1]){detail(.02,side*.32,.96,.34,.23,.19,'#6b6261');detail(.08,side*.36,1.13,.14,.12,.1,'#a18e70')}detail(.19,0,1.1,.08,.33,.22,'#44454d');detail(.24,0,1.21,.025,.29,.035,'#b8a283');detail(.24,0,1.12,.025,.04,.1,'#b8a283')}
+
  }
  const armZ=.65*scale+bob-charge*.1+swing*.18,reach=.34*scale+charge*.12+swing*.2;v.push(box(0,-reach,armZ,.18*scale,.16*scale,.55*scale,armor),box(0,reach,armZ,.18*scale,.16*scale,.55*scale,armor));
  if(actor.kind==="ranged"&&!boss){v.push(box(0,.52*scale,.76*scale,.6*scale,.06*scale,.85*scale,"#9d7d48"),box(0,.5*scale,.78*scale,.72*scale,.03*scale,.03*scale,"#dfd3a5",0,Boolean(actor.telegraph)));}
