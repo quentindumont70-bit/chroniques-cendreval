@@ -1,0 +1,2 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {resolveRenderSize,lighterRenderSize} from '../app/render-quality.ts';
+test('4K scales pixels without multiplying world detail and auto steps down safely',()=>{assert.equal(resolveRenderSize('ultra',844,3).detail,resolveRenderSize('hd',844,3).detail);let size=resolveRenderSize('ultra',844,3);for(let i=0;i<5;i++){const next=lighterRenderSize(size);assert(next.width<=size.width);assert(Math.abs(next.width/next.height-16/9)<.01);size=next;}assert.equal(size.width,426)});
