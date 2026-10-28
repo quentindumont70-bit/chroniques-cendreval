@@ -392,7 +392,7 @@ export default function Home() {
     };
     const mouseUp=(e:PointerEvent)=>{if(e.button>=3&&started){e.preventDefault();e.stopPropagation()}if(e.pointerType==="touch"){if(touchLook.current?.id===e.pointerId)touchLook.current=null;return}const input=`Mouse${e.button}`;keys.current[input]=false;delete inputPulse.current[input]};
     const pointerMove=(e:PointerEvent)=>{const look=touchLook.current;if(e.pointerType!=="touch"||!look||look.id!==e.pointerId||panel||village||choosingSpec)return;const dx=e.clientX-look.x,dy=e.clientY-look.y;state.current.a+=dx*.0052*sensitivityRef.current;cameraPitch.current=Math.max(-.65,Math.min(.65,cameraPitch.current-dy*.0046*sensitivityRef.current));touchLook.current={id:e.pointerId,x:e.clientX,y:e.clientY};e.preventDefault()};
-    const pointerCancel=(e:PointerEvent)=>{if(touchLook.current?.id===e.pointerId)touchLook.current=null;clearInput()};
+    const pointerCancel=(e:PointerEvent)=>{if(e.pointerType==="touch"){if(touchLook.current?.id===e.pointerId)touchLook.current=null;return}clearInput()};
     const blockCapturedClick=(e:MouseEvent)=>{if(!suppressCapturedClick.current)return;suppressCapturedClick.current=false;e.preventDefault();e.stopImmediatePropagation()};
     const move=(e:MouseEvent)=>{
       if(!started||panel||village||choosingSpec)return;

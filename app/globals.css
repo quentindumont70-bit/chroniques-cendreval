@@ -164,3 +164,6 @@ html:has(.stage.playing),html:has(.stage.playing) *{cursor:none!important}.stage
 @media(pointer:coarse),(max-width:900px){.message{font:11px/1.4 Arial;top:19%;left:22%;right:22%;text-shadow:0 1px 3px #000;pointer-events:none}.attack-warning{font-size:13px;max-width:310px}.thumb-caption{opacity:.75}}
 
 .talent-dialog .talent-workshop .talent-tree button{line-height:1.5;min-height:72px;padding:12px}.talent-dialog .talent-workshop .talent-tree small{font-size:10px;color:#b9cbbf}.talent-dialog .talent-workshop .talent-tree b{font:13px/1.5 Arial}.talent-dialog .talent-summary{background:#14282f}.talent-dialog .talent-preview{border-color:#a1ae8c99}.talent-dialog-scroll{scroll-padding-top:16px}@media(max-width:600px){.talent-dialog .talent-heading{align-items:flex-start}.talent-dialog .talent-heading h2{font-size:21px;line-height:1.25}.talent-dialog .talent-tree{gap:16px}.talent-dialog .talent-tree section{padding:12px}.talent-dialog .talent-workshop dl>div{padding:10px}}
+
+/* One gesture surface owns both thumbs; only real controls intercept it. */
+@media(pointer:coarse),(max-width:900px){.thumb-surface{inset:0}.thumb-surface>*{pointer-events:none}.quest,.boss-health,.cast-caption,.exposure-state{pointer-events:none}}
