@@ -28,7 +28,10 @@ export function actorRig(actor:RigActor,time:number,moving=0):Voxel[]{
  body(lean-.02,shoulder[1],.97,.31,heavy?.3:.22,.16,steel,.55);body(lean-.02,shoulder[1],.95,.33,heavy?.32:.24,.035,trim,.9);}
 
 // ARMS
- // CAPE
+ for(let panel=0;panel<5;panel++){const y=(panel-2)*.105,sway=Math.sin(time*.003+panel*.55)*(.018+moving*.02);bone([lean-.16,y,1.03],[-.24+sway,y*1.35,.23+(panel%2)*.09],.14,cloth,.66)}
+ if(actor.kind==='ranged'&&!boss){body(lean-.025,0,1.17,.31,.34,.3,'#354d40',.3);body(lean+.14,0,1.21,.045,.2,.13,'#1e2928');bone([-.18,.18,.6],[-.23,.2,1.06],.14,'#70573c');for(let i=0;i<3;i++)bone([-.23,.16+i*.035,.9],[-.24,.16+i*.035,1.22],.018,'#c6b691');}
+
+// CAPE
  // FINISH
  return parts.map(v=>({...v,x:v.x*size,y:v.y*size,z:(v.z+breath)*size,sx:v.sx*size,sy:v.sy*size,sz:v.sz*size}));
 }
