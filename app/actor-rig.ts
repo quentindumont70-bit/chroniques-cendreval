@@ -17,7 +17,11 @@ export function actorRig(actor:RigActor,time:number,moving=0):Voxel[]{
  for(let bar=-1;bar<=1;bar++)body(lean+.14,bar*.05,1.13,.025,.017,.1,trim,.8);
  if(boss)for(const side of [-1,1]){bone([lean,side*.11,1.36],[lean-.03,side*.24,1.51],.095,trim,.68);bone([lean-.03,side*.24,1.51],[lean+.01,side*.21,1.72],.065,trim,.05);}
 // HEAD
- // LEGS
+ const stride=Math.sin(time*.009)*Math.min(1,moving)*.19;
+ for(const side of [-1,1]){const hip:Joint=[0,side*.12,.55],knee:Joint=[side*stride*.65+.035,side*.14,.29],foot:Joint=[-side*stride,side*.15,.055];
+ bone(hip,knee,.18,cloth,.9);bone(knee,foot,.155,steel,.65);body(knee[0]+.04,knee[1],knee[2]-.04,.18,.18,.12,trim,.65);body(foot[0]+.055,foot[1],.015,.28,.17,.075,steel,.7);}
+
+// LEGS
  // ARMS
  // CAPE
  // FINISH
