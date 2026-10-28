@@ -20,6 +20,8 @@ await send('touchStart',1,140,270);await send('touchMove',1,140,220);
 const before=await save();await send('touchStart',2,600,52);await send('touchMove',2,640,55);await send('touchEnd',2);
 const after=await save();assert(after.a-before.a>.15,'upper camera area is not a separate input system');
 await send('touchEnd',1);
+// Start this collision-sensitive assertion at the known clear spawn.
+await p.reload();await p.evaluate(()=>{const s=JSON.parse(localStorage.getItem('cendreval-save'));s.x=3.5;s.y=16.5;s.a=-Math.PI/2;localStorage.setItem('cendreval-save',JSON.stringify(s))});await p.getByText('CONTINUER',{exact:true}).click();
 // Capture cancellation of one pointer does not strand the other pointer.
 await send('touchStart',1,145,265);await send('touchMove',1,145,220);
 await send('touchStart',2,620,235);
