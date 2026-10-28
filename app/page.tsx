@@ -666,7 +666,7 @@ export default function Home() {
         if(remain<=lead&&!cuePlayed.current){cuePlayed.current=true;playCombatSound("ready")}
         if(!Number.isFinite(remain)||remain>lead+.1)cuePlayed.current=false;
         const angle=Math.atan2(Math.sin(Math.atan2(cueFoe.y-s.y,cueFoe.x-s.x)-s.a),Math.cos(Math.atan2(cueFoe.y-s.y,cueFoe.x-s.x)-s.a));
-        if(Math.abs(angle)<FOV*.48)drawParryCue(ctx,cueFoe,(.5+angle/FOV)*W,H*.49+cameraPitch.current*H*.28,touchControlsActive());
+        if(Math.abs(angle)<FOV*.48)drawParryCue(ctx,cueFoe,(.5+angle/FOV)*W,H*.61+cameraPitch.current*H*.28,touchControlsActive());
       }else cuePlayed.current=false;
       // Arme, sort et viseur.
       const threats=[enemy.current,...minions.current].filter(foe=>foe.alive);
