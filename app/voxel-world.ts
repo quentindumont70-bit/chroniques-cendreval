@@ -1,3 +1,4 @@
+import {actorRig} from "./actor-rig";
 import {facetedMesh} from "./faceted-mesh";
 import {clipNear} from "./near-clip";
 import {LIVING_PROPS,VALLEY_PROPS,visibleSpans} from "./world-art";
@@ -85,46 +86,15 @@ export function drawVoxelShrines(ctx:CanvasRenderingContext2D,camera:Camera,zbuf
 
 type Actor={x:number;y:number;boss:boolean;kind:"melee"|"ranged"|"brute";phase?:1|2;hit?:number;telegraph?:number;strike?:number;intent?:string;death?:number};
 /** Segment-built combatants. Armor, limbs and weapons all expose independent 3D faces. */
-export function drawVoxelActor(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:Float32Array,actor:Actor,time:number){const dx=actor.x-camera.x,dy=actor.y-camera.y,d=Math.hypot(dx,dy);if(d<.34||d>24)return;const angle=Math.atan2(Math.sin(Math.atan2(dy,dx)-camera.yaw),Math.cos(Math.atan2(dy,dx)-camera.yaw));if(Math.abs(angle)>camera.fov*.7)return;const yaw=Math.atan2(camera.y-actor.y,camera.x-actor.x),boss=actor.boss,scale=boss?1.32:actor.kind==="brute"?1.06:.88,bob=Math.sin(time*.004+actor.x)*.025,charge=actor.telegraph?Math.min(1,1-actor.telegraph/.8):0,swing=actor.strike?Math.sin(Math.min(1,1-actor.strike/.4)*Math.PI):0,armor=actor.hit?"#c8b48e":boss?"#473849":actor.kind==="ranged"?"#4f493e":"#302b39",cloth=boss?"#682e36":actor.kind==="ranged"?"#756442":"#49334f",skin="#9a7860";const v:Voxel[]=[box(0,0,.14+bob,.28*scale,.32*scale,.48*scale,cloth),box(0,0,.57*scale+bob,.34*scale,.48*scale,.55*scale,armor),box(0,0,1.08*scale+bob,.28*scale,.32*scale,.3*scale,skin),box(0,0,1.28*scale+bob,.34*scale,.42*scale,.16*scale,boss?"#282331":"#38343d"),box(0,-.17*scale,0,.2*scale,.18*scale,.48*scale,"#27242b"),box(0,.17*scale,0,.2*scale,.18*scale,.48*scale,"#27242b")];
- if(boss){
-  v.push(box(.02*scale,-.34*scale,.78*scale,.42*scale,.28*scale,.22*scale,"#665064"),box(.02*scale,.34*scale,.78*scale,.42*scale,.28*scale,.22*scale,"#665064"));
-  v.push(box(.18*scale,0,.7*scale,.08*scale,.3*scale,.28*scale,"#b38551"),box(.18*scale,0,.48*scale,.08*scale,.42*scale,.08*scale,"#2b2029"));
-  v.push(box(.17*scale,-.09*scale,1.14*scale,.05*scale,.06*scale,.045*scale,actor.phase===2?"#bceeff":"#f3a059",0,true),box(.17*scale,.09*scale,1.14*scale,.05*scale,.06*scale,.045*scale,actor.phase===2?"#bceeff":"#f3a059",0,true));
-  v.push(box(0,-.2*scale,1.35*scale,.12*scale,.08*scale,.28*scale,"#302536",-.42),box(0,.2*scale,1.35*scale,.12*scale,.08*scale,.28*scale,"#302536",.42));
- }
- // Layered armor, a closed visor and a split tabard give the guardian a distinct silhouette.
- if(boss){const trim="#a78962",steel="#716879",dark="#24232e",ember=actor.phase===2?"#abe3e8":"#efb16c";
- const part=(x:number,y:number,z:number,sx:number,sy:number,sz:number,color:string,glow=false)=>v.push(box(x*scale,y*scale,z*scale,sx*scale,sy*scale,sz*scale,color,0,glow));
- part(.17,0,1.11,.07,.35,.22,dark);part(.215,0,1.2,.025,.37,.035,trim);part(.215,0,1.08,.025,.29,.035,steel);part(.23,0,1.11,.025,.035,.1,trim);
- for(const side of [-1,1]){part(.02,side*.34,.91,.32,.26,.06,trim);part(.06,side*.39,1,.17,.13,.12,steel);part(.13,side*.17,.28,.12,.19,.15,steel);part(.19,side*.17,.32,.03,.11,.05,trim);part(.08,side*.17,.025,.28,.21,.1,dark);part(.18,side*.105,.08,.05,.14,.3,"#542b38");part(.21,side*.14,.48,.04,.12,.09,trim)}
- for(let band=0;band<3;band++)part(.19,0,.63+band*.1,.05,.35-band*.04,.055,band===2?trim:steel);
- part(.225,0,.79,.035,.075,.09,ember,true);part(-.22,0,.24,.06,.48,.62,"#382533");part(-.24,0,.81,.07,.42,.12,trim);
- }
- if(!boss){const detail=(x:number,y:number,z:number,sx:number,sy:number,sz:number,color:string)=>v.push(box(x*scale,y*scale,z*scale,sx*scale,sy*scale,sz*scale,color));
- // Segmented armour separates the shoulder, waist and greaves.
- for(const side of [-1,1]){detail(.03,side*.27,.91,.28,.18,.13,'#58635e');detail(.13,side*.17,.26,.12,.15,.17,'#626d65');detail(.07,side*.17,.02,.27,.19,.1,'#333c3b')}
- detail(.19,0,.73,.045,.33,.22,'#68736a');detail(.215,0,.78,.02,.045,.15,'#b09b70');detail(.04,0,.53,.37,.37,.06,'#292b30');detail(.23,0,.54,.03,.09,.055,'#b49b68');
- if(actor.kind==='ranged'){detail(-.14,0,.65,.14,.42,.6,'#405347');detail(-.17,.19,.6,.13,.13,.47,'#6d5942');for(let arrow=0;arrow<3;arrow++)detail(-.17,.15+arrow*.035,1.02,.015,.015,.25,'#c8b48a');detail(.17,0,1.14,.06,.27,.12,'#292e30');detail(.2,0,1.22,.06,.29,.035,'#9caa8b')}
- if(actor.kind==='brute'){for(const side of [-1,1]){detail(.02,side*.32,.96,.34,.23,.19,'#6b6261');detail(.08,side*.36,1.13,.14,.12,.1,'#a18e70')}detail(.19,0,1.1,.08,.33,.22,'#44454d');detail(.24,0,1.21,.025,.29,.035,'#b8a283');detail(.24,0,1.12,.025,.04,.1,'#b8a283')}
-
- }
- const armZ=.65*scale+bob-charge*.1+swing*.18,reach=.34*scale+charge*.12+swing*.2;v.push(box(0,-reach,armZ,.18*scale,.16*scale,.55*scale,armor),box(0,reach,armZ,.18*scale,.16*scale,.55*scale,armor));
- if(actor.kind==="ranged"&&!boss){for(let limb=0;limb<5;limb++){const t=(limb-2)/2;v.push(box((.12-.16*t*t+charge*.06)*scale,.52*scale,(.65+limb*.16)*scale,.07*scale,.07*scale,.19*scale,limb%2?"#b19a68":"#766344"))}v.push(box(-.06*scale,.52*scale,.68*scale,.012*scale,.018*scale,.64*scale,"#d9d2af"),box((.06-charge*.12)*scale,.52*scale,.99*scale,.55*scale,.025*scale,.025*scale,"#b9af8e",0,Boolean(actor.telegraph)));}
- else if(boss&&actor.phase===2){for(const side of [-1,1]){v.push(box(0,side*.53*scale,.64*scale,.1*scale,.08*scale,.76*scale,"#88b9c4",side*(.18+swing*.65),true),box(0,side*.53*scale,1.28*scale,.16*scale,.28*scale,.12*scale,"#d6e7df",side*(.18+swing*.65),true))}}
- else {v.push(box(0,.48*scale,.52*scale,.12*scale,.1*scale,.92*scale,boss?"#815437":"#6b5841",.2+swing*.75),box(0,.48*scale,1.3*scale,.28*scale,.5*scale,.28*scale,boss?"#d07a3d":"#79736a",.2+swing*.75,boss));}
- if(boss){const cold=actor.phase===2,glow=cold?"#c4f2f4":"#ffd38a",metal=cold?"#718e9d":"#936546";
- for(const side of (cold?[-1,1]:[1])){const y=side*(cold?.53:.48)*scale;
- v.push(box(.02,y,.58*scale,.15*scale,.15*scale,.13*scale,"#262735"),box(.02,y,.7*scale,.18*scale,.18*scale,.08*scale,metal));
- if(cold){v.push(box(0,y,1.01*scale,.14*scale,.38*scale,.055*scale,metal),box(.01,y,1.08*scale,.055*scale,.06*scale,.35*scale,glow,0,true));for(const wing of [-1,1])v.push(box(0,y+wing*.15*scale,1.05*scale,.1*scale,.07*scale,.18*scale,metal,wing*.3))}
- else{for(const edge of [-1,1]){v.push(box(0,y+edge*.22*scale,1.31*scale,.34*scale,.075*scale,.28*scale,metal),box(.015,y+edge*.28*scale,1.39*scale,.14*scale,.09*scale,.13*scale,"#c99b5d"))}v.push(box(.16*scale,y,1.39*scale,.035*scale,.17*scale,.13*scale,glow,0,true),box(0,y,1.57*scale,.15*scale,.15*scale,.12*scale,metal))}
- }
- // Anticipation compresses the stance; the strike drives the chest forward.
- for(const part of v){if(part.z>.5*scale){part.x+=(-charge*.065+swing*.1)*scale;part.z-=charge*.025*scale}if(Math.abs(part.y)>.42*scale){part.x+=swing*.15*scale;part.z+=charge*.06*scale}}
- }
- // Animate a readable anticipation/recoil across ordinary enemies as well.
- if(!boss){const recoil=(actor.hit??0)>0?Math.min(.09,(actor.hit??0)*.15):0;for(const part of v){if(part.z>.5*scale){part.x+=(-charge*.09+swing*.14-recoil)*scale;part.z-=charge*.045*scale}if(Math.abs(part.y)>.32*scale){part.x+=swing*.18*scale;part.z+=charge*.1*scale}}}
- const death=actor.death??0,fade=death>0?Math.min(1,death/.62):1,collapse=death>0?.22+.78*fade:1;if(death>0)for(const part of v){part.z*=collapse;part.sz*=collapse;part.color=part.glow?part.color:"#594752"}
- drawFaces(ctx,camera,translated(scaled(v,.3*Math.min(1,d/1.35)),actor.x,actor.y,yaw),zbuf,fade)}
+const actorMotion=new WeakMap<object,{x:number;y:number;t:number;moving:number}>(),bossMotionKey={};
+export function drawVoxelActor(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:Float32Array,actor:Actor,time:number){
+ const d=Math.hypot(actor.x-camera.x,actor.y-camera.y);if(d<.34||d>24)return;
+ const angle=Math.atan2(Math.sin(Math.atan2(actor.y-camera.y,actor.x-camera.x)-camera.yaw),Math.cos(Math.atan2(actor.y-camera.y,actor.x-camera.x)-camera.yaw));if(Math.abs(angle)>camera.fov*.7)return;
+ const key=actor.boss?bossMotionKey:actor,old=actorMotion.get(key),dt=old?Math.max(0,time-old.t):0,speed=old&&dt>0&&dt<250?Math.min(1,Math.hypot(actor.x-old.x,actor.y-old.y)/(dt*.001)):0,moving=dt===0?(old?.moving??0):(old?.moving??0)+(speed-(old?.moving??0))*Math.min(1,dt/120);
+ actorMotion.set(key,{x:actor.x,y:actor.y,t:time,moving});
+ const model=actorRig(actor,time,moving),yaw=Math.atan2(camera.y-actor.y,camera.x-actor.x),fade=actor.death?Math.min(1,actor.death/.62):1;
+ drawFaces(ctx,camera,translated(scaled(model,.3),actor.x,actor.y,yaw),zbuf,fade);
+}
 
 type LandmarkOptions={lore:readonly{x:number;y:number}[];loreMask:number;rest?:{x:number;y:number}|null;gate?:{x:number;y:number}|null;dungeon?:boolean};
 /** Interactive landmarks share wall occlusion and retain their volume from every viewing angle. */
