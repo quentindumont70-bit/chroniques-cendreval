@@ -110,3 +110,12 @@ test('mobile crowns use compact angled foliage rather than oversized flat slabs'
 });
 
 test('tree variants stay deterministic and bounded on mobile',()=>{for(const frame of [0,1]){const variants=Array.from({length:6},(_,i)=>sceneryModel(frame,false,3,false,i));assert(new Set(variants.map(v=>JSON.stringify(v))).size>=4);for(const v of variants){assert(v.length<65);assert(v.every(validVoxel))}assert.deepEqual(variants[2],sceneryModel(frame,false,3,false,2))}});
+
+test('pine boughs climb a spiral instead of collapsing into horizontal shelves',()=>{
+ for(let variant=0;variant<6;variant++){
+  const leaves=sceneryModel(0,false,1,false,variant).filter(v=>v.motion==='leaf'&&v.z>.2);
+  assert(leaves.length>=17);
+  assert(new Set(leaves.map(v=>v.z.toFixed(3))).size>=17);
+  assert(leaves.every(v=>v.sy<.18),'narrow boughs preserve gaps between branch tips');
+ }
+});

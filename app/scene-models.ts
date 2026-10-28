@@ -34,7 +34,20 @@ for(let k=0;k<3;k++){const a=k*2.1;ornament(b(Math.cos(a)*.055,Math.sin(a)*.055,
     ['#3f6543','#648455','#879761','#536f46'][frond%4],a);
    fern.motion='leaf';add(fern);
   }
-  if(kind==='pine'){for(let tier=0;tier<3+variant%2;tier++){const radius=.28+(variant%3)*.025-tier*.055;for(let side=0;side<4;side++){const a=side*Math.PI/2+tier*.65+variant*.43;const part=b(Math.cos(a)*radius*.45,Math.sin(a)*radius*.45,.36+tier*.15,radius*.9,radius*.65,.14,['#375b49','#557951','#718957','#8b9b68'][tier],a);part.motion='leaf';add(part)}}add(b(0,0,.94,.065,.065,.1,'#8d9e71'))}
+  if(kind==='pine'){
+    // A spiral of narrow, drooping boughs, not four aligned horizontal shelves.
+    const count=detailed?22:17;
+    for(let branch=0;branch<count;branch++){
+      const t=branch/(count-1),a=branch*2.399963+variant*.61;
+      const reach=(.29+(variant%3)*.018)*(1-t*.8),z=.33+t*.61;
+      const cx=Math.cos(a),cy=Math.sin(a),length=reach*.98;
+      add(b(cx*reach*.32,cy*reach*.32,z+.018,reach*.78,.025,.028,wood,a));
+      const leaf=b(cx*reach*.59,cy*reach*.59,z,length,.155-t*.065,.095+t*.025,
+        ['#395b49','#50734e','#668252','#7b9060'][Math.min(3,Math.floor(t*3.6))],a);
+      leaf.motion='leaf';add(leaf);
+    }
+    add(b(.012,0,.95,.048,.05,.13,'#8b9c70',.35));
+  }
   else{const count=detailed?28:20,radius=oak?.3:.24;for(let i=0;i<count;i++){const a=i*2.399963,r=radius*Math.sqrt((i+.5)/count),z=.66+.28*(1-r/radius)+Math.sin(i*1.7)*.055;const size=.13+(i%3)*.025;const part=b(Math.cos(a)*r,Math.sin(a)*r,z,size,size*.88,.13+(i%2)*.04,['#486847','#678250','#81945e','#58774c'][i%4],a);part.motion='leaf';add(part)}for(let fork=0;fork<3;fork++){const a=fork*2.4;add(b(Math.cos(a)*.12,Math.sin(a)*.12,.53+fork*.045,.26,.035,.04,wood,a))}if(oak){add(b(.11,0,.45,.2,.035,.045,wood,.2),b(.22,0,.38,.015,.015,.15,iron));lantern(.22,0,.28)}}};
  if(living){switch(frame){
  case 0:arch();break;
