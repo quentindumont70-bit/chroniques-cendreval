@@ -13,7 +13,7 @@ export function actorRig(actor:RigActor,time:number,moving=0):Voxel[]{
  body(lean,0,.58,.31,heavy?.54:.39,.37,steel,1.22);body(lean,0,.94,.32,heavy?.58:.44,.15,steel,.64);
  body(0,0,.48,.29,.35,.13,cloth,1.08);body(.02,0,.54,.33,.39,.045,trim);
  body(lean+.17,0,.75,.045,.12,.17,trim,.6);body(lean+.19,0,.82,.04,.06,.07,boss?'#c68a42':'#a9b5a2',.5);
- body(lean,0,1.08,.14,.16,.1,cloth);body(lean,0,1.16,.25,.28,.22,steel,.82);body(lean,0,1.38,.22,.25,.12,steel,.1);
+ body(lean,0,1.08,.14,.16,.1,cloth);body(lean,0,1.16,.25,.28,.22,steel,.82);body(lean-.015,0,1.36,.23,.26,.13,steel,.32);
  body(lean+.125,0,1.22,.035,.22,.045,'#171e23');for(const side of [-1,1]){const eye=body(lean+.15,side*.055,1.23,.025,.045,.025,boss?(actor.phase===2?'#a4e6eb':'#ec9a43'):'#b5b69a');eye.glow=boss;}
  for(let bar=-1;bar<=1;bar++)body(lean+.14,bar*.05,1.13,.025,.017,.1,trim,.8);
  if(boss)for(const side of [-1,1]){bone([lean,side*.11,1.36],[lean-.03,side*.24,1.51],.095,trim,.68);bone([lean-.03,side*.24,1.51],[lean+.01,side*.21,1.72],.065,trim,.05);}
@@ -36,6 +36,11 @@ export function actorRig(actor:RigActor,time:number,moving=0):Voxel[]{
  // Overlapping faulds, collar folds and asymmetric shoulder plates give mass.
  for(const side of [-1,1]){body(.08,side*.14,.4,.24,.19,.14,steel,.7,-.16);body(lean-.025,side*(heavy?.32:.25),1.075,.23,.23,.09,trim,.25);body(lean-.08,side*.16,1.055,.22,.19,.08,cloth,.5);}
  if(boss){for(let rib=0;rib<3;rib++)body(lean+.16,0,.64+rib*.085,.035,.36-rib*.04,.028,trim,.85);for(const side of [-1,1])bone([lean-.04,side*.32,1.1],[lean-.09,side*.4,1.23],.07,steel,.05);}
+ // Reference guardian: cheek guards, breastplate sunburst and articulated knuckles.
+ if(boss){for(const side of [-1,1]){body(lean+.08,side*.12,1.12,.13,.055,.17,steel,.5);body(lean-.04,side*.34,1.08,.19,.24,.065,'#34343c',.35);body(.1,side*.14,.27,.17,.17,.12,steel,.35);}
+ for(let ray=0;ray<5;ray++){const a=ray*Math.PI*2/5;bone([lean+.197,0,.82],[lean+.2,Math.cos(a)*.095,.82+Math.sin(a)*.095],.025,trim,.2);}
+ }
+ for(const grip of hands){for(let finger=0;finger<3;finger++)body(grip[0]+.07,grip[1]+(finger-1)*.035,grip[2]+.025,.055,.028,.07,steel,.8);}
  const hand=hands[1];
  if(actor.kind==='ranged'&&!boss){for(const side of [-1,1]){bone(hand,[hand[0]+.12,hand[1],hand[2]+side*.25],.045,'#a98b58');bone([hand[0]+.12,hand[1],hand[2]+side*.25],[hand[0]-.02,hand[1],hand[2]+side*.4],.035,'#806845');}bone([hand[0]-.02,hand[1],hand[2]-.4],[hand[0]-.02,hand[1],hand[2]+.4],.009,'#d7cfb6');}
  else if(!boss&&actor.kind==='melee'){const tip:Joint=[hand[0]+.25+strike*.38,hand[1]-.08,hand[2]+.65-charge*.2];bone(hand,tip,.07,'#aabac0',.03);bone([hand[0],hand[1]-.12,hand[2]+.07],[hand[0],hand[1]+.12,hand[2]+.07],.035,trim);const off=hands[0];body(off[0]+.07,off[1],off[2]-.1,.065,.29,.4,'#4c5e62',.35);body(off[0]+.11,off[1],off[2]+.03,.03,.09,.12,trim,.6);}
