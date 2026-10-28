@@ -38,6 +38,9 @@ export function actorRig(actor:RigActor,time:number,moving=0):Voxel[]{
 
 if(boss&&actor.phase===2)for(const grip of hands){const tip:Joint=[grip[0]+strike*.3,grip[1],grip[2]+.83];bone(grip,tip,.095,'#a9d5dc',.05).glow=true;bone([grip[0],grip[1]-.19,grip[2]+.12],[grip[0],grip[1]+.19,grip[2]+.12],.055,trim);for(const side of [-1,1])bone([grip[0],grip[1]+side*.13,grip[2]+.12],[grip[0],grip[1]+side*.19,grip[2]+.27],.05,'#81b7c9',.15);}
 
+const hit=Math.min(.12,(actor.hit??0)*.18),death=actor.death??0;
+ for(const part of parts){if(part.z>.5){part.x-=hit;part.pitch=(part.pitch??0)-hit*.5;}if(death>0){const life=Math.min(1,death/.62);part.z*=.2+.8*life;part.sz*=.2+.8*life;part.x+=(1-life)*.25;}}
+
 // FINISH
  return parts.map(v=>({...v,x:v.x*size,y:v.y*size,z:(v.z+breath)*size,sx:v.sx*size,sy:v.sy*size,sz:v.sz*size}));
 }
