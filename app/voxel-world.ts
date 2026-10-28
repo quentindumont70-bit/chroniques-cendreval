@@ -99,7 +99,7 @@ export function drawVoxelActor(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:F
 
  }
  const armZ=.65*scale+bob-charge*.1+swing*.18,reach=.34*scale+charge*.12+swing*.2;v.push(box(0,-reach,armZ,.18*scale,.16*scale,.55*scale,armor),box(0,reach,armZ,.18*scale,.16*scale,.55*scale,armor));
- if(actor.kind==="ranged"&&!boss){v.push(box(0,.52*scale,.76*scale,.6*scale,.06*scale,.85*scale,"#9d7d48"),box(0,.5*scale,.78*scale,.72*scale,.03*scale,.03*scale,"#dfd3a5",0,Boolean(actor.telegraph)));}
+ if(actor.kind==="ranged"&&!boss){for(let limb=0;limb<5;limb++){const t=(limb-2)/2;v.push(box((.12-.16*t*t+charge*.06)*scale,.52*scale,(.65+limb*.16)*scale,.07*scale,.07*scale,.19*scale,limb%2?"#b19a68":"#766344"))}v.push(box(-.06*scale,.52*scale,.68*scale,.012*scale,.018*scale,.64*scale,"#d9d2af"),box((.06-charge*.12)*scale,.52*scale,.99*scale,.55*scale,.025*scale,.025*scale,"#b9af8e",0,Boolean(actor.telegraph)));}
  else if(boss&&actor.phase===2){for(const side of [-1,1]){v.push(box(0,side*.53*scale,.64*scale,.1*scale,.08*scale,.76*scale,"#88b9c4",side*(.18+swing*.65),true),box(0,side*.53*scale,1.28*scale,.16*scale,.28*scale,.12*scale,"#d6e7df",side*(.18+swing*.65),true))}}
  else {v.push(box(0,.48*scale,.52*scale,.12*scale,.1*scale,.92*scale,boss?"#815437":"#6b5841",.2+swing*.75),box(0,.48*scale,1.3*scale,.28*scale,.5*scale,.28*scale,boss?"#d07a3d":"#79736a",.2+swing*.75,boss));}
  if(boss){const cold=actor.phase===2,glow=cold?"#c4f2f4":"#ffd38a",metal=cold?"#718e9d":"#936546";
