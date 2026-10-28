@@ -175,6 +175,8 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       let red=path?119+pathWear*7:edge?78:shoulder?59:stone?68:dry?67:deep?34:40;
       let green=path?108+pathWear*6:edge?83:shoulder?76:stone?78:dry?83:deep?61:65;
       let blue=path?80+pathWear*5:edge?54:shoulder?49:stone?63:dry?49:deep?47:45;
+      // Blend the biome pigments continuously, avoiding abrupt dark meadow islands.
+      if(!path&&!edge&&!shoulder&&!stone){const dryMix=Math.max(0,Math.min(1,(meadow-.2)/1.5)),wetMix=Math.max(0,Math.min(1,(-meadow-.2)/1.5));red=40+27*dryMix-6*wetMix;green=65+18*dryMix-4*wetMix;blue=45+4*dryMix+2*wetMix}
       red+=shade;green+=shade;blue+=shade;
       // Mix road shoulders into meadow pigments instead of leaving hard flat bands.
       if(!path&&borderBlend<1){const blend=borderBlend*borderBlend*(3-2*borderBlend);red=red*(.68+.32*blend)+14*(1-blend);green=green*(.78+.22*blend)+8*(1-blend);blue=blue*(.8+.2*blend)+3*(1-blend)}
@@ -188,14 +190,14 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       if(pebbles){red+=24;green+=24;blue+=20}
       if(mossPatch){red-=4;green+=13;blue-=3}
       if(flowerScatter){red+=45;green+=22;blue+=49}
-      if(sunlitSeeds){red+=37;green+=34;blue+=11}
-      if(fallenLeaves){red+=31;green+=13;blue-=4}
+      if(sunlitSeeds){red+=14;green+=13;blue+=5}
+      if(fallenLeaves){red+=14;green+=7;blue-=2}
       if(drySoil){red+=12;green+=5;blue-=2}
       if(grassyBank){red+=5;green+=20;blue+=2}
       if(clayBank){red+=19;green+=9;blue-=4}
       if(roadDust){red+=16;green+=13;blue+=9}
       if(packedEarth){red-=8;green-=7;blue-=5}
-      if(amberGrass){red+=19;green+=12;blue-=3}
+      if(amberGrass){red+=10;green+=7;blue-=2}
       data[i]=red*light*shadow*slopeLight*(1-fog)+145*fog;data[i+1]=green*light*shadow*slopeLight*(1-fog)+157*fog;data[i+2]=blue*light*shadow*slopeLight*(1-fog)+137*fog;data[i+3]=255;
     }
   }
