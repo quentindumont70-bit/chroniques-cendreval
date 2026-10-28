@@ -1,9 +1,10 @@
+import {facetedMesh} from "./faceted-mesh";
 import {clipNear} from "./near-clip";
 import {LIVING_PROPS,VALLEY_PROPS,visibleSpans} from "./world-art";
 import {sceneryModel,valleyLife} from "./scene-models";
 import {selectScenery} from "./scenery-visibility";
 
-export type Voxel={x:number;y:number;z:number;sx:number;sy:number;sz:number;color:string;yaw?:number;glow?:boolean;motion?:"leaf"|"flame"|"banner"};
+export type Voxel={shape?:"faceted";pitch?:number;taper?:number;x:number;y:number;z:number;sx:number;sy:number;sz:number;color:string;yaw?:number;glow?:boolean;motion?:"leaf"|"flame"|"banner"};
 type Camera={x:number;y:number;yaw:number;width:number;height:number;fov:number;eye?:number};
 type Point={x:number;y:number;d:number};
 type Face={points:Point[];depth:number;color:string;glow:boolean;cool:boolean};
@@ -32,10 +33,19 @@ function projectWithLens(camera:Camera,x:number,y:number,z:number,c:number,s:num
 function facesForVoxel(camera:Camera,v:Voxel,out:Face[],cameraCos:number,cameraSin:number,focal:number,frustumSlope:number){
   // Coarse camera-space rejection before projecting five faces per tiny leaf.
   const dx=v.x-camera.x,dy=v.y-camera.y,forward=dx*cameraCos+dy*cameraSin;
-  const radius=(v.sx+v.sy)*.72;
+  const radius=(v.sx+v.sy)*.72+(v.shape?Math.abs(Math.sin(v.pitch??0))*v.sz:0);
   if(forward+radius<=.08)return;
   const lateral=-dx*cameraSin+dy*cameraCos;
   if(Math.abs(lateral)>Math.max(.12,forward)*frustumSlope+radius)return;
+  if(v.shape==='faceted'){
+    const mesh=facetedMesh(v);
+    for(const ids of mesh.faces){const a=mesh.vertices[ids[0]],b=mesh.vertices[ids[1]],c=mesh.vertices[ids[2]],u=b.map((n,i)=>n-a[i]),w=c.map((n,i)=>n-a[i]),nx=u[1]*w[2]-u[2]*w[1],ny=u[2]*w[0]-u[0]*w[2],nz=u[0]*w[1]-u[1]*w[0],length=Math.hypot(nx,ny,nz)||1;
+      if(nx*(camera.x-a[0])+ny*(camera.y-a[1])+nz*((camera.eye??.16)-a[2])<=0)continue;
+      const polygon=clipNear(ids.map(i=>{const [x,y,z]=mesh.vertices[i],dx=x-camera.x,dy=y-camera.y;return{side:-dx*cameraSin+dy*cameraCos,depth:dx*cameraCos+dy*cameraSin,z}}));if(polygon.length<3)continue;
+      const points=polygon.map(p=>({x:camera.width/2+p.side*focal/p.depth,y:camera.height/2-(p.z-(camera.eye??.16))*focal/p.depth,d:p.depth})),depth=points.reduce((n,p)=>n+p.d,0)/points.length;
+      out.push({points,depth,color:shade(v.color,.78+(nz*.2-nx*.12+ny*.08)/length,Math.min(.67,Math.max(0,(depth-5)/24))),glow:Boolean(v.glow),cool:false});
+    }return;
+  }
   const yaw=v.yaw??0,c=Math.cos(yaw),s=Math.sin(yaw),hx=v.sx/2,hy=v.sy/2;
   const corners:[[number,number,number],[number,number,number],[number,number,number],[number,number,number],[number,number,number],[number,number,number],[number,number,number],[number,number,number]]=[[-hx,-hy,0],[hx,-hy,0],[hx,hy,0],[-hx,hy,0],[-hx,-hy,v.sz],[hx,-hy,v.sz],[hx,hy,v.sz],[-hx,hy,v.sz]];
   const world=corners.map(([lx,ly,lz])=>[v.x+lx*c-ly*s,v.y+lx*s+ly*c,v.z+lz] as [number,number,number]);
