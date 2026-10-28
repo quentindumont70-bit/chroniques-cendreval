@@ -62,7 +62,7 @@ for(let k=0;k<3;k++){const a=k*2.1;ornament(b(Math.cos(a)*.055,Math.sin(a)*.055,
   }
   else{const count=detailed?28:20,radius=oak?.3:.24;for(let i=0;i<count;i++){const a=i*2.399963,r=radius*Math.sqrt((i+.5)/count),z=.66+.28*(1-r/radius)+Math.sin(i*1.7)*.055;const size=.13+(i%3)*.025;const part=b(Math.cos(a)*r,Math.sin(a)*r,z,size,size*.88,.13+(i%2)*.04,['#486847','#678250','#81945e','#58774c'][i%4],a);part.motion='leaf';add(part)}for(let fork=0;fork<3;fork++){const a=fork*2.4;add(b(Math.cos(a)*.12,Math.sin(a)*.12,.53+fork*.045,.26,.035,.04,wood,a))}if(oak){add(b(.11,0,.45,.2,.035,.045,wood,.2),b(.22,0,.38,.015,.015,.15,iron));lantern(.22,0,.28)}}
   // Whole trees use shaped volumes; canopy masses have sloped shoulders and tops.
-  for(let i=first;i<v.length;i++){const part=v[i];if(part.motion==='leaf'&&part.z>.25){part.shape='crown';part.sz*=1.2;part.pitch=Math.sin(i*1.7)*.12;}else if(part.sy>.03&&part.sz>.04){part.shape='faceted';part.taper=part.z>.2?.76:.9;}}
+  for(let i=first;i<v.length;i++){const part=v[i];if(part.motion==='leaf'&&part.z>.25){const palette=kind==='pine'?['#3e604d','#506f4d','#648052']:birch?['#647a50','#82935d','#526d48']:['#4e6845','#6e8050','#7b8c59'];part.color=palette[(i+variant)%3];}if(part.motion==='leaf'&&part.z>.25){part.shape='crown';part.sz*=1.2;part.pitch=Math.sin(i*1.7)*.12;}else if(part.sy>.03&&part.sz>.04){part.shape='faceted';part.taper=part.z>.2?.76:.9;}}
  };
  if(living){switch(frame){
  case 0:arch();break;
