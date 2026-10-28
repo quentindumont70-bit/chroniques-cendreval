@@ -8,7 +8,7 @@ import {selectScenery} from "./scenery-visibility";
 export type Voxel={shape?:"faceted"|"crown";pitch?:number;taper?:number;x:number;y:number;z:number;sx:number;sy:number;sz:number;color:string;yaw?:number;glow?:boolean;motion?:"leaf"|"flame"|"banner"};
 type Camera={x:number;y:number;yaw:number;width:number;height:number;fov:number;eye?:number};
 type Point={x:number;y:number;d:number};
-type Face={points:Point[];depth:number;color:string;glow:boolean;cool:boolean};
+type Face={opacity?:number;points:Point[];depth:number;color:string;glow:boolean;cool:boolean};
 
 const FACES=[
   {ids:[4,5,6,7],normal:[0,0,1],light:1.08},
@@ -54,9 +54,17 @@ function facesForVoxel(camera:Camera,v:Voxel,out:Face[],cameraCos:number,cameraS
   for(const face of FACES){const normalX=face.normal[0]*c-face.normal[1]*s,normalY=face.normal[0]*s+face.normal[1]*c;if(face.normal[2]===0&&normalX*(camera.x-v.x)+normalY*(camera.y-v.y)<=0)continue;const polygon=clipNear(face.ids.map(index=>{const [x,y,z]=world[index],dx=x-camera.x,dy=y-camera.y;return {side:-dx*cameraSin+dy*cameraCos,depth:dx*cameraCos+dy*cameraSin,z}}));if(polygon.length<3)continue;const visible:Point[]=polygon.map(p=>({x:camera.width/2+p.side*focal/p.depth,y:camera.height/2-(p.z-(camera.eye??.16))*focal/p.depth,d:p.depth}));const depth=visible.reduce((sum,p)=>sum+p.d,0)/visible.length,fog=Math.min(.67,Math.max(0,(depth-5)/24));out.push({points:visible,depth,color:shade(v.color,face.light,fog),glow:Boolean(v.glow),cool})}
 }
 
+let sceneFaces:Face[]|null=null;
+/** One depth order for every actor, prop and landmark, never one order per object. */
+export function drawVoxelScene(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:Float32Array,collect:()=>void){
+ sceneFaces=[];try{collect();const pending=sceneFaces;sceneFaces=null;paintFaces(ctx,camera,zbuf,pending);}finally{sceneFaces=null;}
+}
 function drawFaces(ctx:CanvasRenderingContext2D,camera:Camera,voxels:Voxel[],zbuf:Float32Array,alpha=1){
- const faces:Face[]=[],cameraCos=Math.cos(camera.yaw),cameraSin=Math.sin(camera.yaw),focal=camera.width/(2*Math.tan(camera.fov/2)),frustumSlope=Math.tan(camera.fov*.6);for(const voxel of voxels)facesForVoxel(camera,voxel,faces,cameraCos,cameraSin,focal,frustumSlope);if(faces.length===0)return;faces.sort((a,b)=>b.depth-a.depth);ctx.save();ctx.globalAlpha=alpha;ctx.lineJoin="round";
- for(const face of faces){let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;for(const p of face.points){if(p.x<minX)minX=p.x;if(p.x>maxX)maxX=p.x;if(p.y<minY)minY=p.y;if(p.y>maxY)maxY=p.y}const left=Math.floor(minX),right=Math.ceil(maxX),top=Math.floor(minY),bottom=Math.ceil(maxY);if(right<0||left>=camera.width||bottom< -48||top>=camera.height+48)continue;
+ const faces:Face[]=[],cameraCos=Math.cos(camera.yaw),cameraSin=Math.sin(camera.yaw),focal=camera.width/(2*Math.tan(camera.fov/2)),frustumSlope=Math.tan(camera.fov*.6);for(const voxel of voxels)facesForVoxel(camera,voxel,faces,cameraCos,cameraSin,focal,frustumSlope);if(sceneFaces){for(const face of faces)face.opacity=alpha;sceneFaces.push(...faces);return}for(const face of faces)face.opacity=alpha;paintFaces(ctx,camera,zbuf,faces);
+}
+function paintFaces(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:Float32Array,faces:Face[]){
+ if(!faces.length)return;faces.sort((a,b)=>b.depth-a.depth);ctx.save();ctx.lineJoin="round";
+ for(const face of faces){const alpha=face.opacity??1;ctx.globalAlpha=alpha;let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;for(const p of face.points){if(p.x<minX)minX=p.x;if(p.x>maxX)maxX=p.x;if(p.y<minY)minY=p.y;if(p.y>maxY)maxY=p.y}const left=Math.floor(minX),right=Math.ceil(maxX),top=Math.floor(minY),bottom=Math.ceil(maxY);if(right<0||left>=camera.width||bottom< -48||top>=camera.height+48)continue;
  const spans=visibleSpans(left,right-left,face.depth,zbuf);if(!spans.length)continue;ctx.save();if(spans.length>1||spans[0][0]>Math.max(0,left)||spans[0][1]<Math.min(camera.width,right)){ctx.beginPath();for(const [from,to]of spans)ctx.rect(from,-48,to-from,camera.height+96);ctx.clip()}
  ctx.beginPath();ctx.moveTo(face.points[0].x,face.points[0].y);for(let i=1;i<face.points.length;i++)ctx.lineTo(face.points[i].x,face.points[i].y);ctx.closePath();ctx.fillStyle=face.color;ctx.fill();ctx.strokeStyle=face.glow?(face.cool?"rgba(151,235,255,.86)":"rgba(255,226,151,.8)"):"rgba(15,28,26,.11)";ctx.lineWidth=face.glow?.7:.35;ctx.stroke();
  if(face.points.length===4&&right-left>12&&bottom-top>12){ctx.clip();ctx.globalAlpha=alpha*.065;ctx.fillStyle="#e6ddbd";const [a,b,c,d]=face.points;for(let fleck=0;fleck<2;fleck++){const u=.17+fleck*.19,v=.2+((fleck*3)%4)*.17,fx=(a.x*(1-u)+b.x*u)*(1-v)+(d.x*(1-u)+c.x*u)*v,fy=(a.y*(1-u)+b.y*u)*(1-v)+(d.y*(1-u)+c.y*u)*v;ctx.fillRect(Math.round(fx),Math.round(fy),1+(fleck%2),1)}}ctx.restore()

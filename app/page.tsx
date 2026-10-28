@@ -1,3 +1,4 @@
+import {drawVoxelScene} from "./voxel-world";
 "use client";
 import TalentWorkshop from "./talent-workshop";
 import {canLearnTalent,talentRefund,type TalentKey} from "./talents";
@@ -581,6 +582,12 @@ export default function Home() {
         }else if(x%13===0){ctx.fillStyle="rgba(10,5,10,.22)";ctx.fillRect(x,top,rayStep,wh)}
       }
 
+      drawVoxelScene(ctx,voxelCamera,zbuf,()=>{
+        if(!inCourt){drawVoxelWorld(ctx,voxelCamera,zbuf,sceneryTime.current,renderSize.detail,firstDuel);drawVoxelShrines(ctx,voxelCamera,zbuf,SHRINES,s.shrines,t)}
+        drawVoxelLandmarks(ctx,voxelCamera,zbuf,{lore:inCourt?[]:LORE_STONES,loreMask:s.lore,rest:s.quest>=7?CASTLE_REST:null,gate:s.quest>=4?CASTLE_GATE:null,dungeon:inDungeon},t);
+        for(const foe of minions.current)if(foe.alive||(foe.death??0)>0)drawVoxelActor(ctx,voxelCamera,zbuf,foe,t);
+        const guardian=enemy.current;if(guardian.alive||(guardian.death??0)>0)drawVoxelActor(ctx,voxelCamera,zbuf,{...guardian,phase:guardianPhase.current===2?2:1},t);
+      });
       // Ombres errantes : elles suivent le joueur et apparaissent comme des sprites dans le couloir.
       for(const shade of minions.current){
         if(!shade.alive||shade.telegraph<=0)continue;
@@ -596,14 +603,14 @@ export default function Home() {
         if(!shade.alive)continue;
         const dx=shade.x-s.x,dy=shade.y-s.y,dist=Math.hypot(dx,dy);let ang=Math.atan2(dy,dx)-s.a;ang=Math.atan2(Math.sin(ang),Math.cos(ang));
         const column=Math.max(0,Math.min(W-1,Math.floor((ang/FOV+.5)*W)));
-        if(Math.abs(ang)<FOV*.7&&dist<zbuf[column]){drawVoxelActor(ctx,voxelCamera,zbuf,shade,t);if(shade.hit>0){const size=Math.min(98,105/Math.max(.2,dist)),cx=(.5+ang/FOV)*W,cy=H/2-size*.12+cameraPitch.current*H*.28,strength=Math.min(1,shade.hit/.55);ctx.save();ctx.globalCompositeOperation="screen";ctx.translate(cx,cy);ctx.strokeStyle=`rgba(255,230,163,${(.18+strength*.7).toFixed(3)})`;ctx.lineWidth=1+strength*4;ctx.beginPath();ctx.ellipse(0,0,size*(.2+(1-strength)*.38),size*(.15+(1-strength)*.3),0,0,Math.PI*2);ctx.stroke();for(let spark=0;spark<6;spark++){const angle=spark*Math.PI/3+t*.0002;ctx.strokeStyle=spark%2?"#ffe7b5":"#a3e4ff";ctx.globalAlpha=strength*.8;ctx.lineWidth=Math.max(1,size*.018);ctx.beginPath();ctx.moveTo(Math.cos(angle)*size*.13,Math.sin(angle)*size*.13);ctx.lineTo(Math.cos(angle)*size*(.3+strength*.17),Math.sin(angle)*size*(.3+strength*.17));ctx.stroke()}ctx.restore()}}
+        if(Math.abs(ang)<FOV*.7&&dist<zbuf[column]){if(shade.hit>0){const size=Math.min(98,105/Math.max(.2,dist)),cx=(.5+ang/FOV)*W,cy=H/2-size*.12+cameraPitch.current*H*.28,strength=Math.min(1,shade.hit/.55);ctx.save();ctx.globalCompositeOperation="screen";ctx.translate(cx,cy);ctx.strokeStyle=`rgba(255,230,163,${(.18+strength*.7).toFixed(3)})`;ctx.lineWidth=1+strength*4;ctx.beginPath();ctx.ellipse(0,0,size*(.2+(1-strength)*.38),size*(.15+(1-strength)*.3),0,0,Math.PI*2);ctx.stroke();for(let spark=0;spark<6;spark++){const angle=spark*Math.PI/3+t*.0002;ctx.strokeStyle=spark%2?"#ffe7b5":"#a3e4ff";ctx.globalAlpha=strength*.8;ctx.lineWidth=Math.max(1,size*.018);ctx.beginPath();ctx.moveTo(Math.cos(angle)*size*.13,Math.sin(angle)*size*.13);ctx.lineTo(Math.cos(angle)*size*(.3+strength*.17),Math.sin(angle)*size*(.3+strength*.17));ctx.stroke()}ctx.restore()}}
       }
 
       // Les corps se tassent en volumes de cendre avant de disparaître.
-      for(const shade of minions.current)if(!shade.alive&&(shade.death??0)>0)drawVoxelActor(ctx,voxelCamera,zbuf,shade,t);
+      
 
-      if(!inCourt){drawVoxelWorld(ctx,voxelCamera,zbuf,sceneryTime.current,renderSize.detail,firstDuel);drawVoxelShrines(ctx,voxelCamera,zbuf,SHRINES,s.shrines,t)}
-      drawVoxelLandmarks(ctx,voxelCamera,zbuf,{lore:inCourt?[]:LORE_STONES,loreMask:s.lore,rest:s.quest>=7?CASTLE_REST:null,gate:s.quest>=4?CASTLE_GATE:null,dungeon:inDungeon},t);
+      
+      
       for(const foe of [enemy.current,...minions.current]){if(!foe.alive||foe.boss)continue;const d=Math.hypot(foe.x-s.x,foe.y-s.y),a=Math.atan2(Math.sin(Math.atan2(foe.y-s.y,foe.x-s.x)-s.a),Math.cos(Math.atan2(foe.y-s.y,foe.x-s.x)-s.a));if(d>.5&&d<7&&Math.abs(a)<(foe.hit>0?.45:.14)&&clearSight(activeMap,s.x,s.y,foe.x,foe.y)){const cx=(.5+a/FOV)*W,barY=Math.max(35,H/2+Math.min(98,105/d)*.52-Math.min(98,105/d)-9),fraction=Math.max(0,Math.min(1,foe.hp/(foeVitals.current.get(foe)??foe.hp)));ctx.fillStyle='rgba(7,18,22,.85)';ctx.fillRect(cx-15,barY,30,3);ctx.fillStyle=foe.kind==='ranged'?'#c9b178':'#b97571';ctx.fillRect(cx-14,barY+1,28*fraction,1);ctx.fillStyle='#d7d9bf';ctx.textAlign='center';ctx.font='5px Arial';ctx.fillText(foe.kind==='ranged'?'ARCHER':foe.kind==='brute'?'BRUTE':'OMBRE',cx,barY-3)}}
       if(hitDirection.current.time>0){const relative=hitDirection.current.angle-s.a;ctx.save();ctx.translate(W/2,H/2);ctx.rotate(relative);ctx.globalAlpha=Math.min(.7,hitDirection.current.time);ctx.strokeStyle='#dca194';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,47,-Math.PI*.65,-Math.PI*.35);ctx.stroke();ctx.restore()}
       if(s.quest===0&&!s.supplies){const dx=5.2-s.x,dy=15.3-s.y,d=Math.hypot(dx,dy),a=Math.atan2(Math.sin(Math.atan2(dy,dx)-s.a),Math.cos(Math.atan2(dy,dx)-s.a));if(d<4&&Math.abs(a)<FOV*.5&&clearSight(activeMap,s.x,s.y,5.2,15.3)){const cx=(.5+a/FOV)*W,cy=H/2+35/d;ctx.fillStyle="#d9bd7d";ctx.globalAlpha=.45+.35*Math.sin(t*.003);ctx.fillRect(cx-2,cy,5,1);ctx.fillRect(cx,cy-2,1,5);ctx.globalAlpha=1;if(d<1.25){ctx.font="7px Georgia";ctx.textAlign="center";ctx.fillText(touchControlsActive()?"Tap gauche · Fouiller":"E · FOUILLER LE CHARIOT",W/2,H*.76)}}}
@@ -633,7 +640,7 @@ export default function Home() {
           // Impact language: expanding shock ring, directional sparks and a brief white flash.
           // Pure canvas effects, no allocations of images or expensive post-processing.
           if(e.hit>0){const strength=Math.min(1,e.hit/.55),pulse=1-strength,cy=base-size*.46+cameraPitch.current*H*.28;ctx.save();ctx.globalCompositeOperation="screen";ctx.translate(cx,cy);ctx.strokeStyle=`rgba(255,235,176,${(.16+strength*.78).toFixed(3)})`;ctx.lineWidth=1+strength*5;ctx.beginPath();ctx.ellipse(0,0,size*(.28+pulse*.44),size*(.18+pulse*.32),-.2,0,Math.PI*2);ctx.stroke();for(let spark=0;spark<9;spark++){const a=spark*Math.PI*2/9+t*.00015,inner=size*(.16+pulse*.22),outer=inner+size*(.09+strength*.16);ctx.strokeStyle=spark%3===0?"#b4eaff":"#ffe2a1";ctx.globalAlpha=strength*(.45+(spark%3)*.2);ctx.lineWidth=Math.max(1,size*.013);ctx.beginPath();ctx.moveTo(Math.cos(a)*inner,Math.sin(a)*inner);ctx.lineTo(Math.cos(a)*outer,Math.sin(a)*outer);ctx.stroke()}ctx.globalAlpha=Math.min(.7,strength*.65);ctx.fillStyle="#fff5da";ctx.beginPath();ctx.ellipse(0,0,size*.18*strength,size*.23*strength,0,0,Math.PI*2);ctx.fill();ctx.restore()}
-          drawVoxelActor(ctx,voxelCamera,zbuf,{...e,phase:guardianPhase.current===2?2:1},t);
+          
         }
       }
 
@@ -653,7 +660,7 @@ export default function Home() {
       if(e.alive&&e.telegraph===0&&guardianAttack>0){const dx=e.x-s.x,dy=e.y-s.y,dist=Math.hypot(dx,dy),target=Math.atan2(dy,dx),diff=Math.abs(Math.atan2(Math.sin(target-s.a),Math.cos(target-s.a))),swing=Math.sin(guardianAttack*Math.PI);if(dist<3.2&&diff<FOV*.72){const x=W/2+Math.sin(target-s.a)*W*.22,y=H*.55;ctx.save();ctx.translate(x,y);ctx.rotate((target-s.a)+Math.PI/2);ctx.strokeStyle=`rgba(255,${Math.floor(150+95*swing)},${Math.floor(82+110*swing)},${.22+.68*swing})`;ctx.lineWidth=2+5*swing;ctx.beginPath();ctx.arc(0,0,18+38*swing,-1.1,1.1);ctx.stroke();ctx.restore()}}
 
       const guardianDeath=e.death??0;
-      if(!e.alive&&guardianDeath>0)drawVoxelActor(ctx,voxelCamera,zbuf,{...e,phase:guardianPhase.current===2?2:1},t);
+      
 
       ctx.restore();
 
