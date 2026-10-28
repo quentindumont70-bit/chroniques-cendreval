@@ -170,3 +170,7 @@ html:has(.stage.playing),html:has(.stage.playing) *{cursor:none!important}.stage
 
 /* Brief combat feedback stays above the action deck and clear of the aim point. */
 @media(pointer:coarse),(max-width:900px){.exchange-result{min-width:0;max-width:60%;bottom:90px;padding:5px 10px}.exchange-result b{font-size:12px;letter-spacing:.6px}.exchange-result span{font-size:10px;letter-spacing:0}.defense-result{min-width:0;max-width:62%;top:65%;padding:6px 10px}.defense-result b{font-size:14px;letter-spacing:1px}.message{font-size:12px;letter-spacing:0;line-height:1.45}}
+
+/* Objective text remains readable with long quests and narrow portrait layouts. */
+@media(pointer:coarse),(max-width:900px){.quest{height:auto!important;min-height:48px;overflow-wrap:anywhere;line-height:1.4;padding:8px 10px;max-width:min(44vw,260px)}.quest span{font-size:8px;line-height:1.5;letter-spacing:.08em}.top-actions{max-width:52%;flex-wrap:wrap;justify-content:flex-end}.top-actions button{min-height:36px}.bars{padding:9px}.bars label{letter-spacing:.04em}}
+@media(orientation:portrait) and (pointer:coarse){.quest{max-width:43vw;font-size:11px}.top-actions button{min-height:44px;padding:6px}.bars{bottom:max(92px,env(safe-area-inset-bottom))}}
