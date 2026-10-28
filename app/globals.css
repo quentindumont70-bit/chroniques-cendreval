@@ -167,3 +167,6 @@ html:has(.stage.playing),html:has(.stage.playing) *{cursor:none!important}.stage
 
 /* One gesture surface owns both thumbs; only real controls intercept it. */
 @media(pointer:coarse),(max-width:900px){.thumb-surface{inset:0}.thumb-surface>*{pointer-events:none}.quest,.boss-health,.cast-caption,.exposure-state{pointer-events:none}}
+
+/* Brief combat feedback stays above the action deck and clear of the aim point. */
+@media(pointer:coarse),(max-width:900px){.exchange-result{min-width:0;max-width:60%;bottom:90px;padding:5px 10px}.exchange-result b{font-size:12px;letter-spacing:.6px}.exchange-result span{font-size:10px;letter-spacing:0}.defense-result{min-width:0;max-width:62%;top:65%;padding:6px 10px}.defense-result b{font-size:14px;letter-spacing:1px}.message{font-size:12px;letter-spacing:0;line-height:1.45}}
