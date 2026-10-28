@@ -561,7 +561,8 @@ export default function Home() {
         if(natural){
           const fog=Math.min(.6,d/22);ctx.fillStyle=`rgba(153,169,148,${fog})`;ctx.fillRect(x,top,rayStep,wh);
           ctx.fillStyle="rgba(194,195,133,.24)";ctx.fillRect(x,top,rayStep,Math.max(1,wh*.035));
-          for(let seam=1;seam<4;seam++){const line=top+wh*(seam*.24)+Math.sin(hitX*3+hitY*2+seam)*wh*.04;ctx.fillStyle="rgba(17,32,28,.18)";ctx.fillRect(x,line,rayStep,Math.max(1,wh*.025))}
+          for(let seam=1;seam<5;seam++){const rock=Math.sin(hitX*2.3+hitY*1.7+seam*2.4),line=top+wh*(seam*.18)+rock*wh*.09;ctx.fillStyle=seam%2?"rgba(72,87,57,.24)":"rgba(166,160,120,.15)";ctx.fillRect(x,line,rayStep,Math.max(1,wh*(.06+rock*.025)))}
+          const foot=wh*(.16+.06*Math.sin(hitX*4+hitY*3));ctx.fillStyle="rgba(62,85,51,.48)";ctx.fillRect(x,top+wh-foot,rayStep,foot);
         }else if(ruin){
           const texture=stoneTexture.current;
           if(texture){const along=side?hitX:hitY,u=((along%1)+1)%1;ctx.drawImage(texture,Math.min(texture.naturalWidth-1,Math.floor(u*texture.naturalWidth)),0,1,texture.naturalHeight,x,top,rayStep,wh);ctx.fillStyle=`rgba(14,27,26,${Math.min(.65,.12+d*.025+(side?.1:0))})`;ctx.fillRect(x,top,rayStep,wh);ctx.fillStyle=`rgba(153,169,148,${Math.min(.45,d/36)})`;ctx.fillRect(x,top,rayStep,wh)}else{
