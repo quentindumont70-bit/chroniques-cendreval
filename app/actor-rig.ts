@@ -12,7 +12,11 @@ export function actorRig(actor:RigActor,time:number,moving=0):Voxel[]{
  body(lean,0,.58,.31,heavy?.54:.39,.37,steel,1.22);body(lean,0,.94,.32,heavy?.58:.44,.15,steel,.64);
  body(0,0,.48,.29,.35,.13,cloth,1.08);body(.02,0,.54,.33,.39,.045,trim);
  body(lean+.17,0,.75,.045,.12,.17,trim,.6);body(lean+.19,0,.82,.04,.06,.07,boss?'#c68a42':'#a9b5a2',.5);
- // HEAD
+ body(lean,0,1.08,.14,.16,.1,cloth);body(lean,0,1.16,.25,.28,.22,steel,.82);body(lean,0,1.38,.22,.25,.12,steel,.1);
+ body(lean+.125,0,1.22,.035,.22,.045,'#171e23');for(const side of [-1,1]){const eye=body(lean+.15,side*.055,1.23,.025,.045,.025,boss?(actor.phase===2?'#a4e6eb':'#ec9a43'):'#b5b69a');eye.glow=boss;}
+ for(let bar=-1;bar<=1;bar++)body(lean+.14,bar*.05,1.13,.025,.017,.1,trim,.8);
+ if(boss)for(const side of [-1,1]){bone([lean,side*.11,1.36],[lean-.03,side*.24,1.51],.095,trim,.68);bone([lean-.03,side*.24,1.51],[lean+.01,side*.21,1.72],.065,trim,.05);}
+// HEAD
  // LEGS
  // ARMS
  // CAPE
