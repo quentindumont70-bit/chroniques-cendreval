@@ -22,7 +22,12 @@ export function actorRig(actor:RigActor,time:number,moving=0):Voxel[]{
  bone(hip,knee,.18,cloth,.9);bone(knee,foot,.155,steel,.65);body(knee[0]+.04,knee[1],knee[2]-.04,.18,.18,.12,trim,.65);body(foot[0]+.055,foot[1],.015,.28,.17,.075,steel,.7);}
 
 // LEGS
- // ARMS
+ const hands:Joint[]=[];
+ for(const side of [-1,1]){const shoulder:Joint=[lean,side*(heavy?.29:.23),.99],elbow:Joint=[lean-.06-charge*.12+strike*.22,side*.34,.77+charge*.17],hand:Joint=[.13+strike*.34-charge*.2,side*.32,.59+charge*.43];
+ bone(shoulder,elbow,.19,steel,.8);bone(elbow,hand,.15,steel,.7);body(...hand,.14,.14,.12,trim,.75);hands.push(hand);
+ body(lean-.02,shoulder[1],.97,.31,heavy?.3:.22,.16,steel,.55);body(lean-.02,shoulder[1],.95,.33,heavy?.32:.24,.035,trim,.9);}
+
+// ARMS
  // CAPE
  // FINISH
  return parts.map(v=>({...v,x:v.x*size,y:v.y*size,z:(v.z+breath)*size,sx:v.sx*size,sy:v.sy*size,sz:v.sz*size}));
