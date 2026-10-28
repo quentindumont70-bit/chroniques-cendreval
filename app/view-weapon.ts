@@ -4,7 +4,22 @@ type WeaponOptions={id:ClassId;spec:'blade'|'bow'|'arcane';time:number;attackPha
 function tint(hex:string,factor:number){const raw=hex.replace('#',''),r=parseInt(raw.slice(0,2),16),g=parseInt(raw.slice(2,4),16),b=parseInt(raw.slice(4,6),16);return `rgb(${Math.min(255,Math.round(r*factor))},${Math.min(255,Math.round(g*factor))},${Math.min(255,Math.round(b*factor))})`}
 /** A camera-space cuboid: front, top and side are all independently lit. */
 function prism(ctx:CanvasRenderingContext2D,x:number,y:number,w:number,h:number,depth:number,color:string,angle=0,glow=false){ctx.save();ctx.translate(x,y);ctx.rotate(angle);const d=Math.max(1,depth);ctx.fillStyle=tint(color,.62);ctx.beginPath();ctx.moveTo(w/2,-h/2);ctx.lineTo(w/2+d,-h/2-d);ctx.lineTo(w/2+d,h/2-d);ctx.lineTo(w/2,h/2);ctx.closePath();ctx.fill();ctx.fillStyle=tint(color,1.18);ctx.beginPath();ctx.moveTo(-w/2,-h/2);ctx.lineTo(-w/2+d,-h/2-d);ctx.lineTo(w/2+d,-h/2-d);ctx.lineTo(w/2,-h/2);ctx.closePath();ctx.fill();ctx.fillStyle=color;if(glow){ctx.shadowColor=color;ctx.shadowBlur=8}ctx.fillRect(-w/2,-h/2,w,h);ctx.strokeStyle=glow?tint(color,1.35):'rgba(15,20,24,.5)';ctx.lineWidth=1;ctx.strokeRect(-w/2,-h/2,w,h);ctx.restore()}
-function blade(ctx:CanvasRenderingContext2D,id:ClassId,color:string){prism(ctx,-6,7,31,11,4,'#43312c');prism(ctx,11,7,20,5,3,'#b18b51');prism(ctx,22,7,8,28,4,id==='reaver'?'#743341':'#665346');prism(ctx,58,7,73,10,5,id==='reaver'?'#a95162':'#728996',0,id==='reaver');ctx.fillStyle=id==='reaver'?'#ed8c9a':'#d9e4df';ctx.beginPath();ctx.moveTo(94,0);ctx.lineTo(111,7);ctx.lineTo(94,14);ctx.lineTo(94,10);ctx.lineTo(54,10);ctx.lineTo(54,6);ctx.lineTo(94,4);ctx.closePath();ctx.fill();ctx.fillStyle='rgba(255,255,230,.55)';ctx.fillRect(30,3,66,2)}
+function polygon(ctx:CanvasRenderingContext2D,points:number[][],color:string){ctx.fillStyle=color;ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}
+function blade(ctx:CanvasRenderingContext2D,id:ClassId,color:string){
+ const blood=id==='reaver',dark=blood?'#6f3545':'#4c626e',light=blood?'#d58a98':'#d4dfda';
+ // A forged silhouette with a central ridge, fuller and tapered point.
+ polygon(ctx,[[21,1],[86,-1],[113,7],[87,15],[21,13]],dark);
+ polygon(ctx,[[22,1],[86,-1],[113,7],[26,7]],light);
+ polygon(ctx,[[26,7],[113,7],[87,15],[22,13]],blood?'#9e5063':'#819799');
+ polygon(ctx,[[31,6],[86,4],[99,7],[85,9],[31,9]],blood?'#633445':'#526b73');
+ ctx.strokeStyle='#f0e8c8';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(28,2);ctx.lineTo(86,1);ctx.lineTo(111,7);ctx.stroke();
+ polygon(ctx,[[15,-3],[23,-7],[28,-3],[24,5],[26,17],[22,22],[17,18],[19,9]],'#aa8a59');
+ prism(ctx,0,7,32,8,3,'#453a32');for(let band=0;band<6;band++){ctx.strokeStyle=band%2?'#8b7352':'#2c2927';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-14+band*5,3);ctx.lineTo(-11+band*5,11);ctx.stroke()}
+ polygon(ctx,[[-18,1],[-24,4],[-24,10],[-18,14],[-13,10],[-13,4]],'#a38b65');
+ // Visible gauntlet wraps the grip rather than a floating weapon.
+ polygon(ctx,[[-8,9],[4,10],[10,17],[6,24],[-6,25],[-14,18]],'#59646b');
+ for(let finger=0;finger<3;finger++)prism(ctx,-6+finger*5,14+finger,4,9,2,'#89938d',-.2);
+}
 function bow(ctx:CanvasRenderingContext2D,color:string){ctx.save();
  // Recurved laminated limbs, carved grip, taut bowstring and feathered arrow.
  const limb=(side:number)=>{ctx.save();ctx.scale(1,side);ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(25,0);ctx.bezierCurveTo(4,12,6,28,19,43);ctx.bezierCurveTo(27,53,23,62,15,68);ctx.strokeStyle='#35271f';ctx.lineWidth=13;ctx.stroke();ctx.strokeStyle='#a87a4a';ctx.lineWidth=8;ctx.stroke();ctx.strokeStyle='#d6a46b';ctx.lineWidth=2;ctx.stroke();ctx.strokeStyle='#514539';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(16,62);ctx.lineTo(13,70);ctx.stroke();ctx.restore()};limb(-1);limb(1);
@@ -37,4 +52,15 @@ export function drawViewWeapon(ctx:CanvasRenderingContext2D,options:WeaponOption
  }
  }
 
-export function drawViewGuard(ctx:CanvasRenderingContext2D,progress:number,perfect:boolean,impact:number){ctx.save();ctx.translate(426*(.28+.08*progress)-impact*9,240*(.86-.26*progress)+impact*5);ctx.rotate(.18-.34*progress);const color=perfect?'#8b7439':'#344457',edge=perfect?'#ffe69b':'#a7c3df';prism(ctx,0,0,55,70,9,color,-.04,perfect);prism(ctx,0,0,8,65,5,edge,0,perfect);prism(ctx,0,0,49,6,4,edge,0,perfect);for(const x of [-21,21])prism(ctx,x,0,5,54,3,tint(color,.72));ctx.restore()}
+export function drawViewGuard(ctx:CanvasRenderingContext2D,progress:number,perfect:boolean,impact:number){
+ ctx.save();ctx.translate(426*(.28+.08*progress)-impact*9,240*(.86-.26*progress)+impact*5);ctx.rotate(.18-.34*progress);
+ const rim=perfect?'#ddc989':'#9eafa9';
+ polygon(ctx,[[-26,-35],[0,-41],[26,-35],[24,12],[0,43],[-24,12]],rim);
+ polygon(ctx,[[-22,-31],[0,-36],[22,-31],[20,10],[0,36],[-20,10]],'#304651');
+ polygon(ctx,[[0,-35],[20,-30],[18,9],[0,34]],'#213440');
+ polygon(ctx,[[-3,-29],[3,-29],[4,25],[0,31],[-4,25]],rim);
+ polygon(ctx,[[-17,-8],[17,-8],[16,-3],[-16,-3]],rim);
+ for(const x of [-17,17])for(const y of [-25,1]){ctx.fillStyle='#d5c49a';ctx.beginPath();ctx.arc(x,y,1.6,0,Math.PI*2);ctx.fill()}
+ if(impact>0){ctx.globalAlpha=Math.min(.75,impact);ctx.strokeStyle=perfect?'#fff0b5':'#accddd';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,-7,10+impact*14,0,Math.PI*2);ctx.stroke()}
+ ctx.restore();
+}
