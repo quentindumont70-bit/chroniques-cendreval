@@ -1,0 +1,3 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {actorPose} from '../app/actor-pose.ts';
+test('attack families have distinct readable silhouettes',()=>{const poses=['sweep','crush','lunge','shot'].map(intent=>actorPose({boss:false,kind:intent==='shot'?'ranged':'melee',intent,telegraph:.2,telegraphMax:.8},100,0));assert.equal(new Set(poses.map(p=>JSON.stringify(p.hands))).size,4);assert(poses[1].hands[0][2]>poses[0].hands[0][2]);});
+test('idle feet are planted and walking feet lift alternately',()=>{const a={boss:true,kind:'brute'};assert.deepEqual(actorPose(a,0,0).feet,actorPose(a,200,0).feet);assert.notDeepEqual(actorPose(a,0,1).feet,actorPose(a,200,1).feet);});
