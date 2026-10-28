@@ -39,9 +39,12 @@ function paintTerrain(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number)
       const wx=x+cos*d,wy=y+sin*d;
       const ix=Math.floor((wx-TERRAIN_ORIGIN)/TERRAIN_STEP),iy=Math.floor((wy-TERRAIN_ORIGIN)/TERRAIN_STEP);
       if(ix<0||ix>=TERRAIN_SIZE||iy<0||iy>=TERRAIN_SIZE)continue;
-      const i=iy*TERRAIN_SIZE+ix,h=terrainHeight![i];
+      const i=iy*TERRAIN_SIZE+ix,tx=(wx-TERRAIN_ORIGIN)/TERRAIN_STEP-ix,ty=(wy-TERRAIN_ORIGIN)/TERRAIN_STEP-iy;
+      const right=Math.min(ix+1,TERRAIN_SIZE-1),down=Math.min(iy+1,TERRAIN_SIZE-1);
+      const sample=(grid:Float32Array)=>(grid[i]*(1-tx)+grid[iy*TERRAIN_SIZE+right]*tx)*(1-ty)+(grid[down*TERRAIN_SIZE+ix]*(1-tx)+grid[down*TERRAIN_SIZE+right]*tx)*ty;
+      const h=sample(terrainHeight!);
       if(h<.08)continue;
-      const top=Math.floor(120+(.5-h)*100/(d*correct)),fog=Math.min(.86,d/78),light=terrainLight![i];
+      const top=Math.floor(120+(.5-h)*100/(d*correct)),fog=Math.min(.86,d/78),light=sample(terrainLight!);
       const rock=h>4.2,red=(rock?97:52)*light,green=(rock?100:79)*light,blue=(rock?92:66)*light;
       ctx.fillStyle=`rgb(${Math.round(red*(1-fog)+157*fog)},${Math.round(green*(1-fog)+169*fog)},${Math.round(blue*(1-fog)+157*fog)})`;
       ctx.fillRect(col*2,top,2,Math.max(1,bottom-top));bottom=Math.max(bottom,top+1);
