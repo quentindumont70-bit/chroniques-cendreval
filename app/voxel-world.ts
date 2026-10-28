@@ -90,6 +90,12 @@ export function drawVoxelActor(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:F
  for(let band=0;band<3;band++)part(.19,0,.63+band*.1,.05,.35-band*.04,.055,band===2?trim:steel);
  part(.225,0,.79,.035,.075,.09,ember,true);part(-.22,0,.24,.06,.48,.62,"#382533");part(-.24,0,.81,.07,.42,.12,trim);
  }
+ if(!boss){const detail=(x:number,y:number,z:number,sx:number,sy:number,sz:number,color:string)=>v.push(box(x*scale,y*scale,z*scale,sx*scale,sy*scale,sz*scale,color));
+ // Segmented armour separates the shoulder, waist and greaves.
+ for(const side of [-1,1]){detail(.03,side*.27,.91,.28,.18,.13,'#58635e');detail(.13,side*.17,.26,.12,.15,.17,'#626d65');detail(.07,side*.17,.02,.27,.19,.1,'#333c3b')}
+ detail(.19,0,.73,.045,.33,.22,'#68736a');detail(.215,0,.78,.02,.045,.15,'#b09b70');detail(.04,0,.53,.37,.37,.06,'#292b30');detail(.23,0,.54,.03,.09,.055,'#b49b68');
+ // ARCHER_DETAIL
+ }
  const armZ=.65*scale+bob-charge*.1+swing*.18,reach=.34*scale+charge*.12+swing*.2;v.push(box(0,-reach,armZ,.18*scale,.16*scale,.55*scale,armor),box(0,reach,armZ,.18*scale,.16*scale,.55*scale,armor));
  if(actor.kind==="ranged"&&!boss){v.push(box(0,.52*scale,.76*scale,.6*scale,.06*scale,.85*scale,"#9d7d48"),box(0,.5*scale,.78*scale,.72*scale,.03*scale,.03*scale,"#dfd3a5",0,Boolean(actor.telegraph)));}
  else if(boss&&actor.phase===2){for(const side of [-1,1]){v.push(box(0,side*.53*scale,.64*scale,.1*scale,.08*scale,.76*scale,"#88b9c4",side*(.18+swing*.65),true),box(0,side*.53*scale,1.28*scale,.16*scale,.28*scale,.12*scale,"#d6e7df",side*(.18+swing*.65),true))}}
