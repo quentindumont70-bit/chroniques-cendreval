@@ -176,3 +176,8 @@ html:has(.stage.playing),html:has(.stage.playing) *{cursor:none!important}.stage
 @media(orientation:portrait) and (pointer:coarse){.quest{max-width:43vw;font-size:11px}.top-actions button{min-height:44px;padding:6px}.bars{bottom:max(92px,env(safe-area-inset-bottom))}}
 /* Real menu controls stay above the full-height gesture surface. */
 @media(pointer:coarse),(max-width:900px){.stage .top-hud{z-index:46;pointer-events:none}.stage .top-actions{z-index:46;pointer-events:auto}}
+
+/* Pause is a navigation panel, with stable touch targets and a quiet playfield. */
+.pause-panel{max-height:calc(100dvh - 24px);overflow:auto;padding:24px;background:linear-gradient(135deg,#15272af7,#101b24fa);border-color:#8d9378;backdrop-filter:blur(3px)}
+.pause-panel h2{font-size:clamp(24px,4vw,38px);margin:12px 0}.pause-panel p{font:13px/1.5 Arial;color:#b9c7c1}.pause-panel button{border-radius:4px;border:1px solid #87917a66;min-height:44px;background:#20343a;color:#e5dcc3;padding:10px 16px;margin:4px;font-size:14px}.pause-panel button:hover{background:#344a49;border-color:#c8b27f}.pause-panel>button{background:#8b5e3d;min-width:210px;letter-spacing:.12em}.pause-panel .eyebrow{color:#c7b184}.stage.paused .top-actions{visibility:hidden}
+@media(pointer:coarse),(max-width:900px){.message{top:22%;left:18%;right:18%;font:11px/1.4 Arial;background:linear-gradient(90deg,transparent,#101c22a0,transparent);padding:4px 8px}.area-notice{pointer-events:none;opacity:.78}.area-notice b{font-size:16px;letter-spacing:1px}.pause-panel{inset:12px;padding:12px 20px}.pause-panel p{margin:8px 0}.pause-panel button{font-size:12px;padding:8px 12px}.pause-panel h2{font-size:26px}}
