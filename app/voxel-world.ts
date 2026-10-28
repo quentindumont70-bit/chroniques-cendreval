@@ -111,6 +111,8 @@ export function drawVoxelActor(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:F
  // Anticipation compresses the stance; the strike drives the chest forward.
  for(const part of v){if(part.z>.5*scale){part.x+=(-charge*.065+swing*.1)*scale;part.z-=charge*.025*scale}if(Math.abs(part.y)>.42*scale){part.x+=swing*.15*scale;part.z+=charge*.06*scale}}
  }
+ // Animate a readable anticipation/recoil across ordinary enemies as well.
+ if(!boss){const recoil=(actor.hit??0)>0?Math.min(.09,(actor.hit??0)*.15):0;for(const part of v){if(part.z>.5*scale){part.x+=(-charge*.09+swing*.14-recoil)*scale;part.z-=charge*.045*scale}if(Math.abs(part.y)>.32*scale){part.x+=swing*.18*scale;part.z+=charge*.1*scale}}}
  const death=actor.death??0,fade=death>0?Math.min(1,death/.62):1,collapse=death>0?.22+.78*fade:1;if(death>0)for(const part of v){part.z*=collapse;part.sz*=collapse;part.color=part.glow?part.color:"#594752"}
  drawFaces(ctx,camera,translated(scaled(v,.3*Math.min(1,d/1.35)),actor.x,actor.y,yaw),zbuf,fade)}
 
