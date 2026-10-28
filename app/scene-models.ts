@@ -3,7 +3,19 @@ const wood='#69513c',stone='#77857b',moss='#657c49',iron='#414953',gold='#c7a66a
 function b(x:number,y:number,z:number,sx:number,sy:number,sz:number,color:string,yaw=0,glow=false):Voxel{return{x,y,z,sx,sy,sz,color,yaw,glow}}
 /** Authored silhouettes with complete low-detail versions, rather than truncated models. */
 export function sceneryModel(frame:number,living:boolean,h:number,detailed:boolean,variant=0):Voxel[]{const v:Voxel[]=[];const add=(...parts:Voxel[])=>v.push(...parts);const ornament=(...parts:Voxel[])=>{if(detailed)add(...parts)};
- const arch=()=>{add(b(-.42,.08,.015,.24,.19,.05,'#53644f',.3),b(.4,-.06,.02,.17,.22,.07,stone,-.4));for(const side of [-1,1]){add(b(side*.31,0,0,.23,.3,.11,stone),b(side*.31,0,.11,.16,.2,.29,stone),b(side*.32,.01,.42,.14,.19,.26,'#889080'),b(side*.3,0,.69,.18,.22,.05,'#596b62'),b(side*.26,0,.73,.2,.23,.14,'#8c9681'),b(side*.15,0,.85,.22,.24,.12,stone));ornament(b(side*.31,-.115,.16,.025,.025,.48,gold),b(side*.37,.04,.03,.1,.17,.07,moss),b(side*.31,0,.67,.2,.27,.055,'#b2b19a'))}add(b(0,0,.94,.18,.25,.14,'#a5a58b'));ornament(b(0,-.14,.95,.055,.025,.09,gold))};
+ const arch=()=>{
+  // Pillars share a footprint, but the right crown is broken and partly fallen.
+  for(const side of [-1,1]){
+   add({...b(side*.32,0,0,.31,.34,.09,'#53634e'),shape:'faceted',taper:.85});
+   for(let course=0;course<4;course++){const z=.09+course*.15,offset=side===1&&course>1?.018:0;add({...b(side*.32+offset,0,z,.21-course*.012,.25,.145,course%2?'#8b9282':'#747f75',side*.025),shape:'faceted',taper:.96});}
+   add(b(side*.32,0,.68,.27,.29,.055,'#a9aa90'));
+   for(let flute=0;flute<2;flute++)add(b(side*.32+(flute-.5)*.08,-.132,.18,.022,.018,.4,'#59675e'));
+   add({...b(side*.38,-.1,.03,.22,.17,.025,moss,.4),shape:'crown'});
+  }
+  for(let voussoir=0;voussoir<7;voussoir++){if(voussoir===5)continue;const angle=Math.PI-voussoir*Math.PI/6,x=Math.cos(angle)*.31,z=.69+Math.sin(angle)*.28;add({...b(x,0,z,.17,.26,.17,voussoir%2?'#939b87':'#7f897b'),shape:'faceted',taper:.7,pitch:(angle-Math.PI/2)*.25});}
+  add({...b(.5,-.12,.035,.23,.2,.15,'#8a9382',.65),shape:'faceted',taper:.4},{...b(.36,-.26,.015,.17,.15,.09,'#69786c',-.3),shape:'faceted',taper:.6});
+  ornament(b(-.32,-.145,.38,.09,.015,.025,gold),b(-.32,-.145,.32,.018,.015,.16,gold));
+ };
  const lantern=(x:number,y:number,z:number)=>{add(b(x,y,z,.09,.09,.12,'#d0a45a',0,true),b(x,y,z+.12,.14,.14,.025,iron),b(x,y,z-.02,.13,.13,.025,iron));ornament(b(x-.046,y-.046,z,.012,.012,.12,iron),b(x+.046,y-.046,z,.012,.012,.12,iron))};
  const tree=(kind:'pine'|'birch'|'oak')=>{const first=v.length;const birch=kind==='birch',oak=kind==='oak';add(b(0,0,0,oak?.105:.06,oak?.1:.07,.71,birch?'#bfc2a6':wood));
  // Tapered trunk segments and exposed roots replace the monolithic pillar silhouette.
@@ -62,10 +74,11 @@ for(let k=0;k<3;k++){const a=k*2.1;ornament(b(Math.cos(a)*.055,Math.sin(a)*.055,
  case 6:add(b(0,0,0,.29,.24,.08,stone),b(0,0,.08,.15,.13,.3,iron),b(0,0,.37,.21,.14,.2,'#66717a'),b(0,0,.58,.11,.12,.13,'#8c9694'),b(.24,0,0,.025,.025,.93,wood));for(let i=0;i<4;i++){const flag=b(.24+i*.055,0,.61+(i%2)*.015,.055,.024,.25-i*.025,i%2?'#8b4d53':'#a96961');flag.motion='banner';add(flag)}ornament(b(.08,-.08,.4,.04,.025,.12,gold),b(-.08,-.08,.4,.04,.025,.12,gold));break;
  case 7:for(let i=0;i<8;i++){const a=i*Math.PI/4;add(b(Math.cos(a)*.24,Math.sin(a)*.24,0,.2,.12,.23,i%2?'#68776b':'#8d9682',a+Math.PI/2))}add(b(0,0,.035,.35,.35,.015,'#3f7984'),b(-.3,0,.2,.045,.06,.53,wood),b(.3,0,.2,.045,.06,.53,wood),b(0,0,.73,.72,.09,.07,wood));ornament(b(.08,0,.45,.01,.01,.28,'#c6b785'),b(.08,0,.39,.1,.1,.09,wood));break;
  }}else{switch(frame){case 0:tree('pine');break;case 1:tree('birch');break;case 2:add(b(-.1,0,0,.42,.34,.28,'#6b7a74',.24),b(.18,.06,0,.28,.25,.2,'#8f9782',-.32),b(-.15,-.06,.26,.25,.2,.028,'#61784c',.24),b(.17,.04,.19,.13,.13,.023,'#8a9a68',-.32));ornament(b(-.1,0,.28,.22,.23,.035,moss,.24),b(.19,0,.2,.12,.13,.02,'#a5aa83'));break;case 3:arch();break;
- case 4:add(b(0,0,.15,.66,.36,.11,wood),b(0,-.18,.24,.67,.04,.24,'#a17c50'),b(0,.18,.24,.67,.04,.24,'#806344'),b(-.32,0,.24,.04,.36,.24,wood));for(const x of [-.22,.22])for(const y of [-.24,.24]){add(b(x,y,.04,.17,.055,.22,'#3e3d39'));ornament(b(x,y-.031,.09,.13,.015,.04,'#b89969'),b(x,y-.032,.05,.035,.015,.18,'#9f835a'))}ornament(b(.38,0,.17,.46,.035,.035,wood),b(-.1,0,.28,.2,.24,.19,'#8e8d70'),b(-.1,-.13,.28,.025,.02,.2,'#c0b491'));break;
+ case 4:add(b(0,0,.15,.66,.36,.11,wood),b(0,-.18,.24,.67,.04,.24,'#a17c50'),b(0,.18,.24,.67,.04,.24,'#806344'),b(-.32,0,.24,.04,.36,.24,wood));for(const x of [-.22,.22])for(const y of [-.24,.24]){add({...b(x,y,.04,.22,.22,.055,'#3e3d39'),shape:'faceted',pitch:Math.PI/2,yaw:Math.PI/2});ornament({...b(x,y-.031,.09,.07,.07,.04,'#b89969'),shape:'faceted'},b(x,y-.032,.05,.035,.015,.18,'#9f835a'))}ornament(b(.38,0,.17,.46,.035,.035,wood),b(-.1,0,.28,.2,.24,.19,'#8e8d70'),b(-.1,-.13,.28,.025,.02,.2,'#c0b491'));break;
  case 5:add(b(0,0,0,.04,.05,.7,wood),b(0,0,0,.13,.14,.04,stone));lantern(0,0,.68);break;
  case 6:for(let i=0;i<(detailed?11:7);i++){const a=i*2.399,r=.09+(i%4)*.045;add(b(Math.cos(a)*r,Math.sin(a)*r,.015,.19,.035,.045,['#456a49','#78965b','#4f8051'][i%3],a));if(detailed||i%3===0){add(b(Math.cos(a)*r,Math.sin(a)*r,.045,.065,.035,.055,'#8ba56a',a));if(i%3===0)add(b(Math.cos(a)*r,Math.sin(a)*r,.075,.036,.036,.026,i%2?'#c7b4d2':'#ead59c',a))}}break;
  case 7:add(b(0,0,0,.4,.25,.09,stone),b(0,0,.09,.25,.15,.6,'#7b8c7f'),b(0,0,.69,.21,.17,.07,'#a2aa95'));ornament(b(0,-.086,.3,.035,.025,.24,gold),b(0,-.086,.43,.14,.025,.035,gold));break;}}
+ if((!living&&(frame===2||frame===7))||(living&&(frame===2||frame===6)))for(const part of v){if(part.sy>.08&&part.sz>.04){part.shape='faceted';part.taper=part.z>.3?.75:.88;}}
  const treeKind=(!living&&(frame===0||frame===1))||(living&&frame===1),width=treeKind?.88+(variant%4)*.08:1,height=treeKind?.93+(variant%3)*.065:1;return v.map(part=>({...part,x:part.x*h*width,y:part.y*h*width,z:part.z*h*height,sx:part.sx*h*width,sy:part.sy*h*width,sz:part.sz*h*height}));
 }
 
