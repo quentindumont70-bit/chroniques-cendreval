@@ -5,7 +5,7 @@ type Joint=[number,number,number];
 export function actorRig(actor:RigActor,time:number,moving=0):Voxel[]{
  const parts:Voxel[]=[],boss=actor.boss,heavy=boss||actor.kind==='brute',size=boss?1.32:heavy?1.06:.88;
  const steel=boss?'#47454c':heavy?'#5b5854':'#53605c',trim=boss?'#9c784b':'#9d9b80',cloth=actor.kind==='ranged'?'#394d41':'#3e303a';
- const body=(x:number,y:number,z:number,sx:number,sy:number,sz:number,color:string,taper=1,pitch=0,yaw=0)=>{const v:Voxel={x,y,z,sx,sy,sz,color,taper,pitch,yaw,shape:'faceted'};parts.push(v);return v};
+ const body=(x:number,y:number,z:number,sx:number,sy:number,sz:number,color:string,taper=1,pitch=0,yaw=0)=>{const v:Voxel={x,y,z,sx,sy,sz,color,taper,pitch,yaw,shape:'faceted',material:color===cloth?'cloth':color===steel||color===trim?'metal':'wood'};parts.push(v);return v};
  const bone=(a:Joint,b:Joint,width:number,color:string,taper=.75)=>{const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];return body(...a,width,width,Math.hypot(dx,dy,dz),color,taper,Math.atan2(Math.hypot(dx,dy),dz),Math.atan2(dy,dx))};
  const pose=actorPose(actor,time,moving),charge=pose.wind,strike=pose.cut;
  const breath=Math.sin(time*.0022)*.008,lean=pose.lean;

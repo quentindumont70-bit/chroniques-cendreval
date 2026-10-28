@@ -1,3 +1,4 @@
+import {materialLight} from "./material-light.ts";
 import {actorRig} from "./actor-rig";
 import {facetedMesh} from "./faceted-mesh";
 import {clipNear} from "./near-clip";
@@ -5,7 +6,7 @@ import {LIVING_PROPS,VALLEY_PROPS,visibleSpans} from "./world-art";
 import {sceneryModel,valleyLife} from "./scene-models";
 import {selectScenery} from "./scenery-visibility";
 
-export type Voxel={shape?:"faceted"|"crown";pitch?:number;taper?:number;x:number;y:number;z:number;sx:number;sy:number;sz:number;color:string;yaw?:number;glow?:boolean;motion?:"leaf"|"flame"|"banner"};
+export type Voxel={shape?:"faceted"|"crown";pitch?:number;taper?:number;x:number;y:number;z:number;sx:number;sy:number;sz:number;color:string;yaw?:number;glow?:boolean;material?:"metal"|"cloth"|"wood";motion?:"leaf"|"flame"|"banner"};
 type Camera={x:number;y:number;yaw:number;width:number;height:number;fov:number;eye?:number};
 type Point={x:number;y:number;d:number};
 type Face={opacity?:number;points:Point[];depth:number;color:string;glow:boolean;cool:boolean};
@@ -44,7 +45,7 @@ function facesForVoxel(camera:Camera,v:Voxel,out:Face[],cameraCos:number,cameraS
       if(nx*(camera.x-a[0])+ny*(camera.y-a[1])+nz*((camera.eye??.16)-a[2])<=0)continue;
       const polygon=clipNear(ids.map(i=>{const [x,y,z]=mesh.vertices[i],dx=x-camera.x,dy=y-camera.y;return{side:-dx*cameraSin+dy*cameraCos,depth:dx*cameraCos+dy*cameraSin,z}}));if(polygon.length<3)continue;
       const points=polygon.map(p=>({x:camera.width/2+p.side*focal/p.depth,y:camera.height/2-(p.z-(camera.eye??.16))*focal/p.depth,d:p.depth})),depth=points.reduce((n,p)=>n+p.d,0)/points.length;
-      out.push({points,depth,color:shade(v.color,.78+(nz*.2-nx*.12+ny*.08)/length,Math.min(.67,Math.max(0,(depth-5)/24))),glow:Boolean(v.glow),cool:false});
+      out.push({points,depth,color:shade(v.color,materialLight(v.material,nx/length,ny/length,nz/length),Math.min(.67,Math.max(0,(depth-5)/24))),glow:Boolean(v.glow),cool:false});
     }return;
   }
   const yaw=v.yaw??0,c=Math.cos(yaw),s=Math.sin(yaw),hx=v.sx/2,hy=v.sy/2;
