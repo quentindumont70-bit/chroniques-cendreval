@@ -11,3 +11,5 @@ test('rigs are volumetric, finite and bounded in every combat pose',()=>{
 test('walking and strikes articulate models rather than translating a rigid silhouette',()=>{
  const a={boss:true,kind:'brute'};assert.notDeepEqual(actorRig(a,200,1),actorRig(a,400,1));assert.notDeepEqual(actorRig(a,200),actorRig({...a,strike:.2},200));assert.deepEqual(actorRig(a,200),actorRig(a,200));
 });
+
+test('distant faceted meshes reduce faces while preserving closed rings',()=>{const p={x:0,y:0,z:0,sx:1,sy:1,sz:1};for(const shape of ['faceted','crown']){const near=facetedMesh({...p,shape},8),far=facetedMesh({...p,shape},4);assert(far.vertices.length<near.vertices.length);assert(far.faces.every(face=>face.every(i=>i>=0&&i<far.vertices.length)));}});

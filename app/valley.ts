@@ -160,7 +160,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       const meadow=Math.sin(wx*.38-wy*.53)+Math.cos(wx*.57+wy*.32),dry=meadow>.85,deep=meadow<-.75;
       // Broad woodland shadows create depth beneath the distant treeline without extra draw calls.
       const canopyShadow=Math.max(0,Math.sin(wx*.49+wy*.18)*Math.cos(wy*.43-wx*.11));
-      const shadow=!path&&pathDistance>1.2?1-canopyShadow*(depth<8?.2:.12):1;
+      const shadow=!path&&pathDistance>1.2?1-canopyShadow*(depth<8?.12:.08):1;
       const woodlandEdge=!path&&pathDistance>1.4&&Math.sin(wx*.3+wy*.44)>.6;
       const ridge=Math.sin(wx*.17+wy*.27)*Math.cos(wy*.19-wx*.12);
       const slopeLight=1+ridge*.095;
@@ -180,7 +180,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
       let blue=path?80+pathWear*5:edge?54:shoulder?49:stone?63:dry?49:deep?47:45;
       // Blend the biome pigments continuously, avoiding abrupt dark meadow islands.
       if(!path&&!edge&&!shoulder&&!stone){const dryMix=Math.max(0,Math.min(1,(meadow-.2)/1.5)),wetMix=Math.max(0,Math.min(1,(-meadow-.2)/1.5));red=40+27*dryMix-6*wetMix;green=65+18*dryMix-4*wetMix;blue=45+4*dryMix+2*wetMix}
-      red+=shade;green+=shade;blue+=shade;
+      const textureFade=Math.max(.15,Math.min(1,(8-depth)/6));red+=shade*textureFade;green+=shade*textureFade;blue+=shade*textureFade;
       // Mix road shoulders into meadow pigments instead of leaving hard flat bands.
       if(!path&&borderBlend<1){const blend=borderBlend*borderBlend*(3-2*borderBlend);red=red*(.68+.32*blend)+14*(1-blend);green=green*(.78+.22*blend)+8*(1-blend);blue=blue*(.8+.2*blend)+3*(1-blend)}
       const i=(row*cols+col)*4;

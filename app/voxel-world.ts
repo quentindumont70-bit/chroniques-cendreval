@@ -20,7 +20,7 @@ const FACES=[
 
 const palette=new Map<string,readonly[number,number,number]>();
 function rgb(hex:string):readonly[number,number,number]{let value=palette.get(hex);if(!value){const raw=hex.replace("#","");value=[parseInt(raw.slice(0,2),16),parseInt(raw.slice(2,4),16),parseInt(raw.slice(4,6),16)];palette.set(hex,value)}return value}
-function shade(hex:string,light:number,fog:number){const [r,g,b]=rgb(hex),mist=[149,157,142];return `rgb(${Math.round(r*light*(1-fog)+mist[0]*fog)},${Math.round(g*light*(1-fog)+mist[1]*fog)},${Math.round(b*light*(1-fog)+mist[2]*fog)})`}
+function shade(hex:string,light:number,fog:number){const [r,g,b]=rgb(hex),mist=[157,163,147];return `rgb(${Math.round(r*light*(1-fog)+mist[0]*fog)},${Math.round(g*light*(1-fog)+mist[1]*fog)},${Math.round(b*(light>.95?light*.94:light)*(1-fog)+mist[2]*fog)})`}
 function project(camera:Camera,x:number,y:number,z:number):Point|null{const dx=x-camera.x,dy=y-camera.y,c=Math.cos(camera.yaw),s=Math.sin(camera.yaw),d=dx*c+dy*s;if(d<=.08)return null;const side=-dx*s+dy*c,focal=camera.width/(2*Math.tan(camera.fov/2));return{x:camera.width/2+side*focal/d,y:camera.height/2-((z-(camera.eye??.16))*focal/d),d}}
 
 /** Returns the screen position of a world point. Kept public so interaction markers use the same lens. */
@@ -39,7 +39,7 @@ function facesForVoxel(camera:Camera,v:Voxel,out:Face[],cameraCos:number,cameraS
   const lateral=-dx*cameraSin+dy*cameraCos;
   if(Math.abs(lateral)>Math.max(.12,forward)*frustumSlope+radius)return;
   if(v.shape){
-    const mesh=facetedMesh(v,v.shape==='crown'?6:8);
+    const mesh=facetedMesh(v,forward>7?4:v.shape==='crown'?6:8);
     for(const ids of mesh.faces){const a=mesh.vertices[ids[0]],b=mesh.vertices[ids[1]],c=mesh.vertices[ids[2]],u=b.map((n,i)=>n-a[i]),w=c.map((n,i)=>n-a[i]),nx=u[1]*w[2]-u[2]*w[1],ny=u[2]*w[0]-u[0]*w[2],nz=u[0]*w[1]-u[1]*w[0],length=Math.hypot(nx,ny,nz)||1;
       if(nx*(camera.x-a[0])+ny*(camera.y-a[1])+nz*((camera.eye??.16)-a[2])<=0)continue;
       const polygon=clipNear(ids.map(i=>{const [x,y,z]=mesh.vertices[i],dx=x-camera.x,dy=y-camera.y;return{side:-dx*cameraSin+dy*cameraCos,depth:dx*cameraCos+dy*cameraSin,z}}));if(polygon.length<3)continue;
@@ -92,6 +92,9 @@ export function drawVoxelActor(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:F
  const angle=Math.atan2(Math.sin(Math.atan2(actor.y-camera.y,actor.x-camera.x)-camera.yaw),Math.cos(Math.atan2(actor.y-camera.y,actor.x-camera.x)-camera.yaw));if(Math.abs(angle)>camera.fov*.7)return;
  const key=actor.boss?bossMotionKey:actor,old=actorMotion.get(key),dt=old?Math.max(0,time-old.t):0,speed=old&&dt>0&&dt<250?Math.min(1,Math.hypot(actor.x-old.x,actor.y-old.y)/(dt*.001)):0,moving=dt===0?(old?.moving??0):(old?.moving??0)+(speed-(old?.moving??0))*Math.min(1,dt/120);
  actorMotion.set(key,{x:actor.x,y:actor.y,t:time,moving});
+ // A broad, low-opacity contact shadow anchors the feet without lights or blur passes.
+ const shadow:Voxel={x:actor.x,y:actor.y,z:.001,sx:.24,sy:.19,sz:.002,color:'#273b32',shape:'faceted'};
+ drawFaces(ctx,camera,[shadow],zbuf,.28);
  const model=actorRig(actor,time,moving),yaw=Math.atan2(camera.y-actor.y,camera.x-actor.x),fade=actor.death?Math.min(1,actor.death/.62):1;
  drawFaces(ctx,camera,translated(scaled(model,.3),actor.x,actor.y,yaw),zbuf,fade);
 }
