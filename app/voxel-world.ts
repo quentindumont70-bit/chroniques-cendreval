@@ -1,3 +1,4 @@
+import {clipNear} from "./near-clip";
 import {LIVING_PROPS,VALLEY_PROPS,visibleSpans} from "./world-art";
 import {sceneryModel,valleyLife} from "./scene-models";
 import {selectScenery} from "./scenery-visibility";
@@ -39,7 +40,7 @@ function facesForVoxel(camera:Camera,v:Voxel,out:Face[],cameraCos:number,cameraS
   const corners:[[number,number,number],[number,number,number],[number,number,number],[number,number,number],[number,number,number],[number,number,number],[number,number,number],[number,number,number]]=[[-hx,-hy,0],[hx,-hy,0],[hx,hy,0],[-hx,hy,0],[-hx,-hy,v.sz],[hx,-hy,v.sz],[hx,hy,v.sz],[-hx,hy,v.sz]];
   const world=corners.map(([lx,ly,lz])=>[v.x+lx*c-ly*s,v.y+lx*s+ly*c,v.z+lz] as [number,number,number]);
   const [red,,blue]=rgb(v.color),cool=blue>red*1.15;
-  for(const face of FACES){const normalX=face.normal[0]*c-face.normal[1]*s,normalY=face.normal[0]*s+face.normal[1]*c;if(face.normal[2]===0&&normalX*(camera.x-v.x)+normalY*(camera.y-v.y)<=0)continue;const visible:Point[]=[];for(const index of face.ids){const point=projectWithLens(camera,...world[index],cameraCos,cameraSin,focal);if(!point)break;visible.push(point)}if(visible.length!==4)continue;const depth=(visible[0].d+visible[1].d+visible[2].d+visible[3].d)*.25,fog=Math.min(.67,Math.max(0,(depth-5)/24));out.push({points:visible,depth,color:shade(v.color,face.light,fog),glow:Boolean(v.glow),cool})}
+  for(const face of FACES){const normalX=face.normal[0]*c-face.normal[1]*s,normalY=face.normal[0]*s+face.normal[1]*c;if(face.normal[2]===0&&normalX*(camera.x-v.x)+normalY*(camera.y-v.y)<=0)continue;const polygon=clipNear(face.ids.map(index=>{const [x,y,z]=world[index],dx=x-camera.x,dy=y-camera.y;return {side:-dx*cameraSin+dy*cameraCos,depth:dx*cameraCos+dy*cameraSin,z}}));if(polygon.length<3)continue;const visible:Point[]=polygon.map(p=>({x:camera.width/2+p.side*focal/p.depth,y:camera.height/2-(p.z-(camera.eye??.16))*focal/p.depth,d:p.depth}));const depth=visible.reduce((sum,p)=>sum+p.d,0)/visible.length,fog=Math.min(.67,Math.max(0,(depth-5)/24));out.push({points:visible,depth,color:shade(v.color,face.light,fog),glow:Boolean(v.glow),cool})}
 }
 
 function drawFaces(ctx:CanvasRenderingContext2D,camera:Camera,voxels:Voxel[],zbuf:Float32Array,alpha=1){
@@ -47,7 +48,7 @@ function drawFaces(ctx:CanvasRenderingContext2D,camera:Camera,voxels:Voxel[],zbu
  for(const face of faces){let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;for(const p of face.points){if(p.x<minX)minX=p.x;if(p.x>maxX)maxX=p.x;if(p.y<minY)minY=p.y;if(p.y>maxY)maxY=p.y}const left=Math.floor(minX),right=Math.ceil(maxX),top=Math.floor(minY),bottom=Math.ceil(maxY);if(right<0||left>=camera.width||bottom< -48||top>=camera.height+48)continue;
  const spans=visibleSpans(left,right-left,face.depth,zbuf);if(!spans.length)continue;ctx.save();if(spans.length>1||spans[0][0]>Math.max(0,left)||spans[0][1]<Math.min(camera.width,right)){ctx.beginPath();for(const [from,to]of spans)ctx.rect(from,-48,to-from,camera.height+96);ctx.clip()}
  ctx.beginPath();ctx.moveTo(face.points[0].x,face.points[0].y);for(let i=1;i<face.points.length;i++)ctx.lineTo(face.points[i].x,face.points[i].y);ctx.closePath();ctx.fillStyle=face.color;ctx.fill();ctx.strokeStyle=face.glow?(face.cool?"rgba(151,235,255,.86)":"rgba(255,226,151,.8)"):"rgba(15,28,26,.18)";ctx.lineWidth=face.glow?.7:.35;ctx.stroke();
- if(right-left>12&&bottom-top>12){ctx.clip();ctx.globalAlpha=alpha*.12;ctx.fillStyle="#e6ddbd";const [a,b,c,d]=face.points;for(let fleck=0;fleck<4;fleck++){const u=.17+fleck*.19,v=.2+((fleck*3)%4)*.17,fx=(a.x*(1-u)+b.x*u)*(1-v)+(d.x*(1-u)+c.x*u)*v,fy=(a.y*(1-u)+b.y*u)*(1-v)+(d.y*(1-u)+c.y*u)*v;ctx.fillRect(Math.round(fx),Math.round(fy),1+(fleck%2),1)}}ctx.restore()
+ if(face.points.length===4&&right-left>12&&bottom-top>12){ctx.clip();ctx.globalAlpha=alpha*.12;ctx.fillStyle="#e6ddbd";const [a,b,c,d]=face.points;for(let fleck=0;fleck<4;fleck++){const u=.17+fleck*.19,v=.2+((fleck*3)%4)*.17,fx=(a.x*(1-u)+b.x*u)*(1-v)+(d.x*(1-u)+c.x*u)*v,fy=(a.y*(1-u)+b.y*u)*(1-v)+(d.y*(1-u)+c.y*u)*v;ctx.fillRect(Math.round(fx),Math.round(fy),1+(fleck%2),1)}}ctx.restore()
  }ctx.restore()
 }
 
