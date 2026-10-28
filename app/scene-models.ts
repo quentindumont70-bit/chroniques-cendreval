@@ -5,7 +5,7 @@ function b(x:number,y:number,z:number,sx:number,sy:number,sz:number,color:string
 export function sceneryModel(frame:number,living:boolean,h:number,detailed:boolean,variant=0):Voxel[]{const v:Voxel[]=[];const add=(...parts:Voxel[])=>v.push(...parts);const ornament=(...parts:Voxel[])=>{if(detailed)add(...parts)};
  const arch=()=>{add(b(-.42,.08,.015,.24,.19,.05,'#53644f',.3),b(.4,-.06,.02,.17,.22,.07,stone,-.4));for(const side of [-1,1]){add(b(side*.31,0,0,.23,.3,.11,stone),b(side*.31,0,.11,.16,.2,.29,stone),b(side*.32,.01,.42,.14,.19,.26,'#889080'),b(side*.3,0,.69,.18,.22,.05,'#596b62'),b(side*.26,0,.73,.2,.23,.14,'#8c9681'),b(side*.15,0,.85,.22,.24,.12,stone));ornament(b(side*.31,-.115,.16,.025,.025,.48,gold),b(side*.37,.04,.03,.1,.17,.07,moss),b(side*.31,0,.67,.2,.27,.055,'#b2b19a'))}add(b(0,0,.94,.18,.25,.14,'#a5a58b'));ornament(b(0,-.14,.95,.055,.025,.09,gold))};
  const lantern=(x:number,y:number,z:number)=>{add(b(x,y,z,.09,.09,.12,'#d0a45a',0,true),b(x,y,z+.12,.14,.14,.025,iron),b(x,y,z-.02,.13,.13,.025,iron));ornament(b(x-.046,y-.046,z,.012,.012,.12,iron),b(x+.046,y-.046,z,.012,.012,.12,iron))};
- const tree=(kind:'pine'|'birch'|'oak')=>{const birch=kind==='birch',oak=kind==='oak';add(b(0,0,0,oak?.105:.06,oak?.1:.07,.71,birch?'#bfc2a6':wood));
+ const tree=(kind:'pine'|'birch'|'oak')=>{const first=v.length;const birch=kind==='birch',oak=kind==='oak';add(b(0,0,0,oak?.105:.06,oak?.1:.07,.71,birch?'#bfc2a6':wood));
  // Tapered trunk segments and exposed roots replace the monolithic pillar silhouette.
  if(detailed){for(let root=0;root<5;root++){const a=root*Math.PI*2/5;add(b(Math.cos(a)*.065,Math.sin(a)*.065,.005,.18,.055,.055,birch?'#9ea596':'#56432e',a))}
  for(let section=0;section<5;section++){const z=.08+section*.115;add(b(Math.sin(section*1.6)*.015,Math.cos(section*1.3)*.012,z,(oak?.12:.085)*(1-section*.09),(.1-section*.009),.12,birch?(section%2?'#d8d5b9':'#b4baa5'):(section%2?'#75583d':'#60482f'),section*.19))}}
@@ -48,7 +48,10 @@ for(let k=0;k<3;k++){const a=k*2.1;ornament(b(Math.cos(a)*.055,Math.sin(a)*.055,
     }
     add(b(.012,0,.95,.048,.05,.13,'#8b9c70',.35));
   }
-  else{const count=detailed?28:20,radius=oak?.3:.24;for(let i=0;i<count;i++){const a=i*2.399963,r=radius*Math.sqrt((i+.5)/count),z=.66+.28*(1-r/radius)+Math.sin(i*1.7)*.055;const size=.13+(i%3)*.025;const part=b(Math.cos(a)*r,Math.sin(a)*r,z,size,size*.88,.13+(i%2)*.04,['#486847','#678250','#81945e','#58774c'][i%4],a);part.motion='leaf';add(part)}for(let fork=0;fork<3;fork++){const a=fork*2.4;add(b(Math.cos(a)*.12,Math.sin(a)*.12,.53+fork*.045,.26,.035,.04,wood,a))}if(oak){add(b(.11,0,.45,.2,.035,.045,wood,.2),b(.22,0,.38,.015,.015,.15,iron));lantern(.22,0,.28)}}};
+  else{const count=detailed?28:20,radius=oak?.3:.24;for(let i=0;i<count;i++){const a=i*2.399963,r=radius*Math.sqrt((i+.5)/count),z=.66+.28*(1-r/radius)+Math.sin(i*1.7)*.055;const size=.13+(i%3)*.025;const part=b(Math.cos(a)*r,Math.sin(a)*r,z,size,size*.88,.13+(i%2)*.04,['#486847','#678250','#81945e','#58774c'][i%4],a);part.motion='leaf';add(part)}for(let fork=0;fork<3;fork++){const a=fork*2.4;add(b(Math.cos(a)*.12,Math.sin(a)*.12,.53+fork*.045,.26,.035,.04,wood,a))}if(oak){add(b(.11,0,.45,.2,.035,.045,wood,.2),b(.22,0,.38,.015,.015,.15,iron));lantern(.22,0,.28)}}
+  // Whole trees use shaped volumes; canopy masses have sloped shoulders and tops.
+  for(let i=first;i<v.length;i++){const part=v[i];if(part.motion==='leaf'&&part.z>.25){part.shape='crown';part.sz*=1.2;part.pitch=Math.sin(i*1.7)*.12;}else if(part.sy>.03&&part.sz>.04){part.shape='faceted';part.taper=part.z>.2?.76:.9;}}
+ };
  if(living){switch(frame){
  case 0:arch();break;
  case 1:tree('oak');break;

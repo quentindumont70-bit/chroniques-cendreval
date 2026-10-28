@@ -119,3 +119,5 @@ test('pine boughs climb a spiral instead of collapsing into horizontal shelves',
   assert(leaves.every(v=>v.sy<.18),'narrow boughs preserve gaps between branch tips');
  }
 });
+
+test('tree crowns expose sloped volumes on every quality tier',()=>{for(const detailed of [false,true])for(const [frame,living] of [[0,false],[1,false],[1,true]]){const model=sceneryModel(frame,living,3,detailed);assert(model.some(v=>v.shape==='crown'));assert(model.some(v=>v.shape==='faceted'&&v.taper<1));}});

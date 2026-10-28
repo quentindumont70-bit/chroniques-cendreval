@@ -5,7 +5,7 @@ import {LIVING_PROPS,VALLEY_PROPS,visibleSpans} from "./world-art";
 import {sceneryModel,valleyLife} from "./scene-models";
 import {selectScenery} from "./scenery-visibility";
 
-export type Voxel={shape?:"faceted";pitch?:number;taper?:number;x:number;y:number;z:number;sx:number;sy:number;sz:number;color:string;yaw?:number;glow?:boolean;motion?:"leaf"|"flame"|"banner"};
+export type Voxel={shape?:"faceted"|"crown";pitch?:number;taper?:number;x:number;y:number;z:number;sx:number;sy:number;sz:number;color:string;yaw?:number;glow?:boolean;motion?:"leaf"|"flame"|"banner"};
 type Camera={x:number;y:number;yaw:number;width:number;height:number;fov:number;eye?:number};
 type Point={x:number;y:number;d:number};
 type Face={points:Point[];depth:number;color:string;glow:boolean;cool:boolean};
@@ -38,8 +38,8 @@ function facesForVoxel(camera:Camera,v:Voxel,out:Face[],cameraCos:number,cameraS
   if(forward+radius<=.08)return;
   const lateral=-dx*cameraSin+dy*cameraCos;
   if(Math.abs(lateral)>Math.max(.12,forward)*frustumSlope+radius)return;
-  if(v.shape==='faceted'){
-    const mesh=facetedMesh(v);
+  if(v.shape){
+    const mesh=facetedMesh(v,v.shape==='crown'?6:8);
     for(const ids of mesh.faces){const a=mesh.vertices[ids[0]],b=mesh.vertices[ids[1]],c=mesh.vertices[ids[2]],u=b.map((n,i)=>n-a[i]),w=c.map((n,i)=>n-a[i]),nx=u[1]*w[2]-u[2]*w[1],ny=u[2]*w[0]-u[0]*w[2],nz=u[0]*w[1]-u[1]*w[0],length=Math.hypot(nx,ny,nz)||1;
       if(nx*(camera.x-a[0])+ny*(camera.y-a[1])+nz*((camera.eye??.16)-a[2])<=0)continue;
       const polygon=clipNear(ids.map(i=>{const [x,y,z]=mesh.vertices[i],dx=x-camera.x,dy=y-camera.y;return{side:-dx*cameraSin+dy*cameraCos,depth:dx*cameraCos+dy*cameraSin,z}}));if(polygon.length<3)continue;
