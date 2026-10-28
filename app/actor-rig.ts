@@ -32,6 +32,10 @@ export function actorRig(actor:RigActor,time:number,moving=0):Voxel[]{
  if(actor.kind==='ranged'&&!boss){body(lean-.025,0,1.17,.31,.34,.3,'#354d40',.3);body(lean+.14,0,1.21,.045,.2,.13,'#1e2928');bone([-.18,.18,.6],[-.23,.2,1.06],.14,'#70573c');for(let i=0;i<3;i++)bone([-.23,.16+i*.035,.9],[-.24,.16+i*.035,1.22],.018,'#c6b691');}
 
 // CAPE
- // FINISH
+ const hand=hands[1];
+ if(actor.kind==='ranged'&&!boss){for(const side of [-1,1]){bone(hand,[hand[0]+.12,hand[1],hand[2]+side*.25],.045,'#a98b58');bone([hand[0]+.12,hand[1],hand[2]+side*.25],[hand[0]-.02,hand[1],hand[2]+side*.4],.035,'#806845');}bone([hand[0]-.02,hand[1],hand[2]-.4],[hand[0]-.02,hand[1],hand[2]+.4],.009,'#d7cfb6');}
+ else if(!boss||actor.phase!==2){const tip:Joint=[hand[0]-.15+strike*.45,hand[1],hand[2]+.82];bone([hand[0]+.08,hand[1],hand[2]-.17],tip,.055,'#765237');body(...tip,boss?.34:.2,boss?.44:.29,boss?.26:.18,steel,.72);if(boss){body(tip[0]+.17,tip[1],tip[2]+.07,.04,.19,.13,'#ecaa53',.55).glow=true;for(const side of [-1,1])bone([tip[0],tip[1]+side*.2,tip[2]+.13],[tip[0],tip[1]+side*.31,tip[2]+.17],.085,trim,.1);}}
+
+// FINISH
  return parts.map(v=>({...v,x:v.x*size,y:v.y*size,z:(v.z+breath)*size,sx:v.sx*size,sy:v.sy*size,sz:v.sz*size}));
 }
