@@ -3,11 +3,18 @@
  * Roll is injectable so combat tests and future server events are reproducible.
  */
 export type Rarity='common'|'uncommon'|'rare'|'epic'|'legendary';
-export type LootItem={id:string;name:string;rarity:Rarity;slot:'weapon'|'armor'|'trinket'|'material';power:number;description:string};
+export type LootItem={id:string;name:string;rarity:Rarity;slot:'weapon'|'armor'|'trinket'|'material';power:number;description:string;affinity?:'melee'|'bow'|'magic';physicalGuard?:number;magicGuard?:number;manaRegen?:number};
 export type DropEntry={item:LootItem;chance:number};
 export type EnemyLootKind='ordinary'|'elite'|'guardian'|'ashKing'|'echo';
 const item=(id:string,name:string,rarity:Rarity,slot:LootItem['slot'],power:number,description:string):LootItem=>({id,name,rarity,slot,power,description});
 export const ITEMS={
+ longbow:{...item('longbow','Arc du bois de lune','rare','weapon',9,'Un arc tendu pour les tirs lointains. Excellent bonus aux flèches, faible en mêlée.'),affinity:'bow'},
+ emberstaff:{...item('emberstaff','Sceptre des braises','rare','weapon',9,'Un foyer de verre qui amplifie les sorts plutôt que les coups physiques.'),affinity:'magic'},
+ moonbow:{...item('moonbow','Arc du guetteur pâle','epic','weapon',23,'Une branche lunaire réservée aux chasseurs des échos.'),affinity:'bow'},
+ starstaff:{...item('starstaff','Bâton du firmament brisé','epic','weapon',23,'Les fractures du cristal répondent aux arcanes.'),affinity:'magic'},
+ plate:{...item('plate','Cuirasse du rempart','rare','armor',8,'Protection physique 4 ; protection magique 1.'),physicalGuard:4,magicGuard:1},
+ veil:{...item('veil','Voile des lucioles','rare','armor',6,'Protection physique 1 ; protection magique 3 ; régénération +1 mana/s.'),physicalGuard:1,magicGuard:3,manaRegen:1},
+ moonstone:{...item('moonstone','Pierre de source','rare','trinket',3,'Une réserve modeste de puissance, mais +1 mana/s permanent.'),manaRegen:1},
  ash:item('ash','Éclat de cendre','common','material',0,'Une poussière encore chaude, prisée des artisans.'),
  iron:item('iron','Garde de fer noir','uncommon','armor',3,'Une vieille cuirasse renforcée aux jointures.'),
  fang:item('fang','Crochet du maraudeur','rare','weapon',7,'Sa morsure laisse une entaille profonde.'),
@@ -18,11 +25,11 @@ export const ITEMS={
 } as const satisfies Record<string,LootItem>;
 /** Independent Bernoulli trials; chances are probabilities per kill, not normalized weights. */
 export const LOOT_TABLES:Record<EnemyLootKind,readonly DropEntry[]>={
- ordinary:[{item:ITEMS.ash,chance:.26},{item:ITEMS.iron,chance:.038},{item:ITEMS.fang,chance:.004}],
- elite:[{item:ITEMS.ash,chance:.55},{item:ITEMS.iron,chance:.15},{item:ITEMS.fang,chance:.025},{item:ITEMS.vigil,chance:.009}],
- guardian:[{item:ITEMS.iron,chance:.4},{item:ITEMS.vigil,chance:.075},{item:ITEMS.oath,chance:.012}],
- ashKing:[{item:ITEMS.vigil,chance:.24},{item:ITEMS.oath,chance:.065},{item:ITEMS.crown,chance:.001}],
- echo:[{item:ITEMS.fang,chance:.11},{item:ITEMS.oath,chance:.028},{item:ITEMS.eclipse,chance:.001}]
+ ordinary:[{item:ITEMS.longbow,chance:.004},{item:ITEMS.emberstaff,chance:.004},{item:ITEMS.ash,chance:.26},{item:ITEMS.iron,chance:.038},{item:ITEMS.fang,chance:.004}],
+ elite:[{item:ITEMS.longbow,chance:.025},{item:ITEMS.emberstaff,chance:.025},{item:ITEMS.plate,chance:.035},{item:ITEMS.veil,chance:.035},{item:ITEMS.moonstone,chance:.02},{item:ITEMS.ash,chance:.55},{item:ITEMS.iron,chance:.15},{item:ITEMS.fang,chance:.025},{item:ITEMS.vigil,chance:.009}],
+ guardian:[{item:ITEMS.plate,chance:.12},{item:ITEMS.veil,chance:.12},{item:ITEMS.starstaff,chance:.012},{item:ITEMS.iron,chance:.4},{item:ITEMS.vigil,chance:.075},{item:ITEMS.oath,chance:.012}],
+ ashKing:[{item:ITEMS.starstaff,chance:.065},{item:ITEMS.moonbow,chance:.065},{item:ITEMS.vigil,chance:.24},{item:ITEMS.oath,chance:.065},{item:ITEMS.crown,chance:.001}],
+ echo:[{item:ITEMS.moonbow,chance:.028},{item:ITEMS.moonstone,chance:.1},{item:ITEMS.fang,chance:.11},{item:ITEMS.oath,chance:.028},{item:ITEMS.eclipse,chance:.001}]
 };
 export function rollLoot(kind:EnemyLootKind,random:()=>number=Math.random):LootItem[]{
  const found:LootItem[]=[];

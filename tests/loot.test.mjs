@@ -8,8 +8,8 @@ test('all loot is unique, typed and chances stay within a probability',()=>{
 });
 test('independent rolls permit no reward, multiple drops and fixed rare guarantees in tests',()=>{
  assert.deepEqual(rollLoot('ashKing',()=>.999),[]);
- assert.deepEqual(rollLoot('ashKing',()=>0).map(i=>i.id),['vigil','oath','crown']);
- assert.deepEqual(rollLoot('echo',()=>.001).map(i=>i.id),['fang','oath']);
+ assert.deepEqual(rollLoot('ashKing',()=>0).map(i=>i.id),['starstaff','moonbow','vigil','oath','crown']);
+ assert.deepEqual(rollLoot('echo',()=>.001).map(i=>i.id),['moonbow','moonstone','fang','oath']);
  assert.throws(()=>rollLoot('elite',()=>1),RangeError);
 });
 test('boss and elite tables classify correctly; legendary has no pity timer',()=>{
