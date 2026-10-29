@@ -1,0 +1,4 @@
+import type {InventoryState} from './inventory';
+import type {EnemyLootKind} from './loot';
+export const BOUNTIES:readonly {id:string;kind:EnemyLootKind;count:number;ashes:number;name:string}[]=[{id:'ordinary-5',kind:'ordinary',count:5,ashes:4,name:'Nettoyer les chemins'},{id:'elite-3',kind:'elite',count:3,ashes:8,name:'Briser les patrouilles'},{id:'guardian-1',kind:'guardian',count:1,ashes:12,name:'Rompre le serment'},{id:'echo-3',kind:'echo',count:3,ashes:18,name:'Faire taire les échos'}];
+export function claimBounty(state:InventoryState,id:string):InventoryState{const b=BOUNTIES.find(b=>b.id===id);if(!b||(state.victories?.[b.kind]??0)<b.count||state.claimedBounties?.includes(id))return state;return {...state,items:{...state.items,ash:(state.items.ash??0)+b.ashes},claimedBounties:[...(state.claimedBounties??[]),id]}}
