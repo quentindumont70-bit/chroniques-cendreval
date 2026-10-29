@@ -93,7 +93,7 @@ export function drawVoxelWorld(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:F
 
 export function drawVoxelShrines(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:Float32Array,shrines:readonly{x:number;y:number}[],mask:number,time:number){const voxels:Voxel[]=[];shrines.forEach((p,index)=>{const dx=p.x-camera.x,dy=p.y-camera.y,d=Math.hypot(dx,dy),angle=Math.atan2(Math.sin(Math.atan2(dy,dx)-camera.yaw),Math.cos(Math.atan2(dy,dx)-camera.yaw));if(d<.72||d>22||Math.abs(angle)>camera.fov*.72)return;const active=Boolean(mask&(1<<index)),pulse=.96+Math.sin(time*.004+index)*.05,stone=active?"#778879":"#56645e";const model=[box(0,0,0,.68,.58,.14,"#384b43"),box(0,0,.14,.5,.42,.16,stone),box(0,0,.3,.34,.3,.72,stone),box(0,0,1.02,.48,.4,.16,"#8c8e79"),box(0,-.19,.62,.12,.05,.16,active?"#bce6ad":"#78a9bc",0,true),box(0,-.19,.62*1.01,.05,.03,.34,active?"#e5efb8":"#b3dce0",0,true)];model.push(box(.15,.08,.02,.19,.14,.07,"#6a7765",.4),box(-.15,-.08,.01,.16,.18,.04,"#586b4c",-.35),box(0,-.155,.38,.35,.025,.035,"#a5aa8b"),box(0,-.155,.83,.35,.025,.035,"#89977e"));model[4].sx*=pulse;model[5].sz*=pulse;voxels.push(...translated(scaled(model,.22),p.x,p.y,index*.7))});drawFaces(ctx,camera,voxels,zbuf)}
 
-type Actor={x:number;y:number;boss:boolean;kind:"melee"|"ranged"|"brute";phase?:1|2;hit?:number;telegraph?:number;strike?:number;intent?:string;death?:number};
+type Actor={commander?:boolean;x:number;y:number;boss:boolean;kind:"melee"|"ranged"|"brute";phase?:1|2;hit?:number;telegraph?:number;strike?:number;intent?:string;death?:number};
 /** Segment-built combatants. Armor, limbs and weapons all expose independent 3D faces. */
 const actorMotion=new WeakMap<object,{x:number;y:number;t:number;moving:number}>(),bossMotionKey={};
 export function drawVoxelActor(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:Float32Array,actor:Actor,time:number){
@@ -117,3 +117,6 @@ export function drawVoxelLandmarks(ctx:CanvasRenderingContext2D,camera:Camera,zb
  drawFaces(ctx,camera,voxels,zbuf)}
 
 export function voxelSceneStats(){return{props:SCENE_PROPS.length,minimumVoxels:VALLEY_PROPS.length*3+LIVING_PROPS.length*3}}
+
+/** Small encounter landmarks: timber shelters, supplies and a liberation pennant. */
+export function drawValleyCamps(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:Float32Array,camps:readonly{x:number;y:number}[],mask:number){const voxels:Voxel[]=[];camps.forEach((p,i)=>{if(Math.hypot(camera.x-p.x,camera.y-p.y)>9)return;const cloth=mask&(1<<i)?'#7baf91':['#945e4f','#677b91','#98764c'][i%3];const model=[box(-.3,.3,0,.035,.035,.52,'#544637'),box(.3,.3,0,.035,.035,.52,'#544637'),box(0,.3,.48,.7,.5,.05,cloth),box(-.3,.3,.25,.035,.48,.4,cloth),box(.35,-.25,0,.24,.22,.17,'#70583c'),box(.35,-.25,.16,.26,.24,.025,'#a2875a'),box(-.38,-.28,0,.025,.025,.65,'#735c40'),box(-.28,-.28,.5,.2,.025,.14,cloth),box(0,-.2,0,.18,.15,.035,'#44433b'),box(0,-.2,.04,.07,.07,.1,mask&(1<<i)?'#c7d6a2':'#e4a45b',0,true)];voxels.push(...translated(model,p.x,p.y,i*.6))});drawFaces(ctx,camera,voxels,zbuf)}

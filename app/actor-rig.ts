@@ -1,10 +1,10 @@
 import {actorPose} from "./actor-pose.ts";
 import type {Voxel} from './voxel-world';
-export type RigActor={boss:boolean;kind:'melee'|'ranged'|'brute';phase?:1|2;telegraph?:number;telegraphMax?:number;strike?:number;hit?:number;death?:number;intent?:string};
+export type RigActor={commander?:boolean;boss:boolean;kind:'melee'|'ranged'|'brute';phase?:1|2;telegraph?:number;telegraphMax?:number;strike?:number;hit?:number;death?:number;intent?:string};
 type Joint=[number,number,number];
 export function actorRig(actor:RigActor,time:number,moving=0):Voxel[]{
  const parts:Voxel[]=[],boss=actor.boss,heavy=boss||actor.kind==='brute',size=boss?1.32:heavy?1.06:.88;
- const steel=boss?'#47454c':heavy?'#5b5854':'#53605c',trim=boss?'#9c784b':'#9d9b80',cloth=actor.kind==='ranged'?'#394d41':'#3e303a';
+ const steel=actor.commander?(actor.phase===2?'#714b47':'#4d5461'):boss?'#47454c':heavy?'#5b5854':'#53605c',trim=boss?'#9c784b':'#9d9b80',cloth=actor.kind==='ranged'?'#394d41':'#3e303a';
  const body=(x:number,y:number,z:number,sx:number,sy:number,sz:number,color:string,taper=1,pitch=0,yaw=0)=>{const v:Voxel={x,y,z,sx,sy,sz,color,taper,pitch,yaw,shape:'faceted',material:color===cloth?'cloth':color===steel||color===trim?'metal':'wood'};parts.push(v);return v};
  const bone=(a:Joint,b:Joint,width:number,color:string,taper=.75)=>{const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];return body(...a,width,width,Math.hypot(dx,dy,dz),color,taper,Math.atan2(Math.hypot(dx,dy),dz),Math.atan2(dy,dx))};
  const pose=actorPose(actor,time,moving),charge=pose.wind,strike=pose.cut;
@@ -51,6 +51,7 @@ if(boss&&actor.phase===2)for(const grip of hands){const tip:Joint=[grip[0]+strik
 const hit=Math.min(.12,(actor.hit??0)*.18),death=actor.death??0;
  for(const part of parts){if(part.z>.5){part.x-=hit;part.pitch=(part.pitch??0)-hit*.5;}if(death>0){const life=Math.min(1,death/.62);part.z*=.2+.8*life;part.sz*=.2+.8*life;part.x+=(1-life)*.25;}}
 
+if(actor.commander){const accent=actor.phase===2?'#efac68':'#bfa474';body(-.05,0,1.35,.13,.25,.08,accent);body(-.08,-.27,1.04,.1,.12,.2,accent,.6);body(-.08,.27,1.04,.1,.12,.2,accent,.6);}
 // FINISH
  return parts.map(v=>({...v,x:v.x*size,y:v.y*size,z:(v.z+(v.z>.5?breath:0))*size,sx:v.sx*size,sy:v.sy*size,sz:v.sz*size}));
 }
