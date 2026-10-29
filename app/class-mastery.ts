@@ -1,0 +1,3 @@
+import type {ClassId,Stats} from './rpg';
+export const MASTERY:Record<ClassId,string>={blade:'Résolution : +12 armure au-dessus de 70 endurance.',bow:'Précision : +8 pénétration physique au-dessus de 70 endurance.',arcane:'Résonance : +5 puissance au-dessus de 60 mana.',hex:'Dernier souffle : +8 % vol de vie sous 40 vie.',cantor:'Cadence : +2 mana/s sous 40 mana.',reaver:'Fureur : +6 puissance sous 40 vie.'};
+export function masteryStats(base:Stats,id:ClassId,hp:number,mana:number,stamina:number):Stats{const s={...base};if(id==='blade'&&stamina>70)s.armor+=12;if(id==='bow'&&stamina>70)s.armorPen+=8;if(id==='arcane'&&mana>60)s.power+=5;if(id==='hex'&&hp<40)s.lifeSteal+=.08;if(id==='cantor'&&mana<40)s.manaRegen+=2;if(id==='reaver'&&hp<40)s.power+=6;return s}
