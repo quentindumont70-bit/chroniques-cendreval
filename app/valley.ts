@@ -1,11 +1,10 @@
-function meadowPatch(x:number,y:number){return Math.sin(x*.43+y*.17)*Math.cos(y*.37-x*.13)}
-import {routeDistance} from "./world-art";
+import {meadowSurface,MEADOW_SIZE,MEADOW_ORIGIN,MEADOW_SCALE} from "./meadow-surface";
 // Low resolution world-space scenery with cached terrain and atmospheric perspective.
 const wrap = (a:number) => Math.atan2(Math.sin(a), Math.cos(a));
 let ground: HTMLCanvasElement | undefined;
 let pixels: ImageData | undefined;
 let panorama: HTMLCanvasElement | undefined;
-let pathGrid:Float32Array|undefined;
+
 const GROUND_SIDE_CACHE=new Map<number,Float32Array>();
 let terrainLayer:HTMLCanvasElement|undefined;
 let terrainPose:{x:number;y:number;yaw:number}|undefined;
@@ -17,7 +16,7 @@ let terrainLight:Float32Array|undefined;
 function elevation(x:number,y:number){
   const outside=Math.max(0,Math.max(-x,x-20,-y,y-20));
   const rise=1-Math.exp(-outside*.14);
-  return rise*(4.8+3.2*Math.sin(x*.13+y*.09)**2+5.4*Math.sin(x*.21-y*.16)**2);
+  return rise*(1.4+1.8*Math.sin(x*.09+y*.07)**2+2.6*Math.sin(x*.12-y*.1)**2);
 }
 function prepareTerrain(){
   if(terrainHeight)return;
@@ -45,7 +44,7 @@ function paintTerrain(ctx:CanvasRenderingContext2D,x:number,y:number,yaw:number)
       const h=sample(terrainHeight!);
       if(h<.08)continue;
       const top=Math.floor(120+(.5-h)*100/(d*correct)),fog=Math.min(.86,d/78),light=sample(terrainLight!);
-      const rock=h>4.2,red=(rock?97:52)*light,green=(rock?100:79)*light,blue=(rock?92:66)*light;
+      const rock=h>4.2,red=(rock?109:75)*light,green=(rock?115:95)*light,blue=(rock?101:72)*light;
       ctx.fillStyle=`rgb(${Math.round(red*(1-fog)+157*fog)},${Math.round(green*(1-fog)+169*fog)},${Math.round(blue*(1-fog)+157*fog)})`;
       ctx.fillRect(col*2,top,2,Math.max(1,bottom-top));bottom=Math.max(bottom,top+1);
     }
@@ -65,12 +64,12 @@ export function drawValley(ctx:CanvasRenderingContext2D, x:number, y:number, yaw
     ctx.fillStyle="#f4dfad";ctx.fillRect(Math.floor(sunX)-6,32,12,12);
   }
   for(let layer=0;layer<4;layer++){
-    ctx.fillStyle=["#a3a6a0","#858f8b","#687b77","#435f59"][layer];
+    ctx.fillStyle=["#a3aaa5","#939e97","#7c8e80","#657e6a"][layer];
     ctx.beginPath();ctx.moveTo(0,horizon+2);
     for(let sx=0;sx<=w+2;sx+=2){
       const a=yaw+(sx/w-.5)*fov;
       const ridge=Math.sin(a*3+layer*1.8)*14+Math.sin(a*7-layer)*7+Math.sin(a*13+layer)*3;
-      const height=67+layer*12+ridge*(1-layer*.14);
+      const height=88+layer*7+ridge*(.58-layer*.08);
       ctx.lineTo(sx,Math.floor(height+Math.sin(a)*x*(layer*.18)+Math.cos(a)*y*(layer*.12)));
     }
     ctx.lineTo(w,horizon+2);ctx.fill();
@@ -119,7 +118,7 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
   const cols=detail>=3?852:detail>=2?426:213,rows=detail>=3?368:detail>=2?184:92,step=184/rows;
   if(ground&&groundPose&&groundPose.x===x&&groundPose.y===y&&groundPose.yaw===yaw&&groundPose.cols===cols){ctx.drawImage(ground,0,120,426,184);return}
   groundPose={x,y,yaw,cols};
-  if(!pathGrid){pathGrid=new Float32Array(160*160);for(let gy=0;gy<160;gy++)for(let gx=0;gx<160;gx++)pathGrid[gy*160+gx]=routeDistance(gx/8,gy/8)}
+  const pigments=meadowSurface();
   if(!ground||ground.width!==cols){ground=document.createElement("canvas");ground.width=cols;ground.height=rows;pixels=ground.getContext("2d")!.createImageData(cols,rows)}
   const data=pixels!.data,cos=Math.cos(yaw),sin=Math.sin(yaw);
   let columnSide=GROUND_SIDE_CACHE.get(cols);
@@ -129,79 +128,9 @@ export function drawValleyGround(ctx:CanvasRenderingContext2D,x:number,y:number,
     for(let col=0;col<cols;col++){
       const side=columnSide[col];
       const wx=x+depth*(cos-sin*side),wy=y+depth*(sin+cos*side);
-      const hx=Math.floor(wx*22),hy=Math.floor(wy*22),hash=((Math.imul(hx,374761393)^Math.imul(hy,668265263))>>>0)%23;
-      const gridX=wx*8,gridY=wy*8,gx=Math.floor(gridX),gy=Math.floor(gridY);
-      // Bilinear sampling prevents the path edge from becoming a staircase at oblique angles.
-      let pathDistance=10;
-      if(gx>=0&&gy>=0&&gx<159&&gy<159){
-        const tx=gridX-gx,ty=gridY-gy,k=gy*160+gx;
-        const a=pathGrid[k]!*(1-tx)+pathGrid[k+1]!*tx;
-        const b=pathGrid[k+160]!*(1-tx)+pathGrid[k+161]!*tx;
-        pathDistance=a*(1-ty)+b*ty;
-      }
-      const bankNoise=Math.sin(wx*5.1+wy*2.7)*Math.cos(wy*4.3-wx*1.6)*.055;
-      const path=pathDistance<.43+bankNoise;
-      const borderBlend=Math.max(0,Math.min(1,(pathDistance-.35-bankNoise)/.52));
-      const rolling=Math.sin(wx*.72+wy*.23)*Math.cos(wy*.61)*.5+.5;
-      const broad=Math.sin(wx*.21+wy*.31)*Math.cos(wy*.27-wx*.17);
-      const micro=Math.sin(wx*1.1+wy*.6)*Math.sin(wy*.9-wx*.7);
-      const light=.72+rolling*.25+broad*.075+micro*.035;
-      const edge=pathDistance<.58+bankNoise;
-      const shoulder=pathDistance>=.43+bankNoise&&pathDistance<.9+bankNoise;
-      const pathWear=Math.sin(wx*.9+wy*.3)*Math.sin(wy*.7-wx*.2);
-      // Foot-worn twin ruts follow the pilgrimage route, giving the road a traveled texture.
-      const rut=path&&depth<15&&Math.abs(pathDistance-(.235+Math.sin(wx*.8+wy*.6)*.018))<.045;
-      const roadCracks=path&&pathDistance>.28&&depth<6&&Math.sin(wx*7.1+wy*3.7)*Math.cos(wy*5.9-wx*2.2)>.84;
-      const fineX=Math.floor(wx*140),fineY=Math.floor(wy*140),fine=((Math.imul(fineX,374761393)^Math.imul(fineY,668265263))>>>0)%23,near=Math.max(0,Math.min(1,(4-depth)/3));
-      const stone=(near>.4?fine:hash)>21&&meadowPatch(wx,wy)>.65,shade=hash*.18+near*(fine*.1-1);
-      const gravel=path&&fine>18&&pathDistance<.2,grassTuft=!path&&fine>21&&depth<8&&meadowPatch(wx,wy)<-.2;
-      const pebbles=path&&depth<5&&depth>1&&hash===3;
-      const mossPatch=!path&&depth<7&&hash===7;
-      const meadow=Math.sin(wx*.38-wy*.53)+Math.cos(wx*.57+wy*.32),dry=meadow>.85,deep=meadow<-.75;
-      // Broad woodland shadows create depth beneath the distant treeline without extra draw calls.
-      const canopyShadow=Math.max(0,Math.sin(wx*.49+wy*.18)*Math.cos(wy*.43-wx*.11));
-      const shadow=!path&&pathDistance>1.2?1-canopyShadow*(depth<8?.12:.08):1;
-      const woodlandEdge=!path&&pathDistance>1.4&&Math.sin(wx*.3+wy*.44)>.6;
-      const ridge=Math.sin(wx*.17+wy*.27)*Math.cos(wy*.19-wx*.12);
-      const slopeLight=1+ridge*.095;
-      const damp=!path&&deep&&Math.sin(wx*.55+wy*.3)>.2;
-      const flowerScatter=!path&&depth<6&&fine===11&&hash>18&&meadowPatch(wx,wy)<-.55;
-      const sunlitSeeds=!path&&depth<5&&fine===17&&hash>17&&dry;
-      const fallenLeaves=!path&&depth<5&&hash===12&&fine>20;
-      const drySoil=!path&&pathDistance>.8&&meadowPatch(wx,wy)>.55;
-      const grassyBank=!path&&pathDistance>.43&&pathDistance<1.15&&fine>19&&meadowPatch(wx,wy)<.35;
-      const clayBank=!path&&pathDistance>.48&&pathDistance<.85&&dry&&hash>17;
-      const roadDust=path&&depth<9&&fine===6;
-      const packedEarth=path&&pathDistance<.16&&Math.sin(wx*2.7+wy*.7)>.45;
-      const amberGrass=!path&&dry&&depth<12&&fine>17;
-      // Scalar channels avoid allocating a fresh RGB array for every ground pixel.
-      let red=path?119+pathWear*7:edge?78:shoulder?59:stone?68:dry?67:deep?34:40;
-      let green=path?108+pathWear*6:edge?83:shoulder?76:stone?78:dry?83:deep?61:65;
-      let blue=path?80+pathWear*5:edge?54:shoulder?49:stone?63:dry?49:deep?47:45;
-      // Blend the biome pigments continuously, avoiding abrupt dark meadow islands.
-      if(!path&&!edge&&!shoulder&&!stone){const dryMix=Math.max(0,Math.min(1,(meadow-.2)/1.5)),wetMix=Math.max(0,Math.min(1,(-meadow-.2)/1.5));red=40+27*dryMix-6*wetMix;green=65+18*dryMix-4*wetMix;blue=45+4*dryMix+2*wetMix}
-      const textureFade=Math.max(.15,Math.min(1,(8-depth)/6));red+=shade*textureFade;green+=shade*textureFade;blue+=shade*textureFade;
-      // Mix road shoulders into meadow pigments instead of leaving hard flat bands.
-      if(!path&&borderBlend<1){const blend=borderBlend*borderBlend*(3-2*borderBlend);red=red*(.68+.32*blend)+14*(1-blend);green=green*(.78+.22*blend)+8*(1-blend);blue=blue*(.8+.2*blend)+3*(1-blend)}
-      const i=(row*cols+col)*4;
-      if(rut){red-=9;green-=8;blue-=6}
-      if(roadCracks){red-=17;green-=16;blue-=12}
-      if(gravel){red+=12;green+=10;blue+=8}
-      if(grassTuft){red+=5;green+=10;blue+=4}
-      if(woodlandEdge){red-=3;green-=2;blue-=1}
-      if(damp){red-=2;green-=1;blue+=3}
-      if(pebbles){red+=24;green+=24;blue+=20}
-      if(mossPatch){red-=2;green+=6;blue-=1}
-      if(flowerScatter){red+=45;green+=22;blue+=49}
-      if(sunlitSeeds){red+=14;green+=13;blue+=5}
-      if(fallenLeaves){red+=14;green+=7;blue-=2}
-      if(drySoil){red+=12;green+=5;blue-=2}
-      if(grassyBank){red+=5;green+=20;blue+=2}
-      if(clayBank){red+=19;green+=9;blue-=4}
-      if(roadDust){red+=16;green+=13;blue+=9}
-      if(packedEarth){red-=8;green-=7;blue-=5}
-      if(amberGrass){red+=10;green+=7;blue-=2}
-      data[i]=red*light*shadow*slopeLight*(1-fog)+145*fog;data[i+1]=green*light*shadow*slopeLight*(1-fog)+157*fog;data[i+2]=blue*light*shadow*slopeLight*(1-fog)+137*fog;data[i+3]=255;
+      const gx=Math.max(0,Math.min(MEADOW_SIZE-1.001,(wx-MEADOW_ORIGIN)*MEADOW_SCALE)),gy=Math.max(0,Math.min(MEADOW_SIZE-1.001,(wy-MEADOW_ORIGIN)*MEADOW_SCALE));
+      const ix=Math.floor(gx),iy=Math.floor(gy),tx=gx-ix,ty=gy-iy,k=(iy*MEADOW_SIZE+ix)*3,next=k+MEADOW_SIZE*3,i=(row*cols+col)*4;
+      for(let channel=0;channel<3;channel++){const pigment=(pigments[k+channel]*(1-tx)+pigments[k+3+channel]*tx)*(1-ty)+(pigments[next+channel]*(1-tx)+pigments[next+3+channel]*tx)*ty;data[i+channel]=pigment*(1-fog)+(channel===0?145:channel===1?157:137)*fog}data[i+3]=255;
     }
   }
   ground.getContext("2d")!.putImageData(pixels!,0,0);ctx.drawImage(ground,0,120,426,184);

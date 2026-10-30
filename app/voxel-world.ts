@@ -1,3 +1,4 @@
+import {UNDERSTORY,visibleUnderstory} from "./valley-understory";
 import {materialLight} from "./material-light.ts";
 import {actorRig} from "./actor-rig";
 import {facetedMesh} from "./faceted-mesh";
@@ -89,6 +90,7 @@ export function drawVoxelWorld(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:F
  const source=MODEL_TIERS[detail>=2&&item.d<7||heroTree?1:0][item.i];const gust=Math.sin(time*.00034+item.i*.73)*.5+.5;const phase=time*.0015+item.i*.71;for(const voxel of source){if(voxel.motion==='flame'){const pulse=.82+Math.sin(time*.009+item.i+voxel.x*7)*.18;voxels.push({...voxel,sz:voxel.sz*pulse})}else if(voxel.motion==='leaf'||voxel.motion==='banner'){
  const wave=Math.sin(phase+voxel.z*3)*(.003+gust*.011);
  voxels.push({...voxel,x:voxel.x+wave,y:voxel.y+wave*.4})}else voxels.push(voxel)}}
+ for(const patch of visibleUnderstory(camera.x,camera.y,camera.yaw,camera.fov,detail))voxels.push(...UNDERSTORY[patch.i].parts);
  voxels.push(...valleyLife(time,camera.x,camera.y,detail,combat));drawFaces(ctx,camera,voxels,zbuf)}
 
 export function drawVoxelShrines(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:Float32Array,shrines:readonly{x:number;y:number}[],mask:number,time:number){const voxels:Voxel[]=[];shrines.forEach((p,index)=>{const dx=p.x-camera.x,dy=p.y-camera.y,d=Math.hypot(dx,dy),angle=Math.atan2(Math.sin(Math.atan2(dy,dx)-camera.yaw),Math.cos(Math.atan2(dy,dx)-camera.yaw));if(d<.72||d>22||Math.abs(angle)>camera.fov*.72)return;const active=Boolean(mask&(1<<index)),pulse=.96+Math.sin(time*.004+index)*.05,stone=active?"#778879":"#56645e";const model=[box(0,0,0,.68,.58,.14,"#384b43"),box(0,0,.14,.5,.42,.16,stone),box(0,0,.3,.34,.3,.72,stone),box(0,0,1.02,.48,.4,.16,"#8c8e79"),box(0,-.19,.62,.12,.05,.16,active?"#bce6ad":"#78a9bc",0,true),box(0,-.19,.62*1.01,.05,.03,.34,active?"#e5efb8":"#b3dce0",0,true)];model.push(box(.15,.08,.02,.19,.14,.07,"#6a7765",.4),box(-.15,-.08,.01,.16,.18,.04,"#586b4c",-.35),box(0,-.155,.38,.35,.025,.035,"#a5aa8b"),box(0,-.155,.83,.35,.025,.035,"#89977e"));model[4].sx*=pulse;model[5].sz*=pulse;voxels.push(...translated(scaled(model,.22),p.x,p.y,index*.7))});drawFaces(ctx,camera,voxels,zbuf)}
@@ -111,7 +113,14 @@ export function drawVoxelActor(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:F
 type LandmarkOptions={lore:readonly{x:number;y:number}[];loreMask:number;rest?:{x:number;y:number}|null;gate?:{x:number;y:number}|null;dungeon?:boolean};
 /** Interactive landmarks share wall occlusion and retain their volume from every viewing angle. */
 export function drawVoxelLandmarks(ctx:CanvasRenderingContext2D,camera:Camera,zbuf:Float32Array,options:LandmarkOptions,time:number){const voxels:Voxel[]=[];
- options.lore.forEach((p,index)=>{const read=Boolean(options.loreMask&(1<<index)),stone=read?"#526764":"#674f5e",rune=read?"#b7dec9":"#efb16e";voxels.push(...translated([box(0,0,0,.2,.16,.38,"#34443f"),box(0,0,.34,.3,.18,.2,stone),box(.1,0,.39,.035,.19,.09,rune,0,true),box(0,0,.53,.22,.17,.06,"#829087")],p.x,p.y,index*.8))});
+ options.lore.forEach((p,index)=>{if(Math.hypot(p.x-camera.x,p.y-camera.y)>14)return;const read=Boolean(options.loreMask&(1<<index)),stone=read?"#69786b":"#74776e",rune=read?"#a9c5a0":"#d6b87b";const model:Voxel[]=[
+ {x:0,y:0,z:.001,sx:.31,sy:.24,sz:.024,color:'#46523d',shape:'faceted',taper:.7},
+ {x:-.01,y:0,z:.018,sx:.22,sy:.17,sz:.055,color:'#65715e',shape:'faceted',taper:.9},
+ {x:0,y:0,z:.065,sx:.145,sy:.12,sz:.22,color:stone,shape:'faceted',taper:.68,pitch:.035},
+ {x:-.012,y:0,z:.27,sx:.12,sy:.115,sz:.035,color:'#929580',shape:'faceted',taper:.45},
+ box(0,-.064,.13,.012,.008,.105,rune,0,true),box(0,-.064,.19,.061,.008,.011,rune,0,true),
+ {x:.12,y:.03,z:.01,sx:.09,sy:.07,sz:.035,color:'#7c836f',shape:'faceted',taper:.5,yaw:.4},
+ {x:-.11,y:-.04,z:.012,sx:.07,sy:.045,sz:.016,color:'#7d8c54',shape:'crown'}];voxels.push(...translated(model,p.x,p.y,index*.8))});
  if(options.rest){const p=options.rest,pulse=.9+Math.sin(time*.009)*.12,flame=options.dungeon?"#e6514c":"#ee9555";voxels.push(...translated([box(0,0,0,.42,.34,.08,"#28222b"),box(-.14,0,.06,.09,.3,.12,"#5c4032",.6),box(.14,0,.06,.09,.3,.12,"#5c4032",-.6),box(0,0,.13,.17,.14,.2,flame,0,true),box(0,0,.28,.08,.07,.15,"#ffd184",0,true)].map((v,i)=>i>2?{...v,sx:v.sx*pulse,sz:v.sz*pulse}:v),p.x,p.y,.35))}
  if(options.gate){const p=options.gate,metal="#75656d",bars="#b38a51",model=[box(-.34,0,0,.18,.3,.78,metal),box(.34,0,0,.18,.3,.78,metal),box(0,0,.7,.86,.32,.18,"#87767c"),box(0,0,.08,.58,.12,.08,"#2a2029")];for(let i=-2;i<=2;i++)model.push(box(i*.11,0,.12,.035,.1,.55,bars));model.push(box(0,0,.38,.58,.09,.04,bars));voxels.push(...translated(model,p.x,p.y,0))}
  drawFaces(ctx,camera,voxels,zbuf)}
