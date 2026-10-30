@@ -182,7 +182,7 @@ html:has(.stage.playing),html:has(.stage.playing) *{cursor:none!important}.stage
 .pause-panel h2{font-size:clamp(24px,4vw,38px);margin:12px 0}.pause-panel p{font:13px/1.5 Arial;color:#b9c7c1}.pause-panel button{border-radius:4px;border:1px solid #87917a66;min-height:44px;background:#20343a;color:#e5dcc3;padding:10px 16px;margin:4px;font-size:14px}.pause-panel button:hover{background:#344a49;border-color:#c8b27f}.pause-panel>button{background:#8b5e3d;min-width:210px;letter-spacing:.12em}.pause-panel .eyebrow{color:#c7b184}.stage.paused .top-actions{visibility:hidden}
 @media(pointer:coarse),(max-width:900px){.message{top:22%;left:18%;right:18%;font:11px/1.4 Arial;background:linear-gradient(90deg,transparent,#101c22a0,transparent);padding:4px 8px}.area-notice{pointer-events:none;opacity:.78}.area-notice b{font-size:16px;letter-spacing:1px}.pause-panel{inset:12px;padding:12px 20px}.pause-panel p{margin:8px 0}.pause-panel button{font-size:12px;padding:8px 12px}.pause-panel h2{font-size:26px}}
 
-/* Cendreval interface: enamel blue, warm ivory and restrained gem accents.
+/* Outbinched interface: enamel blue, warm ivory and restrained gem accents.
    Static CSS decoration keeps the live canvas and gesture surface inexpensive. */
 .stage{--ui-deep:#101c31;--ui-raised:#1d334b;--ui-line:#839ba5;--ui-ivory:#f1e5c8;--ui-gem:#9ddccc}
 .stage .illustrated-panel,.stage .gesture-help,.stage .pause-panel{background:radial-gradient(ellipse at 0 0,#304b62 0,transparent 65%),linear-gradient(145deg,#15263bfA,#10192bfC);border:1px solid #a5b4b6;border-radius:9px;box-shadow:inset 0 0 0 3px #0d172b,inset 0 0 0 4px #a4b0a345,0 18px 50px #0009;backdrop-filter:none;color:var(--ui-ivory)}
@@ -236,3 +236,6 @@ html:has(.stage.playing),html:has(.stage.playing) *{cursor:none!important}.stage
 .ending-screen{z-index:60;overflow-y:auto;overscroll-behavior:contain}.echo-card{z-index:50;right:12px;top:76px;bottom:auto;width:min(520px,calc(100% - 24px));max-width:calc(100% - 24px);max-height:calc(100dvh - 100px);overflow-x:hidden;grid-template-columns:minmax(0,1fr)}.echo-card button{min-height:44px}
 
 @media(max-width:500px){.echo-trials{grid-template-columns:minmax(0,1fr)}}
+
+/* Keep the full title inside narrow phone screens. */
+.opening h1{max-width:100%;font-size:clamp(28px,6.2vw,80px);letter-spacing:.08em}

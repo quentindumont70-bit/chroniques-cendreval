@@ -1,6 +1,10 @@
-# vinext-starter
+# Outbinched
 
-A clean full-stack starter running on
+Jeu de rôle en vue subjective, jouable sur mobile et ordinateur.
+
+**Outbinched** est le nom public du jeu. Le dépôt, son adresse de publication et les identifiants internes `cendreval-*` restent inchangés pour préserver les liens et les sauvegardes existantes.
+
+Infrastructure running on
 [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
 Drizzle support.
 
