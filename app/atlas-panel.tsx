@@ -1,0 +1,14 @@
+import {useMemo} from 'react';
+import {atlasMarkers,routeFor,type AtlasProfile,type MapPoint} from './atlas';
+import {mapForQuest} from './world-map';
+export default function AtlasPanel({profile,destination,onDestination,onClose}:{profile:AtlasProfile;destination:MapPoint|null;onDestination:(p:MapPoint|null)=>void;onClose:()=>void}){
+ const map=mapForQuest(profile.quest),markers=atlasMarkers(profile),route=useMemo(()=>routeFor(profile,destination),[profile,destination]);
+ return <div className="panel atlas-panel" role="dialog" aria-modal="true" aria-label="Atlas d’Outbinched"><button className="close" onClick={onClose} aria-label="Fermer l’atlas">×</button><span className="eyebrow">CARTOGRAPHIE DU VEILLEUR</span><h2>{profile.quest>=7?'Le château noir':'La vallée des serments'}</h2><p>Choisissez un lieu ou une case libre. Le tracé contourne les murs ; le losange vous guide une fois la carte refermée.</p><div className="atlas-layout"><svg viewBox="0 0 200 200" role="img" aria-label="Carte interactive, nord en haut">
+ <rect width="200" height="200" fill="#152322"/>
+ {map.flatMap((row,y)=>[...row].map((cell,x)=><rect key={`${x}-${y}`} x={x*10} y={y*10} width="10" height="10" fill={cell==='0'?'#344437':cell==='3'?'#847561':'#162220'} stroke="#9da68112" strokeWidth=".4" onClick={()=>{if(cell==='0')onDestination({x:x+.5,y:y+.5})}}/>))}
+ {route.length>0&&<polyline points={route.map(p=>`${p.x*10},${p.y*10}`).join(' ')} fill="none" stroke="#e9c581" strokeWidth="1.2" strokeDasharray="2 2"/>}
+ {markers.map(m=><g key={m.id} role="button" tabIndex={0} aria-label={m.label} onClick={()=>onDestination(m)} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();onDestination(m)}}}><circle cx={m.x*10} cy={m.y*10} r="5.5" fill={m.done?'#7a683f':'#182631'} stroke="#e9c581" strokeWidth=".6"/><text x={m.x*10} y={m.y*10+2} textAnchor="middle" fontSize="6" fill="#fff0d1">{m.symbol}</text></g>)}
+ {destination&&<circle cx={destination.x*10} cy={destination.y*10} r="6.5" fill="none" stroke="#fff4c2"/>}
+ <path d="M 5 0 L -3 -3 L -2 0 L -3 3 Z" fill="#9df2ed" stroke="#102124" strokeWidth=".6" transform={`translate(${profile.x*10} ${profile.y*10}) rotate(${profile.a*180/Math.PI})`}/><text x="100" y="8" textAnchor="middle" fontSize="6" fill="#fff0d1">N</text></svg>
+ <div className="atlas-locations"><b>DESTINATIONS</b>{markers.map(m=><button key={m.id} onClick={()=>onDestination(m)}>{m.symbol} {m.label}<small>{m.done?'Lieu connu':'À explorer'}</small></button>)}</div></div><div className="atlas-footer"><span>{destination?route.length?`Itinéraire tracé · ${Math.round(route.reduce((n,p,i)=>n+(i?Math.hypot(p.x-route[i-1].x,p.y-route[i-1].y):0),0))} pas`:'Destination inaccessible':'Aucune destination choisie'}</span><button onClick={()=>onDestination(null)}>Effacer le repère</button><button onClick={onClose}>Reprendre la route</button></div></div>
+}

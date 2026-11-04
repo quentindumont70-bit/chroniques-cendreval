@@ -1,0 +1,5 @@
+# Outbinched
+
+Avant toute modification, lire `docs/PARALLEL-WORK.md` et `docs/work-claims/` sur main, puis comparer aux branches distantes actuelles. Queen’s Domain est la référence principale précisée par l’utilisateur le 4 novembre 2026.
+
+Travailler sur une branche Claude distincte, réserver un périmètre, préserver les sauvegardes `cendreval-*`, valider le code et proposer une PR. Codex assure l’intégration proposée ; ne pas pousser sur main pendant le travail parallèle. Les conversations ne sont pas partagées automatiquement.
