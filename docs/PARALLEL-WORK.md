@@ -1,6 +1,8 @@
 # Outbinched — travail partagé Codex / Claude
 
-État de passation : 4 novembre 2026. Toujours comparer ces notes aux branches distantes avant de commencer.
+État de passation : 5 novembre 2026.
+
+**Mise à jour prioritaire :** l’utilisateur a autorisé les cinq chantiers 3D. Lire `docs/EXPEDITION-3D.md` pour leur état, les fichiers, l’accès `?expedition=1` et les limites de validation graphique. Le mode classique reste le défaut. Les paragraphes décrivant le raycaster ci-dessous concernent cette version classique. Toujours comparer ces notes aux branches distantes avant de commencer.
 
 ## Identité et accès
 
@@ -14,7 +16,7 @@
 
 FPS-RPG solo gothique, vallée belle et lumineuse puis château sombre. Références : Secret of Mana réinventé avec les moyens actuels, Octopath Traveler pour la richesse visuelle, Skyrim / Elden Ring / Heretic pour l'exploration et le combat. L'ambition AAA est une direction, pas une qualification du prototype actuel.
 
-Priorités : relief lisible, monde vivant, personnages et arbres volumétriques soignés, animations lisibles, coups et butin perceptibles, musique sans bruit blanc, interface oldschool modernisée. Le moteur actuel est un raycaster Canvas 2D avec rendu voxel/facettes projetées ; ne pas le décrire comme un moteur WebGL complet. Pas de migration moteur sans décision explicite.
+Priorités : relief lisible, monde vivant, personnages et arbres volumétriques soignés, animations lisibles, coups et butin perceptibles, musique sans bruit blanc, interface oldschool modernisée. Le moteur actuel est un raycaster Canvas 2D avec rendu voxel/facettes projetées ; ne pas le décrire comme un moteur WebGL complet. La migration progressive a été explicitement autorisée le 5 novembre ; elle est isolée dans la nouvelle expédition.
 
 Mobile : deux pouces indépendants, gestes pour attaque/parade/esquive/compétences ; préserver ce schéma. Le joueur trouve le 1080p agréable sur iPhone 17 Pro Max et la 4K trop lente. PC : clavier/souris, capture/reprise fiable, boutons latéraux sans navigation navigateur. Ne pas annoncer 60/120/240 FPS garantis sans mesure.
 
@@ -26,7 +28,7 @@ L'utilisateur demande de vrais gros chantiers distincts, jouables, enchaînés s
 
 Le 4 novembre, l’utilisateur précise que Queen’s Domain est le jeu correspondant à ce qu’il veut atteindre avec Outbinched. Cette référence devient prioritaire pour calibrer la direction. Source officielle : https://press.futurefriendsgames.com/queens-domain . Piliers documentés : fantasy rétro, exploration interconnectée riche en secrets, déplacements verticaux, combat à endurance, attaques chargées et spéciales, armes secondaires.
 
-Traduction proposée pour Outbinched : construire une petite zone dense et cohérente, avec relief réel, raccourcis, secrets, silhouettes lisibles et impacts convaincants avant de multiplier les systèmes. Garder l’identité, les classes et les sauvegardes propres à Outbinched. Ne pas copier les assets, le monde ou l’histoire de la référence. Le raycaster actuel limite les espaces superposés et les déplacements 3D ; proposer une tranche jouable en vraie 3D pour évaluer une migration, sans annoncer qu’elle existe déjà ni supprimer le prototype publié.
+Traduction proposée pour Outbinched : construire une petite zone dense et cohérente, avec relief réel, raccourcis, secrets, silhouettes lisibles et impacts convaincants avant de multiplier les systèmes. Garder l’identité, les classes et les sauvegardes propres à Outbinched. Ne pas copier les assets, le monde ou l’histoire de la référence. Le raycaster actuel limite les espaces superposés et les déplacements 3D ; proposer une tranche jouable en vraie 3D pour évaluer une migration, sans supprimer le prototype classique publié. La première implémentation 3D est désormais décrite dans EXPEDITION-3D.md.
 
 ## Architecture
 
