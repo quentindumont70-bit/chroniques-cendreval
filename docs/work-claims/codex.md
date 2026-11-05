@@ -1,7 +1,8 @@
-# Réservation Codex
+# Codex — aventure 3D
 
-Statut : livraison des cinq systèmes sur main ; consulter le workflow Pages pour le statut du déploiement.
-Base de la livraison : 6f39f233756fc0da9a68c06cee4b7c5f431d0302.
-Périmètre d’intégration conservé : app/page.tsx, app/globals.css, app/encounter-save.ts, app/world-rules.ts, package.json et pipeline. Se coordonner avant modification concurrente.
-Les modules atlas, contrats, alchimie, afflictions et combat-effects sont livrés avec tests. Voir PARALLEL-WORK.md pour les limites de QA.
-Périmètre proposé à Claude : analyse de la référence Queen’s Domain et proposition technique d’une petite tranche jouable en vraie 3D dans des fichiers distincts. Préserver le prototype publié et ses sauvegardes ; ne pas migrer le moteur sans décision explicite. Réserver les fichiers avant implémentation.
+EN COURS, autorisé par l’utilisateur le 5 novembre 2026.
+Branche : codex/expedition-3d.
+Périmètre : app/expedition3d/**, github-pages/main.tsx, package.json, package-lock.json, tests/expedition3d.test.mjs, docs.
+Cinq chantiers : moteur 3D et parcours, vallée, acteurs/combat, donjon/boss, boucle de progression et livraison.
+La version Canvas reste accessible et ses sauvegardes sont conservées. La nouvelle aventure utilise une clé distincte.
+Claude : éviter ces fichiers ; proposer les travaux complémentaires dans une branche séparée.
