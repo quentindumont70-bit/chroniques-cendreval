@@ -1,3 +1,4 @@
+import {HERBS} from '../alchemy.ts';
 export type Zone='valley'|'crypt';
 export type Box={x:number;z:number;y:number;w:number;d:number;h:number;kind?:'gate'|'house'|'wall'|'pillar'|'rock'};
 export type Place={id:string;name:string;x:number;z:number;y?:number;kind:'rest'|'portal'|'lever'|'secret'|'memory'|'village'|'herb'|'chest';index?:number};
@@ -44,7 +45,7 @@ export const places:Record<Zone,Place[]>={valley:[
  {id:'hollow',name:'Cache sous le pont',x:0,z:4,y:-1.4,kind:'secret'},
  {id:'shrine',name:'Sanctuaire du seuil',x:0,z:-35,kind:'rest'},
  {id:'entrance',name:'Entrer dans le donjon',x:0,z:-47,kind:'portal'},
- ...[[-5,17],[5,20],[-7,-8],[10,-12],[-23,-17],[21,-26],[-8,-31],[8,-37],[-20,5],[16,10],[-10,31],[26,-9]].map(([x,z],index)=>({id:`herb${index}`,name:['Achillée carmin','Résine dorée','Morille lunaire'][index%3],x,z,kind:'herb' as const,index}))
+ ...[[-5,17],[5,20],[-7,-8],[10,-12],[-23,-17],[21,-26],[-8,-31],[8,-37],[-20,5],[16,10],[-10,31],[26,-9]].map(([x,z],index)=>({id:`herb${index}`,name:HERBS[index].name,x,z,kind:'herb' as const,index}))
 ],crypt:[
  {id:'exit',name:'Retour à la vallée',x:0,z:5,kind:'portal'},
  {id:'cryptfire',name:'Braise du vestibule',x:-4,z:2,kind:'rest'},

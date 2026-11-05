@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {ground,floorAt,moveBody,canStand,sight,places,spawns} from '../app/expedition3d/world.ts';
+import {HERBS} from '../app/alchemy.ts';
 import {fresh,decode,rewardBoss,finish,gainXp,SAVE_KEY} from '../app/expedition3d/progress.ts';
 function walk(zone,p,to,gate=false){for(let i=0;i<2500;i++){const dx=to.x-p.x,dz=to.z-p.z,d=Math.hypot(dx,dz);if(d<.13)return true;moveBody(zone,p,dx/d*.07,dz/d*.07,gate);p.y=floorAt(zone,p.x,p.z,p.y)}return false}
 test('village to castle is traversable over a genuinely elevated bridge',()=>{const p={x:0,y:0,z:31};assert(walk('valley',p,{x:0,z:4}));assert.equal(p.y,1.8);assert(walk('valley',p,{x:0,z:-47}));assert(p.y>3.5)});
@@ -13,7 +14,7 @@ test('boss reward and conclusion cannot be claimed twice or before the boss',()=
 test('3D save is separate and preserves valid bridge and gallery positions',()=>{assert(!SAVE_KEY.startsWith('cendreval-'));const p=fresh('arcane');p.x=0;p.z=4;p.y=1.8;assert.equal(decode(JSON.stringify(p)).y,1.8);p.zone='crypt';p.x=12;p.z=-25;p.y=3;assert.equal(decode(JSON.stringify(p)).y,3)});
 test('corrupt save data cannot create unknown equipment or invalid coordinates',()=>{const p=decode(JSON.stringify({...fresh(),x:100000,gold:-100,mana:900,oil:800,dead:['hacked','boss'],gear:['hacked'],equipped:'hacked',talentMight:999,finished:true,bossLoot:false}));assert(p.x<=33);assert.equal(p.gold,0);assert.equal(p.mana,100);assert.equal(p.oil,9);assert.equal(p.equipped,'pilgrim');assert.equal(p.talentMight,3);assert.equal(p.finished,false);assert.throws(()=>decode('{}'))});
 test('level thresholds grant real talent points',()=>{const p=fresh();gainXp(p,110);assert.equal(p.level,3);assert.equal(p.talent,2);assert.equal(p.xp,5)});
-test('all class choices round trip and all gameplay locations have finite heights',()=>{for(const id of ['blade','bow','arcane','hex','cantor','reaver'])assert.equal(decode(JSON.stringify(fresh(id))).classId,id);for(const zone of ['valley','crypt'])for(const p of [...places[zone],...spawns[zone]])assert(Number.isFinite(ground(zone,p.x,p.z)))});
+test('all class choices round trip and all gameplay locations have finite heights',()=>{for(const id of ['blade','bow','arcane','hex','cantor','reaver'])assert.equal(decode(JSON.stringify(fresh(id))).classId,id);for(const p of places.valley.filter(p=>p.kind==='herb'))assert.equal(p.name,HERBS[p.index].name);for(const zone of ['valley','crypt'])for(const p of [...places[zone],...spawns[zone]])assert(Number.isFinite(ground(zone,p.x,p.z)))});
 
 import * as THREE from 'three';
 import {Expedition} from '../app/expedition3d/game.ts';
