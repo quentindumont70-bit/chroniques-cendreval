@@ -1,7 +1,7 @@
 import {HERBS} from '../alchemy.ts';
 export type Zone='valley'|'crypt'|'cistern';
 export type Box={x:number;z:number;y:number;w:number;d:number;h:number;kind?:'gate'|'house'|'wall'|'pillar'|'rock'};
-export type Place={id:string;name:string;x:number;z:number;y?:number;kind:'rest'|'portal'|'lever'|'secret'|'memory'|'village'|'herb'|'chest'|'npc'|'flight'|'shortcut'|'bell'|'inscription';index?:number;requiresFlight?:boolean};
+export type Place={id:string;name:string;x:number;z:number;y?:number;kind:'rest'|'portal'|'lever'|'secret'|'memory'|'village'|'herb'|'chest'|'npc'|'flight'|'shortcut'|'bell'|'inscription'|'challenge';index?:number;requiresFlight?:boolean};
 export const clamp=(v:number,a:number,b:number)=>Math.max(a,Math.min(b,v));
 export function ground(zone:Zone,x:number,z:number){
  if(zone==='cistern')return z< -14&&z> -21?-10:0;
@@ -41,6 +41,7 @@ export const cryptBoxes:Box[]=[
 export const cisternBoxes:Box[]=[{x:-23,z:-14,y:-10,w:1,d:55,h:18,kind:'wall'},{x:23,z:-14,y:-10,w:1,d:55,h:18,kind:'wall'},{x:0,z:12,y:0,w:46,d:1,h:8,kind:'wall'},{x:0,z:-41,y:0,w:46,d:1,h:8,kind:'wall'},...[-15,15].flatMap(x=>[-7,-30].map(z=>({x,z,y:0,w:2,d:2,h:8,kind:'pillar' as const})))];
 export const platforms:Record<Zone,Box[]>={valley:[{x:25,z:-7,y:ground('valley',25,-7)+2.5,w:6,d:5,h:.5}],crypt:[{x:3,z:-24,y:5.4,w:5,d:5,h:.5}],cistern:[]};
 export const places:Record<Zone,Place[]>={valley:[
+ {id:'trial-orchard',name:'Épreuve : les Veilleurs du verger',x:-25,z:-32,kind:'challenge'},
  {id:'tovin-home',name:'Tovin · de retour à Valbrume',x:7,z:22,kind:'npc'},
  {id:'mara',name:'Mara · la lumière sous la pierre',x:6,z:24,kind:'npc'},
  {id:'rune',name:'Rune · rallumer la forge',x:-5,z:19,kind:'npc'},
@@ -57,6 +58,7 @@ export const places:Record<Zone,Place[]>={valley:[
  {id:'entrance',name:'Entrer dans le donjon',x:0,z:-47,kind:'portal'},
  ...[[-5,17],[5,20],[-7,-8],[10,-12],[-23,-17],[21,-26],[-8,-31],[8,-37],[-20,5],[16,10],[-10,31],[26,-9]].map(([x,z],index)=>({id:`herb${index}`,name:HERBS[index].name,x,z,kind:'herb' as const,index}))
 ],cistern:[
+ {id:'trial-drowned',name:'Épreuve : le cercle des noyés',x:-10,z:-34,kind:'challenge'},
  {id:'tide-inscription',name:'Lire la stèle des marées',x:0,z:-6,kind:'inscription'},
  {id:'bell-source',name:'Faire sonner la Source',x:-7,z:-25,kind:'bell',index:0},
  {id:'bell-moon',name:'Faire sonner la Lune',x:0,z:-26,kind:'bell',index:1},
@@ -68,6 +70,7 @@ export const places:Record<Zone,Place[]>={valley:[
  {id:'orecache',name:'Coffre de la carrière',x:10,z:-29,kind:'chest'},
  {id:'cistern-shortcut',name:'Ouvrir le passage du château',x:0,z:-36,kind:'shortcut'},
  ],crypt:[
+ {id:'trial-vigil',name:'Épreuve : la dernière veillée',x:0,z:-20,kind:'challenge'},
  {id:'crypt-cistern',name:'Passage vers la citerne',x:-15,z:-26,kind:'portal'},
  {id:'highrelic',name:'Autel de la foudre',x:3,z:-24,y:5.4,kind:'chest',requiresFlight:true},
  {id:'exit',name:'Retour à la vallée',x:0,z:5,kind:'portal'},

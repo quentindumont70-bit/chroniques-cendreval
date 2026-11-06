@@ -1,3 +1,6 @@
+import {TRIALS,startTrial,trialSpawns,advanceTrial,trialForEnemy,type TrialId} from './encounters.ts';
+import {PROJECTS,buildProject,villageRest,npcPosition,hearRumor,type ProjectId} from './village.ts';
+import {discoverPlaces,findPlace,walkingRoute,type RoutePoint} from './navigation.ts';
 import {masteryStats,learnMastery} from './mastery.ts';
 import {BOSS_MOVES,nextBossMove,bossMoveHits,weaponPose,type BossMove} from './combat.ts';
 import {enemyLoot,relicStats,RELICS,salvage,type RelicId} from './relics.ts';
@@ -16,13 +19,14 @@ import {buildWorld,actor,pose,makeWeapon,material,disposeWorld,disposeMaterials,
 import {ground,floorAt,ceilingAt,moveBody,sight,canStand,places,spawns,clamp,type Zone,type Place,type EnemyKind} from './world.ts';
 import {fresh,decode,SAVE_KEY,GEAR,gainXp,objective,rewardBoss,finish,type Progress} from './progress.ts';
 export type Enemy={id:string;kind:EnemyKind;x:number;y:number;z:number;hp:number;max:number;wind:number;recover:number;flash:number;phase:number;model:Actor;affliction?:Affliction;expose:number;home:{x:number;z:number};poise?:number;stun?:number;alert?:number;move?:BossMove;sequence?:number;attackYaw?:number};
-export type Snapshot={p:Progress;objective:string;hint:string;notice:string;target:{name:string;hp:number;max:number;wind:boolean;poise:number;move:string}|null;cooldowns:number[];fps:number;calls:number;paused:boolean;guard:boolean;locked:boolean;sound:boolean;quality:string;saveError:string;charge:number;dialogue:NpcId|null;riposte:boolean;preferences:Preferences;frameMs:number;feedback:number;feedbackKind:string};
+export type Snapshot={p:Progress;objective:string;hint:string;notice:string;target:{name:string;hp:number;max:number;wind:boolean;poise:number;move:string}|null;cooldowns:number[];fps:number;calls:number;paused:boolean;guard:boolean;locked:boolean;sound:boolean;quality:string;saveError:string;charge:number;dialogue:NpcId|null;riposte:boolean;preferences:Preferences;frameMs:number;feedback:number;feedbackKind:string;route:RoutePoint[];navigationHint:string};
 type Bolt={mesh:T.Mesh;vx:number;vz:number;vy:number;life:number;damage:number;hostile:boolean;magic:boolean;mark:boolean;poise:number;charged:boolean};
 type Hazard={x:number;z:number;y:number;delay:number;radius:number;mesh:T.Mesh};
 type Fx={mesh:T.Mesh;life:number;max:number;vy:number};
 const NAMES:Record<EnemyKind,string>={sentinel:'Veilleur déchu',archer:'Arbalétrier des brumes',hound:'Traqueur creux',boss:'Le gardien · Sulfuras'};
 export class Expedition{
  renderer:T.WebGLRenderer;scene=new T.Scene();camera=new T.PerspectiveCamera(72,1,.06,180);world!:WorldView;weapon:T.Group;enemies:Enemy[]=[];bolts:Bolt[]=[];fx:Fx[]=[];hazards:Hazard[]=[];feedback=0;feedbackKind='hit';swingDuration=.46;
+ navigationRoute:RoutePoint[]=[];navigationHint='';explorationTimer=0;
  preferences:Preferences={...DEFAULT_PREFERENCES};slowFrames=0;frameMs=16.7;
  dialogue:NpcId|null=null;charging=false;charge=0;riposte=0;airUsed=false;airBurst=0;dodgeBonus=0;
  p:Progress;paused=true;mouseFallback=false;keys=new Set<string>();cooldowns=[0,0,0];attackCd=0;swing=0;guardTime=0;guarding=false;dodgeTime=0;dodgeBurst=0;vy=0;pitch=0;locked:string|null=null;
@@ -98,16 +102,17 @@ export class Expedition{
   if(arrival){this.p.x=0;this.p.z=zone==='crypt'?3:zone==='cistern'?7:-44;this.p.y=ground(zone,this.p.x,this.p.z);this.p.yaw=zone==='crypt'?0:Math.PI}
   if(spawn){this.p.x=spawn.x;this.p.z=spawn.z;this.p.y=ground(zone,spawn.x,spawn.z);this.p.yaw=spawn.yaw??0}
   this.vy=0;this.airUsed=false;this.airBurst=0;this.pitch=0;this.locked=null;
-  for(const s of spawns[zone])if(!this.p.dead.includes(s.id)){
-   const model=actor(s.kind);model.root.position.set(s.x,ground(zone,s.x,s.z),s.z);this.scene.add(model.root);const max=s.kind==='boss'?500:s.id==='s4'?160:s.kind==='sentinel'?90:s.kind==='archer'?65:55;
+  for(const s of [...spawns[zone],...(Object.keys(TRIALS) as TrialId[]).filter(id=>TRIALS[id].zone===zone).flatMap(id=>trialSpawns(this.p,id))])if(!this.p.dead.includes(s.id)){
+   const model=actor(s.kind);model.root.position.set(s.x,ground(zone,s.x,s.z),s.z);this.scene.add(model.root);const max=s.id.startsWith('trial-')?(s.kind==='sentinel'?120:s.kind==='archer'?80:65):s.kind==='boss'?500:s.id==='s4'?160:s.kind==='sentinel'?90:s.kind==='archer'?65:55;
    this.enemies.push({...s,y:ground(zone,s.x,s.z),hp:max,max,wind:0,recover:1,flash:0,phase:1,model,expose:0,poise:0,stun:0,alert:0,home:{x:s.x,z:s.z}});
   }
-  this.updateMarkers();this.save();
+  this.updateMarkers();if(this.p.trackedPlace)this.trackPlace(this.p.trackedPlace,false);this.save();
  }
  updateMarkers(){
   for(const gate of this.world.gates)gate.visible=!this.p.gate;
   if(this.world.village)this.world.village.visible=this.p.heartChoice==='restore';const fire=this.world.root?.getObjectByName('forge-fire');if(fire)fire.visible=this.p.forgeOpen;const ward=this.world.root?.getObjectByName('village-ward');if(ward)ward.visible=this.p.heartChoice==='ward';
-  for(const p of places[this.p.zone]){const m=this.world.markers.get(p.id)!;m.visible=p.id==='tovin-home'?this.p.rescue>=2:p.kind==='flight'?!this.p.flight:p.id==='tovin'&&this.p.rescue>=2?false:p.kind==='herb'?!(this.p.harvestMask&(1<<p.index!)):p.id==='reward'?this.p.dead.includes('boss')&&!this.p.bossLoot:!this.p.found.includes(p.id)||['rest','portal','village','lever','npc','shortcut','bell','inscription'].includes(p.kind)}
+  for(const id of Object.keys(PROJECTS)){const obj=this.world.root?.getObjectByName('project-'+id);if(obj)obj.visible=this.p.villageProjects.includes(id)}
+  for(const p of places[this.p.zone]){const m=this.world.markers.get(p.id)!;m.visible=p.id==='tovin-home'?this.p.rescue>=2:p.kind==='flight'?!this.p.flight:p.id==='tovin'&&this.p.rescue>=2?false:p.kind==='herb'?!(this.p.harvestMask&(1<<p.index!)):p.id==='reward'?this.p.dead.includes('boss')&&!this.p.bossLoot:!this.p.found.includes(p.id)||['rest','portal','village','lever','npc','shortcut','bell','inscription','challenge'].includes(p.kind)}
  }
  clearTransient(){for(const h of this.hazards||[]){h.mesh.removeFromParent();h.mesh.geometry.dispose()}this.hazards=[];for(const b of this.bolts){b.mesh.removeFromParent();b.mesh.geometry.dispose()}for(const f of this.fx){f.mesh.removeFromParent();f.mesh.geometry.dispose()}this.bolts=[];this.fx=[]}
  stats(){const s=playerStats(this.p.classId,this.p.level,this.p),g=GEAR.find(g=>g.id===this.p.equipped)!;return masteryStats(this.p,relicStats(this.p,buildStats(this.p,{...s,power:s.power+g.power,armor:s.armor+g.armor+(this.p.heartChoice==='ward'?10:0),manaRegen:s.manaRegen+(this.p.heartChoice==='restore'?1:0)})))}
@@ -159,6 +164,7 @@ export class Expedition{
   if(e.hp<=0)this.kill(e);
  }
  kill(e:Enemy){if(this.p.dead.includes(e.id))return;this.p.dead.push(e.id);this.p.foesDefeated++;if(this.p.mastery==='harvest'){this.p.stamina=Math.min(100,this.p.stamina+20);this.p.hp=Math.min(100,this.p.hp+5)}if(this.p.discipline==='butcher'&&this.p.disciplineRank>=2)this.p.hp=Math.min(100,this.p.hp+10);if(this.p.discipline==='soul'&&this.p.disciplineRank>=3)this.p.mana=Math.min(100,this.p.mana+15);gainXp(this.p,enemyLoot(this.p,e.id,e.kind));this.p.mana=Math.min(100,this.p.mana+8);this.p.potions=Math.min(9,this.p.potions+(this.p.foesDefeated%3===0?1:0));this.locked=null;
+  const trial=trialForEnemy(e.id);if(trial&&advanceTrial(this.p,trial)){if(this.p.trials[trial]===3){this.say('Épreuve accomplie · +1 talent, or et minerais');this.updateMarkers()}else{this.spawnTrialWave(trial);this.say('Seconde vague · '+TRIALS[trial].name)}}
   const drop=e.id==='v2'?'spear':e.id==='v3'?'bow':e.id==='c2'?'catalyst':null;if(drop&&!this.p.weapons.includes(drop)){this.p.weapons.push(drop);this.say('Arme trouvée : '+WEAPONS[drop].name)}
   if(this.p.foesDefeated===2&&!this.p.gear.includes('watch')){this.p.gear.push('watch');this.say('Butin : Lame du veilleur · équipez-la dans le sac.')}
   if(e.kind==='boss'){this.p.quest=8;this.say('Le gardien est tombé. Recueillez son cœur.');this.updateMarkers()}
@@ -180,6 +186,10 @@ export class Expedition{
  heal(){if(this.paused||this.p.potions<1||this.p.hp>=100)return;this.p.potions--;this.p.hp=Math.min(100,this.p.hp+45);this.say('Potion · +45 vie');this.save()}
  prepare(){if(this.paused)return;const next=usePreparation(this.p);if(next!==this.p){this.p=next;this.say('Préparation utilisée');this.save()}}
  refreshWeapon(){if(!this.camera)return;disposeWorld(this.weapon);this.weapon=makeWeapon(WEAPONS[this.p.weapon].model);hands(this.weapon,ARMORS[this.p.armor].color);this.camera.add(this.weapon);this.weapon.scale.setScalar(.55)}
+ spawnTrialWave(id:TrialId){for(const spawn of trialSpawns(this.p,id)){if(this.enemies.some(e=>e.id===spawn.id&&e.hp>0))continue;const model=actor(spawn.kind),y=ground(this.p.zone,spawn.x,spawn.z),max=spawn.kind==='sentinel'?120:spawn.kind==='archer'?80:65;model.root.position.set(spawn.x,y,spawn.z);this.scene.add(model.root);this.enemies.push({...spawn,y,hp:max,max,wind:0,recover:1.5,flash:0,phase:1,model,expose:0,poise:0,stun:0,alert:6,home:{x:spawn.x,z:spawn.z}})}}
+ buildVillage(id:ProjectId){if(buildProject(this.p,id)){this.updateMarkers();this.say(PROJECTS[id].name+' achevé.');this.save();this.emit()}}
+ hearRumor(id:string){const r=hearRumor(this.p,id);if(r){this.say(r.text);this.save();this.emit()}}
+ trackPlace(id:string,persist=true){if(!id){this.p.trackedPlace='';this.navigationRoute=[];this.navigationHint='';if(persist){this.save();this.emit()}return}const found=findPlace(id);if(!found)return;this.p.trackedPlace=id;let target=found.place;if(found.zone!==this.p.zone){const gateway=this.p.zone==='valley'?(found.zone==='crypt'?'entrance':'cistern'):this.p.zone==='crypt'?(found.zone==='cistern'&&this.p.shortcut?'crypt-cistern':'exit'):found.zone==='crypt'?'cistern-shortcut':'cistern-exit';target=places[this.p.zone].find(t=>t.id===gateway)!}this.navigationRoute=walkingRoute(this.p,target);this.navigationHint=found.place.name+(found.zone!==this.p.zone?' · rejoindre '+target.name:this.navigationRoute.length?' · chemin pédestre':' · accès vertical ou chemin non trouvé');if(persist){this.save();this.emit()}}
  equipRelic(id:RelicId){if(!this.p.relics.includes(id))return;this.p.relic=id;this.save();this.emit()}
  salvageItem(kind:'weapon'|'armor',id:string){if(salvage(this.p,kind,id)){this.say('Équipement recyclé.');this.save();this.emit()}}
  equipWeapon(id:WeaponId){if(!this.p.weapons.includes(id))return;this.p.weapon=id;this.charging=false;this.charge=0;this.refreshWeapon();this.save();this.emit()}
@@ -188,7 +198,7 @@ export class Expedition{
  trainDiscipline(id:string){if(train(this.p,id)){this.save();this.emit()}}
  learnMastery(id:string){if(learnMastery(this.p,id)){this.save();this.emit()}}
  respec(){if(respecialize(this.p)){if(this.p.mastery){this.p.mastery='';this.p.talent+=2}this.save();this.emit()}}
- chooseDialogue(id:string){if(!this.dialogue)return;if(id==='forge'&&this.p.forgeOpen){this.emit();return}const message=choose(this.p,id);if(message){this.say(message);this.updateMarkers();this.save();this.emit()}}
+ chooseDialogue(id:string){if(!this.dialogue)return;if(id.startsWith('rumor-')){this.hearRumor(id.slice(6));return;}if(id==='forge'&&this.p.forgeOpen){this.emit();return}const message=choose(this.p,id);if(message){this.say(message);this.updateMarkers();this.save();this.emit()}}
  craft(id:Preparation){this.p=brew(this.p,id);this.save();this.emit()}
  equip(id:string){if(this.p.gear.includes(id)){this.p.equipped=id;this.save();this.emit()}}
  learn(key:TalentKey){if(canLearnTalent(this.p,key,this.p.talent,this.p.level)){this.p[key]=(this.p[key]||0)+1;this.p.talent--;this.save();this.emit()}}
@@ -205,9 +215,10 @@ export class Expedition{
   if(t.kind==='shortcut'){p.shortcut=true;this.loadZone('crypt',true,{x:-14,z:-25,yaw:Math.PI});return}
   if(t.kind==='flight'){p.flight=true;this.say('Souffle acquis : sautez une seconde fois en l’air pour franchir les gouffres.');gainXp(p,35);this.updateMarkers();this.save();return}
   if(t.kind==='npc'||t.kind==='village'){this.dialogue=t.id==='tovin-home'?'tovin':t.id as NpcId;this.pause();return}
+  if(t.kind==='challenge'){const id=t.id.slice(6) as TrialId;if(startTrial(p,id)){this.spawnTrialWave(id);this.say('Épreuve commencée · '+TRIALS[id].name);this.save()}else this.say(p.trials[id]===3?'Cette épreuve est accomplie.':'Terminez d’abord l’épreuve en cours.');return}
   if(t.kind==='bell'){this.say(ringBell(p,t.index!));this.tone([196,261.63,329.63][t.index!],.8);this.save();return}
   if(t.kind==='inscription'){this.say(t.id==='memory-shrine'?(memoryReward(p)?'Les trois mémoires deviennent une braise qui ne meurt pas.':(p.lore&7)===7?'La braise vous accompagne.':'Trois voix : le pont brisé, le belvédère, puis le gardien.'): 'Quand la Lune rejoint la Source, le Soleil revient. Trois cloches veillent sur la rive profonde.');this.save();return}
-  if(t.kind==='rest'){p.checkpoint=t.id;p.hp=100;p.mana=100;p.stamina=100;p.potions=Math.max(3,p.potions);this.say('Repos · vie, mana et trois potions restaurés.');this.save();return}
+  if(t.kind==='rest'){p.checkpoint=t.id;p.hp=100;p.mana=100;p.stamina=100;p.potions=Math.max(3,p.potions);villageRest(p);this.say('Repos · vie, mana et trois potions restaurés.');this.save();return}
   if(t.kind==='lever'){p.gate=true;this.say('Le sceau cède. La grille du gardien se lève.');this.updateMarkers();this.save();return}
   if(t.kind==='herb'){this.p=harvest(p,t.index!);this.say('Récolte ajoutée à l’alchimie.');this.updateMarkers();this.save();return}
   if(p.found.includes(t.id))return;
@@ -222,7 +233,7 @@ export class Expedition{
  }
  respawn(){const cp=this.p.checkpoint;this.p.hp=100;this.p.mana=100;this.p.stamina=100;this.p.gold=Math.floor(this.p.gold*.9);this.cooldowns=[0,0,0];this.loadZone(cp==='cryptfire'?'crypt':cp==='cisternfire'?'cistern':'valley',false);const spot=places[this.p.zone].find(t=>t.id===cp)!;this.p.x=spot.x+1;this.p.z=spot.z+1;this.p.y=ground(this.p.zone,this.p.x,this.p.z);this.save();this.resume()}
  tick(dt:number){
-  const p=this.p;this.feedback=Math.max(0,(this.feedback||0)-dt);const chapter=discoverChapter(p);if(chapter)this.say(chapter.title+' · '+chapter.text);this.elapsed+=dt;this.riposte=Math.max(0,(this.riposte||0)-dt);this.airBurst=Math.max(0,(this.airBurst||0)-dt);this.dodgeBonus=Math.max(0,(this.dodgeBonus||0)-dt);if(this.charging)this.charge=Math.min(1.2,(this.charge||0)+dt);this.attackCd=Math.max(0,this.attackCd-dt);this.swing=Math.max(0,this.swing-dt);this.dodgeTime=Math.max(0,this.dodgeTime-dt);this.dodgeBurst=Math.max(0,this.dodgeBurst-dt);this.cooldowns=this.cooldowns.map(c=>Math.max(0,c-dt));this.noticeTime-=dt;tickAlchemy(p,dt);
+  const p=this.p;this.explorationTimer=(this.explorationTimer||0)+dt;if(this.explorationTimer>1){discoverPlaces(p);this.explorationTimer=0}this.feedback=Math.max(0,(this.feedback||0)-dt);const chapter=discoverChapter(p);if(chapter)this.say(chapter.title+' · '+chapter.text);this.elapsed+=dt;this.riposte=Math.max(0,(this.riposte||0)-dt);this.airBurst=Math.max(0,(this.airBurst||0)-dt);this.dodgeBonus=Math.max(0,(this.dodgeBonus||0)-dt);if(this.charging)this.charge=Math.min(1.2,(this.charge||0)+dt);this.attackCd=Math.max(0,this.attackCd-dt);this.swing=Math.max(0,this.swing-dt);this.dodgeTime=Math.max(0,this.dodgeTime-dt);this.dodgeBurst=Math.max(0,this.dodgeBurst-dt);this.cooldowns=this.cooldowns.map(c=>Math.max(0,c-dt));this.noticeTime-=dt;tickAlchemy(p,dt);
   p.mana=Math.min(100,p.mana+this.stats().manaRegen*dt);p.stamina=Math.min(100,p.stamina+(this.guarding?2:18)*dt);
   for(const t of this.touches.values())if(t.side==='look'&&t.travel<18&&this.elapsed-t.time>.3&&!this.guarding){this.guarding=true;this.guardTime=0}
   if(this.guarding)this.guardTime+=dt;
@@ -243,7 +254,7 @@ export class Expedition{
    if(e.kind==='boss'&&e.hp<=e.max*.5&&e.phase===1){e.phase=2;e.wind=0;e.move=undefined;e.sequence=0;e.recover=2;disposeWorld(e.model.weapon);e.model.weapon=makeWeapon('thunder');e.model.weapon.position.set(0,-.5,-.25);e.model.weapon.rotation.x=-.7;e.model.arms[1].add(e.model.weapon);this.say('Le gardien brise son serment · les deux Thunderfury !');this.spark(e.x,e.y+2,e.z,'#75e6ff',24)}
    const dx=p.x-e.x,dz=p.z-e.z,dist=Math.hypot(dx,dz),leashed=Math.hypot(e.x-e.home.x,e.z-e.home.z)>18||p.zone==='valley'&&p.z>14&&e.home.z<14,sees=!leashed&&this.visible(e)&&Math.abs(p.y-e.y)<4;
    if(leashed){e.alert=0;e.wind=0;const hx=e.home.x-e.x,hz=e.home.z-e.z,hd=Math.max(.1,Math.hypot(hx,hz));moveBody(p.zone,e,hx/hd*dt*2,hz/hd*dt*2,p.gate);e.y=floorAt(p.zone,e.x,e.z,e.y);e.model.root.position.set(e.x,e.y,e.z);pose(e.model,this.elapsed,true,0,0,e.phase);continue}
-   if(sees&&dist<14){e.alert=4;for(const ally of this.enemies)if(ally!==e&&ally.hp>0&&Math.hypot(ally.x-e.x,ally.z-e.z)<6)ally.alert=Math.max(ally.alert||0,3)}
+   if(sees&&dist<14){if(!p.seenFoes.includes(e.kind))p.seenFoes.push(e.kind);e.alert=4;for(const ally of this.enemies)if(ally!==e&&ally.hp>0&&Math.hypot(ally.x-e.x,ally.z-e.z)<6)ally.alert=Math.max(ally.alert||0,3)}
    e.recover=Math.max(0,e.recover-dt);let moving=false;if((e.stun||0)>0){pose(e.model,this.elapsed,false,0,0,e.phase);e.model.root.rotation.x=.15;continue}else e.model.root.rotation.x=0;
    if(e.wind>0){e.wind-=dt;if(e.wind<=0){e.recover=e.kind==='boss'&&e.move?BOSS_MOVES[e.move].recover:e.kind==='hound'?.9:1.5;e.flash=.3;
     if(e.kind==='boss'&&e.move){const move=BOSS_MOVES[e.move],facing=-(Math.sin(e.attackYaw||0)*dx+Math.cos(e.attackYaw||0)*dz)/Math.max(.01,dist);if(e.move==='storm'){for(let i=-1;i<=1;i++)this.addHazard(p.x+i*2.4,p.z+i*.7,.75+Math.abs(i)*.2)}else{if(sees&&bossMoveHits(e.move,dist,p.y-e.y,facing))this.hurt(move.damage,e,move.magic);if(e.move==='slam')this.spark(e.x,e.y+.05,e.z,'#ffbb65',20)}}
@@ -283,12 +294,12 @@ export class Expedition{
   this.advance(dt);
   const p=this.p;this.camera.position.set(p.x,p.y+1.62+(!this.paused&&this.preferences.motion?Math.sin(this.elapsed*8)*Math.hypot(this.stick.x,this.stick.y)*.025:0),p.z);this.camera.rotation.set(this.pitch,p.yaw,0,'YXZ');
   const wp=weaponPose(p.weapon,this.swing,this.swingDuration||WEAPONS[p.weapon].recovery,this.charge||0,this.guarding,this.preferences.motion);this.weapon.position.set(wp.x,wp.y,wp.z);this.weapon.rotation.set(wp.rx,wp.ry,wp.rz);
-  for(const t of places[p.zone]){const m=this.world.markers.get(t.id);if(m?.userData.npc){pose(m.userData.npc,this.elapsed*.5,false,0,0,1);m.rotation.y=Math.sin(this.elapsed*.3+t.x)*.2;m.position.x=t.x+Math.sin(this.elapsed*.18+t.z)*.25}}
+  for(const t of places[p.zone]){const m=this.world.markers.get(t.id);if(m?.userData.npc){const spot=npcPosition(t.id,t.x,t.z,this.elapsed,p),near=Math.hypot(m.position.x-p.x,m.position.z-p.z)<3;pose(m.userData.npc,this.elapsed*.5,!near&&spot.moving,0,0,1);if(near)m.rotation.y=Math.atan2(m.position.x-p.x,m.position.z-p.z);else{m.position.set(spot.x,ground(p.zone,spot.x,spot.z),spot.z);m.rotation.y=Math.sin(this.elapsed*.16)*.4}}}
   for(let i=0;i<this.world.birds.length;i++){const b=this.world.birds[i],t=this.elapsed*.12+i*1.3;b.position.set(Math.cos(t)*18,12+i*.4,Math.sin(t)*12-13);b.rotation.y=-t;b.rotation.z=Math.sin(this.elapsed*2+i)*.1}
   this.renderer.render(this.scene,this.camera);this.frames++;this.frameTime+=realDt;if(this.frameTime>1){this.fps=Math.round(this.frames/this.frameTime);this.frameMs=Math.round(this.frameTime/this.frames*10000)/10;this.slowFrames=!this.paused&&this.fps<42?this.slowFrames+1:0;if(this.preferences.autoQuality&&this.slowFrames>=4&&this.quality!=='Fluide'){this.setQuality(this.quality==='Détaillé'?'Équilibré':'Fluide',true);this.slowFrames=0;this.say('Qualité ajustée pour préserver la fluidité.')}this.frames=0;this.frameTime=0}
   this.uiTime+=dt;if(this.uiTime>.12){this.emit();this.uiTime=0}
  };
- emit(){const e=this.enemies.find(e=>e.id===this.locked&&e.hp>0)||this.target(16,.85);this.onSnapshot({p:{...this.p},objective:objective(this.p),hint:this.hint,notice:this.noticeTime>0?this.notice:'',target:e?{name:e.kind==='boss'&&e.phase===2?'Le gardien · Thunderfury':NAMES[e.kind],hp:e.hp,max:e.max,wind:e.wind>0,poise:e.poise||0,move:e.kind==='boss'&&e.move?BOSS_MOVES[e.move].name:''}:null,cooldowns:[...this.cooldowns],fps:this.fps,calls:this.renderer.info.render.calls,paused:this.paused,guard:this.guarding,locked:!!this.locked,sound:this.sound,quality:this.quality,saveError:this.saveError,charge:this.charge||0,dialogue:this.dialogue,riposte:(this.riposte||0)>0,preferences:{...this.preferences},frameMs:this.frameMs,feedback:this.feedback,feedbackKind:this.feedbackKind})}
+ emit(){const e=this.enemies.find(e=>e.id===this.locked&&e.hp>0)||this.target(16,.85);this.onSnapshot({p:{...this.p},objective:objective(this.p),hint:this.hint,notice:this.noticeTime>0?this.notice:'',target:e?{name:e.kind==='boss'&&e.phase===2?'Le gardien · Thunderfury':NAMES[e.kind],hp:e.hp,max:e.max,wind:e.wind>0,poise:e.poise||0,move:e.kind==='boss'&&e.move?BOSS_MOVES[e.move].name:''}:null,cooldowns:[...this.cooldowns],fps:this.fps,calls:this.renderer.info.render.calls,paused:this.paused,guard:this.guarding,locked:!!this.locked,sound:this.sound,quality:this.quality,saveError:this.saveError,charge:this.charge||0,dialogue:this.dialogue,riposte:(this.riposte||0)>0,preferences:{...this.preferences},frameMs:this.frameMs,feedback:this.feedback,feedbackKind:this.feedbackKind,route:[...(this.navigationRoute||[])],navigationHint:this.navigationHint||''})}
  dispose(){this.save();this.disposed=true;cancelAnimationFrame(this.raf);this.cleanups.forEach(f=>f());this.clearTransient();disposeWorld(this.world.root);this.enemies.forEach(e=>disposeWorld(e.model.root));disposeWorld(this.weapon);disposeMaterials();this.renderer.dispose();this.audio?.close();if(document.pointerLockElement===this.canvas)document.exitPointerLock()}
 }
 export function loadProgress(){for(const key of [SAVE_KEY,SAVE_KEY+'-backup'])try{const raw=localStorage.getItem(key);if(raw)return decode(raw)}catch{}return fresh()}

@@ -118,6 +118,7 @@ export function buildWorld(scene:T.Scene,zone:Zone){
   }else if(p.kind==='flight'){cylinder(group,0,.6,0,.5,1.2,'#748d89');const wings=mesh(new T.TorusGeometry(.55,.06,6,16),'#8ce4e6',group,0,1.5,0,true);wings.rotation.x=.3;orb(group,0,1.5,0,.15,'#d5f4ee',true);
   }else if(p.kind==='lever'){
    cylinder(group,0,.5,0,.5,1,'#686e70');const lever=box(group,0,1.2,0,.12,.9,.12,'#d7b877');lever.rotation.z=.45;orb(group,0,1.7,0,.14,'#8fe6e1',true);
+  }else if(p.kind==='challenge'){const ring=mesh(new T.TorusGeometry(.75,.08,6,24),'#d3ad79',group,0,.06,0);ring.rotation.x=Math.PI/2;cylinder(group,0,.45,0,.28,.9,'#727c77',.2);const mark=orb(group,0,1.2,0,.15,'#e9c17b',true);group.userData.trial=true;
   }else if(p.kind==='bell'){
    for(const x of [-.55,.55])box(group,x,1.1,0,.12,2.2,.12,'#8a8b76');box(group,0,2.2,0,1.3,.15,.2,'#9a8d6c');cylinder(group,0,1.65,0,.35,.5,['#70b9bc','#b5b7d5','#d6b576'][p.index!],.17,12);orb(group,0,1.35,0,.075,'#dccb99');const glyph=mesh(p.index===1?new T.TorusGeometry(.15,.035,5,12):p.index===0?new T.OctahedronGeometry(.16):new T.SphereGeometry(.15,8,5),'#e2d3a4',group,0,2.55,0,true);
   }else if(p.kind==='memory'||p.kind==='inscription'){
@@ -125,7 +126,7 @@ export function buildWorld(scene:T.Scene,zone:Zone){
   }else{box(group,0,.3,0,.9,.6,.6,'#6d5140');box(group,0,.63,0,1,.12,.7,'#c6a46b');orb(group,0,.85,0,.06,'#ffdc7f',true)}
  }
  const village=worldDetails(root,zone);landscape(root,zone);
- batchScenery(root,[...markers.values(),...birds,...gates,village,...['forge-fire','village-ward'].map(n=>root.getObjectByName(n)).filter((v):v is T.Object3D=>!!v)],new Set(materials.values()));
+ batchScenery(root,[...markers.values(),...birds,...gates,village,...['forge-fire','village-ward','project-garden','project-lanterns','project-memorial'].map(n=>root.getObjectByName(n)).filter((v):v is T.Object3D=>!!v)],new Set(materials.values()));
  return {root,gates,markers,water,birds,village} satisfies WorldView;
 }
 export function disposeWorld(root:T.Object3D){const shared=new Set(materials.values());root.traverse(o=>{if(o instanceof T.Mesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])if(!shared.has(m))m.dispose();if(o instanceof T.InstancedMesh)o.dispose()}if(o instanceof T.DirectionalLight||o instanceof T.PointLight||o instanceof T.SpotLight)o.shadow.dispose()});root.removeFromParent()}

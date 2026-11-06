@@ -2,7 +2,7 @@
 
 État de passation : 6 novembre 2026.
 
-**Dernière livraison :** lire `docs/EXPEDITION-CHAPTER.md` pour les cinq chantiers de composition du chapitre : décors et fusion statique, quatre attaques du gardien, jalons/énigmes, reliques/douze maîtrises/économie, correction tactile et réglages. 197 tests et compilation réussis. Le nouvel essai navigateur confirme que WebGL est désactivé ; aucun essai réel iPhone ni FPS n’est certifié.
+**Dernière livraison :** lire `docs/EXPEDITION-EXPLORATION.md` : trois épreuves à deux vagues, bestiaire, reconstruction du village et rumeurs, atlas découvert et chemins pédestres. 212 tests et compilation réussis. Les cinq chantiers précédents (`docs/EXPEDITION-CHAPTER.md`) ont été publiés en bcd0889. WebGL reste désactivé dans l’environnement de contrôle ; aucune mesure iPhone certifiée.
 
 **Mise à jour prioritaire :** l’utilisateur a autorisé les cinq chantiers 3D. Lire `docs/EXPEDITION-3D.md` pour leur état, les fichiers, l’accès `?expedition=1` et les limites de validation graphique. Le mode classique reste le défaut. Les paragraphes décrivant le raycaster ci-dessous concernent cette version classique. Toujours comparer ces notes aux branches distantes avant de commencer.
 
