@@ -1,6 +1,8 @@
 # Outbinched — travail partagé Codex / Claude
 
-État de passation : 5 novembre 2026.
+État de passation : 6 novembre 2026.
+
+**Dernière livraison :** les cinq chantiers de profondeur sont décrits dans `docs/EXPEDITION-DEPTH.md`. L’expédition compte trois zones, sept armes, quatre tenues, douze voies et des quêtes persistantes. Les essais graphiques restent à réaliser ; ne pas confondre tests de simulation réussis et validation visuelle.
 
 **Mise à jour prioritaire :** l’utilisateur a autorisé les cinq chantiers 3D. Lire `docs/EXPEDITION-3D.md` pour leur état, les fichiers, l’accès `?expedition=1` et les limites de validation graphique. Le mode classique reste le défaut. Les paragraphes décrivant le raycaster ci-dessous concernent cette version classique. Toujours comparer ces notes aux branches distantes avant de commencer.
 

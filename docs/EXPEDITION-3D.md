@@ -1,5 +1,7 @@
 # Outbinched — expédition 3D, avant-première
 
+**Mise à jour du 6 novembre :** lire `EXPEDITION-DEPTH.md` pour les cinq chantiers supplémentaires, la troisième zone, l’arsenal, les spécialisations et les quêtes. Les sections ci-dessous décrivent la première livraison du 5 novembre.
+
 ## Accès et statut
 
 Le 5 novembre 2026, l’utilisateur a autorisé les cinq chantiers proposés et leur enchaînement autonome. La référence principale reste Queen’s Domain.

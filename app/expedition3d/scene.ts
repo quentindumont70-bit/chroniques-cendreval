@@ -1,3 +1,4 @@
+import {actorDetail,worldDetails} from './art.ts';
 import * as T from 'three';
 import {ground,places,solids,BRIDGE,type Zone,type EnemyKind} from './world.ts';
 const materials=new Map<string,T.MeshStandardMaterial>();
@@ -11,6 +12,7 @@ export type Actor={root:T.Group;arms:T.Group[];legs:T.Group[];head:T.Object3D;we
 export function makeWeapon(kind:string){const p=new T.Group();
  if(kind==='bow'){const curve=new T.CatmullRomCurve3([new T.Vector3(0,-.6,0),new T.Vector3(.22,0,0),new T.Vector3(0,.6,0)]);mesh(new T.TubeGeometry(curve,12,.035,5,false),'#876040',p);box(p,0,0,0,.015,1.2,.015,'#d6caae')}
  else if(['arcane','hex','cantor'].includes(kind)){cylinder(p,0,0,0,.04,1.2,'#6c4a3a');orb(p,0,.7,0,.14,kind==='hex'?'#ba80fa':kind==='cantor'?'#66e6bd':'#73c9f1',true);const ring=mesh(new T.TorusGeometry(.21,.025,5,12),'#ccaa67',p,0,.65);ring.rotation.y=.4}
+ else if(kind==='spear'){cylinder(p,0,0,0,.035,2.1,'#795d40');const blade=mesh(new T.ConeGeometry(.14,.5,4),'#c2ceca',p,0,1.25,0);blade.scale.z=.3;cylinder(p,0,.98,0,.06,.15,'#c7ad76')}
  else if(kind==='hammer'){cylinder(p,0,0,0,.05,1.6,'#5b3830');box(p,0,.7,0,.9,.45,.4,'#664438');orb(p,0,.7,.24,.17,'#ff963d',true)}
  else{box(p,0,.3,0,.12,1.05,.045,kind==='thunder'?'#9cf5f1':'#c6d0ce');box(p,0,-.22,0,.42,.055,.08,'#c4a36e');cylinder(p,0,-.38,0,.055,.26,'#47362c');if(kind==='thunder')orb(p,0,.7,0,.07,'#61e6ed',true)}
  return p;
@@ -35,15 +37,16 @@ export function actor(kind:EnemyKind){
   weapon.position.set(0,-.5,-.25);weapon.rotation.x=-.7;arms[1].add(weapon);second.position.copy(weapon.position);second.rotation.copy(weapon.rotation);arms[0].add(second);second.visible=false;
   if(kind==='boss'){root.scale.setScalar(1.65);for(const x of [-.2,0,.2])mesh(new T.ConeGeometry(.07,.35,5),'#cda264',root,x,2.05,0);orb(root,0,1.15,-.3,.13,'#e87b40',true)}
  }
+ actorDetail(root,kind);
  return {root,arms,legs,head,weapon,second,kind} satisfies Actor;
 }
 export function pose(a:Actor,time:number,moving:boolean,windup:number,attack:number,phase:number){
  a.legs.forEach((l,i)=>l.rotation.x=moving?Math.sin(time*8+i*Math.PI)*.5:Math.sin(time*1.5)*.015);
  a.arms.forEach((l,i)=>{l.rotation.x=windup>0?-1.9:attack>0?.9:Math.sin(time*5+i*Math.PI)*(moving?.2:.025);l.rotation.z=windup>0?(i?-.25:.25):0});
- a.head.rotation.z=Math.sin(time*1.1)*.025;
+ a.head.rotation.z=Math.sin(time*1.1)*.025;const cloak=a.root.userData.cloak as T.Object3D|undefined;if(cloak)cloak.rotation.x=Math.sin(time*3)*.04+(moving?.12:0);
  if(a.kind==='boss'&&phase===2){a.second.visible=true;a.weapon.visible=true}
 }
-export type WorldView={root:T.Group;gates:T.Object3D[];markers:Map<string,T.Group>;water:T.Mesh|null;birds:T.Group[]};
+export type WorldView={root:T.Group;gates:T.Object3D[];markers:Map<string,T.Group>;water:T.Mesh|null;birds:T.Group[];village:T.Group};
 export function buildWorld(scene:T.Scene,zone:Zone){
  const root=new T.Group();scene.add(root);const random=seed(781),markers=new Map<string,T.Group>(),birds:T.Group[]=[];let gates:T.Object3D[]=[],water:T.Mesh|null=null;
  scene.background=new T.Color(zone==='valley'?'#a4b8b0':'#151c23');scene.fog=new T.FogExp2(zone==='valley'?'#a4b8b0':'#151c23',zone==='valley'?.014:.035);
@@ -87,13 +90,13 @@ export function buildWorld(scene:T.Scene,zone:Zone){
   box(root,0,13,-47,8,3,4,'#7f887d');
   for(let i=0;i<10;i++){const x=(random()-.5)*150;const m=mesh(new T.ConeGeometry(18+random()*12,20+random()*20,6),'#7d9691',root,x,8,-85-random()*30);m.scale.z=.65}
   for(let i=0;i<5;i++){const b=new T.Group();box(b,-.2,0,0,.45,.025,.12,'#354947').rotation.z=.2;box(b,.2,0,0,.45,.025,.12,'#354947').rotation.z=-.2;root.add(b);birds.push(b)}
- }else{
+ }else if(zone==='crypt'){
   // Vault ribs, cross beams and lights establish readable interior depth.
   for(const z of [-4,-16,-25,-34,-44]){
-   box(root,0,6,z,39,.45,.65,'#626a71');
+   box(root,0,8.2,z,39,.45,.65,'#626a71');
    for(const x of [-18,18]){cylinder(root,x,3,z,.4,6,'#667077');orb(root,x,2.5,z,.16,'#ffb76c',true);const light=new T.PointLight(0xffaa66,7,12,2);light.position.set(x,3,z);root.add(light)}
   }
-  box(root,0,7,-20,40,.5,58,'#2b323c');
+  box(root,0,9,-20,40,.5,58,'#2b323c');
   for(let i=0;i<9;i++){box(root,-14,.35,-12-i*1.8,3,.7,1.1,'#656b70')}
   const ring=mesh(new T.TorusGeometry(5,.1,6,40),'#be9562',root,0,.04,-40);ring.rotation.x=Math.PI/2;
  }
@@ -104,17 +107,19 @@ export function buildWorld(scene:T.Scene,zone:Zone){
    mesh(new T.ConeGeometry(.28,.9,7),'#ffb756',group,0,.5,0,true);const light=new T.PointLight(0xffaa55,9,8,2);light.position.y=1;group.add(light);
   }else if(p.kind==='herb'){
    for(let i=0;i<4;i++){cylinder(group,(i%2)*.18,.25,Math.floor(i/2)*.15,.025,.5,'#68814e');orb(group,(i%2)*.18,.5,Math.floor(i/2)*.15,.1,['#d8a292','#dcbd6c','#a5b5db'][p.index!%3])}
-  }else if(p.kind==='village'){
-   const npc=actor('archer');npc.weapon.visible=false;group.add(npc.root);orb(group,0,2.3,0,.08,'#f6dd9b',true);
-  }else if(p.kind==='portal'){
+  }else if(p.kind==='village'||p.kind==='npc'){
+   const npc=actor(p.id==='rune'?'sentinel':'archer');npc.weapon.visible=false;npc.root.scale.setScalar(p.id==='vey'?.94:p.id==='rune'?1.06:1);group.add(npc.root);group.userData.npc=npc;orb(group,0,2.3,0,.08,'#f6dd9b',true);
+  }else if(p.kind==='portal'||p.kind==='shortcut'){
    for(const x of [-1.8,1.8])box(group,x,1.7,0,.5,3.4,.7,'#a0a793');box(group,0,3.3,0,4,.6,.7,'#a0a793');orb(group,0,3.4,-.4,.12,'#b5e7d6',true);
+  }else if(p.kind==='flight'){cylinder(group,0,.6,0,.5,1.2,'#748d89');const wings=mesh(new T.TorusGeometry(.55,.06,6,16),'#8ce4e6',group,0,1.5,0,true);wings.rotation.x=.3;orb(group,0,1.5,0,.15,'#d5f4ee',true);
   }else if(p.kind==='lever'){
    cylinder(group,0,.5,0,.5,1,'#686e70');const lever=box(group,0,1.2,0,.12,.9,.12,'#d7b877');lever.rotation.z=.45;orb(group,0,1.7,0,.14,'#8fe6e1',true);
   }else if(p.kind==='memory'){
    const stone=box(group,0,.8,0,.6,1.6,.3,'#a1aaa0');stone.rotation.z=.1;orb(group,0,1.2,.2,.09,'#8de1dc',true);
   }else{box(group,0,.3,0,.9,.6,.6,'#6d5140');box(group,0,.63,0,1,.12,.7,'#c6a46b');orb(group,0,.85,0,.06,'#ffdc7f',true)}
  }
- return {root,gates,markers,water,birds} satisfies WorldView;
+ const village=worldDetails(root,zone);
+ return {root,gates,markers,water,birds,village} satisfies WorldView;
 }
 export function disposeWorld(root:T.Object3D){const shared=new Set(materials.values());root.traverse(o=>{if(o instanceof T.Mesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])if(!shared.has(m))m.dispose();if(o instanceof T.InstancedMesh)o.dispose()}if(o instanceof T.DirectionalLight||o instanceof T.PointLight||o instanceof T.SpotLight)o.shadow.dispose()});root.removeFromParent()}
 export function disposeMaterials(){materials.forEach(m=>m.dispose());materials.clear()}
