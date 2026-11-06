@@ -1,9 +1,8 @@
-# Codex — cinq chantiers de profondeur
+# Codex — composition du premier chapitre
 
-Livraison du 6 novembre 2026, autorisée par « exécute tout ça sans interruption ».
-Branche : codex/expedition-3d. Base : 48dfdef86f896a5227accf12f3ae3ec532aa4d65.
-Périmètre : app/expedition3d/**, tests/expedition-depth.test.mjs, package.json et docs.
-Chantiers : modèles/décor, arsenal/combat, citerne/souffle/passages, builds/forge, village/quête/dialogues/musique.
-Statut : implémentation intégrée ; typecheck, build et 168 tests locaux réussis. Consulter Actions pour le déploiement du commit courant.
-La validation visuelle WebGL et les essais réels sur iPhone restent ouverts. La version classique reste le défaut.
-Claude : lire EXPEDITION-DEPTH.md et les branches/PR. Réserver le périmètre avant de toucher game.ts, scene.ts, art.ts, world.ts, progress.ts ou les panneaux partagés. Priorité proposée : revue graphique et ergonomie sur une session WebGL fonctionnelle, sans annoncer d’avance que ces essais ont réussi.
+Base : 7c1f444afb50a90b1a227692102202d348193d1c. Branche : codex/expedition-3d.
+Autorisation utilisateur : cinq chantiers complets sans validation, correction du stick droit au démarrage.
+Périmètre : app/expedition3d/**, tests/expedition-chapter.test.mjs, tests/support/expedition-harness.mjs, adaptation du test de géométrie, package.json et notes.
+État : code intégré, typecheck et 197 tests réussis ; publication associée au commit à consulter dans Actions.
+Consulter docs/EXPEDITION-CHAPTER.md. Limite : nouvel essai WebGL bloqué par GL_RENDERER Disabled. Validation visuelle et tactile sur iPhone toujours ouvertes.
+Aucune édition en parallèle détectée sur main ou codex/expedition-3d au contrôle précédant la publication. Périmètre libéré après livraison ; comparer les têtes distantes avant reprise.

@@ -1,7 +1,7 @@
 import {HERBS} from '../alchemy.ts';
 export type Zone='valley'|'crypt'|'cistern';
 export type Box={x:number;z:number;y:number;w:number;d:number;h:number;kind?:'gate'|'house'|'wall'|'pillar'|'rock'};
-export type Place={id:string;name:string;x:number;z:number;y?:number;kind:'rest'|'portal'|'lever'|'secret'|'memory'|'village'|'herb'|'chest'|'npc'|'flight'|'shortcut';index?:number;requiresFlight?:boolean};
+export type Place={id:string;name:string;x:number;z:number;y?:number;kind:'rest'|'portal'|'lever'|'secret'|'memory'|'village'|'herb'|'chest'|'npc'|'flight'|'shortcut'|'bell'|'inscription';index?:number;requiresFlight?:boolean};
 export const clamp=(v:number,a:number,b:number)=>Math.max(a,Math.min(b,v));
 export function ground(zone:Zone,x:number,z:number){
  if(zone==='cistern')return z< -14&&z> -21?-10:0;
@@ -52,10 +52,15 @@ export const places:Record<Zone,Place[]>={valley:[
  {id:'ruin',name:'Mémoire du pont brisé',x:-17,z:-20,kind:'memory'},
  {id:'lookout',name:'Belvédère des disparus',x:24,z:-29,kind:'memory'},
  {id:'hollow',name:'Cache sous le pont',x:0,z:4,y:-1.4,kind:'secret'},
+ {id:'memory-shrine',name:'Rassembler les trois mémoires',x:-3,z:-34,kind:'inscription'},
  {id:'shrine',name:'Sanctuaire du seuil',x:0,z:-35,kind:'rest'},
  {id:'entrance',name:'Entrer dans le donjon',x:0,z:-47,kind:'portal'},
  ...[[-5,17],[5,20],[-7,-8],[10,-12],[-23,-17],[21,-26],[-8,-31],[8,-37],[-20,5],[16,10],[-10,31],[26,-9]].map(([x,z],index)=>({id:`herb${index}`,name:HERBS[index].name,x,z,kind:'herb' as const,index}))
 ],cistern:[
+ {id:'tide-inscription',name:'Lire la stèle des marées',x:0,z:-6,kind:'inscription'},
+ {id:'bell-source',name:'Faire sonner la Source',x:-7,z:-25,kind:'bell',index:0},
+ {id:'bell-moon',name:'Faire sonner la Lune',x:0,z:-26,kind:'bell',index:1},
+ {id:'bell-sun',name:'Faire sonner le Soleil',x:7,z:-25,kind:'bell',index:2},
  {id:'cistern-exit',name:'Remonter à la vallée',x:0,z:8,kind:'portal'},
  {id:'cisternfire',name:'Feu des passeurs',x:-4,z:5,kind:'rest'},
  {id:'wings',name:'Le souffle des passeurs',x:8,z:-10,kind:'flight'},

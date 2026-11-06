@@ -1,3 +1,8 @@
+import {masteryStats,learnMastery} from './mastery.ts';
+import {BOSS_MOVES,nextBossMove,bossMoveHits,weaponPose,type BossMove} from './combat.ts';
+import {enemyLoot,relicStats,RELICS,salvage,type RelicId} from './relics.ts';
+import {discoverChapter,ringBell,memoryReward} from './chapter.ts';
+import {touchSide,isGameSurface,cancelContact,decodePreferences,DEFAULT_PREFERENCES,SETTINGS_KEY,pixelRatio,type Preferences} from './controls.ts';
 import {WEAPONS,ARMORS,attackProfile,buildStats,forge,train,respecialize,type WeaponId,type ArmorId} from './arsenal.ts';
 import {choose,type NpcId} from './story.ts';
 import {hands} from './art.ts';
@@ -10,13 +15,15 @@ import {canLearnTalent,type TalentKey} from '../talents.ts';
 import {buildWorld,actor,pose,makeWeapon,material,disposeWorld,disposeMaterials,type Actor,type WorldView} from './scene.ts';
 import {ground,floorAt,ceilingAt,moveBody,sight,canStand,places,spawns,clamp,type Zone,type Place,type EnemyKind} from './world.ts';
 import {fresh,decode,SAVE_KEY,GEAR,gainXp,objective,rewardBoss,finish,type Progress} from './progress.ts';
-export type Enemy={id:string;kind:EnemyKind;x:number;y:number;z:number;hp:number;max:number;wind:number;recover:number;flash:number;phase:number;model:Actor;affliction?:Affliction;expose:number;home:{x:number;z:number};poise?:number;stun?:number;alert?:number};
-export type Snapshot={p:Progress;objective:string;hint:string;notice:string;target:{name:string;hp:number;max:number;wind:boolean;poise:number}|null;cooldowns:number[];fps:number;calls:number;paused:boolean;guard:boolean;locked:boolean;sound:boolean;quality:string;saveError:string;charge:number;dialogue:NpcId|null;riposte:boolean};
+export type Enemy={id:string;kind:EnemyKind;x:number;y:number;z:number;hp:number;max:number;wind:number;recover:number;flash:number;phase:number;model:Actor;affliction?:Affliction;expose:number;home:{x:number;z:number};poise?:number;stun?:number;alert?:number;move?:BossMove;sequence?:number;attackYaw?:number};
+export type Snapshot={p:Progress;objective:string;hint:string;notice:string;target:{name:string;hp:number;max:number;wind:boolean;poise:number;move:string}|null;cooldowns:number[];fps:number;calls:number;paused:boolean;guard:boolean;locked:boolean;sound:boolean;quality:string;saveError:string;charge:number;dialogue:NpcId|null;riposte:boolean;preferences:Preferences;frameMs:number;feedback:number;feedbackKind:string};
 type Bolt={mesh:T.Mesh;vx:number;vz:number;vy:number;life:number;damage:number;hostile:boolean;magic:boolean;mark:boolean;poise:number;charged:boolean};
+type Hazard={x:number;z:number;y:number;delay:number;radius:number;mesh:T.Mesh};
 type Fx={mesh:T.Mesh;life:number;max:number;vy:number};
 const NAMES:Record<EnemyKind,string>={sentinel:'Veilleur déchu',archer:'Arbalétrier des brumes',hound:'Traqueur creux',boss:'Le gardien · Sulfuras'};
 export class Expedition{
- renderer:T.WebGLRenderer;scene=new T.Scene();camera=new T.PerspectiveCamera(72,1,.06,180);world!:WorldView;weapon:T.Group;enemies:Enemy[]=[];bolts:Bolt[]=[];fx:Fx[]=[];
+ renderer:T.WebGLRenderer;scene=new T.Scene();camera=new T.PerspectiveCamera(72,1,.06,180);world!:WorldView;weapon:T.Group;enemies:Enemy[]=[];bolts:Bolt[]=[];fx:Fx[]=[];hazards:Hazard[]=[];feedback=0;feedbackKind='hit';swingDuration=.46;
+ preferences:Preferences={...DEFAULT_PREFERENCES};slowFrames=0;frameMs=16.7;
  dialogue:NpcId|null=null;charging=false;charge=0;riposte=0;airUsed=false;airBurst=0;dodgeBonus=0;
  p:Progress;paused=true;mouseFallback=false;keys=new Set<string>();cooldowns=[0,0,0];attackCd=0;swing=0;guardTime=0;guarding=false;dodgeTime=0;dodgeBurst=0;vy=0;pitch=0;locked:string|null=null;
  notice='Bienvenue à Valbrume.';noticeTime=6;hint='';nearest:Place|null=null;fps=60;quality='Équilibré';sound=false;saveError='';audio:AudioContext|null=null;audioGain:GainNode|null=null;musicTimer=0;
@@ -24,13 +31,14 @@ export class Expedition{
  cleanups:(()=>void)[]=[];onSnapshot:(s:Snapshot)=>void;onPause:()=>void;
  canvas:HTMLCanvasElement;
  constructor(canvas:HTMLCanvasElement,p:Progress,onSnapshot:(s:Snapshot)=>void,onPause:()=>void){
-  this.canvas=canvas;this.p=p;this.onSnapshot=onSnapshot;this.onPause=onPause;
-  this.renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});this.renderer.outputColorSpace=T.SRGBColorSpace;this.renderer.toneMapping=T.ACESFilmicToneMapping;this.renderer.toneMappingExposure=1.1;this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=T.PCFSoftShadowMap;
+  this.canvas=canvas;try{this.preferences=decodePreferences(localStorage.getItem(SETTINGS_KEY))}catch{}this.quality=this.preferences.quality;this.scale=this.quality==='Fluide'?.7:this.quality==='Détaillé'?1.25:1;this.p=p;this.onSnapshot=onSnapshot;this.onPause=onPause;
+  this.renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});this.renderer.outputColorSpace=T.SRGBColorSpace;this.renderer.toneMapping=T.ACESFilmicToneMapping;this.renderer.toneMappingExposure=1.1;this.renderer.shadowMap.enabled=this.quality!=='Fluide';this.renderer.shadowMap.type=T.PCFSoftShadowMap;
   this.camera.rotation.order='YXZ';this.scene.add(this.camera);this.weapon=makeWeapon(WEAPONS[p.weapon].model);hands(this.weapon,ARMORS[p.armor].color);this.camera.add(this.weapon);this.weapon.position.set(.38,-.45,-.65);this.weapon.scale.setScalar(.55);
   this.loadZone(p.zone,false);this.resize();this.bind();this.frame(0);
  }
  listen(target:EventTarget,name:string,fn:EventListener,options?:AddEventListenerOptions){target.addEventListener(name,fn,options);this.cleanups.push(()=>target.removeEventListener(name,fn,options))}
  bind(){
+  const surface=this.canvas.parentElement||this.canvas;
   this.listen(window,'resize',()=>this.resize());
   this.listen(document,'visibilitychange',()=>{if(document.hidden)this.pause()});
   this.listen(window,'blur',()=>this.pause());this.listen(window,'pagehide',()=>this.save());
@@ -48,21 +56,21 @@ export class Expedition{
   this.listen(window,'keyup',((e:KeyboardEvent)=>{this.keys.delete(e.code);if(e.code==='KeyR')this.releaseCharge()}) as EventListener);
   this.listen(this.canvas,'contextmenu',(e=>e.preventDefault()));
   this.listen(this.canvas,'auxclick',((e:MouseEvent)=>{if(e.button>=3)e.preventDefault()}) as EventListener);
-  this.listen(this.canvas,'pointerdown',((e:PointerEvent)=>{
-   if(this.paused)return;this.canvas.setPointerCapture(e.pointerId);
+  this.listen(surface,'pointerdown',((e:PointerEvent)=>{
+   if(this.paused||!isGameSurface(e.target))return;e.preventDefault();try{this.canvas.setPointerCapture(e.pointerId)}catch{}
    if(e.pointerType==='mouse'){
     if(e.button>=3){e.preventDefault();return}if(document.pointerLockElement!==this.canvas&&!this.mouseFallback){this.capture();return}
     if(e.button===0)this.startCharge();if(e.button===2){this.guarding=true;this.guardTime=0}if(e.button===1)this.toggleLock();return;
    }
-   const side=e.clientX<innerWidth*.45?'move':'look';
+   const rect=this.canvas.getBoundingClientRect(),side=touchSide(e.clientX,rect.left,rect.width);
    if([...this.touches.values()].some(t=>t.side===side))return;
    this.touches.set(e.pointerId,{side,x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,time:this.elapsed,travel:0});
   }) as EventListener);
-  this.listen(this.canvas,'pointermove',((e:PointerEvent)=>{
+  this.listen(surface,'pointermove',((e:PointerEvent)=>{
    if(this.paused)return;
    if(e.pointerType==='mouse'&&(document.pointerLockElement===this.canvas||this.mouseFallback&&(e.buttons&1))){this.turn(e.movementX,e.movementY);return}
    const t=this.touches.get(e.pointerId);if(!t)return;const dx=e.clientX-t.lastX,dy=e.clientY-t.lastY;t.travel+=Math.hypot(dx,dy);
-   if(t.side==='move'){this.stick.x=clamp((e.clientX-t.x)/55,-1,1);this.stick.y=clamp((e.clientY-t.y)/55,-1,1)}else this.turn(dx*1.5,dy*1.5);
+   if(t.side==='move'){this.stick.x=clamp((e.clientX-t.x)/55,-1,1);this.stick.y=clamp((e.clientY-t.y)/55,-1,1)}else{this.turn(dx*1.5,dy*1.5);if(t.travel>18)this.guarding=false;}
    t.lastX=e.clientX;t.lastY=e.clientY;
   }) as EventListener);
   const up=((e:PointerEvent)=>{
@@ -70,19 +78,19 @@ export class Expedition{
    const t=this.touches.get(e.pointerId);if(!t)return;this.touches.delete(e.pointerId);
    if(t.side==='move'){this.stick={x:0,y:0};if(this.elapsed-t.time<.22&&t.travel<14)this.jump()}
    else{const duration=this.elapsed-t.time,dx=e.clientX-t.x,dy=e.clientY-t.y;
-    if(duration<.32&&Math.hypot(dx,dy)>65){if(dy>Math.abs(dx))this.dodge();else if(-dy>Math.abs(dx))this.skill(0);else this.skill(dx<0?1:2)}
+    if(this.preferences.gestures&&duration<.32&&Math.hypot(dx,dy)>65){if(dy>Math.abs(dx))this.dodge();else if(-dy>Math.abs(dx))this.skill(0);else this.skill(dx<0?1:2)}
     else if(duration<.28&&t.travel<18)this.attack();this.guarding=false;
    }
   }) as EventListener;
-  this.listen(this.canvas,'pointerup',up);this.listen(this.canvas,'pointercancel',((e:PointerEvent)=>{this.touches.delete(e.pointerId);this.stick={x:0,y:0};this.guarding=false}) as EventListener);
+  this.listen(surface,'pointerup',up);const cancel=((e:PointerEvent)=>{const side=cancelContact(this.touches,e.pointerId);if(side==='move')this.stick={x:0,y:0};if(side==='look')this.guarding=false;}) as EventListener;this.listen(surface,'pointercancel',cancel);this.listen(surface,'lostpointercapture',cancel);
   this.listen(window,'mouseup',((e:MouseEvent)=>{if(e.button===0)this.releaseCharge();if(e.button===2)this.guarding=false}) as EventListener);
  }
- turn(dx:number,dy:number){if(!this.locked)this.p.yaw-=dx*.0025;this.pitch=clamp(this.pitch-dy*.0025,-1.25,1.25)}
- resize(){const w=this.canvas.clientWidth||innerWidth,h=this.canvas.clientHeight||innerHeight;this.renderer.setPixelRatio(Math.min(devicePixelRatio,1.5)*this.scale);this.renderer.setSize(w,h,false);this.camera.aspect=w/h;this.camera.updateProjectionMatrix()}
+ turn(dx:number,dy:number){const prefs=this.preferences||DEFAULT_PREFERENCES;if(!this.locked)this.p.yaw-=dx*.0025*prefs.sensitivity;this.pitch=clamp(this.pitch-dy*.0025*prefs.sensitivity*(prefs.invertY?-1:1),-1.25,1.25)}
+ resize(){const w=this.canvas.clientWidth||innerWidth,h=this.canvas.clientHeight||innerHeight;this.renderer.setPixelRatio(pixelRatio(w,h,devicePixelRatio,this.scale));this.renderer.setSize(w,h,false);this.camera.aspect=w/h;this.camera.updateProjectionMatrix()}
  capture(){if(!matchMedia('(pointer:fine)').matches)return;if(!this.canvas.requestPointerLock){this.mouseFallback=true;return}try{const request=this.canvas.requestPointerLock();request?.catch(()=>{this.mouseFallback=true;this.say('Capture indisponible : maintenez le clic gauche pour orienter la vue.')})}catch{this.mouseFallback=true}}
- resume(){if(this.p.hp<=0)return;this.paused=false;this.last=performance.now();this.capture();this.audio?.resume();this.emit()}
+ resume(){if(this.p.hp<=0)return;this.touches.clear();this.stick={x:0,y:0};this.keys.clear();this.guarding=false;this.charging=false;this.paused=false;this.last=performance.now();this.capture();this.audio?.resume();this.emit()}
  pause(){if(this.disposed)return;this.paused=true;this.keys.clear();this.touches.clear();this.stick={x:0,y:0};this.guarding=false;this.charging=false;this.charge=0;this.save();if(document.pointerLockElement===this.canvas)document.exitPointerLock();this.audio?.suspend();this.emit();this.onPause()}
- save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(this.p));this.saveError=''}catch{this.saveError='Sauvegarde indisponible : le navigateur refuse le stockage.'}}
+ save(){try{const previous=localStorage.getItem(SAVE_KEY);if(previous){try{decode(previous);localStorage.setItem(SAVE_KEY+'-backup',previous)}catch{}}localStorage.setItem(SAVE_KEY,JSON.stringify(this.p));this.saveError=''}catch{this.saveError='Sauvegarde indisponible : le navigateur refuse le stockage.'}}
  say(s:string){this.notice=s;this.noticeTime=5}
  newGame(id:ClassId){this.dialogue=null;this.charging=false;this.charge=0;this.riposte=0;this.p=fresh(id);this.camera.remove(this.weapon);disposeWorld(this.weapon);this.weapon=makeWeapon(WEAPONS[this.p.weapon].model);hands(this.weapon,ARMORS[this.p.armor].color);this.camera.add(this.weapon);this.weapon.scale.setScalar(.55);this.cooldowns=[0,0,0];this.loadZone('valley',false);this.save();this.resume()}
  loadZone(zone:Zone,arrival=true,spawn?:{x:number;z:number;yaw?:number}){
@@ -99,22 +107,23 @@ export class Expedition{
  updateMarkers(){
   for(const gate of this.world.gates)gate.visible=!this.p.gate;
   if(this.world.village)this.world.village.visible=this.p.heartChoice==='restore';const fire=this.world.root?.getObjectByName('forge-fire');if(fire)fire.visible=this.p.forgeOpen;const ward=this.world.root?.getObjectByName('village-ward');if(ward)ward.visible=this.p.heartChoice==='ward';
-  for(const p of places[this.p.zone]){const m=this.world.markers.get(p.id)!;m.visible=p.id==='tovin-home'?this.p.rescue>=2:p.kind==='flight'?!this.p.flight:p.id==='tovin'&&this.p.rescue>=2?false:p.kind==='herb'?!(this.p.harvestMask&(1<<p.index!)):p.id==='reward'?this.p.dead.includes('boss')&&!this.p.bossLoot:!this.p.found.includes(p.id)||['rest','portal','village','lever','npc','shortcut'].includes(p.kind)}
+  for(const p of places[this.p.zone]){const m=this.world.markers.get(p.id)!;m.visible=p.id==='tovin-home'?this.p.rescue>=2:p.kind==='flight'?!this.p.flight:p.id==='tovin'&&this.p.rescue>=2?false:p.kind==='herb'?!(this.p.harvestMask&(1<<p.index!)):p.id==='reward'?this.p.dead.includes('boss')&&!this.p.bossLoot:!this.p.found.includes(p.id)||['rest','portal','village','lever','npc','shortcut','bell','inscription'].includes(p.kind)}
  }
- clearTransient(){for(const b of this.bolts){b.mesh.removeFromParent();b.mesh.geometry.dispose()}for(const f of this.fx){f.mesh.removeFromParent();f.mesh.geometry.dispose()}this.bolts=[];this.fx=[]}
- stats(){const s=playerStats(this.p.classId,this.p.level,this.p),g=GEAR.find(g=>g.id===this.p.equipped)!;return buildStats(this.p,{...s,power:s.power+g.power,armor:s.armor+g.armor+(this.p.heartChoice==='ward'?10:0),manaRegen:s.manaRegen+(this.p.heartChoice==='restore'?1:0)})}
+ clearTransient(){for(const h of this.hazards||[]){h.mesh.removeFromParent();h.mesh.geometry.dispose()}this.hazards=[];for(const b of this.bolts){b.mesh.removeFromParent();b.mesh.geometry.dispose()}for(const f of this.fx){f.mesh.removeFromParent();f.mesh.geometry.dispose()}this.bolts=[];this.fx=[]}
+ stats(){const s=playerStats(this.p.classId,this.p.level,this.p),g=GEAR.find(g=>g.id===this.p.equipped)!;return masteryStats(this.p,relicStats(this.p,buildStats(this.p,{...s,power:s.power+g.power,armor:s.armor+g.armor+(this.p.heartChoice==='ward'?10:0),manaRegen:s.manaRegen+(this.p.heartChoice==='restore'?1:0)})))}
  forward(){return {x:-Math.sin(this.p.yaw),z:-Math.cos(this.p.yaw)}}
  target(range=15,cone=.65){const dir=this.forward();return this.enemies.filter(e=>e.hp>0).filter(e=>{const dx=e.x-this.p.x,dz=e.z-this.p.z,d=Math.hypot(dx,dz);return d<range&&(dx*dir.x+dz*dir.z)/Math.max(.01,d)>cone&&Math.abs(e.y-this.p.y)<3&&this.visible(e)}).sort((a,b)=>Math.hypot(a.x-this.p.x,a.z-this.p.z)-Math.hypot(b.x-this.p.x,b.z-this.p.z))[0]}
  visible(e:Enemy){return sight(this.p.zone,{...this.p,y:this.p.y+1.1},{...e,y:e.y+1.1},this.p.gate)}
  toggleLock(){if(this.locked){this.locked=null;return}const e=this.target(18,.35);if(e)this.locked=e.id;else this.say('Aucune cible visible à verrouiller.')}
- jump(){if(this.paused)return;if(this.p.y<=floorAt(this.p.zone,this.p.x,this.p.z,this.p.y)+.08){this.vy=6;this.airUsed=false;this.tone(180,.1)}else if(this.p.flight&&!this.airUsed){this.airUsed=true;this.vy=7.6;this.airBurst=.45;this.spark(this.p.x,this.p.y+.1,this.p.z,'#99e6e1',12);this.say('Souffle des passeurs');this.tone(520,.25)}}
- dodge(){const cost=this.p.discipline==='strider'&&this.p.disciplineRank>=1?18:24;if(this.paused||this.p.stamina<cost||this.dodgeTime>0)return;this.p.stamina-=cost;this.dodgeTime=.28;this.dodgeBurst=.22;this.dodgeBonus=this.p.discipline==='strider'&&this.p.disciplineRank>=3?3:0;this.tone(100,.1)}
+ jump(){if(this.paused)return;if(this.p.y<=floorAt(this.p.zone,this.p.x,this.p.z,this.p.y)+.08){this.vy=6;this.airUsed=false;this.tone(180,.1)}else if(this.p.flight&&!this.airUsed){this.airUsed=true;if(this.p.relic==='tide')this.p.stamina=Math.min(100,this.p.stamina+15);this.vy=7.6;this.airBurst=.45;this.spark(this.p.x,this.p.y+.1,this.p.z,'#99e6e1',12);this.say('Souffle des passeurs');this.tone(520,.25)}}
+ dodge(){const cost=(this.p.discipline==='strider'&&this.p.disciplineRank>=1?18:24)-(this.p.mastery==='feather'?8:0);if(this.paused||this.p.stamina<cost||this.dodgeTime>0)return;this.p.stamina-=cost;this.dodgeTime=.28;this.dodgeBurst=.22;this.dodgeBonus=this.p.discipline==='strider'&&this.p.disciplineRank>=3||this.p.relic==='fang'?3:0;this.tone(100,.1)}
  startCharge(){if(this.paused||this.attackCd>0)return;this.charging=true;this.charge=0}
  releaseCharge(){if(!this.charging)return;const charge=this.charge;this.charging=false;this.charge=0;this.attack(charge)}
  attack(charge=0){
   const p=this.p,profile=attackProfile(p,charge,(this.riposte||0)>0);
-  if(this.paused||this.attackCd>0||p.stamina<profile.stamina)return;p.stamina-=profile.stamina;this.attackCd=profile.recovery;this.swing=profile.recovery;this.tone(p.weapon==='hammer'||p.weapon==='ember'?110:220,.09);
-  let damage=profile.damage+(p.oilTime>0?5:0);if(this.dodgeBonus>0){damage*=1.5;this.dodgeBonus=0}
+  if(p.mastery==='tempo'&&!profile.full)profile.recovery*=.8;if(p.mastery==='patient'&&profile.full){profile.damage*=1.25;profile.recovery*=1.2}if(p.mastery==='risk'&&p.hp<40)profile.damage*=1.35;
+  if(this.paused||this.attackCd>0||p.stamina<profile.stamina)return;p.stamina-=profile.stamina;this.attackCd=profile.recovery;this.swing=profile.recovery;this.swingDuration=profile.recovery;this.tone(p.weapon==='hammer'||p.weapon==='ember'?110:220,.09);
+  let damage=profile.damage+(p.oilTime>0?5:0);if(p.relic==='fang'&&this.dodgeBonus>0)damage*=1.2;if(this.dodgeBonus>0){if(p.discipline==='strider'&&p.disciplineRank>=3)damage*=1.5;this.dodgeBonus=0}
   if(profile.full&&p.discipline==='butcher'&&p.disciplineRank>=3&&p.hp<50)damage*=1.4;
   if(this.riposte>0&&p.discipline==='bloodguard'&&p.disciplineRank>=3)damage*=1.75;
   if(this.riposte>0&&p.discipline==='duelist'&&p.disciplineRank>=3)p.stamina=Math.min(100,p.stamina+20);this.riposte=0;
@@ -127,18 +136,20 @@ export class Expedition{
   }
  }
  skill(index:number){
-  if(this.paused)return;const sk=CLASSES[this.p.classId].skills[index];if(!sk||this.cooldowns[index]>0)return;if(this.p.mana<sk.cost){this.say('Mana insuffisant.');return}
-  this.p.mana-=sk.cost;this.cooldowns[index]=skillCooldown(sk,this.stats());this.swing=.45;
+  if(this.paused)return;const sk=CLASSES[this.p.classId].skills[index];if(!sk||this.cooldowns[index]>0)return;const manaCost=sk.cost*(this.p.mastery==='well'?.9:1);if(this.p.mana<manaCost){this.say('Mana insuffisant.');return}
+  this.swingDuration=.45;this.p.mana-=manaCost;if(sk.heal&&this.p.mastery==='mercy')this.p.mana=Math.min(100,this.p.mana+15);this.cooldowns[index]=skillCooldown(sk,this.stats());this.swing=.45;
   if(sk.heal)this.p.hp=Math.min(100,this.p.hp+sk.heal*(this.p.discipline==='hymn'&&this.p.disciplineRank>=3?1.5:1));if(sk.cost>0&&this.p.discipline==='prism'&&this.p.disciplineRank>=3)this.p.hp=Math.min(100,this.p.hp+5);if(sk.heal||sk.guard)this.p.stamina=Math.min(100,this.p.stamina+35);
   if(sk.guard){this.dodgeTime=Math.max(this.dodgeTime,sk.guard);this.spark(this.p.x,this.p.y+1,this.p.z,'#a4e2e1',8)}
-  if(sk.damage>0){if(sk.range>6)this.shoot(false,sk.damage,sk.magic,true);else for(const e of this.enemies)if(e.hp>0&&Math.hypot(e.x-this.p.x,e.z-this.p.z)<sk.range&&this.visible(e))this.hit(e,sk.damage,sk.magic,true)}
+  if(sk.damage>0){if(this.p.relic==='ember')this.p.hp=Math.min(100,this.p.hp+3);if(sk.range>6)this.shoot(false,sk.damage,sk.magic,true);else for(const e of this.enemies)if(e.hp>0&&Math.hypot(e.x-this.p.x,e.z-this.p.z)<sk.range&&this.visible(e))this.hit(e,sk.damage,sk.magic,true)}
   this.say(sk.name);this.tone(420+index*90,.2);
  }
  hit(e:Enemy,base:number,magic:boolean,mark:boolean,poise=0,charged=false){
-  if(e.hp<=0)return;const wasMarked=(e.affliction?.remaining||0)>0;const consumed=mark?{bonus:0,heal:0,mana:0,label:''}:consumeAffliction(e.affliction,this.p.classId);
+  if(e.hp<=0)return;if(mark&&this.p.mastery==='resonance')poise+=20;const wasMarked=(e.affliction?.remaining||0)>0;const consumed=mark?{bonus:0,heal:0,mana:0,label:''}:consumeAffliction(e.affliction,this.p.classId);
   const stats=this.stats();if(charged&&(this.p.weapon==='spear'||this.p.discipline==='marksman'&&this.p.disciplineRank>=3))stats.armorPen+=20;if(this.p.discipline==='doom'&&this.p.disciplineRank>=3&&wasMarked)base*=1.3;const protectedByAlly=this.enemies.some(a=>a!==e&&a.hp>0&&a.kind==='sentinel'&&Math.hypot(a.x-e.x,a.z-e.z)<4);
   const damage=resolveDamage(base+consumed.bonus,stats,{armor:(e.kind==='boss'?20:10)+(protectedByAlly?10:0),magicResist:e.kind==='archer'?20:8},magic,Math.random(),e.expose>0);
-  const dealt=Math.min(e.hp,damage.amount);e.hp-=damage.amount;e.flash=.18;this.p.hp=Math.min(100,this.p.hp+consumed.heal+dealt*this.stats().lifeSteal);this.p.mana=Math.min(100,this.p.mana+consumed.mana);
+  this.feedback=.18;this.feedbackKind=damage.critical?'critical':'hit';const dealt=Math.min(e.hp,damage.amount);e.hp-=damage.amount;e.flash=.18;this.p.hp=Math.min(100,this.p.hp+consumed.heal+dealt*this.stats().lifeSteal);this.p.mana=Math.min(100,this.p.mana+consumed.mana);
+  if(consumed.label&&this.p.mastery==='echo')this.riposte=Math.max(this.riposte||0,2);
+  if(consumed.label&&this.p.relic==='lantern')this.p.mana=Math.min(100,this.p.mana+8);
   if(this.p.affix==='siphon')this.p.mana=Math.min(100,this.p.mana+4);
   if(consumed.label&&this.p.discipline==='soul'&&this.p.disciplineRank>=2)this.p.hp=Math.min(100,this.p.hp+8);
   if(consumed.label&&this.p.discipline==='pyre'&&this.p.disciplineRank>=3)for(const other of this.enemies)if(other!==e&&other.hp>0&&Math.hypot(other.x-e.x,other.z-e.z)<3&&this.visible(other)){other.hp-=12;this.spark(other.x,other.y+1,other.z,'#f6ad6b',4);if(other.hp<=0)this.kill(other)}
@@ -147,7 +158,7 @@ export class Expedition{
   this.spark(e.x,e.y+1,e.z,damage.critical?'#ffeec0':magic?'#9ae4ec':'#ffba77',7);this.say(`${damage.critical?'Critique · ':''}${damage.amount} dégâts${consumed.label?' · '+consumed.label:''}`);this.tone(e.hp<=0?120:280,.07);
   if(e.hp<=0)this.kill(e);
  }
- kill(e:Enemy){if(this.p.dead.includes(e.id))return;this.p.dead.push(e.id);this.p.foesDefeated++;this.p.ore=Math.min(999,this.p.ore+(e.kind==='boss'?4:1));if(this.p.discipline==='butcher'&&this.p.disciplineRank>=2)this.p.hp=Math.min(100,this.p.hp+10);if(this.p.discipline==='soul'&&this.p.disciplineRank>=3)this.p.mana=Math.min(100,this.p.mana+15);this.p.gold+=e.kind==='boss'?40:8;gainXp(this.p,e.kind==='boss'?100:22);this.p.mana=Math.min(100,this.p.mana+8);this.p.potions=Math.min(9,this.p.potions+(this.p.foesDefeated%3===0?1:0));this.locked=null;
+ kill(e:Enemy){if(this.p.dead.includes(e.id))return;this.p.dead.push(e.id);this.p.foesDefeated++;if(this.p.mastery==='harvest'){this.p.stamina=Math.min(100,this.p.stamina+20);this.p.hp=Math.min(100,this.p.hp+5)}if(this.p.discipline==='butcher'&&this.p.disciplineRank>=2)this.p.hp=Math.min(100,this.p.hp+10);if(this.p.discipline==='soul'&&this.p.disciplineRank>=3)this.p.mana=Math.min(100,this.p.mana+15);gainXp(this.p,enemyLoot(this.p,e.id,e.kind));this.p.mana=Math.min(100,this.p.mana+8);this.p.potions=Math.min(9,this.p.potions+(this.p.foesDefeated%3===0?1:0));this.locked=null;
   const drop=e.id==='v2'?'spear':e.id==='v3'?'bow':e.id==='c2'?'catalyst':null;if(drop&&!this.p.weapons.includes(drop)){this.p.weapons.push(drop);this.say('Arme trouvée : '+WEAPONS[drop].name)}
   if(this.p.foesDefeated===2&&!this.p.gear.includes('watch')){this.p.gear.push('watch');this.say('Butin : Lame du veilleur · équipez-la dans le sac.')}
   if(e.kind==='boss'){this.p.quest=8;this.say('Le gardien est tombé. Recueillez son cœur.');this.updateMarkers()}
@@ -163,17 +174,20 @@ export class Expedition{
  hurt(amount:number,source:Enemy|null,magic=false,origin?:{x:number;z:number}){
   if(this.p.hp<=0)return;if(this.dodgeTime>0){this.p.perfectDefenses++;this.say('Esquive parfaite');return}
   let d=amount;const from=origin||source;const front=from?this.forward().x*(from.x-this.p.x)+this.forward().z*(from.z-this.p.z)>0:true;
-  if(this.guarding&&front&&this.p.stamina>=12){this.p.stamina-=12;if(this.guardTime<.24){this.p.perfectDefenses++;this.p.mana=Math.min(100,this.p.mana+10);this.riposte=2.5;let heal=this.p.affix==='ward'?6:0;if(this.p.discipline==='bastion'&&this.p.disciplineRank>=3)heal+=12;if(this.p.discipline==='hymn'&&this.p.disciplineRank>=2)heal+=10;this.p.hp=Math.min(100,this.p.hp+heal);if(source){source.recover=1.6;source.stun=1.6;source.wind=0}this.say('Parade parfaite · +10 mana');this.tone(720,.15);return}d*=this.p.discipline==='bastion'&&this.p.disciplineRank>=2?.15:.3;this.say('Coup bloqué')}
-  d=Math.max(1,Math.round(d*100/(100+(magic?this.stats().magicResist:this.stats().armor)))-(this.p.wardTime>0?3:0));this.p.hp=Math.max(0,this.p.hp-d);if(this.p.discipline==='bloodguard'&&this.p.disciplineRank>=2)this.p.mana=Math.min(100,this.p.mana+8);this.charging=false;this.charge=0;this.tone(65,.15);if(this.p.hp===0){this.say('Le serment attend votre retour.');this.pause()}
+  const guardCost=this.p.mastery==='bulwark'?6:12;if(this.guarding&&front&&this.p.stamina>=guardCost){this.p.stamina-=guardCost;if(this.guardTime<.24){this.p.perfectDefenses++;this.p.mana=Math.min(100,this.p.mana+10);this.riposte=2.5;if(this.p.relic==='bell')this.p.stamina=Math.min(100,this.p.stamina+25);let heal=this.p.affix==='ward'?6:0;if(this.p.discipline==='bastion'&&this.p.disciplineRank>=3)heal+=12;if(this.p.discipline==='hymn'&&this.p.disciplineRank>=2)heal+=10;this.p.hp=Math.min(100,this.p.hp+heal);if(source){source.recover=1.6;source.stun=1.6;source.wind=0}this.feedback=.35;this.feedbackKind='parry';this.say('Parade parfaite · +10 mana');this.tone(720,.15);return}d*=this.p.discipline==='bastion'&&this.p.disciplineRank>=2?.15:.3;this.say('Coup bloqué')}
+  d=Math.max(1,Math.round(d*100/(100+(magic?this.stats().magicResist:this.stats().armor)))-(this.p.wardTime>0?3:0));this.feedback=.35;this.feedbackKind='hurt';this.p.hp=Math.max(0,this.p.hp-d);if(this.p.discipline==='bloodguard'&&this.p.disciplineRank>=2)this.p.mana=Math.min(100,this.p.mana+8);this.charging=false;this.charge=0;this.tone(65,.15);if(this.p.hp===0){this.say('Le serment attend votre retour.');this.pause()}
  }
  heal(){if(this.paused||this.p.potions<1||this.p.hp>=100)return;this.p.potions--;this.p.hp=Math.min(100,this.p.hp+45);this.say('Potion · +45 vie');this.save()}
  prepare(){if(this.paused)return;const next=usePreparation(this.p);if(next!==this.p){this.p=next;this.say('Préparation utilisée');this.save()}}
  refreshWeapon(){if(!this.camera)return;disposeWorld(this.weapon);this.weapon=makeWeapon(WEAPONS[this.p.weapon].model);hands(this.weapon,ARMORS[this.p.armor].color);this.camera.add(this.weapon);this.weapon.scale.setScalar(.55)}
+ equipRelic(id:RelicId){if(!this.p.relics.includes(id))return;this.p.relic=id;this.save();this.emit()}
+ salvageItem(kind:'weapon'|'armor',id:string){if(salvage(this.p,kind,id)){this.say('Équipement recyclé.');this.save();this.emit()}}
  equipWeapon(id:WeaponId){if(!this.p.weapons.includes(id))return;this.p.weapon=id;this.charging=false;this.charge=0;this.refreshWeapon();this.save();this.emit()}
  equipArmor(id:ArmorId){if(!this.p.armors.includes(id))return;this.p.armor=id;this.refreshWeapon();this.save();this.emit()}
  forgeItem(action:'weapon'|'armor'|'upgrade'|'affix',id:string){if(forge(this.p,action,id)){this.refreshWeapon();this.say('Travail de forge terminé.');this.save();this.emit()}}
  trainDiscipline(id:string){if(train(this.p,id)){this.save();this.emit()}}
- respec(){if(respecialize(this.p)){this.save();this.emit()}}
+ learnMastery(id:string){if(learnMastery(this.p,id)){this.save();this.emit()}}
+ respec(){if(respecialize(this.p)){if(this.p.mastery){this.p.mastery='';this.p.talent+=2}this.save();this.emit()}}
  chooseDialogue(id:string){if(!this.dialogue)return;if(id==='forge'&&this.p.forgeOpen){this.emit();return}const message=choose(this.p,id);if(message){this.say(message);this.updateMarkers();this.save();this.emit()}}
  craft(id:Preparation){this.p=brew(this.p,id);this.save();this.emit()}
  equip(id:string){if(this.p.gear.includes(id)){this.p.equipped=id;this.save();this.emit()}}
@@ -191,6 +205,8 @@ export class Expedition{
   if(t.kind==='shortcut'){p.shortcut=true;this.loadZone('crypt',true,{x:-14,z:-25,yaw:Math.PI});return}
   if(t.kind==='flight'){p.flight=true;this.say('Souffle acquis : sautez une seconde fois en l’air pour franchir les gouffres.');gainXp(p,35);this.updateMarkers();this.save();return}
   if(t.kind==='npc'||t.kind==='village'){this.dialogue=t.id==='tovin-home'?'tovin':t.id as NpcId;this.pause();return}
+  if(t.kind==='bell'){this.say(ringBell(p,t.index!));this.tone([196,261.63,329.63][t.index!],.8);this.save();return}
+  if(t.kind==='inscription'){this.say(t.id==='memory-shrine'?(memoryReward(p)?'Les trois mémoires deviennent une braise qui ne meurt pas.':(p.lore&7)===7?'La braise vous accompagne.':'Trois voix : le pont brisé, le belvédère, puis le gardien.'): 'Quand la Lune rejoint la Source, le Soleil revient. Trois cloches veillent sur la rive profonde.');this.save();return}
   if(t.kind==='rest'){p.checkpoint=t.id;p.hp=100;p.mana=100;p.stamina=100;p.potions=Math.max(3,p.potions);this.say('Repos · vie, mana et trois potions restaurés.');this.save();return}
   if(t.kind==='lever'){p.gate=true;this.say('Le sceau cède. La grille du gardien se lève.');this.updateMarkers();this.save();return}
   if(t.kind==='herb'){this.p=harvest(p,t.index!);this.say('Récolte ajoutée à l’alchimie.');this.updateMarkers();this.save();return}
@@ -206,7 +222,7 @@ export class Expedition{
  }
  respawn(){const cp=this.p.checkpoint;this.p.hp=100;this.p.mana=100;this.p.stamina=100;this.p.gold=Math.floor(this.p.gold*.9);this.cooldowns=[0,0,0];this.loadZone(cp==='cryptfire'?'crypt':cp==='cisternfire'?'cistern':'valley',false);const spot=places[this.p.zone].find(t=>t.id===cp)!;this.p.x=spot.x+1;this.p.z=spot.z+1;this.p.y=ground(this.p.zone,this.p.x,this.p.z);this.save();this.resume()}
  tick(dt:number){
-  const p=this.p;this.elapsed+=dt;this.riposte=Math.max(0,(this.riposte||0)-dt);this.airBurst=Math.max(0,(this.airBurst||0)-dt);this.dodgeBonus=Math.max(0,(this.dodgeBonus||0)-dt);if(this.charging)this.charge=Math.min(1.2,(this.charge||0)+dt);this.attackCd=Math.max(0,this.attackCd-dt);this.swing=Math.max(0,this.swing-dt);this.dodgeTime=Math.max(0,this.dodgeTime-dt);this.dodgeBurst=Math.max(0,this.dodgeBurst-dt);this.cooldowns=this.cooldowns.map(c=>Math.max(0,c-dt));this.noticeTime-=dt;tickAlchemy(p,dt);
+  const p=this.p;this.feedback=Math.max(0,(this.feedback||0)-dt);const chapter=discoverChapter(p);if(chapter)this.say(chapter.title+' · '+chapter.text);this.elapsed+=dt;this.riposte=Math.max(0,(this.riposte||0)-dt);this.airBurst=Math.max(0,(this.airBurst||0)-dt);this.dodgeBonus=Math.max(0,(this.dodgeBonus||0)-dt);if(this.charging)this.charge=Math.min(1.2,(this.charge||0)+dt);this.attackCd=Math.max(0,this.attackCd-dt);this.swing=Math.max(0,this.swing-dt);this.dodgeTime=Math.max(0,this.dodgeTime-dt);this.dodgeBurst=Math.max(0,this.dodgeBurst-dt);this.cooldowns=this.cooldowns.map(c=>Math.max(0,c-dt));this.noticeTime-=dt;tickAlchemy(p,dt);
   p.mana=Math.min(100,p.mana+this.stats().manaRegen*dt);p.stamina=Math.min(100,p.stamina+(this.guarding?2:18)*dt);
   for(const t of this.touches.values())if(t.side==='look'&&t.travel<18&&this.elapsed-t.time>.3&&!this.guarding){this.guarding=true;this.guardTime=0}
   if(this.guarding)this.guardTime+=dt;
@@ -224,23 +240,26 @@ export class Expedition{
    if(e.hp<=0){e.model.root.rotation.z=Math.min(Math.PI/2,e.model.root.rotation.z+dt*2);e.model.root.position.y=e.y-.2;continue}
    e.poise=Math.max(0,(e.poise||0)-dt*6);e.stun=Math.max(0,(e.stun||0)-dt);e.alert=Math.max(0,(e.alert||0)-dt);
    e.expose=Math.max(0,e.expose-dt);e.flash=Math.max(0,e.flash-dt);const dot=tickAffliction(e.affliction,dt);if(dot>0){e.hp-=dot;if(e.hp<=0){this.kill(e);continue}}
-   if(e.kind==='boss'&&e.hp<=e.max*.5&&e.phase===1){e.phase=2;e.wind=0;e.recover=2;disposeWorld(e.model.weapon);e.model.weapon=makeWeapon('thunder');e.model.weapon.position.set(0,-.5,-.25);e.model.weapon.rotation.x=-.7;e.model.arms[1].add(e.model.weapon);this.say('Le gardien brise son serment · les deux Thunderfury !');this.spark(e.x,e.y+2,e.z,'#75e6ff',24)}
-   const dx=p.x-e.x,dz=p.z-e.z,dist=Math.hypot(dx,dz),sees=this.visible(e)&&Math.abs(p.y-e.y)<4;
+   if(e.kind==='boss'&&e.hp<=e.max*.5&&e.phase===1){e.phase=2;e.wind=0;e.move=undefined;e.sequence=0;e.recover=2;disposeWorld(e.model.weapon);e.model.weapon=makeWeapon('thunder');e.model.weapon.position.set(0,-.5,-.25);e.model.weapon.rotation.x=-.7;e.model.arms[1].add(e.model.weapon);this.say('Le gardien brise son serment · les deux Thunderfury !');this.spark(e.x,e.y+2,e.z,'#75e6ff',24)}
+   const dx=p.x-e.x,dz=p.z-e.z,dist=Math.hypot(dx,dz),leashed=Math.hypot(e.x-e.home.x,e.z-e.home.z)>18||p.zone==='valley'&&p.z>14&&e.home.z<14,sees=!leashed&&this.visible(e)&&Math.abs(p.y-e.y)<4;
+   if(leashed){e.alert=0;e.wind=0;const hx=e.home.x-e.x,hz=e.home.z-e.z,hd=Math.max(.1,Math.hypot(hx,hz));moveBody(p.zone,e,hx/hd*dt*2,hz/hd*dt*2,p.gate);e.y=floorAt(p.zone,e.x,e.z,e.y);e.model.root.position.set(e.x,e.y,e.z);pose(e.model,this.elapsed,true,0,0,e.phase);continue}
    if(sees&&dist<14){e.alert=4;for(const ally of this.enemies)if(ally!==e&&ally.hp>0&&Math.hypot(ally.x-e.x,ally.z-e.z)<6)ally.alert=Math.max(ally.alert||0,3)}
    e.recover=Math.max(0,e.recover-dt);let moving=false;if((e.stun||0)>0){pose(e.model,this.elapsed,false,0,0,e.phase);e.model.root.rotation.x=.15;continue}else e.model.root.rotation.x=0;
-   if(e.wind>0){e.wind-=dt;if(e.wind<=0){e.recover=e.kind==='boss'?(e.phase===2?.65:1.3):e.kind==='hound'?.9:1.5;e.flash=.3;
-    if(e.kind==='archer')this.shoot(true,18,e.id==='s3',false,e);
-    else if(dist<(e.kind==='boss'?3.7:2.25)&&sees)this.hurt(e.kind==='boss'?e.phase===2?27:38:e.kind==='hound'?16:24,e,e.kind==='boss'&&e.phase===2);
+   if(e.wind>0){e.wind-=dt;if(e.wind<=0){e.recover=e.kind==='boss'&&e.move?BOSS_MOVES[e.move].recover:e.kind==='hound'?.9:1.5;e.flash=.3;
+    if(e.kind==='boss'&&e.move){const move=BOSS_MOVES[e.move],facing=-(Math.sin(e.attackYaw||0)*dx+Math.cos(e.attackYaw||0)*dz)/Math.max(.01,dist);if(e.move==='storm'){for(let i=-1;i<=1;i++)this.addHazard(p.x+i*2.4,p.z+i*.7,.75+Math.abs(i)*.2)}else{if(sees&&bossMoveHits(e.move,dist,p.y-e.y,facing))this.hurt(move.damage,e,move.magic);if(e.move==='slam')this.spark(e.x,e.y+.05,e.z,'#ffbb65',20)}}
+    else if(e.kind==='archer')this.shoot(true,18,e.id==='s3',false,e);
+    else if(dist<2.25&&sees)this.hurt(e.kind==='hound'?16:24,e);
     this.spark(e.x,e.y+.2,e.z,e.phase===2?'#73cddd':'#df9863',e.kind==='boss'?14:3);
    }}else if((sees||e.alert!>0)&&dist<(e.kind==='boss'?14:16)){
-    const range=e.kind==='archer'?9:e.kind==='boss'?3.1:1.65;
+    const range=e.kind==='archer'?9:e.kind==='boss'&&e.phase===2&&(e.sequence||0)%3===0?12:e.kind==='boss'?3.1:1.65;
     if(e.kind==='archer'&&dist<5&&dist>.1){moveBody(p.zone,e,-dx/dist*dt*2,-dz/dist*dt*2,p.gate);e.y=floorAt(p.zone,e.x,e.z,e.y);moving=true}
     if(dist>range){let velocity=e.kind==='hound'?3.5:e.kind==='boss'?e.phase===2?2.6:1.6:1.8;if(e.affliction?.kind==='bow'&&e.affliction.remaining>0)velocity*=.75;
-     const flank=e.kind==='hound'?Math.sin(this.elapsed+e.home.x)*.65:0;moveBody(p.zone,e,(dx/dist-dz/dist*flank)*velocity*dt,(dz/dist+dx/dist*flank)*velocity*dt,p.gate);e.y=ground(p.zone,e.x,e.z);moving=true;
-    }else if(e.recover===0&&sees){e.wind=e.kind==='boss'?(e.phase===2?.65:1.2):e.kind==='hound'?.5:1;}
+     const flank=e.kind==='hound'?Math.sin(this.elapsed+e.home.x)*.65:0;moveBody(p.zone,e,(dx/dist-dz/dist*flank)*velocity*dt,(dz/dist+dx/dist*flank)*velocity*dt,p.gate);e.y=floorAt(p.zone,e.x,e.z,e.y);moving=true;
+    }else if(e.recover===0&&sees){if(e.kind==='boss'){e.move=nextBossMove(e.phase,e.sequence||0);e.sequence=(e.sequence||0)+1;e.attackYaw=Math.atan2(-dx,-dz);e.wind=BOSS_MOVES[e.move].wind;this.tone(e.move==='storm'?440:140,.25)}else e.wind=e.kind==='hound'?.5:1;}
    }
-   e.model.root.position.set(e.x,e.y,e.z);e.model.root.rotation.y=Math.atan2(-dx,-dz);pose(e.model,this.elapsed,moving,e.wind,e.flash,e.phase);
+   e.model.root.position.set(e.x,e.y,e.z);e.model.root.rotation.y=e.kind==='boss'&&e.wind>0?(e.attackYaw||0):Math.atan2(-dx,-dz);pose(e.model,this.elapsed,moving,e.wind,e.flash,e.phase);
   }
+  for(let i=(this.hazards||[]).length-1;i>=0;i--){const h=this.hazards[i];h.delay-=dt;h.mesh.rotation.z+=dt;h.mesh.scale.setScalar(1+Math.sin(this.elapsed*14)*.06);if(h.delay<=0){if(Math.hypot(p.x-h.x,p.z-h.z)<h.radius&&Math.abs(p.y-h.y)<2&&sight(p.zone,{x:h.x,y:h.y+1,z:h.z},{...p,y:p.y+1},p.gate))this.hurt(24,null,true,{x:h.x,z:h.z});this.spark(h.x,h.y+.2,h.z,'#8be9ff',12);h.mesh.removeFromParent();h.mesh.geometry.dispose();this.hazards.splice(i,1)}}
   for(let i=this.bolts.length-1;i>=0;i--){const b=this.bolts[i],old=b.mesh.position.clone();b.mesh.position.addScaledVector(new T.Vector3(b.vx,b.vy,b.vz),dt);b.life-=dt;const v=b.mesh.position;
    if(!sight(p.zone,old,v,p.gate)||v.y<ground(p.zone,v.x,v.z))b.life=0;
    if(b.life>0&&b.hostile&&Math.hypot(v.x-p.x,v.z-p.z)<.5&&Math.abs(v.y-(p.y+1))<.9){this.hurt(b.damage,null,b.magic,{x:p.x-b.vx,z:p.z-b.vz});b.life=0}
@@ -252,22 +271,24 @@ export class Expedition{
   this.hint=this.nearest?this.nearest.name:'';this.saveTime+=dt;if(this.saveTime>6){this.save();this.saveTime=0}
   if(this.sound){this.musicTimer-=dt;if(this.musicTimer<=0){const battle=this.enemies.some(e=>e.hp>0&&(e.alert||0)>0),village=p.zone==='valley'&&p.z>15;const notes=battle?[110,116.54,146.83,130.81]:village?[146.83,220,174.61,261.63,220,196]:p.zone==='cistern'?[130.81,196,155.56,233.08]:[110,130.81,164.81,196];const n=notes[Math.floor(this.elapsed/(battle?.6:2.4))%notes.length];this.tone(n,battle?.45:2.6,.025);if(!battle){this.tone(n*1.5,2.8,.012);this.tone(n/2,3,.018)}this.musicTimer=battle?.65:2.8}}
  }
+ addHazard(x:number,z:number,delay:number){if(!this.hazards)this.hazards=[];if(this.hazards.length>=9)return;const y=floorAt(this.p.zone,x,z,this.p.y),mesh=new T.Mesh(new T.RingGeometry(1.3,1.5,32),material('#80dfff',true));mesh.rotation.x=-Math.PI/2;mesh.position.set(x,y+.06,z);this.scene.add(mesh);this.hazards.push({x,z,y,delay,radius:1.5,mesh})}
  spark(x:number,y:number,z:number,color:string,n:number){for(let i=0;i<n&&this.fx.length<48;i++){const m=new T.Mesh(new T.IcosahedronGeometry(.045+Math.random()*.06,0),material(color,true));m.position.set(x+(Math.random()-.5)*.7,y+Math.random()*.5,z+(Math.random()-.5)*.7);this.scene.add(m);this.fx.push({mesh:m,life:.5,max:.5,vy:.5+Math.random()})}}
  tone(freq:number,duration:number,volume=.055){if(!this.sound||!this.audio||!this.audioGain)return;const a=this.audio,o=a.createOscillator(),g=a.createGain();o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(0,a.currentTime);g.gain.linearRampToValueAtTime(volume,a.currentTime+.02);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+duration);o.connect(g);g.connect(this.audioGain);o.start();o.stop(a.currentTime+duration+.02);o.onended=()=>{o.disconnect();g.disconnect()}}
  toggleSound(){this.sound=!this.sound;if(this.sound&&!this.audio){this.audio=new AudioContext();this.audioGain=this.audio.createGain();this.audioGain.gain.value=.65;this.audioGain.connect(this.audio.destination)}if(this.sound)this.audio?.resume();else this.audio?.suspend();this.emit()}
- setQuality(q:string){this.quality=q;this.scale=q==='Fluide'?.7:q==='Détaillé'?1.25:1;this.renderer.shadowMap.enabled=q!=='Fluide';this.resize();this.emit()}
+ setPreference<K extends keyof Preferences>(key:K,value:Preferences[K]){this.preferences=decodePreferences(JSON.stringify({...this.preferences,[key]:value}));try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(this.preferences))}catch{}this.emit()}
+ setQuality(q:string,automatic=false){if(!['Fluide','Équilibré','Détaillé'].includes(q))return;this.preferences.quality=q;if(!automatic)this.preferences.autoQuality=false;try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(this.preferences))}catch{}this.quality=q;this.scale=q==='Fluide'?.7:q==='Détaillé'?1.25:1;this.renderer.shadowMap.enabled=q!=='Fluide';this.resize();this.emit()}
  advance(dt:number){if(this.paused)return;let remaining=Math.min(.05,Math.max(0,dt));while(remaining>0){const step=Math.min(1/60,remaining);this.tick(step);remaining-=step;if(this.paused)break}}
  frame=(now:number)=>{
   if(this.disposed)return;this.raf=requestAnimationFrame(this.frame);const realDt=Math.max(0,(now-this.last)/1000),dt=Math.min(.05,realDt);this.last=now;
   this.advance(dt);
-  const p=this.p;this.camera.position.set(p.x,p.y+1.62+(!this.paused?Math.sin(this.elapsed*8)*Math.hypot(this.stick.x,this.stick.y)*.025:0),p.z);this.camera.rotation.set(this.pitch,p.yaw,0,'YXZ');
-  const w=WEAPONS[p.weapon],swing=Math.sin(Math.min(1,this.swing/w.recovery)*Math.PI);this.weapon.position.set(.38+(p.weapon==='sword'?swing*.15:0),-.43-swing*.12,-.64-(p.weapon==='spear'?swing*.55:0));this.weapon.rotation.set(-.2+swing*(w.ranged?.15:1.3)-(this.charge||0)*.8,0,this.guarding?-.8:p.weapon==='sword'?-swing*.8:-.15);
+  const p=this.p;this.camera.position.set(p.x,p.y+1.62+(!this.paused&&this.preferences.motion?Math.sin(this.elapsed*8)*Math.hypot(this.stick.x,this.stick.y)*.025:0),p.z);this.camera.rotation.set(this.pitch,p.yaw,0,'YXZ');
+  const wp=weaponPose(p.weapon,this.swing,this.swingDuration||WEAPONS[p.weapon].recovery,this.charge||0,this.guarding,this.preferences.motion);this.weapon.position.set(wp.x,wp.y,wp.z);this.weapon.rotation.set(wp.rx,wp.ry,wp.rz);
   for(const t of places[p.zone]){const m=this.world.markers.get(t.id);if(m?.userData.npc){pose(m.userData.npc,this.elapsed*.5,false,0,0,1);m.rotation.y=Math.sin(this.elapsed*.3+t.x)*.2;m.position.x=t.x+Math.sin(this.elapsed*.18+t.z)*.25}}
   for(let i=0;i<this.world.birds.length;i++){const b=this.world.birds[i],t=this.elapsed*.12+i*1.3;b.position.set(Math.cos(t)*18,12+i*.4,Math.sin(t)*12-13);b.rotation.y=-t;b.rotation.z=Math.sin(this.elapsed*2+i)*.1}
-  this.renderer.render(this.scene,this.camera);this.frames++;this.frameTime+=realDt;if(this.frameTime>1){this.fps=Math.round(this.frames/this.frameTime);this.frames=0;this.frameTime=0}
+  this.renderer.render(this.scene,this.camera);this.frames++;this.frameTime+=realDt;if(this.frameTime>1){this.fps=Math.round(this.frames/this.frameTime);this.frameMs=Math.round(this.frameTime/this.frames*10000)/10;this.slowFrames=!this.paused&&this.fps<42?this.slowFrames+1:0;if(this.preferences.autoQuality&&this.slowFrames>=4&&this.quality!=='Fluide'){this.setQuality(this.quality==='Détaillé'?'Équilibré':'Fluide',true);this.slowFrames=0;this.say('Qualité ajustée pour préserver la fluidité.')}this.frames=0;this.frameTime=0}
   this.uiTime+=dt;if(this.uiTime>.12){this.emit();this.uiTime=0}
  };
- emit(){const e=this.enemies.find(e=>e.id===this.locked&&e.hp>0)||this.target(16,.85);this.onSnapshot({p:{...this.p},objective:objective(this.p),hint:this.hint,notice:this.noticeTime>0?this.notice:'',target:e?{name:e.kind==='boss'&&e.phase===2?'Le gardien · Thunderfury':NAMES[e.kind],hp:e.hp,max:e.max,wind:e.wind>0,poise:e.poise||0}:null,cooldowns:[...this.cooldowns],fps:this.fps,calls:this.renderer.info.render.calls,paused:this.paused,guard:this.guarding,locked:!!this.locked,sound:this.sound,quality:this.quality,saveError:this.saveError,charge:this.charge||0,dialogue:this.dialogue,riposte:(this.riposte||0)>0})}
+ emit(){const e=this.enemies.find(e=>e.id===this.locked&&e.hp>0)||this.target(16,.85);this.onSnapshot({p:{...this.p},objective:objective(this.p),hint:this.hint,notice:this.noticeTime>0?this.notice:'',target:e?{name:e.kind==='boss'&&e.phase===2?'Le gardien · Thunderfury':NAMES[e.kind],hp:e.hp,max:e.max,wind:e.wind>0,poise:e.poise||0,move:e.kind==='boss'&&e.move?BOSS_MOVES[e.move].name:''}:null,cooldowns:[...this.cooldowns],fps:this.fps,calls:this.renderer.info.render.calls,paused:this.paused,guard:this.guarding,locked:!!this.locked,sound:this.sound,quality:this.quality,saveError:this.saveError,charge:this.charge||0,dialogue:this.dialogue,riposte:(this.riposte||0)>0,preferences:{...this.preferences},frameMs:this.frameMs,feedback:this.feedback,feedbackKind:this.feedbackKind})}
  dispose(){this.save();this.disposed=true;cancelAnimationFrame(this.raf);this.cleanups.forEach(f=>f());this.clearTransient();disposeWorld(this.world.root);this.enemies.forEach(e=>disposeWorld(e.model.root));disposeWorld(this.weapon);disposeMaterials();this.renderer.dispose();this.audio?.close();if(document.pointerLockElement===this.canvas)document.exitPointerLock()}
 }
-export function loadProgress(){try{const raw=localStorage.getItem(SAVE_KEY);return raw?decode(raw):fresh()}catch{return fresh()}}
+export function loadProgress(){for(const key of [SAVE_KEY,SAVE_KEY+'-backup'])try{const raw=localStorage.getItem(key);if(raw)return decode(raw)}catch{}return fresh()}

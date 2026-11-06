@@ -2,7 +2,7 @@
 
 État de passation : 6 novembre 2026.
 
-**Dernière livraison :** les cinq chantiers de profondeur sont décrits dans `docs/EXPEDITION-DEPTH.md`. L’expédition compte trois zones, sept armes, quatre tenues, douze voies et des quêtes persistantes. Les essais graphiques restent à réaliser ; ne pas confondre tests de simulation réussis et validation visuelle.
+**Dernière livraison :** lire `docs/EXPEDITION-CHAPTER.md` pour les cinq chantiers de composition du chapitre : décors et fusion statique, quatre attaques du gardien, jalons/énigmes, reliques/douze maîtrises/économie, correction tactile et réglages. 197 tests et compilation réussis. Le nouvel essai navigateur confirme que WebGL est désactivé ; aucun essai réel iPhone ni FPS n’est certifié.
 
 **Mise à jour prioritaire :** l’utilisateur a autorisé les cinq chantiers 3D. Lire `docs/EXPEDITION-3D.md` pour leur état, les fichiers, l’accès `?expedition=1` et les limites de validation graphique. Le mode classique reste le défaut. Les paragraphes décrivant le raycaster ci-dessous concernent cette version classique. Toujours comparer ces notes aux branches distantes avant de commencer.
 
