@@ -2,7 +2,7 @@
 
 État de passation : 6 novembre 2026.
 
-**Dernière livraison :** lire `docs/EXPEDITION-EXPLORATION.md` : trois épreuves à deux vagues, bestiaire, reconstruction du village et rumeurs, atlas découvert et chemins pédestres. 212 tests et compilation réussis. Les cinq chantiers précédents (`docs/EXPEDITION-CHAPTER.md`) ont été publiés en bcd0889. WebGL reste désactivé dans l’environnement de contrôle ; aucune mesure iPhone certifiée.
+**Dernière livraison :** `docs/EXPEDITION-AUDIO.md` : mixeur à trois canaux, sons distincts, volumes persistants, retours de combat séparés et cadrans de recharge. 225 tests et compilation réussis. Écoute réelle et essai visuel/iPhone non certifiés. Les trois chantiers précédents sont décrits dans `docs/EXPEDITION-EXPLORATION.md`.
 
 **Mise à jour prioritaire :** l’utilisateur a autorisé les cinq chantiers 3D. Lire `docs/EXPEDITION-3D.md` pour leur état, les fichiers, l’accès `?expedition=1` et les limites de validation graphique. Le mode classique reste le défaut. Les paragraphes décrivant le raycaster ci-dessous concernent cette version classique. Toujours comparer ces notes aux branches distantes avant de commencer.
 
