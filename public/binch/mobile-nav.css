@@ -1,0 +1,16 @@
+/* La Binch — menu mobile fixe ; sur ordinateur, navigation d’origine intacte. */
+#binch-mobile-navigation{display:none}
+@media(max-width:750px){
+ body{padding-bottom:calc(78px + env(safe-area-inset-bottom,0px))}
+ #binch-mobile-navigation:not([hidden]){position:fixed;bottom:0;left:0;right:0;z-index:70;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:stretch;gap:2px;padding:7px 5px calc(8px + env(safe-area-inset-bottom,0px));background:#0a1411f5;backdrop-filter:blur(16px);border-top:1px solid #9c8153;box-shadow:0 -8px 26px #0009}
+ #binch-mobile-navigation button{display:grid;justify-items:center;align-content:center;gap:2px;min-height:56px;min-width:0;padding:5px 2px;background:transparent;border:1px solid transparent;border-radius:8px;color:#c9cabb;font:inherit;cursor:pointer}
+ #binch-mobile-navigation button span{font-size:1.35rem;line-height:1.1}
+ #binch-mobile-navigation button small{font-size:.7rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+ #binch-mobile-navigation button.active,#binch-mobile-navigation button[aria-expanded="true"]{color:#f8db9d;border-color:#8b784d;background:#29352a}
+ #binch-mobile-navigation button:focus-visible{outline:2px solid #f7d486;outline-offset:2px}
+ #app nav.nav:not(.binch-mobile-nav-expanded){max-height:0;min-height:0;padding-top:0;padding-bottom:0;margin-top:0;margin-bottom:0;border:0;overflow:hidden}
+ #app nav.nav.binch-mobile-nav-expanded{max-height:40vh;overflow:auto;display:flex;flex-wrap:wrap;top:0;gap:5px;padding:10px;background:#111c17;box-shadow:0 8px 20px #0008}
+ #app nav.nav.binch-mobile-nav-expanded button{flex:1 1 auto}
+ #app main{scroll-margin-top:8px}
+}
+@media(prefers-reduced-motion:reduce){#binch-mobile-navigation *,#app nav.nav{scroll-behavior:auto!important;animation:none!important}}
