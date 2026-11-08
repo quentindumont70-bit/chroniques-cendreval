@@ -23,6 +23,15 @@ function objectives(p){
  const entries=read(key,[]);
  return Array.isArray(entries)?entries.filter(x=>x&&typeof x.title==='string'&&!x.done&&Number(x.level)<=p.level+5).slice(0,80):[];
 }
+function zoneContext(p){
+ const key='binch.zone.plan.v1.'+[p.name,p.race,p.cls].map(x=>encodeURIComponent(String(x).toLocaleLowerCase('fr'))).join('.');
+ const saved=read(key,{});
+ const selected=(window.GRIMOIRE_ZONES||[]).find(z=>z&&z.id===saved.zone);
+ if(!selected)return [];
+ const tasks=Array.isArray(saved.tasks)?saved.tasks.filter(t=>t&&t.zone===selected.id&&!t.done&&typeof t.title==='string'&&t.title.length<=120).slice(0,10):[];
+ return [{id:'selectedzone:'+selected.id,label:'Avancer dans '+selected.name,group:'Exploration',level:p.level,score:102,detail:'Zone choisie manuellement dans le carnet de voyage'}]
+   .concat(tasks.map((t,i)=>({id:'zonetask:'+selected.id+':'+String(t.id),label:t.title,group:'Quêtes',level:p.level,score:105-i,detail:'Étape notée dans le carnet de '+selected.name})));
+}
 function suggestions(p){
  const jobs=p.jobs.slice(0,3).map(j=>({id:'job:'+j,label:'Faire progresser '+j,group:'Métiers',level:p.level,score:72,detail:'Vérifier les recettes et composants auprès du maître de métier'}));
  const nextClass=(classMilestones[p.cls]||[]).filter(([lvl])=>lvl>=p.level&&lvl<=p.level+8).map(([lvl,label])=>({id:'class:'+lvl,label,group:'Quêtes',level:lvl,score:110-(lvl-p.level)*3,detail:'Jalon de classe indicatif : confirmer les conditions sur WoW Forever'}));
@@ -32,7 +41,7 @@ function suggestions(p){
  const dungeon=(window.GRIMOIRE_DUNGEONS||[]).filter(d=>d&&Array.isArray(d.levels)&&d.levels[0]<=p.level+4&&d.levels[1]>=p.level).sort((a,b)=>Math.abs(a.levels[0]-p.level)-Math.abs(b.levels[0]-p.level))[0];
  const dungeons=dungeon?[{id:'dungeon:'+dungeon.id,label:'Préparer '+dungeon.name,group:'Donjons',level:dungeon.levels[0],score:60,detail:'Préparer les quêtes, le groupe et les consommables — accès à confirmer'}]:[];
  const basics=[{id:'baseline:training',label:'Vérifier les compétences et l’équipement',group:'Quêtes',level:p.level,score:64,detail:'Un contrôle rapide avant le départ'},{id:'baseline:route',label:'Préparer un trajet et ses quêtes regroupées',group:'Quêtes',level:p.level,score:69,detail:'Limiter les allers-retours inutiles'}];
- return [...personal,...nextClass,...exploration,...jobs,...dungeons,...basics].filter(x=>!plan.done[x.id]).map(x=>({...x,score:x.score+(plan.focus==='Mixte'?0:x.group===plan.focus?35:-15)})).sort((a,b)=>b.score-a.score||a.level-b.level);
+ return [...personal,...zoneContext(p),...nextClass,...exploration,...jobs,...dungeons,...basics].filter(x=>!plan.done[x.id]).map(x=>({...x,score:x.score+(plan.focus==='Mixte'?0:x.group===plan.focus?35:-15)})).sort((a,b)=>b.score-a.score||a.level-b.level);
 }
 function schedule(p){
  const mins=plan.duration;const budget=Math.max(10,mins-10),list=suggestions(p),selected=[],types=new Set();
@@ -73,7 +82,7 @@ function init(){
   restore(profile());if(!Object.keys(plan.done).length)return;
   if(confirm('Rendre de nouveau disponibles les étapes cochées de ce personnage ?')){plan.done={};save();render();}
  };
- document.addEventListener('grimoire:sync',render);document.addEventListener('binch:profile-changed',render);
+ document.addEventListener('grimoire:sync',render);document.addEventListener('binch:profile-changed',render);document.addEventListener('binch:zone-change',render);
  window.addEventListener('storage',render);
  render();
 }
