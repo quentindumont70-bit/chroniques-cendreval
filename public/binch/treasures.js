@@ -70,7 +70,7 @@ function build(){
  page.querySelector('#binch-treasure-search').addEventListener('input',render);
  page.querySelector('#binch-treasure-category').addEventListener('change',render);
  page.querySelector('#binch-treasures-achievements').addEventListener('click',()=>{const crest=$('#app .binch-crest-secret');if(crest)crest.click()});
- page.querySelector('#binch-treasure-collection').addEventListener('click',e=>{const chosen=e.target.closest('[data-exhibit]');if(chosen){setExhibit(chosen.dataset.exhibit);return}const b=e.target.closest('[data-treasure]');if(b&&window.BinchRewards)window.BinchRewards.preview(b.dataset.treasure)});
+ page.querySelector('#binch-treasure-collection').addEventListener('click',e=>{const chosen=e.target.closest('[data-exhibit]');if(chosen){setExhibit(chosen.dataset.exhibit);return}const b=e.target.closest('[data-treasure]');if(b&&window.BinchRewards)window.BinchRewards.preview(b.dataset.treasure,b)});
  document.addEventListener('binch:treasure',()=>{render();displayExhibit()});document.addEventListener('grimoire:sync',displayExhibit);
  window.addEventListener('storage',e=>{if(e.key==='binch.procs.v1')render()});
  render();setTimeout(displayExhibit,0);
