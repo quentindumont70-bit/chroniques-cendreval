@@ -1249,9 +1249,13 @@ function sprite(ctx,item,time){
  for(let i=0;i<11;i++){const angle=i*Math.PI*2/11+t*.28,dist=19+3*Math.sin(t+i);if(i%3===0)pix(ctx,32+Math.cos(angle)*dist,31+Math.sin(angle)*dist,1,1,gold)}
 }
 function animate(item){const canvas=$('binch-proc-canvas');if(!canvas)return;const ctx=canvas.getContext('2d');if(!ctx)return;ctx.imageSmoothingEnabled=false;const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches||READ().motion===false;const start=performance.now();function frame(now){ctx.clearRect(0,0,64,64);sprite(ctx,item,reduce?0:now-start);if(!reduce&&shown&&now-start<4200)animation=requestAnimationFrame(frame)}frame(start)}
-function pop(item,preview=false){
+function pop(item,preview=false,anchor=null){
  clearTimeout(timer);if(animation)cancelAnimationFrame(animation);shown=true;
- const wrap=$('binch-proc-toast');wrap.hidden=false;queueMicrotask(()=>{const host=document.querySelector('#app main .page.active')||$('page-hub');if(host)host.prepend(wrap)});
+ const wrap=$('binch-proc-toast');wrap.hidden=false;
+ const active=document.querySelector('#app main .page.active')||$('page-hub');
+ const section=anchor?.closest?.('#app main .page article,#app main .page .panel');
+ if(section&&active?.contains(section))section.after(wrap);
+ else active?.prepend(wrap);
  wrap.style.setProperty('--proc-accent',color(item));
  $('binch-proc-label').textContent=preview?'APERÇU • AUCUN DROP COMPTABILISÉ':title(item)+' • '+TIERS.find(x=>x.id===item.tier).name.toUpperCase();
  $('binch-proc-title').textContent=item.name;
@@ -1261,7 +1265,7 @@ function pop(item,preview=false){
 }
 function closeToast(){shown=false;const el=$('binch-proc-toast');if(el)el.hidden=true;if(animation)cancelAnimationFrame(animation)}
 function eligible(e){if(e.isTrusted===false)return false;if(e.target.closest('#binch-proc-toast,#page-procs,[data-binch-proc-open]'))return false;return !!document.querySelector('#app:not(.hidden)')}
-function onClick(e){if(!eligible(e))return;const now=Date.now();if(now-last<COOLDOWN)return;if(Math.random()>=PROBABILITY)return;last=now;const item=roll();logDrop(item);pop(item);renderCodex()}
+function onClick(e){if(!eligible(e))return;const now=Date.now();if(now-last<COOLDOWN)return;if(Math.random()>=PROBABILITY)return;last=now;const item=roll();logDrop(item);pop(item,false,e.target);renderCodex()}
 function makeCodex(){
  if($('page-procs'))return;
  const nav=document.querySelector('#app nav.nav'),main=document.querySelector('#app main'),header=document.querySelector('#app .app-head');
@@ -1298,11 +1302,11 @@ function renderCodex(){
    return '<article class="binch-proc-entry" style="--tier-color:'+tier.color+'"><span class="binch-proc-emblem">'+(acquired?'✦':'?')+'</span><div><div class="binch-proc-entry-kind">'+ESC(title(item))+' · '+tier.name+'</div><strong>'+ESC(item.name)+'</strong><small>Chance par clic : '+displayChance(item)+'</small></div><span class="binch-proc-count">'+(acquired?'× '+drops[item.id]:'Non obtenu')+'</span><button type="button" class="binch-proc-preview-item" data-proc-preview-id="'+item.id+'" aria-label="Prévisualiser '+ESC(item.name)+'">✧</button></article>';
  }).join('');
 }
-window.BinchRewards={items:ITEMS.map(x=>({...x,categoryName:title(x),tierName:TIERS.find(t=>t.id===x.tier)?.name||x.tier,color:color(x)})),read:READ,preview:id=>{const item=ITEMS.find(x=>x.id===id);if(item&&Number(READ().drops?.[id]||0)>0)pop(item,true);},chance:displayChance,
+window.BinchRewards={items:ITEMS.map(x=>({...x,categoryName:title(x),tierName:TIERS.find(t=>t.id===x.tier)?.name||x.tier,color:color(x)})),read:READ,preview:(id,anchor)=>{const item=ITEMS.find(x=>x.id===id);if(item&&Number(READ().drops?.[id]||0)>0)pop(item,true,anchor);},chance:displayChance,
  draw:(canvas,id)=>{const item=ITEMS.find(x=>x.id===id);if(!item||!canvas||canvas.tagName!=='CANVAS')return false;canvas.width=64;canvas.height=64;const ctx=canvas.getContext('2d');if(!ctx)return false;ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,64,64);sprite(ctx,item,0);return true}
 };
 function setup(){
- window.BINCH_TREASURE_API={items:ITEMS.map(x=>({...x,rarityName:TIERS.find(t=>t.id===x.tier)?.name||x.tier,color:color(x),categoryName:title(x)})),read:READ,preview:id=>{const item=ITEMS.find(x=>x.id===id);if(item)pop(item,true)}};
+ window.BINCH_TREASURE_API={items:ITEMS.map(x=>({...x,rarityName:TIERS.find(t=>t.id===x.tier)?.name||x.tier,color:color(x),categoryName:title(x)})),read:READ,preview:(id,anchor)=>{const item=ITEMS.find(x=>x.id===id);if(item)pop(item,true,anchor)}};
  makeCodex();document.addEventListener('click',e=>{if(READ().enabled===false)return;onClick(e)},true);
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeToast()});
 }
