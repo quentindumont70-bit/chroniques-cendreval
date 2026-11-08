@@ -53,6 +53,15 @@ function mount(){
    importFile(e.dataTransfer.files[0]);
   });
  }
+ // Catch older wizard buttons even when their previous click handler was broken.
+ page.addEventListener('click',e=>{
+   const button=e.target&&e.target.closest?e.target.closest('button'):null;
+   if(!button||button.id==='binch-direct-pick')return;
+   const label=(button.textContent||'').trim().toLowerCase();
+   if(/acc[eé]der [aà] l.import|aller au bouton d.import/.test(label)){
+     e.preventDefault();e.stopImmediatePropagation();picker.click();
+   }
+ },true);
  const jump=$('binch-sync-jump');
  if(jump)jump.onclick=()=>picker.click();
  const topLabel=page.querySelector('label[for="grimoire-bridge-file"].btn');
