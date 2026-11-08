@@ -22,7 +22,7 @@ function init(){
  '<label>Zone / activité<input name="zone" maxlength="100" placeholder="Ex. : Mulgore"></label>'+
  '<label class="binch-level-log-note">Bilan de session<textarea name="note" maxlength="240" rows="2" placeholder="Quêtes, métiers, découvertes…"></textarea></label>'+
  '<button type="submit">Enregistrer ma session</button></form>'+
- '<div id="binch-level-log-summary" aria-live="polite" role="status"></div>'+
+ '<div id="binch-level-log-summary" aria-live="polite" role="status"></div><div id="binch-level-log-insights" class="binch-level-log-insights"></div>'+
  '<div class="binch-level-log-actions"><button type="button" data-level-log-view="recent">Dernières sessions</button><button type="button" data-level-log-view="all">Toutes</button><button type="button" id="binch-level-log-export">Exporter JSON</button><label class="binch-level-log-import-label">Importer JSON<input id="binch-level-log-import" type="file" accept=".json,application/json" hidden></label></div>'+
  '<div id="binch-level-log-list"></div>';
  const plan=$('binch-session-planner');
@@ -78,6 +78,15 @@ function render(){
  const max=entries.length?Math.max(...entries.map(x=>x.level)):null;
  const days=new Set(entries.map(x=>x.when)).size;
  $('binch-level-log-summary').textContent=entries.length+' session(s) consignées · '+days+' jour(s) distinct(s) · '+(Math.round(total/60*10)/10).toLocaleString('fr-FR')+' h déclarées'+(max!==null?' · niveau max consigné : '+max:'')+'.';
+ const zones=new Map();for(const x of entries){const label=x.zone.trim()||'Zone non indiquée';const value=zones.get(label)||{mins:0,count:0};value.mins+=x.minutes;value.count++;zones.set(label,value)}
+ const popular=[...zones.entries()].sort((a,b)=>b[1].mins-a[1].mins).slice(0,4);
+ const uniqueLevels=[...new Set(entries.map(x=>x.level))].sort((a,b)=>a-b);
+ const first=uniqueLevels.length?uniqueLevels[0]:null,last=uniqueLevels.length?uniqueLevels[uniqueLevels.length-1]:null;
+ const trend=first!==null&&last!==null&&last>first?'Niveaux consignés de '+first+' à '+last:'Pas assez de niveaux distincts pour dégager une progression.';
+ $('binch-level-log-insights').innerHTML=popular.length?
+ '<div class="binch-level-insight-head"><strong>Répartition du temps déclaré par zone</strong><small>'+esc(trend)+'</small></div>'+
+ popular.map(([name,stat])=>'<div class="binch-level-insight"><span>'+esc(name)+'</span><div class="binch-level-insight-track"><i style="width:'+(total>0?(100*stat.mins/total).toFixed(1):'0')+'%"></i></div><small>'+(Math.round(stat.mins/60*10)/10).toLocaleString('fr-FR')+' h · '+stat.count+' session(s)</small></div>').join(''):
+ '<p class="muted">Les statistiques par zone apparaîtront après tes premières sessions.</p>';
  boxButtons();
  const shown=show==='recent'?list.slice(0,7):list;
  $('binch-level-log-list').innerHTML=shown.length?shown.map(x=>'<article class="binch-level-log-entry"><div><small>'+esc(x.when)+' · '+x.minutes+' min'+(x.zone?' · '+esc(x.zone):'')+'</small><strong>Niveau '+x.level+'</strong>'+(x.note?'<p>'+esc(x.note)+'</p>':'')+'</div><button type="button" data-level-log-remove="'+esc(x.id)+'" aria-label="Supprimer cette session">×</button></article>').join(''):'<p class="muted">Aucune session consignée. Commence par une première entrée.</p>';
