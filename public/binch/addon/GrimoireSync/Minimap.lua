@@ -34,7 +34,11 @@ boot:SetScript("OnEvent",function(self)
   dialog:SetHeight(150)
   dialog:SetPoint("CENTER",UIParent,"CENTER",0,90)
   dialog:SetFrameStrata("DIALOG")
-  dialog:SetBackdrop({bgFile="Interface\\DialogFrame\\UI-DialogBox-Background",edgeFile="Interface\\DialogFrame\\UI-DialogBox-Border",tile=true,tileSize=32,edgeSize=24,insets={left=8,right=8,top=8,bottom=8}})
+  -- Frame:SetBackdrop n'existe pas sur certains builds Forever.
+  -- Une texture de fond standard suffit et ne depend pas de BackdropTemplate.
+  local dialogBG=dialog:CreateTexture(nil,"BACKGROUND")
+  dialogBG:SetAllPoints(dialog)
+  dialogBG:SetTexture("Interface\\DialogFrame\\UI-DialogBox-Background")
   dialog:EnableMouse(true)
   dialog:Hide()
   local title=dialog:CreateFontString(nil,"OVERLAY","GameFontNormal")
