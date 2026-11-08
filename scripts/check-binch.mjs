@@ -39,6 +39,9 @@ for(const file of scripts){
 }
 const index=read('index.html'),treasures=read('treasures.js');
 if(!index.includes('window.BinchRewards')||!index.includes('draw:(canvas,id)')||!treasures.includes('API.draw?.'))fail('Contrat sprite Trésors incomplet');
+const faith=read('faith-avatar.js'),intendant=read('intendant.js');
+if(!faith.includes('window.BinchFaithAvatar')||!faith.includes('requestAnimationFrame')||!faith.includes('reducedMotion()')||!faith.includes("visibilitychange"))fail('Contrat Faith : animation vocale performante ou gestion de visibilité manquante.');
+if(!intendant.includes('binch-faith-canvas')||!intendant.includes("window.BinchFaithAvatar?.speak(answer.text)"))fail('Faith n’est plus relié aux réponses de l’intendant.');
 const planner=read('guild-planner.js');
 if(planner.includes('form.elements.item.value'))fail('Le formulaire Guild Planner utilise une propriété native ambiguë');
 const lfg=read('lfg.js'),config=JSON.parse(read('lfg-cloud-config.json'));
