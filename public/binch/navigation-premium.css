@@ -46,3 +46,26 @@
 #app .app-head .profile-switch:hover{border-color:#e4c994!important;background:#3b4946!important}
 @media(max-width:760px){#app .app-head .app-tools{width:100%;justify-content:stretch}#app .app-head .identity{flex:1 1 170px}#app .app-head .profile-switch{flex:1 1 170px}#app nav.nav[data-binch-nav-rows="1"] button[data-page]:before{font-size:.85rem}#app nav.nav[data-binch-nav-rows="1"] button[data-page]{gap:5px!important}}
 @media(prefers-reduced-motion:reduce){#app nav.nav[data-binch-nav-rows="1"] button[data-page]{transition:none!important}}
+
+/* 0.17 — accents par rubrique clairement visibles même à l'état inactif.
+   Douceur des valeurs plutôt qu'une mosaïque flashy. */
+#app nav.nav[data-binch-nav-rows="1"] button[data-page]{
+ border-left:3px solid var(--tab)!important;
+ color:#e9e8e2!important;
+ background:linear-gradient(112deg,color-mix(in srgb,var(--tab) 19%,#1b303a) 0%,#1a2931 57%,#15272c 100%)!important;
+}
+#app nav.nav[data-binch-nav-rows="1"] button[data-page]:before{
+ color:var(--tab)!important;text-shadow:0 0 11px color-mix(in srgb,var(--tab) 36%,transparent);
+}
+#app nav.nav[data-binch-nav-rows="1"] button[data-page].active{
+ border-left:4px solid var(--tab)!important;
+ border-top:1px solid var(--tab)!important;
+ background:linear-gradient(125deg,color-mix(in srgb,var(--tab) 36%,#232e34),#26333a 88%)!important;
+}
+#app nav.nav[data-binch-nav-rows="1"].binch-nav-condensed{
+ background:#17272b!important;backdrop-filter:none!important;
+ box-shadow:0 6px 15px #0009!important;
+}
+@media(prefers-contrast:more){
+ #app nav.nav[data-binch-nav-rows="1"] button[data-page]{border-left-width:5px!important}
+}
