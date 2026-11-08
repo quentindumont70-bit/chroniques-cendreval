@@ -1,60 +1,80 @@
--- GrimoireSync / La Binch — bouton discret de mini-carte (pas de panneau ni barre).
--- Charge par le TOC après Core.lua. Ne modifie aucune fonctionnalité WoW.
-local boot = CreateFrame("Frame")
+-- GrimoireSync / La Binch - livre fixe contre la mini-carte.
+-- L'API WoW ne donne pas le chemin Windows absolu ni l'acces au presse-papiers.
+local boot=CreateFrame("Frame")
 boot:RegisterEvent("PLAYER_LOGIN")
-boot:SetScript("OnEvent", function(self, event)
+boot:SetScript("OnEvent",function(self)
   self:UnregisterEvent("PLAYER_LOGIN")
   if not Minimap or GrimoireSyncMinimapButton then return end
-
-  local button = CreateFrame("Button", "GrimoireSyncMinimapButton", Minimap)
-  button:SetWidth(30)
-  button:SetHeight(30)
+  local button=CreateFrame("Button","GrimoireSyncMinimapButton",Minimap)
+  button:SetWidth(28)
+  button:SetHeight(28)
   button:SetFrameStrata("MEDIUM")
-  button:SetFrameLevel((Minimap:GetFrameLevel() or 0) + 5)
-  button:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -11, 2)
-  button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+  button:SetFrameLevel((Minimap:GetFrameLevel() or 0)+5)
+  button:SetPoint("TOPRIGHT",Minimap,"TOPRIGHT",2,2)
+  button:RegisterForClicks("LeftButtonUp","RightButtonUp")
 
-  local background = button:CreateTexture(nil, "BACKGROUND")
+  local background=button:CreateTexture(nil,"BACKGROUND")
   background:SetAllPoints(button)
   background:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
-  background:SetVertexColor(0.1, 0.18, 0.14, 0.9)
-
-  local icon = button:CreateTexture(nil, "ARTWORK")
-  icon:SetPoint("CENTER", button, "CENTER", 0, 0)
+  background:SetVertexColor(0.1,0.18,0.14,0.9)
+  local icon=button:CreateTexture(nil,"ARTWORK")
+  icon:SetPoint("CENTER",button,"CENTER",0,0)
   icon:SetWidth(19)
   icon:SetHeight(19)
   icon:SetTexture("Interface\\Icons\\INV_Misc_Book_09")
-  button.icon = icon
-
-  local ring = button:CreateTexture(nil, "OVERLAY")
+  local ring=button:CreateTexture(nil,"OVERLAY")
   ring:SetAllPoints(button)
   ring:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-
-  local highlight = button:CreateTexture(nil, "HIGHLIGHT")
+  local highlight=button:CreateTexture(nil,"HIGHLIGHT")
   highlight:SetAllPoints(button)
   highlight:SetTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 
-  button:SetScript("OnEnter", function(self)
+  local dialog=CreateFrame("Frame","GrimoireSyncPathDialog",UIParent)
+  dialog:SetWidth(520)
+  dialog:SetHeight(150)
+  dialog:SetPoint("CENTER",UIParent,"CENTER",0,90)
+  dialog:SetFrameStrata("DIALOG")
+  dialog:SetBackdrop({bgFile="Interface\\DialogFrame\\UI-DialogBox-Background",edgeFile="Interface\\DialogFrame\\UI-DialogBox-Border",tile=true,tileSize=32,edgeSize=24,insets={left=8,right=8,top=8,bottom=8}})
+  dialog:EnableMouse(true)
+  dialog:Hide()
+  local title=dialog:CreateFontString(nil,"OVERLAY","GameFontNormal")
+  title:SetPoint("TOP",dialog,"TOP",0,-19)
+  title:SetText("La Binch - chemin de sauvegarde")
+  local subtitle=dialog:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
+  subtitle:SetPoint("TOP",title,"BOTTOM",0,-8)
+  subtitle:SetText("Ctrl+C pour copier le chemin relatif; complete le nom de compte.")
+  local edit=CreateFrame("EditBox",nil,dialog,"InputBoxTemplate")
+  edit:SetWidth(460)
+  edit:SetHeight(25)
+  edit:SetPoint("TOP",subtitle,"BOTTOM",0,-14)
+  edit:SetAutoFocus(false)
+  edit:SetText("WTF\\Account\\NOM_DU_COMPTE\\SavedVariables\\GrimoireSync.lua")
+  edit:SetScript("OnEscapePressed",function(self)self:ClearFocus();dialog:Hide()end)
+  local close=CreateFrame("Button",nil,dialog,"UIPanelButtonTemplate")
+  close:SetWidth(95)
+  close:SetHeight(23)
+  close:SetPoint("BOTTOM",dialog,"BOTTOM",0,15)
+  close:SetText("Fermer")
+  close:SetScript("OnClick",function()edit:ClearFocus();dialog:Hide()end)
+
+  button:SetScript("OnEnter",function(self)
     if not GameTooltip then return end
-    GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-    GameTooltip:AddLine("La Binch - GrimoireSync", 0.96, 0.78, 0.45)
-    GameTooltip:AddLine("Clic gauche : /reload (sauvegarde les donnees du jeu)", 1, 1, 1)
-    GameTooltip:AddLine("Puis : importer GrimoireSync.lua sur le site La Binch.", 0.8, 0.9, 0.8)
-    GameTooltip:AddLine("Clic droit : aide de synchronisation.", 0.7, 0.8, 0.7)
+    GameTooltip:SetOwner(self,"ANCHOR_LEFT")
+    GameTooltip:AddLine("La Binch - GrimoireSync",0.96,0.78,0.45)
+    GameTooltip:AddLine("Clic gauche : /reload (sauvegarder)",1,1,1)
+    GameTooltip:AddLine("Clic droit : afficher un chemin copiable (Ctrl+C)",0.8,0.9,0.8)
     GameTooltip:Show()
   end)
-  button:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
-  button:SetScript("OnClick", function(self, mouse)
-    if mouse == "LeftButton" then
-      if type(ReloadUI) == "function" then
-        ReloadUI()
-      else
-        print("|cffff7777La Binch|r : commande /reload indisponible sur ce client.")
-      end
+  button:SetScript("OnLeave",function()if GameTooltip then GameTooltip:Hide()end end)
+  button:SetScript("OnClick",function(self,mouse)
+    if mouse=="LeftButton" then
+      if type(ReloadUI)=="function" then ReloadUI()
+      else print("|cffff7777La Binch|r : /reload indisponible sur ce client.") end
     else
-      print("|cffd9b56cLa Binch|r : /reload enregistre tes donnees localement.")
-      print("|cffd9b56cLa Binch|r : puis, sur le site, Synchronisation > Choisir GrimoireSync.lua.")
-      print("|cffd9b56cLa Binch|r : le fichier est dans WTF/Account/<compte>/SavedVariables/.")
+      dialog:Show()
+      edit:SetFocus()
+      edit:HighlightText()
+      print("|cffd9b56cLa Binch|r : Ctrl+C pour copier le chemin relatif. WoW ne connait pas ton chemin disque absolu.")
     end
   end)
 end)
