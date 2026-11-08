@@ -1,0 +1,20 @@
+#binch-leveling-journal{margin:18px 0;border:1px solid #7c8063;background:linear-gradient(145deg,#17231c,#131919)}
+#binch-leveling-journal h2{margin:6px 0 10px}
+#binch-leveling-journal label{display:grid;gap:6px;color:#dfd4ba;font-weight:650;font-size:.85rem}
+#binch-leveling-journal input,#binch-leveling-journal textarea{width:100%;min-width:0;background:#0d1816;color:#f5ead7;border:1px solid #647264;border-radius:7px;padding:10px}
+#binch-leveling-journal button,#binch-leveling-journal .binch-level-log-import-label{border:1px solid #b29c73;color:#f1dcb6;background:#28382e;border-radius:7px;padding:10px 13px;cursor:pointer}
+#binch-leveling-journal button:hover,#binch-leveling-journal .binch-level-log-import-label:hover{background:#3c5140;border-color:#f3d998}
+#binch-leveling-journal .binch-level-log-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(150px,1.5fr);gap:12px;align-items:end;margin:15px 0;padding:14px;border:1px solid #52685a;border-radius:8px;background:#0c1915}
+#binch-leveling-journal .binch-level-log-note{grid-column:1/-1}
+#binch-leveling-journal .binch-level-log-form>button{grid-column:1/-1;justify-self:start;background:#c3a675;color:#191d16;font-weight:750}
+#binch-leveling-journal #binch-level-log-summary{font-weight:700;color:#e7d4a8;margin:14px 0}
+#binch-leveling-journal .binch-level-log-actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+#binch-leveling-journal .binch-level-log-actions .active{background:#c1a478;color:#191d16}
+#binch-leveling-journal .binch-level-log-import-label{display:inline-flex;align-items:center}
+#binch-leveling-journal .binch-level-log-entry{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 3px;border-top:1px solid #4d6055}
+#binch-leveling-journal .binch-level-log-entry strong{display:block;font-size:1.1rem;color:#eddaa6}
+#binch-leveling-journal .binch-level-log-entry small{display:block;color:#a6c4ae}
+#binch-leveling-journal .binch-level-log-entry p{margin:3px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+#binch-leveling-journal .binch-level-log-entry button{color:#ffb2ad}
+@media(max-width:800px){#binch-leveling-journal .binch-level-log-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:450px){#binch-leveling-journal .binch-level-log-form{grid-template-columns:1fr}#binch-leveling-journal .binch-level-log-form>button{width:100%}}
