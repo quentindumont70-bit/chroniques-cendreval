@@ -187,11 +187,10 @@ local function startAuctionScan()
   else print("|cffff7777GrimoireSync|r : API de scan inconnue. Utilise /grimoire debug.") end
 end
 
-for _,event in ipairs({"PLAYER_LOGIN","PLAYER_LEVEL_UP","PLAYER_XP_UPDATE","UNIT_XP","UPDATE_EXHAUSTION","ZONE_CHANGED_NEW_AREA","PLAYER_MONEY","BAG_UPDATE_DELAYED","PLAYER_LOGOUT","QUEST_TURNED_IN","QUEST_LOG_UPDATE","SKILL_LINES_CHANGED"}) do addon:RegisterEvent(event) end
+for _,event in ipairs({"PLAYER_LOGIN","PLAYER_LEVEL_UP","PLAYER_XP_UPDATE","UPDATE_EXHAUSTION","ZONE_CHANGED_NEW_AREA","PLAYER_MONEY","BAG_UPDATE_DELAYED","PLAYER_LOGOUT","QUEST_TURNED_IN","QUEST_LOG_UPDATE","SKILL_LINES_CHANGED"}) do addon:RegisterEvent(event) end
 addon:SetScript("OnEvent",function(_,event,unit)
-  if event=="PLAYER_XP_UPDATE" or event=="UPDATE_EXHAUSTION" or (event=="UNIT_XP" and unit=="player") then
+  if event=="PLAYER_XP_UPDATE" or event=="UPDATE_EXHAUSTION" then
     captureXP()
-  elseif event=="UNIT_XP" then return
   elseif event=="BAG_UPDATE_DELAYED" and C_Timer and C_Timer.After then
     if pendingInventory then return end; pendingInventory=true
     C_Timer.After(0.5,function()pendingInventory=false;capture()end)
