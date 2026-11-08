@@ -1253,7 +1253,7 @@ function pop(item,preview=false,anchor=null){
  clearTimeout(timer);if(animation)cancelAnimationFrame(animation);shown=true;
  const wrap=$('binch-proc-toast');wrap.hidden=false;
  const active=document.querySelector('#app main .page.active')||$('page-hub');
- const section=anchor?.closest?.('#app main .page article,#app main .page .panel');
+ const section=anchor?.closest?.('.binch-treasure-frame,.binch-route-step,.discovery-card,.craft-card,#app main .page article,#app main .page .panel');
  if(section&&active?.contains(section))section.after(wrap);
  else active?.prepend(wrap);
  wrap.style.setProperty('--proc-accent',color(item));
