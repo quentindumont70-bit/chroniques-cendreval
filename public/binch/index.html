@@ -395,7 +395,7 @@ function msg(o){const d=state.data,a=[`📜 ${d.guild||'La guilde'} — ${d.even
     const controls=document.createElement('div');controls.className='binch-map-controls';controls.setAttribute('aria-label','Filtres de la carte');map.before(controls);controls.append(map.querySelector('.atlas-toolbar'),map.querySelector('.continent-tabs'));
     controls.querySelectorAll('[data-atlas-filter]').forEach(b=>b.onclick=()=>{atlasFilter=b.dataset.atlasFilter;controls.querySelectorAll('[data-atlas-filter]').forEach(x=>x.classList.toggle('active',x===b));renderAtlas()});
     controls.querySelectorAll('[data-continent]').forEach(b=>{b.classList.toggle('active',b.dataset.continent===map.dataset.continent);b.onclick=()=>{map.dataset.continent=b.dataset.continent;controls.querySelectorAll('[data-continent]').forEach(x=>x.classList.toggle('active',x===b));renderAtlas()}});
-    new MutationObserver(bindStages).observe($('map-nodes'),{childList:true});setTimeout(()=>{bindStages();renderAtlas()});
+    new MutationObserver(()=>{if(!document.hidden)bindStages()}).observe($('map-nodes'),{childList:true});setTimeout(()=>{bindStages();renderAtlas()});
   }
   function bindStages(){document.querySelectorAll('.map-node').forEach((n,i)=>n.onclick=()=>{atlasStage=i;setTimeout(renderAtlas)})}
   function renderAtlas(){
@@ -404,7 +404,7 @@ function msg(o){const d=state.data,a=[`📜 ${d.guild||'La guilde'} — ${d.even
     d[2].slice(0,-1).forEach((p,i)=>{const q=d[2][i+1],dx=q[0]-p[0],dy=q[1]-p[1],l=Math.hypot(dx,dy),a=Math.atan2(dy,dx)*180/Math.PI;h+='<i class="atlas-path" style="left:'+p[0]+'%;top:'+p[1]+'%;width:'+l+'%;transform:rotate('+a+'deg)"></i>'});
     d[3].forEach(p=>{const hidden=atlasFilter!=='tout'&&atlasFilter!==p[4]?' hidden':'';h+='<button class="atlas-poi"'+hidden+' data-name="'+p[1]+'" style="left:'+p[2]+'%;top:'+p[3]+'%">'+p[0]+'</button>'});root.innerHTML=h;
   }
-  function boot(){addSwitch();fixPriority();buildKnowledge();quickActions();upgradeAtlas();renderKnowledge();new MutationObserver(()=>{addSwitch();fixPriority();upgradeAtlas()}).observe(document.body,{subtree:true,childList:true})}
+  function boot(){addSwitch();fixPriority();buildKnowledge();quickActions();upgradeAtlas();renderKnowledge();const cards=$('hub-cards');if(cards){const watcher=new MutationObserver(()=>{if(document.hidden)return;fixPriority()});watcher.observe(cards,{childList:true});}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 
