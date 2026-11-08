@@ -43,11 +43,22 @@ function response(query){
  if(/^(?:aide|help)|que peux|comment tu|capacites|fonctionnalit/.test(q))
    return {text:'Je peux ouvrir les onglets, indiquer ton profil importé, expliquer la synchro, proposer une route indicative 1–60, préparer un message Discord et retrouver les outils du GM. Les données Forever non vérifiées ne seront pas inventées. Je ne publie pas sur Discord et je ne suis pas connecté à un modèle IA.'};
  if(/discord|annonce|publie|poster|post|recrut|reunion|raid.*soir|donjon.*vendredi|donjon.*samedi/.test(q)){
-   const role=/tank/.test(q)?'tank':/heal|soign|soin/.test(q)?'soigneur':/dps/.test(q)?'DPS':'rôles à préciser';
-   const hour=q.match(/\b(\d{1,2})\s*(?:h|:)\s*(\d{2})?\b/),time=hour?String(hour[1]).padStart(2,'0')+':'+(hour[2]||'00'):'horaire à confirmer';
-   const place=(query.match(/#([a-zA-Z0-9_-]+)/)||[])[1]||'général';
-   const message=['⚔ LA BINCH — Rendez-vous de guilde','Activité : '+query.replace(/\s+(?:et )?(?:poste|publie|envoie).*/i,'').slice(0,160),'Heure : '+time+' (date à confirmer)','Besoin : '+role,'Répondez avec ✅ présent / ❔ peut-être / ❌ absent.'].join('\n');
-   return {text:'J’ai préparé un brouillon pour #'+place+'. Vérifie la date, les rôles et l’activité avant de le publier. Je ne peux pas envoyer directement sur Discord.',draft:message,buttons:[{label:'Ouvrir le mode GM',page:'gm'},{label:'Ouvrir LFG',page:'lfg'}]};
+   // Modèle de message déterministe : une absence d'information reste explicitement inconnue.
+   const day=q.match(/\b(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche|demain|aujourd'hui)\b/);
+   const hour=q.match(/\b([01]?\d|2[0-3])\s*(?:h|:)\s*([0-5]\d)?\b/);
+   const time=hour?String(hour[1]).padStart(2,'0')+':'+(hour[2]||'00'):'horaire à confirmer';
+   const role=/\b(tank|tanker)\b/.test(q)?'tank':/\b(heal|soign|soin)/.test(q)?'soigneur':/\bdps\b/.test(q)?'DPS':'rôles à confirmer';
+   const channel=(query.match(/#([\p{L}\p{N}_-]+)/u)||[])[1]||'général';
+   const extract=query.match(/(?:\bpour\b|\bfaire\b|\borganiser\b)\s+(.+?)(?=\s+(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche|demain|aujourd'hui|à\s+\d|a\s+\d|dans\s+#|sur\s+#|et\s+(?:poste|publie|envoie))|$)/i);
+   const activity=extract?extract[1].replace(/^(?:un|une|des|les)\s+/i,'').replace(/[\s,.;]+$/,'').slice(0,130):'activité à préciser';
+   const date=day?day[1]+' (date exacte à confirmer)':'date à confirmer';
+   const message=['⚔ LA BINCH — Rendez-vous de guilde',
+     'Activité : '+activity,
+     'Quand : '+date+' · '+time+' (heure locale de la guilde)',
+     'Rôles recherchés : '+role,
+     'Merci de répondre : ✅ présent · ❔ peut-être · ❌ absent.'].join('\n');
+   return {text:'J’ai préparé un brouillon à copier dans #'+channel+'. Vérifie les informations avant publication : je ne peux pas poster directement sur Discord. Le jour et l’heure ne sont pas reliés à un événement réel.',
+     draft:message,buttons:[{label:'Ouvrir LFG',page:'lfg'},{label:'Ouvrir le Mode GM',page:'gm'}]};
  }
  if(/synchro|addon|reload|personnage.*import|grimoire.?sync|saved.?variables/.test(q))
    return {text:'Installe GrimoireSync, active-le dans WoW Forever, fais /reload, puis ouvre Synchronisation. Sélectionne GrimoireSync.lua et autorise sa lecture. Sur un navigateur compatible, le suivi des /reload peut être activé tant que l’onglet est ouvert. Aucun mot de passe n’est nécessaire.',buttons:[{label:'Ouvrir Synchronisation',page:'sync'}]};
@@ -72,7 +83,7 @@ function render(){
   const article=document.createElement('article');article.className='binch-intendant-msg '+(entry.who==='user'?'user':'assistant');
   const label=document.createElement('small');label.textContent=entry.who==='user'?'Vous':'Brog · Intendant';
   const body=document.createElement('p');body.textContent=entry.text;article.append(label,body);
-  if(entry.draft){const text=document.createElement('textarea');text.className='binch-intendant-draft';text.value=entry.draft;text.rows=5;text.setAttribute('aria-label','Brouillon Discord');article.append(text);
+  if(entry.draft){const text=document.createElement('textarea');text.className='binch-intendant-draft';text.value=entry.draft;text.rows=5;text.setAttribute('aria-label','Brouillon Discord');text.addEventListener('change',()=>{entry.draft=text.value;save()});article.append(text);
    const copy=document.createElement('button');copy.type='button';copy.textContent='Copier ce brouillon';copy.onclick=async()=>{try{await navigator.clipboard.writeText(text.value);copy.textContent='Copié ✓'}catch{prompt('Copie ce texte :',text.value)}};article.append(copy);
   }
   (entry.buttons||[]).forEach(btn=>{const b=document.createElement('button');b.type='button';b.textContent=btn.label;b.onclick=()=>{if(!page(btn.page))say('Cette rubrique n’est pas disponible dans la version actuelle.','intendant')};article.append(b)});
