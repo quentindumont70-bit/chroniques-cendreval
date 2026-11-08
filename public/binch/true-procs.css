@@ -69,3 +69,18 @@
 @keyframes binch-banner{0%,100%{transform:rotate(0)}30%{transform:rotate(-7deg)}70%{transform:rotate(5deg)}}
 @media(max-width:620px){#binch-proc-stage .binch-proc-theater{min-height:300px;padding:25px 13px 20px}#binch-proc-stage .binch-proc-actors{height:155px}#binch-proc-stage .binch-proc-actor{width:95px}}
 @media(prefers-reduced-motion:reduce){#binch-proc-stage *,#page-evenements *{animation:none!important;transition:none!important}#binch-proc-stage .binch-proc-actor{transform:none!important}}
+
+
+/* Choc nébulaire : aucune fenêtre modale, scène physiquement intégrée dans la page. */
+#app main .page #binch-proc-stage{position:relative!important;inset:auto!important;z-index:2!important;display:block!important;isolation:initial!important;width:100%!important;max-width:100%;margin:12px 0 20px;pointer-events:auto!important;min-height:0;animation:none}
+#app main .page #binch-proc-stage .binch-proc-curtain{display:none!important}
+#app main .page #binch-proc-stage .binch-proc-theater{width:100%;min-height:230px;max-height:none;display:grid;grid-template-rows:auto minmax(105px,1fr) auto;overflow:hidden;border:1px solid #baa3c2;border-left:4px solid #ada3dc;border-radius:13px;background:radial-gradient(ellipse at 80% 25%,#51436788,transparent 60%),linear-gradient(125deg,#263b46,#1d2739 65%,#332736);box-shadow:inset 0 1px #fff2,0 10px 26px #0005;padding:17px clamp(16px,3vw,33px) 20px}
+#app main .page #binch-proc-stage .binch-proc-actors{height:140px;max-width:580px}
+#app main .page #binch-proc-stage .binch-proc-actor{width:clamp(72px,10vw,118px)}
+#app main .page #binch-proc-stage .binch-proc-caption h3{font-size:clamp(1.1rem,2vw,1.55rem)}
+#app main .page #binch-proc-stage .binch-proc-caption p{font-size:.78rem}
+#app main .page #binch-proc-stage .binch-proc-skip{padding:7px 10px}
+#page-evenements .binch-procs-entry.binch-proc-locked{opacity:.72;border-left-color:#6e7780!important}
+#page-evenements .binch-procs-entry.binch-proc-locked .binch-procs-entry-art{filter:grayscale(.85)}
+#page-evenements .binch-procs-entry button:disabled{opacity:.65;cursor:not-allowed;background:#293038;color:#ced5da;border-color:#5e6874}
+@media(max-width:600px){#app main .page #binch-proc-stage .binch-proc-theater{min-height:215px;padding:18px 12px 13px}#app main .page #binch-proc-stage .binch-proc-actors{height:112px}#app main .page #binch-proc-stage .binch-proc-actor{width:85px}}
