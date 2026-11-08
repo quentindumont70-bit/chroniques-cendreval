@@ -1,0 +1,27 @@
+/* La Binch · Intendant permanent. Pas d'animation permanente, isolation des styles. */
+#binch-intendant-launcher{position:fixed;z-index:85;right:clamp(12px,3vw,32px);bottom:clamp(12px,3vw,28px);display:flex;align-items:center;gap:8px;min-height:52px;padding:10px 18px;border-radius:999px;border:1px solid #f6d5a2;background:linear-gradient(115deg,#f5ddad,#c99862);color:#1c2222;font-weight:900;font-size:.87rem;box-shadow:0 12px 33px #0009;cursor:pointer}
+#binch-intendant-launcher span{font-size:1.35rem}
+#binch-intendant-panel{position:fixed;z-index:86;right:clamp(9px,3vw,30px);bottom:clamp(75px,7vw,95px);width:min(420px,calc(100vw - 18px));height:min(640px,calc(100dvh - 108px));border:1px solid #bfa074;border-radius:17px;background:radial-gradient(ellipse at 98% 0%,#705f4559,transparent 46%),linear-gradient(150deg,#26313a,#16232a 70%,#152120);box-shadow:0 23px 80px #000c;display:flex;flex-direction:column;overflow:hidden;color:#f6f1e7}
+#binch-intendant-panel[hidden]{display:none!important}
+#binch-intendant-panel .binch-intendant-header{display:flex;justify-content:space-between;align-items:center;padding:18px 19px 10px;gap:14px;border-bottom:1px solid #746954}
+#binch-intendant-panel .binch-intendant-header small{font-size:.62rem;letter-spacing:.15em;color:#edc88d;font-weight:850}
+#binch-intendant-panel .binch-intendant-header h2{font:700 1.5rem Cinzel,Georgia,serif;margin:5px 0;color:#ffe1a8}
+#binch-intendant-panel #binch-intendant-close{width:42px;height:42px;border:1px solid #8c8b84;border-radius:10px;background:#2b3b42;color:#f3efe6;font-size:1.1rem;cursor:pointer}
+#binch-intendant-panel .binch-intendant-note{font-size:.71rem;line-height:1.55;color:#c7d6d2;margin:0;padding:10px 17px;border-bottom:1px solid #455c5d}
+#binch-intendant-panel #binch-intendant-messages{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:13px;display:flex;flex-direction:column;gap:12px}
+#binch-intendant-panel .binch-intendant-msg{border:1px solid #54706b;border-radius:12px;padding:12px;background:#1d3535}
+#binch-intendant-panel .binch-intendant-msg.user{margin-left:40px;background:#3b3440;border-color:#87788b}
+#binch-intendant-panel .binch-intendant-msg small{font-size:.66rem;letter-spacing:.09em;font-weight:800;color:#d7b98f;text-transform:uppercase}
+#binch-intendant-panel .binch-intendant-msg p{font-size:.82rem;line-height:1.65;white-space:pre-wrap;margin:5px 0;color:#f0eae2}
+#binch-intendant-panel .binch-intendant-msg button{background:#334b52;color:#f1f1e9;border:1px solid #88a6a4;border-radius:8px;padding:8px 11px;min-height:38px;font-size:.76rem;margin:8px 5px 0 0;cursor:pointer}
+#binch-intendant-panel .binch-intendant-draft{display:block;width:100%;min-height:125px;margin-top:8px;border-radius:8px;border:1px solid #a78e69;background:#18282d;color:#ffedcf;padding:10px;font:13px/1.5 ui-monospace,monospace}
+#binch-intendant-panel .binch-intendant-suggestions{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;flex-shrink:0;padding:11px;border-top:1px solid #425c60}
+#binch-intendant-panel .binch-intendant-suggestions button{flex:0 0 auto;border:1px solid #827765;color:#f7dab2;background:#343437;border-radius:999px;padding:7px 12px;font-size:.7rem;cursor:pointer}
+#binch-intendant-panel #binch-intendant-form{padding:11px 13px 15px;background:#112027;border-top:1px solid #576d69}
+#binch-intendant-panel #binch-intendant-form>label{font-size:.68rem;color:#e2bf8d;font-weight:800}
+#binch-intendant-panel #binch-intendant-form>div{display:flex;gap:8px;margin-top:5px}
+#binch-intendant-panel #binch-intendant-query{flex:1;min-width:0;min-height:45px;background:#263841;border:1px solid #77908d;border-radius:8px;color:#fff1e1;padding:10px}
+#binch-intendant-panel #binch-intendant-form button{min-height:45px;padding:8px 13px;border-radius:8px;background:#e9c28a;border:1px solid #ffe4b2;color:#1a2222;font-weight:900}
+#binch-intendant-panel :is(button,input,textarea):focus-visible,#binch-intendant-launcher:focus-visible{outline:3px solid #fce6b0;outline-offset:3px}
+@media(max-width:650px){#binch-intendant-panel{right:0;bottom:0;width:100vw;height:min(85dvh,740px);border-radius:15px 15px 0 0}#binch-intendant-launcher{right:12px;bottom:12px}}
+@media(prefers-reduced-motion:reduce){#binch-intendant-panel *,#binch-intendant-launcher{transition:none!important;animation:none!important}}
