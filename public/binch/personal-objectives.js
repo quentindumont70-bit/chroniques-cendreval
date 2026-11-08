@@ -26,7 +26,7 @@ function init(){
  '<label>Priorité <select name="priority">'+PRIORITIES.map(v=>'<option>'+v+'</option>').join('')+'</select></label>'+
  '<label>Niveau visé <input name="level" type="number" min="1" max="60" value="1" required></label>'+
  '<button type="submit">Ajouter</button></form>'+
- '<div class="binch-objective-toolbar"><div role="group" aria-label="Filtrer les objectifs"><button type="button" data-objective-filter="À faire">À faire</button><button type="button" data-objective-filter="Tous">Tous</button><button type="button" data-objective-filter="Terminés">Terminés</button></div><button type="button" id="binch-objective-copy">Copier mes objectifs</button></div>'+
+ '<div class="binch-objective-toolbar"><div role="group" aria-label="Filtrer les objectifs"><button type="button" data-objective-filter="À faire">À faire</button><button type="button" data-objective-filter="Tous">Tous</button><button type="button" data-objective-filter="Terminés">Terminés</button></div><button type="button" id="binch-objective-copy">Copier mes objectifs</button><button type="button" id="binch-objective-export">Exporter JSON</button><label class="binch-objective-upload">Importer JSON <input id="binch-objective-import" type="file" accept=".json,application/json" hidden></label></div>'+
  '<p id="binch-objective-summary" aria-live="polite" role="status"></p><div id="binch-objective-list"></div>';
  const anchor=$('binch-adventure-home');if(anchor)anchor.insertAdjacentElement('afterend',box);else hub.prepend(box);
  $('binch-objective-form').onsubmit=e=>{
@@ -44,6 +44,33 @@ function init(){
   const del=e.target.closest('[data-objective-del]');
   if(del){load();const row=items.find(x=>x.id===del.dataset.objectiveDel);if(row&&confirm('Supprimer « '+row.title+' » ?')){items=items.filter(x=>x!==row);save();render()}}
  });
+ $('binch-objective-export').onclick=()=>{
+  load();const payload={format:'binch-personal-objectives-v1',createdAt:new Date().toISOString(),character:currentKey.slice(K.length),items:items.map(({title,type,priority,level,done})=>({title,type,priority,level,done}))};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='la-binch-objectifs.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
+ };
+ $('binch-objective-import').onchange=async e=>{
+  const file=e.target.files?.[0];e.target.value='';if(!file)return;
+  if(file.size>100000){alert('Fichier trop volumineux (100 Ko max).');return;}
+  try{
+   const data=JSON.parse(await file.text());
+   if(data.format!=='binch-personal-objectives-v1'||!Array.isArray(data.items)||data.items.length>120)throw Error('Format non reconnu');
+   const incoming=data.items.map(x=>{
+    if(!x||typeof x.title!=='string'||!x.title.trim()||x.title.length>100||!TYPES.includes(x.type)||!PRIORITIES.includes(x.priority)||!Number.isInteger(x.level)||x.level<1||x.level>60||typeof x.done!=='boolean')throw Error('Objectif invalide');
+    return {title:x.title.trim(),type:x.type,priority:x.priority,level:x.level,done:x.done};
+   });
+   load();
+   const currentCharacter=currentKey.slice(K.length);
+   if(data.character!==currentCharacter&&!confirm('Ce fichier provient d’un autre personnage. Importer quand même dans le profil actif ?'))return;
+   const fingerprint=x=>[x.title.trim().toLocaleLowerCase('fr'),x.type,x.level].join('|');
+   const seen=new Set(items.map(fingerprint));const unique=incoming.filter(x=>{const key=fingerprint(x);if(seen.has(key))return false;seen.add(key);return true});
+   const available=Math.max(0,120-items.length);const toAdd=unique.slice(0,available);
+   if(!toAdd.length){alert('Aucun nouvel objectif à ajouter.');return;}
+   if(!confirm('Ajouter '+toAdd.length+' objectif(s) sans effacer les '+items.length+' existants ?'))return;
+   for(const item of toAdd)items.push({...item,id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9)});
+   save();render();
+  }catch(error){alert('Import refusé : '+error.message)}
+ };
  $('binch-objective-copy').onclick=async()=>{
   load();const list=items.filter(x=>!x.done).sort((a,b)=>a.level-b.level),text=['La Binch — objectifs à venir',...list.map(x=>'- [ ] Nv '+x.level+' · '+x.type+' · '+x.title+' ('+x.priority+')')].join('\n');
   try{await navigator.clipboard.writeText(text);$('binch-objective-copy').textContent='Copié ✓'}catch{prompt('Copier mes objectifs',text)}
