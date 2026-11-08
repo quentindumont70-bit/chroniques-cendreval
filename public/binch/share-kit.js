@@ -5,6 +5,7 @@ const syncStyle=document.createElement('link');syncStyle.rel='stylesheet';syncSt
 const lfgStyle=document.createElement('link');lfgStyle.rel='stylesheet';lfgStyle.href='./lfg.css';document.head.append(lfgStyle);const lfgScript=document.createElement('script');lfgScript.src='./lfg.js';lfgScript.defer=true;document.head.append(lfgScript);
 const procStyle=document.createElement('link');procStyle.rel='stylesheet';procStyle.href='./true-procs.css';document.head.append(procStyle);const procScript=document.createElement('script');procScript.src='./true-procs.js';procScript.defer=true;document.head.append(procScript);
 const intendantStyle=document.createElement('link');intendantStyle.rel='stylesheet';intendantStyle.href='./intendant.css';document.head.append(intendantStyle);const intendantScript=document.createElement('script');intendantScript.src='./intendant.js';intendantScript.defer=true;document.head.append(intendantScript);
+const navStyle=document.createElement('link');navStyle.rel='stylesheet';navStyle.href='./nav-scroll.css';document.head.append(navStyle);const navScript=document.createElement('script');navScript.src='./nav-scroll.js';navScript.defer=true;document.head.append(navScript);
 const css=document.createElement('link');css.rel='stylesheet';css.href='./share-kit.css';document.head.append(css);
 const placement=document.createElement('script');placement.src='./sync-placement.js';placement.defer=true;document.head.append(placement);
 const gm=document.createElement('script');gm.src='./gm-quick.js';gm.defer=true;document.head.append(gm);
