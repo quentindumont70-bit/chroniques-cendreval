@@ -1,4 +1,4 @@
--- GrimoireSync 0.8.0 : progression, inventaire, quetes et metiers en lecture seule.
+-- GrimoireSync 0.8.1 : progression, inventaire, quetes et metiers en lecture seule.
 local addon, scan = CreateFrame("Frame"), CreateFrame("Frame")
 local pendingInventory = false
 local trackedQuestIDs={79976} -- fallback si l'API de liste complete n'est pas disponible
@@ -126,6 +126,31 @@ local function capture()
   GrimoireSyncDB.characters[key]={name=name or "Unknown",realm=realm,level=safe(UnitLevel,"player") or 0,class=class or "Unknown",classToken=classToken or "UNKNOWN",race=race or "Unknown",raceToken=raceToken or "UNKNOWN",faction=safe(UnitFactionGroup,"player") or "Unknown",zone=zone,gold=safe(GetMoney) or 0,xp=safe(UnitXP,"player") or 0,xpMax=safe(UnitXPMax,"player") or 0,restedXP=safe(GetXPExhaustion) or 0,client=build or "Unknown",build=buildNumber or "",interface=tonumber(interfaceVersion) or 0,timestamp=now()}
   captureInventory(); captureEquipment(); captureProfessions(); captureQuestFlags(); rebuildPayload()
 end
+-- Capture XP legere : ne rescane pas les sacs et quetes a chaque gain d'XP.
+-- /reload persiste les SavedVariables sur disque, un import navigateur reste requis.
+local function captureXP()
+  if type(GrimoireSyncDB)~="table" then return end
+  local key=GrimoireSyncDB.lastCharacter
+  local c=key and GrimoireSyncDB.characters and GrimoireSyncDB.characters[key]
+  if type(c)~="table" then return end
+  local current=safe(UnitXP,"player")
+  local maximum=safe(UnitXPMax,"player")
+  if type(current)=="number" and type(maximum)=="number" and maximum>0 and current>=0 and current<=maximum then
+    c.xp=current
+    c.xpMax=maximum
+    c.restedXP=safe(GetXPExhaustion) or 0
+    c.timestamp=now()
+    GrimoireSyncDB.xpStatus="ok"
+  else
+    -- Zero seul ne signifie pas absence de donnees; ne pas faire croire
+    -- qu'une valeur estimee est une XP vraiment synchronisee.
+    c.xp=nil
+    c.xpMax=nil
+    GrimoireSyncDB.xpStatus="unavailable"
+  end
+  rebuildPayload()
+end
+
 local function finishAuction(items)
   GrimoireSyncDB.auction={realm=safe(GetRealmName) or "Unknown",faction=safe(UnitFactionGroup,"player") or "Unknown",timestamp=now(),items=items or {},total=#(items or {})}
   rebuildPayload()
@@ -162,9 +187,12 @@ local function startAuctionScan()
   else print("|cffff7777GrimoireSync|r : API de scan inconnue. Utilise /grimoire debug.") end
 end
 
-for _,event in ipairs({"PLAYER_LOGIN","PLAYER_LEVEL_UP","ZONE_CHANGED_NEW_AREA","PLAYER_MONEY","BAG_UPDATE_DELAYED","PLAYER_LOGOUT","QUEST_TURNED_IN","QUEST_LOG_UPDATE","SKILL_LINES_CHANGED"}) do addon:RegisterEvent(event) end
-addon:SetScript("OnEvent",function(_,event)
-  if event=="BAG_UPDATE_DELAYED" and C_Timer and C_Timer.After then
+for _,event in ipairs({"PLAYER_LOGIN","PLAYER_LEVEL_UP","PLAYER_XP_UPDATE","UNIT_XP","UPDATE_EXHAUSTION","ZONE_CHANGED_NEW_AREA","PLAYER_MONEY","BAG_UPDATE_DELAYED","PLAYER_LOGOUT","QUEST_TURNED_IN","QUEST_LOG_UPDATE","SKILL_LINES_CHANGED"}) do addon:RegisterEvent(event) end
+addon:SetScript("OnEvent",function(_,event,unit)
+  if event=="PLAYER_XP_UPDATE" or event=="UPDATE_EXHAUSTION" or (event=="UNIT_XP" and unit=="player") then
+    captureXP()
+  elseif event=="UNIT_XP" then return
+  elseif event=="BAG_UPDATE_DELAYED" and C_Timer and C_Timer.After then
     if pendingInventory then return end; pendingInventory=true
     C_Timer.After(0.5,function()pendingInventory=false;capture()end)
   else capture() end
@@ -177,7 +205,7 @@ SlashCmdList.GRIMOIRESYNC=function(message)
   message=(message or ""):lower():match("^%s*(.-)%s*$")
   if message=="scan" then startAuctionScan(); return end
   capture()
-  if message=="debug" then print("GrimoireSync schema="..tostring(GrimoireSyncDB.schema).." quetes="..tostring((function()local n=0 for _ in pairs(GrimoireSyncDB.completedTrackedQuests or {}) do n=n+1 end return n end)()).." API_QUETES="..tostring(GrimoireSyncDB.questAPI).." inventaire="..tostring(#(GrimoireSyncDB.inventory or {})).." API_AH="..tostring(C_AuctionHouse and C_AuctionHouse.ReplicateItems~=nil)); return end
+  if message=="debug" then print("GrimoireSync schema="..tostring(GrimoireSyncDB.schema).." quetes="..tostring((function()local n=0 for _ in pairs(GrimoireSyncDB.completedTrackedQuests or {}) do n=n+1 end return n end)()).." API_QUETES="..tostring(GrimoireSyncDB.questAPI).." inventaire="..tostring(#(GrimoireSyncDB.inventory or {})).." API_AH="..tostring(C_AuctionHouse and C_AuctionHouse.ReplicateItems~=nil).." XP="..tostring(safe(UnitXP,"player")).."/"..tostring(safe(UnitXPMax,"player")).." statut="..tostring(GrimoireSyncDB.xpStatus or "capture initiale")); return end
   print("|cffd9b56cGrimoireSync|r : "..tostring(GrimoireSyncDB.lastCharacter)..", "..#(GrimoireSyncDB.inventory or {}).." piles dans les sacs.")
   print("|cffd9b56cGrimoireSync|r : ouvre l'hotel des ventes puis tape |cffffffff/grimoire scan|r. /reload enregistre les donnees.")
 end
