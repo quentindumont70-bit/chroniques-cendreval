@@ -1,0 +1,9 @@
+#binch-local-backup{margin:18px 0;border:1px solid #757c69;background:linear-gradient(135deg,#17231c,#101915)}
+#binch-local-backup>summary{font:700 1.1rem Cinzel,Georgia,serif;color:#f1d8a4;cursor:pointer;padding:3px}
+#binch-local-backup>summary small{display:block;font:500 .77rem Inter,system-ui;color:#b6ccbb;margin:4px 0}
+#binch-local-backup p{max-width:900px}
+#binch-local-backup .binch-backup-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:12px 0}
+#binch-local-backup button,#binch-local-backup .binch-backup-upload{display:inline-flex;align-items:center;cursor:pointer;background:#283b32;border:1px solid #ab986d;border-radius:7px;padding:11px 14px;color:#f4dfbd}
+#binch-local-backup button:hover,#binch-local-backup .binch-backup-upload:hover{border-color:#f3daaa;background:#3c5545}
+#binch-local-backup #binch-backup-status{color:#c8e0c7;font-weight:650}
+#binch-local-backup #binch-backup-status[data-error="true"]{color:#ffada4}
