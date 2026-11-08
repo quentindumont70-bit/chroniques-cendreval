@@ -41,7 +41,7 @@ function syncExternalButtons(){
  })
 }
 window.BinchPinned={has:id=>!!pins()[id],set:item=>pinItem(item)};
-function xp(last){const x=+last.xp,m=+last.xpMax;if(!(m>0&&x>=0&&x<=m))return '<div class="binch-xp-missing"><b>XP non synchronisée</b><small>La Binch n’invente aucune valeur. Actualise GrimoireSync dans WoW (/reload), puis réimporte le fichier dans Synchronisation.</small></div>';return '<div class="binch-xp-line"><span>Expérience</span><b>'+x.toLocaleString('fr-FR')+' / '+m.toLocaleString('fr-FR')+'</b></div><div class="binch-xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="'+m+'" aria-valuenow="'+x+'"><i style="width:'+(x/m*100).toFixed(2)+'%"></i></div>'}
+function xp(last){const x=+last.xp,m=+last.xpMax;if(!(m>0&&x>=0&&x<=m))return '<div class="binch-xp-missing"><b>XP non synchronisée</b><small>La Binch n’invente aucune valeur. Actualise GrimoireSync dans WoW (/reload), puis réimporte ton fichier.</small><button type="button" class="binch-xp-sync-link" id="binch-xp-open-sync">↻ Ouvrir la synchronisation</button></div>';return '<div class="binch-xp-line"><span>Expérience</span><b>'+x.toLocaleString('fr-FR')+' / '+m.toLocaleString('fr-FR')+'</b></div><div class="binch-xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="'+m+'" aria-valuenow="'+x+'"><i style="width:'+(x/m*100).toFixed(2)+'%"></i></div>'}
 function updateLevelRing(last,p){
  const ring=$('binch-level-ring');
  if(!ring)return;
@@ -81,6 +81,7 @@ function mount(){
  '<section class="binch-route"><header><div><div class="binch-kicker">TA ROUTE, MAINTENANT</div><h2>Les prochaines étapes</h2><p>Épingle les étapes qui comptent, coche celles que tu termines. Une seule timeline pour tes objectifs.</p></div><div id="binch-route-count"></div></header><div class="binch-route-tools"><input id="binch-route-search" type="search" placeholder="Quête, donjon, métier, recette…"><div id="binch-route-filters"></div></div><div id="binch-route-list"></div></section>';
  hub.prepend(root);hub.classList.add('binch-adventure-ready');
  $('binch-route-search').oninput=renderRoute;
+ root.addEventListener('click',e=>{if(e.target.closest('#binch-xp-open-sync'))document.querySelector('#app nav.nav [data-page="sync"]')?.click()});
  enhanceProfile();
 }
 function renderRoute(){
