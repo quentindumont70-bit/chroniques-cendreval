@@ -25,3 +25,25 @@
 #binch-intendant-panel :is(button,input,textarea):focus-visible,#binch-intendant-launcher:focus-visible{outline:3px solid #fce6b0;outline-offset:3px}
 @media(max-width:650px){#binch-intendant-panel{right:0;bottom:0;width:100vw;height:min(85dvh,740px);border-radius:15px 15px 0 0}#binch-intendant-launcher{right:12px;bottom:12px}}
 @media(prefers-reduced-motion:reduce){#binch-intendant-panel *,#binch-intendant-launcher{transition:none!important;animation:none!important}}
+
+
+/* Brog — avatar original, construit en CSS/SVG symbolique, sans asset Blizzard. */
+#binch-intendant-launcher{gap:10px;letter-spacing:.01em}
+#binch-intendant-launcher::after{content:'●';font-size:.5rem;color:#286747;align-self:flex-start;margin-top:4px}
+#binch-intendant-panel .binch-intendant-header{justify-content:initial;gap:12px;padding:16px 15px 12px;background:radial-gradient(ellipse at 10% 0,#7e543e62,transparent 70%),linear-gradient(95deg,#443a36,#202d32)}
+#binch-intendant-panel .binch-brog-portrait{position:relative;display:grid;place-items:center;flex:0 0 64px;height:70px;border:2px solid #d6b47a;border-radius:42% 43% 38% 41%;background:radial-gradient(ellipse at 35% 34%,#81a56b 0%,#4a7652 46%,#253d3d 100%);box-shadow:inset 0 -7px #273f3c66,0 4px 13px #0008;transform:rotate(-4deg)}
+#binch-intendant-panel .binch-brog-portrait:before,#binch-intendant-panel .binch-brog-portrait:after{position:absolute;content:'';width:11px;height:15px;top:30px;border:2px solid #203b2b;border-radius:50%;background:#f6eecb}
+#binch-intendant-panel .binch-brog-portrait:before{left:13px}#binch-intendant-panel .binch-brog-portrait:after{right:12px}
+#binch-intendant-panel .binch-brog-portrait b{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%) rotate(4deg);padding:3px 7px;background:#35291e;color:#f9d69b;border-radius:8px;font:900 .75rem Georgia,serif;border:1px solid #b38c5a}
+#binch-intendant-panel .binch-brog-portrait>span{position:absolute;top:-8px;right:-5px;color:#ffe0a3;font-size:19px;text-shadow:0 2px 4px #000}
+#binch-intendant-panel .binch-brog-name{min-width:0;flex:1}
+#binch-intendant-panel .binch-brog-name small{font-size:.6rem;letter-spacing:.13em;color:#f1d1a6}
+#binch-intendant-panel .binch-brog-name h2{font:700 1.55rem Cinzel,Georgia,serif;margin:3px 0 0;color:#ffdfa4;display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+#binch-intendant-panel .binch-brog-online{font:700 .59rem system-ui,sans-serif;letter-spacing:0;color:#b7f2d2;background:#215245;border:1px solid #5b987a;border-radius:20px;padding:4px 7px}
+#binch-intendant-panel .binch-brog-motto{font:italic .65rem Georgia,serif;color:#e7cfae}
+#binch-intendant-panel .binch-brog-toolbar{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:7px 14px;background:#1d3031;border-bottom:1px solid #4e6861;font-size:.68rem;color:#b8d6ca}
+#binch-intendant-panel .binch-brog-toolbar button{padding:6px 9px;min-height:31px;background:#35433f;color:#e6dcc8;border:1px solid #879482;border-radius:7px;font-size:.67rem;cursor:pointer}
+#binch-intendant-panel .binch-brog-toolbar button[aria-pressed="true"]{background:#3e5234;border-color:#9ab278;color:#f2e4b4}
+#binch-intendant-panel .binch-intendant-msg.assistant{border-left:3px solid #d6b87b}
+#binch-intendant-panel .binch-intendant-msg.user{border-right:3px solid #b8a3cc}
+@media(max-width:380px){#binch-intendant-panel .binch-brog-portrait{flex-basis:53px;height:60px}#binch-intendant-panel .binch-brog-online{display:none}#binch-intendant-panel .binch-brog-name h2{font-size:1.32rem}}
