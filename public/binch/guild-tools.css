@@ -75,3 +75,22 @@
 @media(max-width:760px){.binch-loot-controls{grid-template-columns:1fr 1fr}.binch-loot-controls label:first-child{grid-column:1/-1}}
 @media(max-width:570px){.binch-loot-grid,.binch-loot-controls{grid-template-columns:1fr}.binch-loot-controls label:first-child{grid-column:auto}.binch-loot-instance{min-height:185px}}
 @media(prefers-reduced-motion:reduce){.binch-loot-instance{transition:none}.binch-loot-instance:hover{transform:none}}
+
+/* Hiérarchie coffre : réel déclaré en premier, promesses ensuite. */
+#page-coffre .binch-chest-physical{border:1px solid #8b9b88;border-left:4px solid #9cc7a5;border-radius:12px;padding:clamp(17px,3vw,26px);margin:22px 0;background:linear-gradient(125deg,#24352e,#172629)}
+#page-coffre .binch-chest-physical .eyebrow{color:#b0e0b9}
+#page-coffre .binch-chest-physical h3,#page-coffre .binch-chest-promises h3{font:700 1.35rem Cinzel,Georgia,serif;color:#f2dfb6;margin:7px 0}
+#page-coffre .binch-chest-physical p,#page-coffre .binch-chest-promises p{font-size:.8rem;color:#ced7d1;line-height:1.7}
+#page-coffre #binch-chest-physical-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:15px}
+#page-coffre .binch-chest-promises{margin:23px 0;border:1px solid #8d7c91;border-left:4px solid #c2a6d6;border-radius:12px;padding:clamp(17px,3vw,26px);background:linear-gradient(125deg,#322d38,#1b2531)}
+#page-coffre .binch-chest-register{margin:18px 0;border:1px solid #796d62;border-radius:10px;background:#222f2c}
+#page-coffre .binch-chest-register summary{padding:15px 18px;font-size:.85rem;font-weight:850;color:#ecd5af;cursor:pointer}
+#page-coffre .binch-chest-register[open] summary{border-bottom:1px solid #6e7670}
+#page-coffre .binch-chest-register form{margin:14px}
+#page-bibliotheque .binch-library-encyclopedia{margin-top:24px;border:1px solid #7b91a4;border-radius:13px;background:linear-gradient(135deg,#223542,#1b2632);overflow:hidden}
+#page-bibliotheque .binch-library-encyclopedia>summary{padding:18px 20px;list-style:none;cursor:pointer;color:#e1eaff;font:700 1.15rem Cinzel,Georgia,serif}
+#page-bibliotheque .binch-library-encyclopedia>summary::-webkit-details-marker{display:none}
+#page-bibliotheque .binch-library-encyclopedia>summary small{display:block;font:.75rem system-ui,sans-serif;color:#bed3e0;margin:5px 0}
+#page-bibliotheque .binch-library-encyclopedia .binch-loot-intro{margin:12px;border:0;box-shadow:none;background:none}
+#page-bibliotheque #binch-lore-codex{margin-top:24px}
+@media(max-width:800px){#page-coffre #binch-chest-physical-items{grid-template-columns:1fr}}
