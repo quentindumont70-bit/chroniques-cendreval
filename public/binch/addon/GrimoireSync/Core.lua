@@ -196,7 +196,14 @@ addon:SetScript("OnEvent",function(_,event,unit)
     C_Timer.After(0.5,function()pendingInventory=false;capture()end)
   else capture() end
 end)
-scan:RegisterEvent("REPLICATE_ITEM_LIST_UPDATE"); scan:RegisterEvent("AUCTION_ITEM_LIST_UPDATE")
+-- WoW Forever 1.6.0.1 does not expose AUCTION_ITEM_LIST_UPDATE.
+-- Register supported auction events defensively; a missing optional event
+-- must never prevent the slash command and character capture from loading.
+local function registerOptionalEvent(frame,event)
+  local ok=pcall(frame.RegisterEvent,frame,event)
+  return ok
+end
+registerOptionalEvent(scan,"REPLICATE_ITEM_LIST_UPDATE")
 scan:SetScript("OnEvent",function(_,event)if event=="REPLICATE_ITEM_LIST_UPDATE" then readReplicate() else readLegacy() end end)
 
 SLASH_GRIMOIRESYNC1="/grimoire"
