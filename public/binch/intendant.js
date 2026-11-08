@@ -58,7 +58,7 @@ function response(query){
      'Rôles recherchés : '+role,
      'Merci de répondre : ✅ présent · ❔ peut-être · ❌ absent.'].join('\n');
    return {text:'J’ai préparé un brouillon à copier dans #'+channel+'. Vérifie les informations avant publication : je ne peux pas poster directement sur Discord. Le jour et l’heure ne sont pas reliés à un événement réel.',
-     draft:message,buttons:[{label:'Ouvrir LFG',page:'lfg'},{label:'Ouvrir le Mode GM',page:'gm'}]};
+     draft:message,activity,roleNeeded:role,channel,dayLabel:date,timeLabel:time,buttons:[{label:'Ouvrir LFG',page:'lfg'},{label:'Ouvrir le Mode GM',page:'gm'}]};
  }
  if(/synchro|addon|reload|personnage.*import|grimoire.?sync|saved.?variables/.test(q))
    return {text:'Installe GrimoireSync, active-le dans WoW Forever, fais /reload, puis ouvre Synchronisation. Sélectionne GrimoireSync.lua et autorise sa lecture. Sur un navigateur compatible, le suivi des /reload peut être activé tant que l’onglet est ouvert. Aucun mot de passe n’est nécessaire.',buttons:[{label:'Ouvrir Synchronisation',page:'sync'}]};
@@ -85,6 +85,20 @@ function render(){
   const body=document.createElement('p');body.textContent=entry.text;article.append(label,body);
   if(entry.draft){const text=document.createElement('textarea');text.className='binch-intendant-draft';text.value=entry.draft;text.rows=5;text.setAttribute('aria-label','Brouillon Discord');text.addEventListener('change',()=>{entry.draft=text.value;save()});article.append(text);
    const copy=document.createElement('button');copy.type='button';copy.textContent='Copier ce brouillon';copy.onclick=async()=>{try{await navigator.clipboard.writeText(text.value);copy.textContent='Copié ✓'}catch{prompt('Copie ce texte :',text.value)}};article.append(copy);
+   const form=document.createElement('button');form.type='button';form.textContent='Préremplir une annonce LFG';
+   form.onclick=()=>{
+    if(!page('lfg')){say('L’onglet LFG n’est pas accessible.','intendant');return}
+    const dungeon=$('#binch-lfg-dungeon'),note=$('#binch-lfg-note');
+    if(!dungeon||!note){say('La Taverne LFG n’est pas encore chargée.','intendant');return}
+    if(entry.activity&&entry.activity!=='activité à préciser')dungeon.value=entry.activity;
+    const details=['Préparé par Brog, à confirmer avant publication.'];
+    if(entry.roleNeeded&&entry.roleNeeded!=='rôles à confirmer')details.push('Rôle recherché : '+entry.roleNeeded+'.');
+    if(entry.dayLabel)details.push('Jour mentionné : '+entry.dayLabel+'.');
+    if(entry.timeLabel&&entry.timeLabel!=='horaire à confirmer')details.push('Heure indicative : '+entry.timeLabel+'.');
+    note.value=details.join(' ');
+    dungeon.scrollIntoView({block:'center',behavior:'smooth'});dungeon.focus({preventScroll:true});
+   };
+   article.append(form);
   }
   (entry.buttons||[]).forEach(btn=>{const b=document.createElement('button');b.type='button';b.textContent=btn.label;b.onclick=()=>{if(!page(btn.page))say('Cette rubrique n’est pas disponible dans la version actuelle.','intendant')};article.append(b)});
   list.append(article)
