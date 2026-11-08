@@ -1,0 +1,45 @@
+/* La Binch · LFG / Taverne, sans animation permanente */
+#page-lfg{--page-accent:#e9c184;--page-border:#8e744e}
+#page-lfg .binch-lfg-hero{position:relative;overflow:hidden;padding:clamp(24px,4.5vw,55px);border-radius:18px;border:1px solid #b79665;background:radial-gradient(ellipse at 98% 0,#9470476a,transparent 48%),repeating-linear-gradient(0deg,transparent,transparent 21px,#00000010 22px),linear-gradient(125deg,#49352b,#231f25 67%,#151e22);box-shadow:inset 0 2px #f5d19b44,0 17px 42px #0008}
+#page-lfg .binch-lfg-hero:before{content:'⚔';position:absolute;right:4%;bottom:-85px;font:260px Georgia,serif;color:#ddbb8340;pointer-events:none}
+#page-lfg .binch-lfg-kicker{font-weight:850;color:#f1ca95;font-size:.72rem;letter-spacing:.18em}
+#page-lfg .binch-lfg-hero h1{font:700 clamp(2rem,5vw,4.3rem)/1.07 Cinzel,Georgia,serif;margin:17px 0;color:#ffe3af}
+#page-lfg .binch-lfg-hero p{max-width:650px;color:#ede1d2;line-height:1.75;font-size:.95rem}
+#page-lfg .binch-lfg-tags{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px}
+#page-lfg .binch-lfg-tags span{border:1px solid #d1b68b;padding:7px 12px;border-radius:999px;background:#271d1a98;color:#f5e2bf;font-size:.76rem}
+#page-lfg .binch-lfg-columns{display:grid;grid-template-columns:minmax(300px,.85fr) minmax(0,1.3fr);gap:18px;margin-top:20px;align-items:start}
+#page-lfg .binch-lfg-form,#page-lfg .binch-lfg-board{border:1px solid #957a57;border-radius:15px;background:linear-gradient(145deg,#2b2727,#172327);padding:clamp(17px,3vw,28px);min-width:0;box-shadow:0 11px 31px #0006}
+#page-lfg .binch-lfg-form h2,#page-lfg .binch-lfg-board h2{font:700 1.5rem Cinzel,Georgia,serif;color:#ffe0af}
+#page-lfg .binch-lfg-form form{display:grid;gap:13px}
+#page-lfg .binch-lfg-form label{display:grid;gap:7px;color:#f3d8b8;font-size:.8rem;font-weight:750}
+#page-lfg .binch-lfg-form input,#page-lfg .binch-lfg-form select,#page-lfg .binch-lfg-form textarea{width:100%;min-width:0;min-height:44px;padding:10px;color:#f9f0e4;background:#152126;border:1px solid #947e64;border-radius:8px}
+#page-lfg .binch-lfg-form textarea{resize:vertical}
+#page-lfg .binch-lfg-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#page-lfg .binch-lfg-primary{padding:13px 16px;min-height:50px;border:1px solid #ffe3a9;border-radius:9px;color:#271e1a;background:linear-gradient(120deg,#ffe6ae,#c99b60);font-weight:900}
+#page-lfg .binch-lfg-discord{margin-top:25px;padding:20px;border:1px solid #7472a1;border-radius:12px;background:radial-gradient(ellipse at 92% 0,#706ab44a,transparent 70%),linear-gradient(140deg,#292940,#1d2433)}
+#page-lfg .binch-lfg-discord h3{color:#dfd8ff;margin:0}
+#page-lfg .binch-lfg-discord p,#page-lfg .binch-lfg-muted{font-size:.77rem;line-height:1.65;color:#c3c8dc}
+#page-lfg .binch-lfg-discord button{margin-top:10px;min-height:42px;padding:9px 13px;border:1px solid #aba4d5;border-radius:8px;color:#ede9ff;background:#41416e;font-weight:750}
+#page-lfg .binch-lfg-board-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#page-lfg .binch-lfg-board-heading>span{padding:7px 12px;border:1px solid #b99c76;color:#f4d7a8;border-radius:9px;font-size:.73rem}
+#page-lfg .binch-lfg-clarity{padding:13px 15px;background:#3b3026;border-left:3px solid #e6b876;border-radius:7px;color:#efe1c9;font-size:.8rem;line-height:1.65}
+#page-lfg .binch-lfg-filters{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+#page-lfg .binch-lfg-filters button{min-height:39px;padding:8px 13px;border:1px solid #9c8268;background:#272a2a;border-radius:8px;color:#ebdbc2}
+#page-lfg .binch-lfg-filters button.active{background:#ecd2a5;border-color:#ffe8c4;color:#2c2422;font-weight:850}
+#page-lfg #binch-lfg-cards{display:grid;gap:13px}
+#page-lfg .binch-lfg-card{background:linear-gradient(140deg,#3a2f2a,#27282b);border:1px solid #b18d60;border-radius:12px;padding:19px;box-shadow:inset 0 1px #e4c99b22}
+#page-lfg .binch-lfg-card-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+#page-lfg .binch-lfg-card-top>span{font-size:.67rem;color:#f8d9a9;letter-spacing:.1em;text-transform:uppercase}
+#page-lfg .binch-lfg-card-top small{color:#d4c8be}
+#page-lfg .binch-lfg-card h3{font:700 1.35rem Cinzel,Georgia,serif;color:#ffe4ad;margin:12px 0 8px}
+#page-lfg .binch-lfg-person{color:#e7d7c5;font-size:.84rem}
+#page-lfg .binch-lfg-card p{font-size:.85rem;color:#d7d3d1;line-height:1.65}
+#page-lfg .binch-lfg-reactions,#page-lfg .binch-lfg-card-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}
+#page-lfg .binch-lfg-reactions button{min-height:40px;background:#292d32;color:#e3eaf3;border:1px solid #737985;border-radius:8px;padding:8px 13px}
+#page-lfg .binch-lfg-card-actions button{min-height:42px;background:#394348;color:#f2e2c9;border:1px solid #9f947d;border-radius:8px;padding:9px 11px;font-size:.76rem}
+#page-lfg .binch-lfg-card-actions button:first-child{background:#d9b780;color:#262221;font-weight:850;border-color:#f2dbad}
+#page-lfg .binch-lfg-empty{background:#28292a;border:1px dashed #9d8666;padding:25px;border-radius:10px;color:#ead5b4;text-align:center}
+#page-lfg :is(input,textarea,select,button,a):focus-visible{outline:3px solid #ffe1a8;outline-offset:3px}
+@media(max-width:890px){#page-lfg .binch-lfg-columns{grid-template-columns:1fr}}
+@media(max-width:600px){#page-lfg .binch-lfg-hero{padding:22px}#page-lfg .binch-lfg-hero:before{font-size:145px;bottom:-45px}#page-lfg .binch-lfg-form,#page-lfg .binch-lfg-board{padding:16px}#page-lfg .binch-lfg-pair{grid-template-columns:1fr}#page-lfg .binch-lfg-card-actions{display:grid;grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){#page-lfg *{transition:none!important;animation:none!important}}
