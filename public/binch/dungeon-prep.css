@@ -1,0 +1,20 @@
+#binch-dungeon-prep{margin:18px 0;background:linear-gradient(135deg,#13231f,#172024);border:1px solid #7f866d}
+#binch-dungeon-prep h2{margin:.35em 0}
+#binch-dungeon-prep h3{color:#f0d5a0;font-size:1.12rem;margin:14px 0 8px}
+#binch-dungeon-prep label{display:grid;gap:7px;color:#e4d5b8;font-weight:650;font-size:.86rem}
+#binch-dungeon-prep select,#binch-dungeon-prep input[type=search],#binch-dungeon-prep textarea{width:100%;min-width:0;min-height:40px;border:1px solid #667b6e;border-radius:7px;padding:10px;background:#0d1817;color:#f6eddb}
+#binch-dungeon-prep button{cursor:pointer;padding:10px 14px;border:1px solid #bd9c64;background:#273b32;border-radius:7px;color:#f9e3b7}
+#binch-dungeon-prep button:hover{border-color:#fae3af;background:#3b5042}
+#binch-dungeon-prep button:disabled{opacity:.55;cursor:not-allowed}
+#binch-dungeon-prep .binch-dungeon-controls{display:grid;grid-template-columns:1fr 1.2fr;gap:14px;margin:14px 0}
+#binch-dungeon-prep .binch-dungeon-info{border:1px solid #506a5d;padding:13px;border-radius:8px;background:#0b1813}
+#binch-dungeon-prep .binch-dungeon-info p{margin:5px 0;color:#d6e0d3}
+#binch-dungeon-prep .binch-dungeon-checks{margin:14px 0}
+#binch-dungeon-prep #binch-dungeon-checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+#binch-dungeon-prep #binch-dungeon-checklist label{display:flex;align-items:flex-start;gap:9px;border:1px solid #506259;border-radius:7px;padding:12px;background:#12241b;font-weight:500}
+#binch-dungeon-prep #binch-dungeon-checklist input{accent-color:#c9a76c;flex:none;margin-top:2px;width:17px;height:17px}
+#binch-dungeon-prep .binch-dungeon-notes{margin:14px 0}
+#binch-dungeon-prep #binch-dungeon-roster,#binch-dungeon-prep #binch-dungeon-events{margin-top:15px}
+#binch-dungeon-prep .binch-dungeon-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}
+#binch-dungeon-prep #binch-dungeon-status{color:#e5d29d;font-weight:650}
+@media(max-width:720px){#binch-dungeon-prep .binch-dungeon-controls,#binch-dungeon-prep #binch-dungeon-checklist{grid-template-columns:1fr}}
