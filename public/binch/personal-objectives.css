@@ -1,0 +1,20 @@
+#binch-personal-objectives{margin:18px 0;border-color:#677b68;background:linear-gradient(135deg,#12221a,#0b1312)}
+#binch-personal-objectives h2{margin:7px 0 10px}
+#binch-personal-objectives label{display:grid;gap:5px;color:#d3dbc9;font-size:.84rem}
+#binch-personal-objectives input,#binch-personal-objectives select{width:100%;padding:10px;background:#101b17;border:1px solid #526e5c;border-radius:6px;color:#f1f0dc;min-width:0}
+#binch-personal-objectives button{background:#24382e;border:1px solid #7e9b7d;color:#f4eacb;padding:9px 12px;border-radius:6px;cursor:pointer}
+#binch-personal-objectives button:hover{border-color:#e0c58a}
+#binch-personal-objectives .binch-objective-form{display:grid;grid-template-columns:minmax(190px,3fr) repeat(3,minmax(95px,1fr)) auto;gap:10px;align-items:end;padding:14px;background:#091610;border:1px solid #506455;border-radius:9px}
+#binch-personal-objectives .binch-objective-form button{background:#bc9e67;color:#141f17;font-weight:800;min-height:41px}
+#binch-personal-objectives .binch-objective-toolbar{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:15px 0}
+#binch-personal-objectives .binch-objective-toolbar div{display:flex;flex-wrap:wrap;gap:6px}
+#binch-personal-objectives .binch-objective-toolbar button.active{background:#c3a570;color:#132018}
+#binch-personal-objectives .binch-objective-item{display:flex;align-items:center;gap:12px;padding:11px;border-bottom:1px solid #3a4b40;background:#101d17}
+#binch-personal-objectives .binch-objective-item span{flex:1;min-width:0}
+#binch-personal-objectives .binch-objective-item b{display:block;overflow-wrap:anywhere}
+#binch-personal-objectives .binch-objective-item small{display:block;color:#b7c5b9}
+#binch-personal-objectives .binch-objective-item button:first-child{min-width:41px;font-size:1.25rem}
+#binch-personal-objectives .binch-objective-item button:last-child{color:#ffd2b7}
+#binch-personal-objectives .binch-objective-item.is-done b{text-decoration:line-through;opacity:.7}
+#binch-personal-objectives #binch-objective-summary{font-weight:650;color:#e8d19e}
+@media(max-width:850px){#binch-personal-objectives .binch-objective-form{grid-template-columns:repeat(2,minmax(0,1fr))}#binch-personal-objectives .binch-objective-form label:first-child,#binch-personal-objectives .binch-objective-form button{grid-column:1/-1}}
