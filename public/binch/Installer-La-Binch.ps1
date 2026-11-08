@@ -1,4 +1,4 @@
-# La Binch - installation locale GrimoireSync v0.8.2
+# La Binch - installation locale GrimoireSync v0.8.3
 # Source publique : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/
 # Aucune permission administrateur, aucune lecture des identifiants/du dossier WTF, aucune telemetrie.
 $ErrorActionPreference = 'Stop'
