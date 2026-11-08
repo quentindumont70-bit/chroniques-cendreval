@@ -30,22 +30,21 @@
 .binch-macro-item pre{white-space:pre-wrap;overflow-wrap:anywhere;border:1px solid #6385a2;border-radius:9px;background:#0c1724;padding:14px;color:#c3ecff;font-size:.76rem;line-height:1.65}
 .binch-macro-item p{color:#c9d4df;line-height:1.6;font-size:.78rem;flex:1}
 .binch-macro-item button{align-self:start;padding:10px 13px;border:1px solid #c7deff;background:#376081;color:#f5faff;border-radius:8px;font-weight:800;cursor:pointer}
-.binch-chest form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0}
+.binch-chest>header{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;padding:22px;border:1px solid #8e7549;border-radius:15px;background:radial-gradient(circle at 85% 15%,#d9a55035,transparent 30%),linear-gradient(130deg,#342d21,#171e1a 72%)}.binch-chest>header h2{margin:.2em 0}.binch-chest>header p{max-width:720px}.binch-chest-seal{display:grid;place-items:center;min-width:170px;padding:18px;border:1px solid #9a7b49;border-radius:12px;background:#171810cc;text-align:center}.binch-chest-seal span{font-size:2.2rem;color:#f0c478}.binch-chest-seal b{font-size:.7rem;letter-spacing:.14em;color:#ffe2a7}.binch-chest-seal small{font-size:.65rem;color:#aab5aa}.binch-chest form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0}
 .binch-chest form label{display:flex;flex-direction:column;gap:8px;font-size:.8rem;font-weight:750;color:#e6cea0}
 .binch-chest form input,.binch-chest form select{width:100%;min-width:0}
 .binch-chest form button{grid-column:1/-1;justify-self:start;padding:12px 18px;border:1px solid #ffdc99;background:linear-gradient(120deg,#f4d6a1,#c59c61);color:#211b13;border-radius:8px;font-weight:850;cursor:pointer}
 .binch-chest-bar{display:flex;gap:13px;justify-content:space-between;align-items:center;margin:20px 0;flex-wrap:wrap}
 .binch-chest-bar button,.binch-loot-shortcuts button{padding:11px 15px;border-radius:8px;border:1px solid #d4b880;background:#364234;color:#fbe5b2;font-weight:750;cursor:pointer}
-.binch-chest-row{display:flex;align-items:center;gap:13px;padding:14px 16px;margin:8px 0;border:1px solid #76684a;border-radius:9px;background:linear-gradient(100deg,#26342e,#161d22)}
+.binch-chest-filters{display:flex;gap:6px}.binch-chest-filters button{padding:7px 10px}.binch-chest-filters button.active{border-color:#ffe1a2;background:#6c5632;color:#fff2cf}#binch-chest-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.binch-chest-row{display:flex;align-items:center;gap:13px;min-height:96px;padding:14px 16px;border:1px solid #76684a;border-left:4px solid #75c98b;border-radius:11px;background:radial-gradient(circle at 100% 0,#d3b36a20,transparent 36%),linear-gradient(100deg,#26342e,#161d22)}.binch-chest-row.status-reserved{border-left-color:#d2a457}.binch-chest-row.status-on-request{border-left-color:#729dc9}
 .binch-chest-gem{color:#f8c77c;font-size:1.45rem}
 .binch-chest-row>span:nth-child(2){flex:1;min-width:0}
-.binch-chest-row b,.binch-chest-row small{display:block;overflow-wrap:anywhere}
-.binch-chest-row small{font-size:.72rem;color:#c3d3c8;margin-top:4px}
+.binch-chest-row b,.binch-chest-row small,.binch-chest-row em{display:block;overflow-wrap:anywhere}.binch-chest-row span>small{font-size:.62rem;color:#e3be77;text-transform:uppercase;letter-spacing:.08em}.binch-chest-row em{font-size:.7rem;color:#aebfb4;font-style:normal;margin-top:4px}.binch-chest-amount{text-align:right}.binch-chest-amount small{font-size:.65rem;color:#9caf9f;margin-top:4px}
 .binch-chest-row>button{font-size:1.1rem;width:33px;height:33px;border-radius:7px;border:1px solid #a77c6b;color:#ffddd0;background:#432929;cursor:pointer}
 .binch-chest-empty{padding:35px 18px;text-align:center;color:#c5d4c6;border:1px dashed #7d775e;border-radius:11px}
 .binch-loot-shortcuts{display:flex;gap:13px;flex-wrap:wrap;margin:22px 0}
 @media(max-width:1040px){.binch-macro-list{grid-template-columns:repeat(2,minmax(0,1fr))}.binch-chest form{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:700px){.binch-gm-menu,.binch-macro-list{grid-template-columns:1fr}.binch-gm-menu button{min-height:112px}.binch-chest form{grid-template-columns:1fr}}
+@media(max-width:800px){#binch-chest-items{grid-template-columns:1fr}.binch-chest>header{grid-template-columns:1fr}.binch-chest-seal{display:none}}@media(max-width:700px){.binch-gm-menu,.binch-macro-list{grid-template-columns:1fr}.binch-gm-menu button{min-height:112px}.binch-chest form{grid-template-columns:1fr}.binch-chest-bar{align-items:stretch}.binch-chest-filters{width:100%;overflow:auto}.binch-chest-bar>button,.binch-chest-upload{flex:1}.binch-chest-row{padding:12px 10px}.binch-chest-gem{display:none}}
 @media(prefers-reduced-motion:reduce){.binch-gm-menu button{transition:none}.binch-gm-menu button:hover{transform:none}}
 
 /* Bestiaire : recherche, index fiable et navigation vers l'atlas */
