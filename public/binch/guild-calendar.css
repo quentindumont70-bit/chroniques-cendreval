@@ -1,0 +1,19 @@
+#binch-guild-calendar{margin:18px 0;border-color:#7f7361;background:linear-gradient(135deg,#19221c,#131c21)}
+#binch-guild-calendar label{display:grid;gap:6px;font-size:.84rem;color:#d8d7bf;font-weight:600}
+#binch-guild-calendar input,#binch-guild-calendar select,#binch-guild-calendar textarea{min-width:0;width:100%;background:#0e1918;color:#f0ebd9;border:1px solid #67736a;padding:10px;border-radius:6px}
+#binch-guild-calendar button{border:1px solid #9a946c;border-radius:6px;background:#28352d;color:#f3ddae;padding:9px 12px;cursor:pointer}
+#binch-guild-calendar button:hover{border-color:#e7c980;background:#3b4e3e}
+#binch-guild-calendar .binch-calendar-form{display:grid;grid-template-columns:minmax(190px,2fr) minmax(140px,1.1fr) repeat(3,minmax(110px,1fr));gap:12px;align-items:end;margin:15px 0;padding:14px;background:#0c1915;border:1px solid #4a6658;border-radius:9px}
+#binch-guild-calendar .binch-calendar-note{grid-column:1/-1}
+#binch-guild-calendar .binch-calendar-form>button{grid-column:1/-1;justify-self:start;background:#c0a475;color:#1a1a11;font-weight:800}
+#binch-guild-calendar .binch-calendar-filters{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}
+#binch-guild-calendar .binch-calendar-filters button.active{background:#c6aa79;color:#19221b}
+#binch-guild-calendar #binch-calendar-count{color:#e5d3a7;font-weight:700}
+#binch-guild-calendar .binch-calendar-event{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border:1px solid #4f6257;padding:14px;margin:10px 0;border-radius:8px;background:#111e1b}
+#binch-guild-calendar .binch-calendar-event h3{margin:6px 0;color:#f3d6a4;font-size:1.16rem}
+#binch-guild-calendar .binch-calendar-event small,#binch-guild-calendar .binch-calendar-event span{color:#bfcfbd}
+#binch-guild-calendar .binch-calendar-event p{margin:6px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+#binch-guild-calendar .binch-calendar-event.done{opacity:.72}
+#binch-guild-calendar .binch-calendar-actions{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end;max-width:370px}
+@media(max-width:880px){#binch-guild-calendar .binch-calendar-form{grid-template-columns:repeat(2,minmax(0,1fr))}#binch-guild-calendar .binch-calendar-form label:first-child{grid-column:1/-1}}
+@media(max-width:620px){#binch-guild-calendar .binch-calendar-event{display:block}#binch-guild-calendar .binch-calendar-actions{justify-content:flex-start;margin-top:12px}#binch-guild-calendar .binch-calendar-form{grid-template-columns:1fr}#binch-guild-calendar .binch-calendar-form label:first-child{grid-column:auto}}
