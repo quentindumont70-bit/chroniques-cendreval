@@ -1,0 +1,71 @@
+/* La Binch | Théâtre des vrais procs. Toutes les animations sont événementielles. */
+#page-evenements{--page-accent:#d8b38c;--page-border:#98786c}
+#page-evenements .binch-procs-hero{position:relative;overflow:hidden;border:1px solid #c89f76;border-radius:17px;padding:clamp(25px,4vw,53px);background:radial-gradient(ellipse at 85% 0,#bc7b874d,transparent 55%),linear-gradient(115deg,#533b46,#2b273a 65%,#202b36);box-shadow:inset 0 2px #ffe0b033,0 18px 43px #0007}
+#page-evenements .binch-procs-hero:before{content:'✦';position:absolute;right:5%;top:-50px;font-size:260px;color:#bfa7ac1d;pointer-events:none}
+#page-evenements .binch-procs-hero>span{letter-spacing:.2em;font-size:.7rem;color:#f1c9ae;font-weight:850}
+#page-evenements .binch-procs-hero h1{font:750 clamp(2.3rem,5vw,4.7rem)/1.06 Cinzel,Georgia,serif;color:#ffe4b7;margin:15px 0}
+#page-evenements .binch-procs-hero p{max-width:680px;color:#f0e4e2;line-height:1.75}
+#page-evenements .binch-procs-mode{max-width:780px;padding:11px 16px;background:#241d2bbb;border:1px solid #bd91a1;color:#eadbdf;font-size:.78rem;line-height:1.65;border-radius:9px}
+#page-evenements .binch-procs-layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(245px,.75fr);gap:17px;margin-top:20px;align-items:start}
+#page-evenements :is(.binch-procs-main,.binch-procs-aside){padding:clamp(17px,3vw,28px);border:1px solid #907a74;border-radius:15px;background:linear-gradient(150deg,#302b33,#1d2630);box-shadow:0 13px 30px #0006}
+#page-evenements h2{font:700 1.5rem Cinzel,Georgia,serif;color:#ffe0b7}
+#page-evenements .binch-procs-subhead{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+#page-evenements #binch-true-procs-stats{font-size:.72rem;color:#d8e4db;border:1px solid #907d76;background:#262f32;padding:7px 11px;border-radius:7px}
+#page-evenements .binch-procs-rule{border-left:3px solid #e6b67e;padding:11px 15px;background:#44383066;color:#eeddd0;font-size:.8rem;line-height:1.67}
+#page-evenements .binch-procs-toggle{display:flex;gap:10px;align-items:center;cursor:pointer;padding:14px;border:1px solid #827a8a;border-radius:10px;background:#222b39;margin:18px 0;color:#e2e5ee;font-size:.83rem}
+#page-evenements .binch-procs-toggle input{width:21px!important;height:21px!important;min-height:21px!important;margin:0;accent-color:#88d7b6}
+#page-evenements #binch-true-procs-list{display:grid;gap:12px}
+#page-evenements .binch-procs-entry{display:grid;grid-template-columns:85px minmax(0,1fr) minmax(120px,.42fr);align-items:center;gap:16px;padding:15px;background:radial-gradient(ellipse at 4% 20%,#78586842,transparent 50%),linear-gradient(105deg,#382d3b,#202b34);border:1px solid #9c7c85;border-radius:13px}
+#page-evenements .binch-procs-entry-art{width:82px;aspect-ratio:1;display:grid;place-items:center;background:#2b3640;border:2px solid #ad8a7b;border-radius:11px;padding:7px;box-shadow:inset 0 1px #ffffff22}
+#page-evenements .binch-procs-entry-art svg{width:100%;height:100%}
+#page-evenements .binch-procs-entry-text strong{font:750 1.03rem Cinzel,Georgia,serif;color:#ffe2bd;display:block;margin:4px 0}
+#page-evenements .binch-procs-entry-text small{font-weight:850;color:#e1b4b8;font-size:.67rem;text-transform:uppercase;letter-spacing:.08em}
+#page-evenements .binch-procs-entry-text p{font-size:.77rem;line-height:1.55;color:#d5d4da;margin:5px 0}
+#page-evenements .binch-procs-entry-chance{display:grid;gap:6px;align-content:center;text-align:right}
+#page-evenements .binch-procs-entry-chance strong{font:750 1.25rem Cinzel,Georgia,serif;color:#f9d89f}
+#page-evenements .binch-procs-entry-chance small,#page-evenements .binch-procs-entry-chance span{font-size:.67rem;color:#c6c3c5}
+#page-evenements .binch-procs-entry-chance button{min-height:41px;border:1px solid #c59a87;background:#514049;color:#fff0db;padding:8px;border-radius:8px;font-size:.7rem;cursor:pointer}
+#page-evenements .binch-procs-aside p{font-size:.8rem;color:#cdd5d5;line-height:1.67}
+#page-evenements #binch-true-procs-log{border:1px solid #816f73;border-radius:9px;padding:11px;background:#202731;display:grid;gap:8px;min-height:100px;font-size:.75rem;color:#efdfc9}
+#page-evenements #binch-true-procs-log>div{padding-bottom:7px;border-bottom:1px solid #554d54}
+#page-evenements #binch-proc-demo{width:100%;min-height:48px;padding:11px 14px;margin-top:14px;background:linear-gradient(110deg,#e5bb8b,#ae8572);border:1px solid #f2d4a6;color:#26212a;font-weight:850;border-radius:8px;cursor:pointer}
+#page-evenements :is(button,input):focus-visible{outline:3px solid #ffefbd;outline-offset:3px}
+@media(max-width:1000px){#page-evenements .binch-procs-layout{grid-template-columns:1fr}}
+@media(max-width:660px){#page-evenements .binch-procs-entry{grid-template-columns:63px 1fr;gap:11px}#page-evenements .binch-procs-entry-art{width:60px}#page-evenements .binch-procs-entry-chance{grid-column:1/-1;grid-template-columns:1fr 1fr;align-items:center;text-align:left}#page-evenements .binch-procs-entry-chance button{grid-column:2;grid-row:1/3}#page-evenements .binch-procs-hero{padding:22px}}
+/* Theater: temporarily covers the page only while a proc is playing. */
+#binch-proc-stage{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;pointer-events:none;isolation:isolate}
+#binch-proc-stage .binch-proc-curtain{position:absolute;inset:0;background:radial-gradient(ellipse at center,#161523bf,#070b10d9);backdrop-filter:blur(3px);pointer-events:none;animation:binch-curtain .35s both}
+#binch-proc-stage .binch-proc-theater{position:relative;width:min(780px,calc(100vw - 24px));min-height:320px;max-height:calc(100dvh - 30px);overflow:hidden;border:2px solid #d5ab77;border-radius:20px;background:radial-gradient(ellipse at 50% 25%,#60576a,#322b3f 62%,#171c29);box-shadow:0 25px 80px #000e,inset 0 2px #ffe7b944;pointer-events:auto;display:grid;grid-template-rows:auto minmax(155px,1fr) auto;justify-items:center;padding:18px 18px 24px}
+#binch-proc-stage .binch-proc-theater:before{content:'';position:absolute;inset:auto -30px 100px;background:repeating-linear-gradient(90deg,#bb986f22 0,#bb986f22 3px,transparent 3px,transparent 36px);height:5px}
+#binch-proc-stage .binch-proc-scene-tag{font:.7rem/1.3 system-ui,sans-serif;text-transform:uppercase;font-weight:850;letter-spacing:.22em;color:#ffe1a3}
+#binch-proc-stage .binch-proc-actors{position:relative;width:100%;height:190px;display:flex;align-items:center;justify-content:space-between;gap:16px;overflow:visible}
+#binch-proc-stage .binch-proc-actor{width:clamp(90px,15vw,155px);aspect-ratio:1;filter:drop-shadow(0 13px 9px #0009);will-change:transform}
+#binch-proc-stage .binch-proc-actor svg{width:100%;height:100%}
+#binch-proc-stage .binch-proc-caption{text-align:center;max-width:610px;position:relative;z-index:1}
+#binch-proc-stage .binch-proc-caption h3{font:750 clamp(1.3rem,3.1vw,2rem)/1.2 Cinzel,Georgia,serif;color:#ffe6b1;margin:0 0 6px}
+#binch-proc-stage .binch-proc-caption p{font-size:.86rem;line-height:1.6;color:#e6dbe0;margin:0}
+#binch-proc-stage .binch-proc-skip{position:absolute;top:12px;right:12px;border-radius:8px;border:1px solid #c5a59a;color:#fff2d6;background:#3e3444;padding:8px 11px;font-size:.72rem;cursor:pointer}
+#binch-proc-stage.scene-road .first{animation:binch-chicken 3.6s ease-in-out both}
+#binch-proc-stage.scene-road .second{animation:binch-chase 3.6s ease-in-out both}
+#binch-proc-stage.scene-blast .first{animation:binch-gnome 3.5s ease-in-out both}
+#binch-proc-stage.scene-blast .second{animation:binch-machine 3.5s ease-in-out both}
+#binch-proc-stage.scene-slide .first{animation:binch-slide 3.5s ease-in-out both}
+#binch-proc-stage.scene-slide .second{animation:binch-slide 3.5s ease-in-out reverse both}
+#binch-proc-stage.scene-fall .first{animation:binch-fall 3.5s ease-in both}
+#binch-proc-stage.scene-fall .second{animation:binch-gnome 3.5s ease-in-out both}
+#binch-proc-stage.scene-fly .first{animation:binch-fly 3.5s ease-in-out both}
+#binch-proc-stage.scene-fly .second{animation:binch-machine 3.5s ease-in-out both}
+#binch-proc-stage.scene-ghost .first{animation:binch-ghost 3.8s ease-in-out both}
+#binch-proc-stage.scene-ghost .second{animation:binch-banner 3.8s ease-in-out both}
+@keyframes binch-curtain{from{opacity:0}to{opacity:1}}
+@keyframes binch-chicken{0%{transform:translateX(-180%) rotate(-9deg)}30%{transform:translateX(22vw) rotate(8deg)}70%{transform:translateX(9vw) rotate(-7deg)}100%{transform:translateX(140vw) rotate(3deg)}}
+@keyframes binch-chase{0%{transform:translateX(-170%) rotate(-13deg)}50%{transform:translateX(10vw) rotate(5deg)}100%{transform:translateX(110vw) rotate(-9deg)}}
+@keyframes binch-gnome{0%,15%{transform:rotate(-7deg)}35%{transform:translateY(-75px) rotate(-18deg)}65%{transform:translate(90px,-60px) rotate(23deg)}100%{transform:translate(115px,50px) rotate(55deg)}}
+@keyframes binch-machine{0%,35%{transform:rotate(0)}45%{transform:rotate(-17deg) scale(1.2)}55%{transform:rotate(18deg) scale(.82)}70%,100%{transform:rotate(0)}}
+@keyframes binch-slide{0%{transform:translateX(-130%) rotate(15deg)}50%{transform:translateX(20px) rotate(-24deg)}100%{transform:translateX(110%) rotate(80deg)}}
+@keyframes binch-fall{0%{transform:translateY(-180px) rotate(-10deg)}55%{transform:translateY(20px) rotate(24deg)}70%{transform:translateY(-35px) rotate(-9deg)}100%{transform:translateY(10px) rotate(30deg)}}
+@keyframes binch-fly{0%{transform:translate(-120px,110px) rotate(-18deg)}40%{transform:translate(70px,-40px) rotate(17deg)}75%{transform:translate(240px,-100px) rotate(-12deg)}100%{transform:translate(380px,-190px)}}
+@keyframes binch-ghost{0%{transform:translateY(90px);opacity:0}40%{transform:translateY(-12px);opacity:.8}65%{transform:translateY(-32px);opacity:1}100%{transform:translateY(-65px);opacity:0}}
+@keyframes binch-banner{0%,100%{transform:rotate(0)}30%{transform:rotate(-7deg)}70%{transform:rotate(5deg)}}
+@media(max-width:620px){#binch-proc-stage .binch-proc-theater{min-height:300px;padding:25px 13px 20px}#binch-proc-stage .binch-proc-actors{height:155px}#binch-proc-stage .binch-proc-actor{width:95px}}
+@media(prefers-reduced-motion:reduce){#binch-proc-stage *,#page-evenements *{animation:none!important;transition:none!important}#binch-proc-stage .binch-proc-actor{transform:none!important}}
