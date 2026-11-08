@@ -1251,7 +1251,7 @@ function sprite(ctx,item,time){
 function animate(item){const canvas=$('binch-proc-canvas');if(!canvas)return;const ctx=canvas.getContext('2d');if(!ctx)return;ctx.imageSmoothingEnabled=false;const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches||READ().motion===false;const start=performance.now();function frame(now){ctx.clearRect(0,0,64,64);sprite(ctx,item,reduce?0:now-start);if(!reduce&&shown&&now-start<4200)animation=requestAnimationFrame(frame)}frame(start)}
 function pop(item,preview=false){
  clearTimeout(timer);if(animation)cancelAnimationFrame(animation);shown=true;
- const wrap=$('binch-proc-toast');wrap.hidden=false;
+ const wrap=$('binch-proc-toast');wrap.hidden=false;queueMicrotask(()=>{const host=document.querySelector('#app main .page.active')||$('page-hub');if(host)host.prepend(wrap)});
  wrap.style.setProperty('--proc-accent',color(item));
  $('binch-proc-label').textContent=preview?'APERÇU • AUCUN DROP COMPTABILISÉ':title(item)+' • '+TIERS.find(x=>x.id===item.tier).name.toUpperCase();
  $('binch-proc-title').textContent=item.name;
