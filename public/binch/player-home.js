@@ -42,11 +42,41 @@ function syncExternalButtons(){
 }
 window.BinchPinned={has:id=>!!pins()[id],set:item=>pinItem(item)};
 function xp(last){const x=+last.xp,m=+last.xpMax;if(!(m>0&&x>=0&&x<=m))return '<div class="binch-xp-missing"><b>XP non synchronisée</b><small>La Binch n’invente aucune valeur. Réinstalle l’addon puis fais /reload.</small></div>';return '<div class="binch-xp-line"><span>Expérience</span><b>'+x.toLocaleString('fr-FR')+' / '+m.toLocaleString('fr-FR')+'</b></div><div class="binch-xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="'+m+'" aria-valuenow="'+x+'"><i style="width:'+(x/m*100).toFixed(2)+'%"></i></div>'}
+function updateLevelRing(last,p){
+ const ring=$('binch-level-ring');
+ if(!ring)return;
+ const current=Number(last?.xp),max=Number(last?.xpMax);
+ const valid=Number.isFinite(current)&&Number.isFinite(max)&&max>0&&current>=0&&current<=max;
+ const badge=ring.parentElement;
+ badge.classList.toggle('binch-level-has-xp',valid);
+ badge.classList.toggle('binch-level-no-xp',!valid);
+ const next=Math.min(60,(Number(p.level)||1)+1);
+ if(valid){
+  const percent=Math.max(0,Math.min(100,100*current/max));
+  ring.style.setProperty('--binch-xp-angle',(percent*3.6).toFixed(2)+'deg');
+  ring.setAttribute('role','progressbar');
+  ring.setAttribute('aria-valuemin','0');
+  ring.setAttribute('aria-valuemax',String(max));
+  ring.setAttribute('aria-valuenow',String(current));
+  ring.setAttribute('aria-valuetext',percent.toLocaleString('fr-FR',{maximumFractionDigits:1})+' %');
+  ring.setAttribute('aria-label','Expérience vers le niveau '+next);
+  badge.title=current.toLocaleString('fr-FR')+' / '+max.toLocaleString('fr-FR')+' XP — '+percent.toLocaleString('fr-FR',{maximumFractionDigits:1})+' % vers le niveau '+next;
+ }else{
+  ring.style.setProperty('--binch-xp-angle','0deg');
+  ring.removeAttribute('role');
+  ring.removeAttribute('aria-valuemin');
+  ring.removeAttribute('aria-valuemax');
+  ring.removeAttribute('aria-valuenow');
+  ring.removeAttribute('aria-valuetext');
+  ring.setAttribute('aria-label','XP non synchronisée : progression circulaire inconnue');
+  badge.title='XP non synchronisée. Aucune progression inventée.';
+ }
+}
 let cat='Toutes';
 function mount(){
  const hub=$('page-hub');if(!hub||$('binch-adventure-home'))return;
  const root=document.createElement('section');root.id='binch-adventure-home';
- root.innerHTML='<section class="binch-character-card"><div class="binch-portrait"><span id="binch-race-glyph"></span><b id="binch-class-glyph"></b></div><div><div class="binch-kicker">CARNET D’AVENTURE</div><h1 id="binch-home-name"></h1><p id="binch-home-meta"></p><div id="binch-fresh"></div><div id="binch-home-xp"></div></div><div class="binch-level"><small>NIVEAU</small><strong id="binch-home-level"></strong><span id="binch-home-zone"></span></div></section>'+
+ root.innerHTML='<section class="binch-character-card"><div class="binch-portrait"><span id="binch-race-glyph"></span><b id="binch-class-glyph"></b></div><div><div class="binch-kicker">CARNET D’AVENTURE</div><h1 id="binch-home-name"></h1><p id="binch-home-meta"></p><div id="binch-fresh"></div><div id="binch-home-xp"></div></div><div class="binch-level"><span id="binch-level-ring" class="binch-level-ring" aria-label="Expérience non synchronisée"></span><small>NIVEAU</small><strong id="binch-home-level"></strong><span id="binch-home-zone"></span></div></section>'+
  '<section id="binch-priority-guard" class="binch-priority-guard" aria-label="Objectifs épinglés"></section>'+
  '<section class="binch-route"><header><div><div class="binch-kicker">TA ROUTE, MAINTENANT</div><h2>Les prochaines étapes</h2><p>Épingle les étapes qui comptent, coche celles que tu termines. Une seule timeline pour tes objectifs.</p></div><div id="binch-route-count"></div></header><div class="binch-route-tools"><input id="binch-route-search" type="search" placeholder="Quête, donjon, métier, recette…"><div id="binch-route-filters"></div></div><div id="binch-route-list"></div></section>';
  hub.prepend(root);hub.classList.add('binch-adventure-ready');
@@ -74,7 +104,7 @@ function renderRoute(){
  list.querySelectorAll('[data-route-pin]').forEach(b=>b.onclick=()=>{const i=all.find(i=>i.id===b.dataset.routePin);if(i)pinItem(i,p)});
  showGuard(p,all,done,stored);syncExternalButtons();
 }
-function render(){mount();if(!$('binch-adventure-home'))return;const p=profile(),last=read('grimoire.bridge.last'),age=last.updated?Date.now()-new Date(last.updated):Infinity,fresh=age<864e5?'Synchronisé aujourd’hui':age<7*864e5?'Import à actualiser':last.updated?'Import ancien':'Profil manuel';$('binch-home-name').textContent=p.name;$('binch-home-level').textContent=p.level;$('binch-home-zone').textContent=p.zone;$('binch-home-meta').textContent=[p.race,p.classe,p.data?.role].filter(Boolean).join(' · ');$('binch-race-glyph').textContent=glyph[p.race]||'◆';$('binch-class-glyph').textContent=glyph[p.classe]||'✦';$('binch-fresh').innerHTML='<span class="'+(age<864e5?'fresh':'')+'">● '+fresh+'</span><small>'+(last.updated?new Date(last.updated).toLocaleString('fr-FR'):'Aucun import WoW')+'</small>';$('binch-home-xp').innerHTML=xp(last);renderRoute()}
+function render(){mount();if(!$('binch-adventure-home'))return;const p=profile(),last=read('grimoire.bridge.last'),age=last.updated?Date.now()-new Date(last.updated):Infinity,fresh=age<864e5?'Synchronisé aujourd’hui':age<7*864e5?'Import à actualiser':last.updated?'Import ancien':'Profil manuel';$('binch-home-name').textContent=p.name;$('binch-home-level').textContent=p.level;$('binch-home-zone').textContent=p.zone;$('binch-home-meta').textContent=[p.race,p.classe,p.data?.role].filter(Boolean).join(' · ');$('binch-race-glyph').textContent=glyph[p.race]||'◆';$('binch-class-glyph').textContent=glyph[p.classe]||'✦';$('binch-fresh').innerHTML='<span class="'+(age<864e5?'fresh':'')+'">● '+fresh+'</span><small>'+(last.updated?new Date(last.updated).toLocaleString('fr-FR'):'Aucun import WoW')+'</small>';$('binch-home-xp').innerHTML=xp(last);updateLevelRing(last,p);renderRoute()}
 const start=()=>setTimeout(render,0);if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();document.addEventListener('grimoire:sync',render);
 document.addEventListener('binch:pins-changed',()=>{if($('binch-route-list'))renderRoute()});
 document.addEventListener('click',event=>{
