@@ -6,8 +6,8 @@ const EXACT=['grimoire.hub.v3'];
 const MAX_KEYS=300,MAX_FILE=2*1024*1024;
 function eligible(k){return EXACT.includes(k)||PREFIXES.some(prefix=>k.startsWith(prefix));}
 function collect(){
- const result={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);
-  if(!k||!eligible(k))continue;const v=localStorage.getItem(k);if(typeof v==='string'&&v.length<=200000)result[k]=v;
+ const result={};let count=0;for(let i=0;i<localStorage.length&&count<MAX_KEYS;i++){const k=localStorage.key(i);
+  if(!k||!eligible(k))continue;const v=localStorage.getItem(k);if(typeof v==='string'&&v.length<=200000){result[k]=v;count++;}
  }
  return result;
 }
