@@ -21,7 +21,71 @@
 .brand .binch-wordmark small{font-size:.72rem;letter-spacing:.04em;margin-top:5px}
 #app .app-head{min-height:86px}
 @media(max-width:600px){.brand .binch-crest{width:46px;height:46px;border-radius:11px}.brand .binch-crest b{font-size:2.1rem}.brand .binch-wordmark>b{font-size:1.2rem}.brand .binch-wordmark small{font-size:.65rem}#app .app-head{min-height:70px}}
-.brand .binch-crest img{position:absolute;z-index:2;inset:0;width:100%;height:100%;object-fit:contain;border-radius:11px;filter:drop-shadow(0 4px 8px #0008)}.brand .binch-crest b{position:relative;z-index:1}</style><link rel="stylesheet" href="enhancements.css"><link rel="stylesheet" href="zone-atlas.css"><link rel="stylesheet" href="journey-live.css"><meta name="binch-release" content="0.9.2-guild"></head><body><div id="race-layer"></div><div id="class-layer"></div>
+.brand .binch-crest img{position:absolute;z-index:2;inset:0;width:100%;height:100%;object-fit:contain;border-radius:11px;filter:drop-shadow(0 4px 8px #0008)}.brand .binch-crest b{position:relative;z-index:1}</style><link rel="stylesheet" href="enhancements.css"><link rel="stylesheet" href="zone-atlas.css"><link rel="stylesheet" href="journey-live.css"><meta name="binch-release" content="0.9.2-guild"><style>
+/* LA BINCH / SÉLECTION DES ORIGINES — direction artistique RPG v1 */
+#onboarding{background:radial-gradient(ellipse at 50% 9%,#7f613522,transparent 60%),linear-gradient(160deg,#060d0c66,#070b0a99)}
+#onboarding .onboard-card{width:min(1180px,100%);background:linear-gradient(155deg,#18231ef5 0%,#0d1412fa 52%,#0b100ef8 100%);border:1px solid #75613d;border-radius:18px;padding:clamp(22px,4.3vw,52px);box-shadow:0 28px 110px #000b,inset 0 1px #ffe4a31c}
+#onboarding .onboard-card:before,#onboarding .onboard-card:after{opacity:.34}
+#onboarding .onboard-card h1{font-size:clamp(2rem,4.5vw,3.6rem);line-height:1.14;max-width:850px;letter-spacing:-.025em;margin:18px 0 9px}
+#onboarding .onboard-card>.progress{gap:10px;margin:25px 0 30px}
+#onboarding .progress i{height:5px;border-radius:30px;background:#27362f;box-shadow:inset 0 1px 3px #000}
+#onboarding .progress i.active{background:linear-gradient(90deg,#b4894a,#f9df9d);box-shadow:0 0 15px #bc98594b}
+#onboarding .choices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin:28px 0 20px}
+#onboarding .choice{
+--choice-accent:#d9bb79;--choice-light:#f7e8b1;--choice-deep:#20251a;
+position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:flex-start;text-align:left;
+min-height:180px;padding:19px 18px 17px;overflow:hidden;border-radius:12px;
+border:1px solid color-mix(in srgb,var(--choice-accent) 37%,#465249);
+background:radial-gradient(ellipse at 85% 8%,color-mix(in srgb,var(--choice-accent) 16%,transparent),transparent 60%),linear-gradient(145deg,color-mix(in srgb,var(--choice-deep) 64%,#16201b),#0b110e 85%);
+box-shadow:inset 0 1px #ffffff12,0 5px 22px #0005;
+transform:translateY(0);transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,filter .22s ease}
+#onboarding .choice:before{content:"";position:absolute;inset:5px;border:1px solid color-mix(in srgb,var(--choice-accent) 16%,transparent);border-radius:8px;pointer-events:none}
+#onboarding .choice:after{content:"✦";position:absolute;top:14px;right:16px;font-size:.75rem;letter-spacing:.08em;color:var(--choice-accent);opacity:.5}
+#onboarding .choice .sigil{
+display:grid;place-items:center;width:63px;height:63px;flex:none;margin:0 0 14px;
+font-family:Georgia,serif;font-size:2.25rem;line-height:1;color:var(--choice-light);
+background:radial-gradient(circle at 35% 20%,color-mix(in srgb,var(--choice-accent) 35%,#293831),#0b1512);
+border:1px solid color-mix(in srgb,var(--choice-accent) 72%,#1f3029);
+border-radius:11px;box-shadow:inset 0 2px #ffffff15,0 7px 22px #0007;
+filter:drop-shadow(0 0 8px color-mix(in srgb,var(--choice-accent) 32%,transparent));
+transition:transform .25s ease,box-shadow .25s ease}
+#onboarding .choice strong{font:700 clamp(.95rem,1.3vw,1.18rem)/1.27 Cinzel,Georgia,serif;letter-spacing:.02em;color:#f4ecd9;margin-bottom:5px}
+#onboarding .choice small{font-size:.77rem;line-height:1.43;color:#c0c9be;max-width:100%;display:block}
+#onboarding .choice:hover{transform:translateY(-4px);border-color:var(--choice-accent);box-shadow:0 15px 36px #000a,0 0 24px color-mix(in srgb,var(--choice-accent) 12%,transparent)}
+#onboarding .choice:hover .sigil{transform:translateY(-3px) scale(1.05)}
+#onboarding .choice.selected{border:2px solid var(--choice-accent);padding:18px 17px 16px;background:radial-gradient(ellipse at 85% 8%,color-mix(in srgb,var(--choice-accent) 26%,transparent),transparent 65%),linear-gradient(145deg,color-mix(in srgb,var(--choice-deep) 64%,#202a20),#101811);box-shadow:inset 0 0 0 1px #ffffff19,0 0 0 3px color-mix(in srgb,var(--choice-accent) 20%,transparent),0 13px 37px #0008,0 0 35px color-mix(in srgb,var(--choice-accent) 16%,transparent)}
+#onboarding .choice.selected:after{content:"✓";display:grid;place-items:center;top:12px;right:12px;width:23px;height:23px;border-radius:50%;background:var(--choice-accent);color:#11190f;font-size:.8rem;font-weight:900;opacity:1}
+#onboarding .choice.selected .sigil{box-shadow:inset 0 2px #ffffff26,0 0 24px color-mix(in srgb,var(--choice-accent) 30%,transparent)}
+#onboarding .choice:focus-visible{outline:3px solid #f8df9d;outline-offset:4px}
+#race-choices .choice[data-race="Humain"]{--choice-accent:#e6c783;--choice-light:#fff0bd;--choice-deep:#413221}
+#race-choices .choice[data-race="Nain"]{--choice-accent:#d6a76b;--choice-light:#ffe5ae;--choice-deep:#463024}
+#race-choices .choice[data-race="Elfe"]{--choice-accent:#87d9c4;--choice-light:#d7ffed;--choice-deep:#17453c}
+#race-choices .choice[data-race="Gnome"]{--choice-accent:#cba7ee;--choice-light:#f5e3ff;--choice-deep:#3a294d}
+#race-choices .choice[data-race="Orc"]{--choice-accent:#a9cb67;--choice-light:#e9ffc1;--choice-deep:#303d1d}
+#race-choices .choice[data-race="MortVivant"]{--choice-accent:#90c5af;--choice-light:#d9f5e1;--choice-deep:#253f43}
+#race-choices .choice[data-race="Tauren"]{--choice-accent:#cfa474;--choice-light:#ffe3b1;--choice-deep:#4b3524}
+#race-choices .choice[data-race="Troll"]{--choice-accent:#6bcbbb;--choice-light:#c6fff1;--choice-deep:#174748}
+#class-choices .choice[data-classe="Guerrier"]{--choice-accent:#c79c6e;--choice-light:#ffdda5;--choice-deep:#4d3420}
+#class-choices .choice[data-classe="Paladin"]{--choice-accent:#f58cba;--choice-light:#ffe3ef;--choice-deep:#57273d}
+#class-choices .choice[data-classe="Chasseur"]{--choice-accent:#abd473;--choice-light:#e7ffca;--choice-deep:#2a4325}
+#class-choices .choice[data-classe="Voleur"]{--choice-accent:#fff569;--choice-light:#fffbd0;--choice-deep:#4a4520}
+#class-choices .choice[data-classe="Prêtre"]{--choice-accent:#d5d9ec;--choice-light:#fff;--choice-deep:#404558}
+#class-choices .choice[data-classe="Chaman"]{--choice-accent:#70aaf4;--choice-light:#d8eeff;--choice-deep:#173c65}
+#class-choices .choice[data-classe="Mage"]{--choice-accent:#69ccf0;--choice-light:#d5f8ff;--choice-deep:#194359}
+#class-choices .choice[data-classe="Démoniste"]{--choice-accent:#b19bde;--choice-light:#efe4ff;--choice-deep:#352654}
+#class-choices .choice[data-classe="Druide"]{--choice-accent:#ffae64;--choice-light:#ffe6b9;--choice-deep:#58321f}
+#job-choices .choice{min-height:158px}
+#job-choices .choice:nth-child(3n+1){--choice-accent:#9ec6a8;--choice-deep:#234333}
+#job-choices .choice:nth-child(3n+2){--choice-accent:#d3a979;--choice-deep:#42311f}
+#job-choices .choice:nth-child(3n){--choice-accent:#90b9df;--choice-deep:#20354c}
+#onboarding .actions{margin-top:26px;gap:12px}
+#onboarding .actions .btn{border-radius:8px;padding:12px 23px;min-height:45px;font-weight:750}
+#onboarding .actions .btn.primary:not(:disabled){background:linear-gradient(115deg,#f6dfa6,#ca9e59);box-shadow:0 7px 23px #0007}
+@media(max-width:930px){#onboarding .choices{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:620px){#onboarding{padding:10px}#onboarding .onboard-card{padding:20px 15px}#onboarding .choices{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#onboarding .choice{min-height:155px;padding:13px 11px}#onboarding .choice.selected{padding:12px 10px}#onboarding .choice .sigil{width:47px;height:47px;font-size:1.8rem;margin-bottom:11px}#onboarding .choice strong{font-size:.9rem}#onboarding .choice small{font-size:.7rem}#onboarding .onboard-card h1{font-size:2rem}#job-choices .choice{min-height:160px}}
+@media(max-width:350px){#onboarding .choices{grid-template-columns:1fr}#onboarding .choice{min-height:128px}}
+@media(prefers-reduced-motion:reduce){#onboarding .choice,#onboarding .choice .sigil{transition:none}#onboarding .choice:hover,#onboarding .choice:hover .sigil{transform:none}}
+</style></head><body><div id="race-layer"></div><div id="class-layer"></div>
 <section id="onboarding" class="onboard"><div class="panel onboard-card"><div class="brand"><span class="mark binch-crest" aria-hidden="true"><b>B</b><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22160%22%20height%3D%22160%22%20viewBox%3D%220%200%20160%20160%22%20role%3D%22img%22%20aria-label%3D%22La%20Binch%22%3E%0A%3Cdefs%3E%0A%3CradialGradient%20id%3D%22bg%22%3E%3Cstop%20stop-color%3D%22%23345447%22%2F%3E%3Cstop%20offset%3D%22.62%22%20stop-color%3D%22%23172822%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2308110f%22%2F%3E%3C%2FradialGradient%3E%0A%3ClinearGradient%20id%3D%22gold%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%23fff1b9%22%2F%3E%3Cstop%20offset%3D%22.38%22%20stop-color%3D%22%23efcb77%22%2F%3E%3Cstop%20offset%3D%22.72%22%20stop-color%3D%22%23b98b45%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23fff1ad%22%2F%3E%3C%2FlinearGradient%3E%0A%3ClinearGradient%20id%3D%22glass%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%22.75%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%23f6d48f%22%2F%3E%3Cstop%20offset%3D%22.55%22%20stop-color%3D%22%23ae7f40%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%236e491e%22%2F%3E%3C%2FlinearGradient%3E%0A%3Cfilter%20id%3D%22shine%22%20x%3D%22-20%25%22%20y%3D%22-20%25%22%20width%3D%22140%25%22%20height%3D%22140%25%22%3E%3CfeGaussianBlur%20stdDeviation%3D%221.25%22%2F%3E%3C%2Ffilter%3E%0A%3C%2Fdefs%3E%0A%3Cpath%20d%3D%22M80%203%20146%2039v80l-66%2038-66-38V39Z%22%20fill%3D%22%23050c09%22%20stroke%3D%22%23ac844b%22%20stroke-width%3D%226%22%2F%3E%0A%3Cpath%20d%3D%22M80%2010%20139%2043v72l-59%2034-59-34V43Z%22%20fill%3D%22url(%23bg)%22%20stroke%3D%22url(%23gold)%22%20stroke-width%3D%223%22%2F%3E%0A%3Cpath%20d%3D%22M80%2019%20129%2047v62l-49%2029-49-29V47Z%22%20fill%3D%22none%22%20stroke%3D%22%23e0bc7965%22%20stroke-width%3D%221.5%22%2F%3E%0A%3Cg%20opacity%3D%22.7%22%20fill%3D%22url(%23gold)%22%3E%3Cpath%20d%3D%22M80%2013v14l-5-6%205-8%205%208-5%206Z%22%2F%3E%3Cpath%20d%3D%22M80%20145v-12l-5%205%205%207%205-7-5-5Z%22%2F%3E%3Cpath%20d%3D%22M26%2079h12l-6-5-6%205%206%205%206-5Z%22%2F%3E%3Cpath%20d%3D%22M134%2079h-12l6-5%206%205-6%205-6-5Z%22%2F%3E%3C%2Fg%3E%0A%3C!--%20etched%20barley%20wreath%20--%3E%0A%3Cpath%20d%3D%22M48%2047c-18%2015-19%2043-5%2063M112%2047c18%2015%2019%2043%205%2063%22%20stroke%3D%22%23c2a16a%22%20stroke-width%3D%223%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%2F%3E%0A%3Cg%20fill%3D%22%23bd995b%22%3E%0A%3Cpath%20d%3D%22m45%2049-9-4%206%2011%207%204-4-11ZM39%2061l-9-1%208%209%207%202-6-10ZM36%2076l-9%203%2010%205%207-1-8-7ZM37%2092l-7%206%2011%202%205-5-9-3ZM44%20106l-2%209%2011-4%203-6-12%201Z%22%2F%3E%0A%3Cpath%20d%3D%22m115%2049%209-4-6%2011-7%204%204-11ZM121%2061l9-1-8%209-7%202%206-10ZM124%2076l9%203-10%205-7-1%208-7ZM123%2092l7%206-11%202-5-5%209-3ZM116%20106l2%209-11-4-3-6%2012%201Z%22%2F%3E%3C%2Fg%3E%0A%3C!--%20fantasy%20tankard%20silhouette%20--%3E%0A%3Cpath%20d%3D%22M58%2054h45v49q0%2013-12%2013H69q-11%200-11-13Z%22%20fill%3D%22%232b1d12%22%20stroke%3D%22url(%23gold)%22%20stroke-width%3D%224%22%2F%3E%0A%3Cpath%20d%3D%22M103%2066h10q14%201%2012%2014-2%2013-20%2012%22%20fill%3D%22none%22%20stroke%3D%22%23e5bf79%22%20stroke-width%3D%228%22%20stroke-linejoin%3D%22round%22%2F%3E%0A%3Cpath%20d%3D%22M104%2069h9q9%201%207%2010-1%208-15%208%22%20fill%3D%22none%22%20stroke%3D%22%23584125%22%20stroke-width%3D%223%22%2F%3E%0A%3Cpath%20d%3D%22M64%2057h34v45q0%208-8%208H73q-9%200-9-8Z%22%20fill%3D%22url(%23glass)%22%2F%3E%0A%3Cpath%20d%3D%22M68%2059v45%22%20stroke%3D%22%23ffdf97%22%20stroke-width%3D%224%22%20opacity%3D%22.65%22%2F%3E%0A%3Cpath%20d%3D%22M89%2060v44%22%20stroke%3D%22%23533819%22%20stroke-width%3D%225%22%20opacity%3D%22.5%22%2F%3E%0A%3C!--%20foam%20foam%2C%20whimsical%20--%3E%0A%3Cpath%20d%3D%22M60%2056q-4-9%205-12%204-9%2015-4%2010-8%2017%201%2012-1%2011%209-1%208-8%208H65q-5%200-5-2Z%22%20fill%3D%22%23fff4c7%22%20stroke%3D%22%23cba45f%22%20stroke-width%3D%223%22%2F%3E%0A%3Cpath%20d%3D%22M74%2055v13q5%207%208-1V55%22%20fill%3D%22%23fff4c7%22%20stroke%3D%22%23cba45f%22%20stroke-width%3D%222%22%2F%3E%0A%3Cpath%20d%3D%22M94%2054v11q5%207%208-2V54%22%20fill%3D%22%23fff4c7%22%20stroke%3D%22%23cba45f%22%20stroke-width%3D%222%22%2F%3E%0A%3C!--%20geometric%20B%20burned%20into%20metal%20--%3E%0A%3Cpath%20d%3D%22M77%2073v23h13q8-2%204-10-2-3-4-3%206-7-2-10H77Zm7%205h3q4%200%200%204h-3Zm0%209h4q5%201%200%205h-4Z%22%20fill%3D%22%2346301a%22%20fill-rule%3D%22evenodd%22%20stroke%3D%22%23f2d48d%22%20stroke-width%3D%22.8%22%2F%3E%0A%3Cpath%20d%3D%22M59%20121h43%22%20stroke%3D%22%23d5ae69%22%20stroke-width%3D%222%22%2F%3E%0A%3Ccircle%20cx%3D%2280%22%20cy%3D%22126%22%20r%3D%223%22%20fill%3D%22%23fce5a5%22%2F%3E%0A%3C%2Fsvg%3E" alt="" width="58" height="58" loading="eager"></span><div class="binch-wordmark"><b>LA BINCH</b><small>Forge ton quartier général</small></div></div><div class="progress"><i class="active"></i><i></i><i></i></div>
 <div id="step-0"><div class="eyebrow">Première ouverture · étape 1</div><h1>De quel peuple portes-tu l’héritage ?</h1><p class="muted">Ta race façonne la matière, les motifs et l’atmosphère du Grimoire.</p><div id="race-choices" class="choices"></div></div>
 <div id="step-1" class="hidden"><div class="eyebrow">Étape 2 · vocation</div><h1>Quelle force guide ta main ?</h1><p class="muted">Ta classe apporte sa lumière, son sceau et ses effets à l’interface.</p><div id="class-choices" class="choices"></div></div>
