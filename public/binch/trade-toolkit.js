@@ -12,7 +12,11 @@
  function jobs(){
   const {p,b,matched}=activeProfile();
   const chosen=Array.isArray(p.jobs)?p.jobs.map(clean):[];
-  if(matched)for(const job of Object.keys(b.skills||{}))chosen.push(clean(job));
+  if(matched){
+   const craft=state('grimoire.craft.v1'),id=String(p?.data?.pseudo||p.name||'').trim().toLowerCase()+'-'+p.race+'-'+p.classe;
+   const skills=craft.imports?.[id]?.skills||{};
+   for(const job of Object.keys(skills))chosen.push(clean(job));
+  }
   return[...new Set(chosen)];
  }
  const need=(all,names)=>names.some(n=>all.includes(clean(n)));
