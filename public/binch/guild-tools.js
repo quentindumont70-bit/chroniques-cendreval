@@ -119,10 +119,15 @@ function chest(){
  render();
 }
 function loot(){
- const main=$('#app main');if(!main||$('#page-loot'))return;makeNav('loot','Butins');
- const page=document.createElement('section');page.id='page-loot';page.className='page';
+ const main=$('#app main');if(!main||$('#binch-library-loot'))return;
+ const page=document.createElement('section');page.id='binch-library-loot';page.className='binch-library-loot';
  page.innerHTML='<section class="panel section binch-loot-intro"><div class="eyebrow">BESTIAIRE / TRÉSORS D’AZEROTH</div><h2>Le codex des rencontres</h2><p>Explore le premier index des donjons du monde. La stratégie et les butins seront enrichis par boss, uniquement à partir de données sourcées. Les emplacements et taux non confirmés restent volontairement absents.</p><div class="binch-loot-controls"><label>Rechercher une instance<input id="binch-loot-search" type="search" placeholder="Nom, région ou niveau…"></label><label>Continent<select id="binch-loot-continent"><option value="">Tous les continents</option><option>Kalimdor</option><option>Royaumes de l’Est</option><option>Zéphrass</option></select></label><label>Niveau de l’instance<select id="binch-loot-level"><option value="0">Tous niveaux</option><option value="20">Autour du niveau 20</option><option value="30">Autour du niveau 30</option><option value="40">Autour du niveau 40</option><option value="50">Autour du niveau 50</option></select></label></div><div class="binch-loot-count" id="binch-loot-count"></div><div id="binch-loot-grid" class="binch-loot-grid"></div><details class="binch-loot-method"><summary>Couverture et fiabilité du codex</summary><p>La première version indexe les donjons répertoriés dans notre atlas. Ce n’est pas une base exhaustive des raids, rares, boss ni de leurs butins. Les stratégies, cartes intérieures, tables exactes et taux d’obtention exigent une vérification des sources avant publication.</p></details></section>';
- main.append(page);
+ const lib=$('#page-bibliotheque');
+ if(lib){
+  const wrap=document.createElement('details');wrap.className='binch-library-encyclopedia';
+  wrap.innerHTML='<summary>⚔ Encyclopédie des donjons et butins <small>Boss, instances et sources documentées</small></summary>';
+  wrap.append(page);lib.append(wrap);
+ }else main.append(page);
  function render(){
   const all=Array.isArray(window.GRIMOIRE_DUNGEONS)?window.GRIMOIRE_DUNGEONS:[],q=$('#binch-loot-search').value.trim().toLocaleLowerCase('fr'),cont=$('#binch-loot-continent').value,lvl=Number($('#binch-loot-level').value)||0;
   const matched=all.filter(d=>(!cont||d.continent===cont)&&(!lvl||(Number(d.levels?.[0]||0)<=lvl+6&&Number(d.levels?.[1]||60)>=lvl-6))&&(!q||[d.name,d.zone,d.continent,String(d.levels?.[0]),String(d.levels?.[1])].join(' ').toLocaleLowerCase('fr').includes(q)));
