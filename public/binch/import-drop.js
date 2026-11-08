@@ -56,7 +56,7 @@ function mount(){
  const jump=$('binch-sync-jump');
  if(jump)jump.onclick=()=>picker.click();
  const topLabel=page.querySelector('label[for="grimoire-bridge-file"].btn');
- if(topLabel){topLabel.setAttribute('for','binch-direct-file');topLabel.addEventListener('click',e=>{e.preventDefault();picker.click();});}
+ if(topLabel){topLabel.setAttribute('for','binch-direct-file');}
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
 })();
