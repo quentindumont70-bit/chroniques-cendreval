@@ -1,0 +1,8 @@
+## Interface: 16001
+## Title: GrimoireSync
+## Notes: Progression, metiers, quetes suivies et inventaire pour Grimoire Forever
+## Author: WoW Forever Grimoire
+## Version: 0.6.0
+## SavedVariables: GrimoireSyncDB
+Core.lua
+
