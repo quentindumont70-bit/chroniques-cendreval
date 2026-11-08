@@ -47,3 +47,29 @@
 #binch-intendant-panel .binch-intendant-msg.assistant{border-left:3px solid #d6b87b}
 #binch-intendant-panel .binch-intendant-msg.user{border-right:3px solid #b8a3cc}
 @media(max-width:380px){#binch-intendant-panel .binch-brog-portrait{flex-basis:53px;height:60px}#binch-intendant-panel .binch-brog-online{display:none}#binch-intendant-panel .binch-brog-name h2{font-size:1.32rem}}
+
+/* Faith — silhouette originale de troll chaman spectral, dessinée en CSS léger. */
+#binch-intendant-launcher{background:linear-gradient(112deg,#d8cbf5,#a6c9d0 54%,#d7b48a)!important;border-color:#e4d8ff!important;color:#16252f!important}
+#binch-intendant-launcher:after{color:#6756a7!important}
+#binch-intendant-panel{border-color:#aea0db;background:radial-gradient(ellipse at 90% 5%,#504c8c66,transparent 46%),linear-gradient(145deg,#242643,#152a36 73%,#1b2435)}
+#binch-intendant-panel .binch-intendant-header{background:radial-gradient(ellipse at 14% 20%,#45697b91,transparent 62%),linear-gradient(115deg,#29284c,#1a3b48)!important;border-bottom-color:#817faf}
+#binch-intendant-panel .binch-brog-name small{color:#c5b9f4!important}
+#binch-intendant-panel .binch-brog-name h2{color:#e3daff!important}
+#binch-intendant-panel .binch-brog-motto{color:#b9dee2!important}
+#binch-intendant-panel .binch-brog-online{background:#294e5b;color:#a8ecf0;border-color:#70aab5}
+#binch-intendant-panel .binch-brog-toolbar{background:#222c47;border-color:#606a96}
+#binch-intendant-panel .binch-intendant-msg.assistant{border-left-color:#b9abec;background:linear-gradient(110deg,#2b3351,#1b3b43)}
+#binch-intendant-panel .binch-intendant-msg.assistant small{color:#d5c5ff}
+#binch-intendant-panel .binch-faith-portrait{position:relative;display:block;flex:0 0 70px;height:75px;border-radius:38% 40% 45% 45%;border:2px solid #a7cddd;background:radial-gradient(ellipse at 40% 20%,#a8d8d8,#477c91 45%,#373663 88%);box-shadow:0 0 0 5px #94bed322,inset 0 -12px #282f6099}
+#binch-intendant-panel .binch-faith-portrait:before,#binch-intendant-panel .binch-faith-portrait:after{content:'';position:absolute;top:13px;width:18px;height:27px;border-radius:8px 15px 15px 10px;border:2px solid #73a6b8;background:#4b627f}
+#binch-intendant-panel .binch-faith-portrait:before{left:-13px;transform:rotate(31deg)}
+#binch-intendant-panel .binch-faith-portrait:after{right:-13px;transform:rotate(-31deg)}
+#binch-intendant-panel .binch-faith-mask{position:absolute;inset:14px 10px 7px;border-radius:43% 43% 32% 32%;background:linear-gradient(#6dabc1,#4d879b 75%,#315b75);border:2px solid #365873}
+#binch-intendant-panel .binch-faith-eye{position:absolute;top:19px;width:12px;height:6px;border-radius:100% 100% 50% 50%;background:#d6ffff;box-shadow:0 0 7px #b3ffff}
+#binch-intendant-panel .binch-faith-eye.left{left:6px}#binch-intendant-panel .binch-faith-eye.right{right:6px}
+#binch-intendant-panel .binch-faith-tusk{position:absolute;bottom:-7px;width:10px;height:20px;background:#f4e5ce;clip-path:polygon(22% 0,100% 0,100% 100%);box-shadow:0 0 3px #bce5eb}
+#binch-intendant-panel .binch-faith-tusk.left{left:2px;transform:rotate(-16deg)}
+#binch-intendant-panel .binch-faith-tusk.right{right:2px;transform:scaleX(-1) rotate(-16deg)}
+#binch-intendant-panel .binch-faith-wisp{position:absolute;right:-8px;top:-14px;color:#dcfaff;font-size:24px;text-shadow:0 0 8px #b5f8f8;pointer-events:none}
+#binch-intendant-panel .binch-brog-toolbar button[aria-pressed="true"]{background:#40365a;border-color:#a298cf;color:#e9dffc}
+@media(max-width:380px){#binch-intendant-panel .binch-faith-portrait{flex-basis:54px;height:60px}#binch-intendant-panel .binch-faith-portrait:before,#binch-intendant-panel .binch-faith-portrait:after{height:22px;width:12px}#binch-intendant-panel .binch-faith-mask{inset:10px 7px 6px}}
