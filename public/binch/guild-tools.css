@@ -47,3 +47,32 @@
 @media(max-width:1040px){.binch-macro-list{grid-template-columns:repeat(2,minmax(0,1fr))}.binch-chest form{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.binch-gm-menu,.binch-macro-list{grid-template-columns:1fr}.binch-gm-menu button{min-height:112px}.binch-chest form{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.binch-gm-menu button{transition:none}.binch-gm-menu button:hover{transform:none}}
+
+/* Bestiaire : recherche, index fiable et navigation vers l'atlas */
+.binch-loot-controls{display:grid;grid-template-columns:minmax(200px,2fr) repeat(2,minmax(130px,1fr));gap:12px;margin:23px 0 17px}
+.binch-loot-controls label{display:flex;flex-direction:column;gap:7px;color:#dfbd7f;font-size:.76rem;font-weight:800}
+.binch-loot-controls :is(input,select){width:100%;min-width:0;min-height:45px;padding:11px;border:1px solid #8b7a5d;border-radius:8px;background:#17232a;color:#f7e7c7}
+.binch-loot-count{margin:13px 0;color:#dbc38f;font-size:.78rem;font-weight:800;letter-spacing:.045em}
+.binch-loot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.binch-loot-instance{display:flex;flex-direction:column;gap:12px;min-height:230px;padding:19px;border:1px solid #897258;border-radius:12px;background:radial-gradient(ellipse at 95% 5%,#a47b5742,transparent 60%),linear-gradient(145deg,#302b2f,#151c2a);box-shadow:0 8px 25px #0006;transition:transform .2s,border-color .2s,box-shadow .2s}
+.binch-loot-instance:nth-child(3n+2){background:radial-gradient(ellipse at 95% 5%,#7185a840,transparent 60%),linear-gradient(145deg,#283147,#171d2a)}
+.binch-loot-instance:nth-child(3n){background:radial-gradient(ellipse at 95% 5%,#8e729e40,transparent 60%),linear-gradient(145deg,#34283b,#1a1b2b)}
+.binch-loot-instance:hover{transform:translateY(-3px);border-color:#f6cf8c;box-shadow:0 14px 35px #0009}
+.binch-loot-instance-top{display:flex;justify-content:space-between;gap:7px;color:#f7d195;font-size:.72rem;font-weight:800;text-transform:uppercase}
+.binch-loot-instance-top small{font-size:.72rem;color:#cce0ed}
+.binch-loot-instance h3{margin:0;color:#ffebc6;font:700 1.12rem/1.32 Cinzel,Georgia,serif;overflow-wrap:anywhere}
+.binch-loot-instance p{margin:0;font-size:.79rem;color:#cbd7dc}
+.binch-loot-evidence{display:grid;gap:5px;margin-top:auto;font-size:.7rem;color:#cbbdb5}
+.binch-loot-evidence span::before{content:'◇';color:#e8bd85;margin-right:6px}
+.binch-loot-instance button{cursor:pointer;text-align:left;border:1px solid #c5a16d;border-radius:8px;background:#354137;color:#f6daa3;font-weight:800;padding:10px 12px;margin-top:8px}
+.binch-loot-instance button:hover{border-color:#ffe3af;background:#4b5840}
+.binch-loot-empty{grid-column:1/-1;text-align:center;padding:40px 18px;border:1px dashed #95856e;border-radius:11px;color:#f6e9d0}
+.binch-loot-method{margin:23px 0;border:1px solid #6d7083;border-radius:9px;padding:15px;color:#cdd4e0;background:#1a2430}
+.binch-loot-method summary{cursor:pointer;color:#f2d29c;font-weight:800}
+.binch-loot-method[open] summary{margin-bottom:12px}
+.binch-chest-upload{display:inline-flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid #cfb180;border-radius:8px;padding:11px 15px;background:#293d43;color:#efdcad;font-weight:800}
+.binch-chest-upload:hover{background:#3d535a;border-color:#ffe1b6}
+@media(max-width:1100px){.binch-loot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.binch-loot-controls{grid-template-columns:1fr 1fr}.binch-loot-controls label:first-child{grid-column:1/-1}}
+@media(max-width:570px){.binch-loot-grid,.binch-loot-controls{grid-template-columns:1fr}.binch-loot-controls label:first-child{grid-column:auto}.binch-loot-instance{min-height:185px}}
+@media(prefers-reduced-motion:reduce){.binch-loot-instance{transition:none}.binch-loot-instance:hover{transform:none}}
