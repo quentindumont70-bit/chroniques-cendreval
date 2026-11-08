@@ -41,12 +41,13 @@ function syncExternalButtons(){
  })
 }
 window.BinchPinned={has:id=>!!pins()[id],set:item=>pinItem(item)};
-function xp(last){const x=+last.xp,m=+last.xpMax;if(!(m>0&&x>=0&&x<=m))return '<div class="binch-xp-missing"><b>XP non synchronisée</b><small>La Binch n’invente aucune valeur. Actualise GrimoireSync dans WoW (/reload), puis réimporte ton fichier.</small><button type="button" class="binch-xp-sync-link" id="binch-xp-open-sync">↻ Ouvrir la synchronisation</button></div>';return '<div class="binch-xp-line"><span>Expérience</span><b>'+x.toLocaleString('fr-FR')+' / '+m.toLocaleString('fr-FR')+'</b></div><div class="binch-xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="'+m+'" aria-valuenow="'+x+'"><i style="width:'+(x/m*100).toFixed(2)+'%"></i></div>'}
+function xp(last){const x=Number(last.xp),m=Number(last.xpMax);if(!(last.xp!==undefined&&last.xp!==null&&last.xp!==''&&last.xpMax!==undefined&&last.xpMax!==null&&last.xpMax!==''&&Number.isFinite(x)&&Number.isFinite(m)&&m>0&&x>=0&&x<=m))return '<div class="binch-xp-missing"><b>XP non synchronisée</b><small>La Binch n’invente aucune valeur. Actualise GrimoireSync dans WoW (/reload), puis réimporte ton fichier.</small><button type="button" class="binch-xp-sync-link" id="binch-xp-open-sync">↻ Ouvrir la synchronisation</button></div>';return '<div class="binch-xp-line"><span>Expérience</span><b>'+x.toLocaleString('fr-FR')+' / '+m.toLocaleString('fr-FR')+'</b></div><div class="binch-xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="'+m+'" aria-valuenow="'+x+'"><i style="width:'+(x/m*100).toFixed(2)+'%"></i></div>'}
 function updateLevelRing(last,p){
  const ring=$('binch-level-ring');
  if(!ring)return;
- const current=Number(last?.xp),max=Number(last?.xpMax);
- const valid=Number.isFinite(current)&&Number.isFinite(max)&&max>0&&current>=0&&current<=max;
+ const rawXP=last?.xp,rawMax=last?.xpMax;
+ const current=Number(rawXP),max=Number(rawMax);
+ const valid=rawXP!==undefined&&rawXP!==null&&rawXP!==''&&rawMax!==undefined&&rawMax!==null&&rawMax!==''&&Number.isFinite(current)&&Number.isFinite(max)&&max>0&&current>=0&&current<=max;
  const badge=ring.parentElement;
  badge.classList.toggle('binch-level-has-xp',valid);
  badge.classList.toggle('binch-level-no-xp',!valid);
