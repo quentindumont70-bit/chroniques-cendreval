@@ -1,0 +1,16 @@
+/* La Binch / garde-fou performance : CPU Opera et onglets de longue durée
+   Désactive uniquement les décorations animées en boucle, pas les événements/procs au clic. */
+body:after,body::after,
+#app .hero-sigil,
+#app .hero:before,
+#app .hero:after{animation:none!important}
+#app .nav{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+#app nav.nav.binch-nav-condensed{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+#app .page:not(.active){animation:none!important}
+@media(max-width:850px){
+ #app nav.nav{box-shadow:0 5px 14px #0009!important}
+ #app .page :is(.tile,.craft-card,.discovery-card,.knowledge-card,.zone-card,.binch-front-widget):hover{transform:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #app *,#app *::before,#app *::after{scroll-behavior:auto!important}
+}
