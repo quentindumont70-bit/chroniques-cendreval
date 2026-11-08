@@ -1,0 +1,52 @@
+/* La Binch : navigation sur deux rangées et véritable salle des Trésors */
+#app nav.nav[data-binch-nav-rows="1"]{
+ display:grid!important;
+ grid-template-columns:repeat(var(--binch-nav-columns,6),minmax(0,1fr))!important;
+ grid-template-rows:repeat(2,minmax(46px,auto));
+ grid-auto-flow:row;
+ gap:7px!important;
+ overflow:visible!important;
+ overflow-x:visible!important;
+ max-height:none!important;
+ padding:11px!important;
+ cursor:default!important;
+ touch-action:auto!important;
+ user-select:auto!important;
+}
+#app nav.nav[data-binch-nav-rows="1"] button{
+ display:flex;align-items:center;justify-content:center;
+ min-width:0;min-height:46px;height:auto;
+ padding:10px 7px!important;text-align:center;
+ white-space:normal!important;line-height:1.23;
+ font-size:clamp(.69rem,.95vw,.85rem);
+ border-radius:9px;letter-spacing:0;
+ cursor:pointer!important;
+}
+#app nav.nav[data-binch-nav-rows="1"] button.active{
+ border-color:#f7d394!important;box-shadow:inset 0 -2px #a87a3b,0 3px 15px #0007;
+}
+#app nav.nav[data-binch-nav-rows="1"] button[data-page="tresors"]{border-color:#a883b9!important;background:#2b203a!important;color:#e9daf7!important}
+#app nav.nav[data-binch-nav-rows="1"] button[data-page="tresors"].active{background:linear-gradient(125deg,#e7cbfb,#c29fe0)!important;color:#281b32!important}
+#page-tresors{--page-accent:#d2aff9!important;--page-accent-soft:#713d9845!important;--page-border:#80629a!important}
+#page-tresors .binch-treasures{background:radial-gradient(ellipse at 85% 0%,#713d9854,transparent 50%),linear-gradient(140deg,#241e37,#111d29)!important}
+#page-tresors .binch-treasures h2{font:700 clamp(1.65rem,3vw,2.5rem)/1.15 Cinzel,Georgia,serif;margin:11px 0}
+#page-tresors .binch-treasures>p{max-width:810px;color:#d6ccdf;line-height:1.7}
+.binch-treasures-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:18px 0;margin:18px 0;border-top:1px solid #87699d;border-bottom:1px solid #87699d}
+.binch-treasures-top strong{font:700 1.08rem Cinzel,Georgia,serif;color:#ead6ff}
+.binch-treasures-top button{padding:10px 14px;border:1px solid #c7a6df;border-radius:8px;background:#352648;color:#f3e3fc;font-weight:750;cursor:pointer}
+.binch-treasure-filters{display:grid;grid-template-columns:minmax(190px,2fr) minmax(160px,1fr);gap:12px;margin:21px 0}
+.binch-treasure-filters :is(input,select){min-width:0;width:100%;border-radius:9px!important;padding:12px;color:#f8eefb;background:#231c36!important;border:1px solid #8d70aa!important;min-height:46px}
+.binch-treasure-collection{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.binch-treasure-card{display:flex;flex-direction:column;gap:15px;min-width:0;min-height:253px;align-items:stretch;padding:18px!important;border-radius:13px!important;border:1px solid var(--treasure-accent)!important;background:radial-gradient(ellipse at 50% -10%,color-mix(in srgb,var(--treasure-accent) 28%,transparent),transparent 60%),linear-gradient(150deg,#2a243f,#141a29)!important;box-shadow:inset 0 1px #fff2,0 12px 28px #0007;color:#f6edf7;cursor:pointer;text-align:left;transition:transform .2s,border-color .2s,box-shadow .2s}
+.binch-treasure-card:hover{transform:translateY(-4px);box-shadow:0 16px 39px #0009,0 0 22px color-mix(in srgb,var(--treasure-accent) 25%,transparent)}
+.binch-treasure-card:focus-visible{outline:3px solid #f8dcff;outline-offset:3px}
+.binch-treasure-card-art{align-self:center;display:grid;place-items:center;width:92px;height:92px;border:1px solid var(--treasure-accent);border-radius:18px;font:3.5rem Georgia,serif;color:var(--treasure-accent);background:radial-gradient(ellipse at 50% 40%,color-mix(in srgb,var(--treasure-accent) 26%,transparent),#141d2f 75%);text-shadow:0 0 23px var(--treasure-accent);box-shadow:0 0 25px color-mix(in srgb,var(--treasure-accent) 22%,transparent)}
+.binch-treasure-card-main{display:flex;flex-direction:column;gap:6px;flex:1}
+.binch-treasure-card-main small{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--treasure-accent);font-weight:800}
+.binch-treasure-card-main strong{font:700 1rem/1.38 Cinzel,Georgia,serif;color:#f7e7d7;overflow-wrap:anywhere}
+.binch-treasure-card-main em{font-style:normal;color:#ced2dd;font-size:.77rem}
+.binch-treasure-open{margin-top:auto;padding-top:10px;border-top:1px solid #b6a8bd55;color:#e9c8ff;font-weight:800;font-size:.76rem}
+.binch-treasure-empty{grid-column:1/-1;border:1px dashed #9983ad;border-radius:13px;padding:38px 22px;text-align:center;color:#e7d9ed;line-height:1.8;background:#221d32}
+@media(max-width:1100px){.binch-treasure-collection{grid-template-columns:repeat(2,minmax(0,1fr))}#app nav.nav[data-binch-nav-rows="1"]{grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:auto}}
+@media(max-width:700px){#app nav.nav[data-binch-nav-rows="1"]{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:auto;gap:6px!important;padding:7px!important}#app nav.nav[data-binch-nav-rows="1"] button{font-size:.68rem;padding:9px 5px!important;min-height:42px}.binch-treasure-filters{grid-template-columns:1fr}.binch-treasure-collection{grid-template-columns:1fr}.binch-treasure-card{min-height:205px}}
+@media(prefers-reduced-motion:reduce){.binch-treasure-card{transition:none}.binch-treasure-card:hover{transform:none}}
