@@ -1,1 +1,24 @@
-#binch-easy-sync{display:grid;grid-template-columns:1fr auto;gap:12px 24px;align-items:center;margin-bottom:24px;padding:20px;border:1px solid #69a9b7;border-radius:13px;background:radial-gradient(ellipse at 100% 0,#64c4d12b,transparent 52%),linear-gradient(135deg,#15333b,#11242b);box-shadow:0 12px 30px #0005}#binch-easy-sync h3{margin:4px 0}#binch-easy-sync p{margin:5px 0;color:#c8dde0}#binch-easy-sync>div>span{color:#8ee0ec;font-size:.66rem;font-weight:900;letter-spacing:.12em}#binch-easy-sync button{min-height:48px;padding:12px 17px;border:1px solid #fff0bd;border-radius:9px;background:linear-gradient(125deg,#ffe6b3,#cba462);color:#17201c;font-weight:900}#binch-easy-status{grid-column:1/-1;padding-top:10px;border-top:1px solid #4c7078}#binch-easy-status[data-state=error]{color:#ffb0a2}#binch-easy-status[data-state=ok]{color:#a9efd0}@media(max-width:680px){#binch-easy-sync{grid-template-columns:1fr}#binch-easy-sync button{width:100%}}
+/* La Binch — console de synchronisation (bêta). Pas d'animation permanente. */
+#page-sync #binch-easy-sync{display:grid;gap:15px;margin:0 0 18px;padding:clamp(17px,2.6vw,30px);border:1px solid #7ab8cb;border-radius:16px;background:radial-gradient(ellipse at 96% 7%,#5385a33b,transparent 42%),linear-gradient(145deg,#19394b,#152530 70%,#102029);box-shadow:inset 0 1px #fff3,0 15px 35px #0006;color:#e6f4f7}
+#binch-easy-sync .binch-easy-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}
+#binch-easy-sync .binch-easy-eyebrow{display:block;color:#93dfed;font-size:.68rem;letter-spacing:.17em;text-transform:uppercase;font-weight:850}
+#binch-easy-sync h3{font:700 clamp(1.2rem,2.3vw,1.7rem)/1.2 Cinzel,Georgia,serif;margin:8px 0;color:#f1e9d5}
+#binch-easy-sync p{color:#d0e6e9;line-height:1.65;font-size:.86rem;margin:6px 0}
+#binch-easy-sync .binch-easy-mark{display:grid;place-items:center;flex:0 0 60px;height:60px;border-radius:50%;border:1px solid #a0dee6;background:#294e60;color:#e1fbff;font-size:2rem;box-shadow:0 0 0 6px #4b82901c}
+#binch-easy-sync .binch-easy-actions{display:flex;flex-wrap:wrap;gap:10px}
+#binch-easy-sync .binch-easy-actions button{min-height:48px;border-radius:9px;padding:11px 18px;font-weight:850}
+#binch-easy-action{color:#1a2930!important;background:linear-gradient(115deg,#fff2c9,#e6bd7c)!important;border:1px solid #fff0c4!important}
+#binch-easy-refresh{color:#e4f7fb!important;background:#2a5667!important;border:1px solid #90cbd7!important}
+#binch-easy-sync button:disabled{opacity:.45;cursor:not-allowed}
+#binch-easy-sync .binch-easy-toggle{display:flex;gap:13px;align-items:flex-start;padding:18px;border:1px solid #648f9b;background:#122b35;border-radius:12px;cursor:pointer}
+#binch-easy-sync .binch-easy-toggle input{flex:0 0 auto;width:24px!important;height:24px!important;min-height:24px!important;margin:3px 0 0;accent-color:#6cdeb1}
+#binch-easy-sync .binch-easy-toggle strong{display:block;color:#e8f7f5;font-size:.9rem}
+#binch-easy-sync .binch-easy-toggle small{display:block;color:#b7d0d3;line-height:1.65;font-size:.76rem;margin-top:5px}
+#binch-easy-status{padding:13px 16px!important;border-left:3px solid #83d7b3;background:#183d39;border-radius:7px;margin:0!important}
+#binch-easy-status[data-state=warning]{border-color:#e7c07a;background:#3e382d}
+#binch-easy-status[data-state=error]{border-color:#e99b99;background:#442d35}
+#binch-easy-sync .binch-easy-explain{font-size:.76rem;color:#b5d0d4;line-height:1.65}
+#binch-easy-sync code{color:#fff1c7;background:#0d222c;padding:2px 5px;border-radius:5px;overflow-wrap:anywhere}
+#binch-easy-sync :is(button,input):focus-visible{outline:3px solid #ffe1a8;outline-offset:3px}
+@media(max-width:600px){#binch-easy-sync .binch-easy-mark{display:none}#binch-easy-sync .binch-easy-actions{display:grid;grid-template-columns:1fr}#binch-easy-sync .binch-easy-actions button{width:100%}}
+@media(prefers-reduced-motion:reduce){#binch-easy-sync *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
