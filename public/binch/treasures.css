@@ -65,3 +65,10 @@
 #page-hub #binch-profile-exhibit p{font-size:.73rem;margin:0;color:#b5c5c2}
 #page-hub #binch-profile-exhibit button{cursor:pointer;border:1px solid #ada48a;border-radius:8px;padding:10px;background:#373a3c;color:#f0e5d1;font-size:.72rem}
 @media(max-width:620px){#page-hub #binch-profile-exhibit{grid-template-columns:50px 1fr;gap:10px}#page-hub #binch-profile-exhibit button{grid-column:auto}#page-hub .binch-exhibit-symbol{min-width:48px;height:48px}}
+
+/* Sprites réels dessinés en pixel art sur canvas (v0) et utilisés partout. */
+#page-tresors .binch-treasure-card-art{width:128px;height:128px;border-radius:13px;padding:10px;background:radial-gradient(ellipse at center,color-mix(in srgb,var(--treasure-accent) 20%,#14242e),#101b27 80%);overflow:hidden}
+#page-tresors .binch-treasure-card-art canvas.binch-art-canvas{display:block;width:106px;height:106px;image-rendering:pixelated;image-rendering:crisp-edges}
+#page-tresors .binch-treasure-card{min-height:268px}
+#page-hub #binch-profile-exhibit canvas.binch-exhibit-symbol{box-sizing:border-box;min-width:70px!important;width:70px;height:70px;padding:4px;image-rendering:pixelated;background:radial-gradient(ellipse at center,color-mix(in srgb,var(--exhibit) 20%,#15272b),#101820 75%)}
+@media(max-width:620px){#page-hub #binch-profile-exhibit canvas.binch-exhibit-symbol{width:52px;height:52px;min-width:52px!important;padding:2px}#page-tresors .binch-treasure-card-art{width:116px;height:116px}#page-tresors .binch-treasure-card-art canvas.binch-art-canvas{width:94px;height:94px}}
