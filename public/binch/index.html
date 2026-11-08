@@ -1298,7 +1298,9 @@ function renderCodex(){
    return '<article class="binch-proc-entry" style="--tier-color:'+tier.color+'"><span class="binch-proc-emblem">'+(acquired?'✦':'?')+'</span><div><div class="binch-proc-entry-kind">'+ESC(title(item))+' · '+tier.name+'</div><strong>'+ESC(item.name)+'</strong><small>Chance par clic : '+displayChance(item)+'</small></div><span class="binch-proc-count">'+(acquired?'× '+drops[item.id]:'Non obtenu')+'</span><button type="button" class="binch-proc-preview-item" data-proc-preview-id="'+item.id+'" aria-label="Prévisualiser '+ESC(item.name)+'">✧</button></article>';
  }).join('');
 }
-window.BinchRewards={items:ITEMS.map(x=>({...x,categoryName:title(x),tierName:TIERS.find(t=>t.id===x.tier)?.name||x.tier,color:color(x)})),read:READ,preview:id=>{const item=ITEMS.find(x=>x.id===id);if(item&&Number(READ().drops?.[id]||0)>0)pop(item,true);},chance:displayChance};
+window.BinchRewards={items:ITEMS.map(x=>({...x,categoryName:title(x),tierName:TIERS.find(t=>t.id===x.tier)?.name||x.tier,color:color(x)})),read:READ,preview:id=>{const item=ITEMS.find(x=>x.id===id);if(item&&Number(READ().drops?.[id]||0)>0)pop(item,true);},chance:displayChance,
+ draw:(canvas,id)=>{const item=ITEMS.find(x=>x.id===id);if(!item||!canvas||canvas.tagName!=='CANVAS')return false;canvas.width=64;canvas.height=64;const ctx=canvas.getContext('2d');if(!ctx)return false;ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,64,64);sprite(ctx,item,0);return true}
+};
 function setup(){
  window.BINCH_TREASURE_API={items:ITEMS.map(x=>({...x,rarityName:TIERS.find(t=>t.id===x.tier)?.name||x.tier,color:color(x),categoryName:title(x)})),read:READ,preview:id=>{const item=ITEMS.find(x=>x.id===id);if(item)pop(item,true)}};
  makeCodex();document.addEventListener('click',e=>{if(READ().enabled===false)return;onClick(e)},true);
