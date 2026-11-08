@@ -38,6 +38,7 @@ function play(e,preview=false){
  stage.innerHTML='<div class="binch-proc-curtain" aria-hidden="true"></div><div class="binch-proc-theater"><div class="binch-proc-scene-tag">'+(preview?'REPRÉSENTATION · SANS TIRAGE':'UN PROC ! · '+e.rarity)+'</div><div class="binch-proc-actors"><div class="binch-proc-actor first">'+art[e.actors[0]]+'</div><div class="binch-proc-actor second">'+art[e.actors[1]]+'</div></div><div class="binch-proc-caption"><h3>'+e.title+'</h3><p>'+e.caption+'</p></div><button type="button" class="binch-proc-skip" aria-label="Fermer cette scène">Passer ✕</button></div>';
  document.body.append(stage);document.body.classList.add('binch-proc-playing');
  stage.querySelector('button').addEventListener('click',closeStage);
+ stage.querySelector('button').focus({preventScroll:true});
  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
  closing=setTimeout(closeStage,reduce?2800:4900);
  if(!preview){state.hits[e.id]=(Number(state.hits[e.id])||0)+1;state.history.unshift({id:e.id,t:Date.now()});state.history=state.history.slice(0,30);state.last=Date.now();save();render()}
@@ -45,6 +46,7 @@ function play(e,preview=false){
 function roll(){
  if(!state.enabled||Date.now()-Number(state.last||0)<COOLDOWN||stage)return;
  state.total=(Number(state.total)||0)+1;
+ state.last=Date.now(); // cooldown starts for every eligible draw, not just winners
  let n=Math.random()*100;
  for(const e of DATA){if(n<e.chance){play(e);break}n-=e.chance}
  save();
@@ -73,6 +75,7 @@ function mount(){
  button.onclick=()=>{nav.querySelectorAll('button[data-page]').forEach(b=>b.classList.toggle('active',b===button));main.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p===page));scrollTo({top:0,behavior:'instant'});render()};
  $('#binch-procs-enable').onchange=e=>{state.enabled=e.target.checked;save();render()};
  $('#binch-proc-demo').onclick=()=>play(DATA[Math.floor(Math.random()*DATA.length)],true);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&stage){e.preventDefault();closeStage()}});
  document.addEventListener('click',e=>{
   if(!e.isTrusted)return;
   const target=e.target.closest('#app nav.nav button[data-page]');
