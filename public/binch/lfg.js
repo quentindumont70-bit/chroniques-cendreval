@@ -32,12 +32,12 @@ function mount(){
 
  function cloudStatus(text,ok=false){
   const el=$('.binch-lfg-clarity');if(!el)return;
-  el.textContent=text;el.dataset.cloudStatus=ok?'online':'local';const submit=$('#binch-lfg-form [type="submit"]');if(submit)submit.textContent=ok?'Publier pour tous les joueurs':'Enregistrer un brouillon local';
+  el.textContent=text;el.dataset.cloudStatus=ok?'online':online?'degraded':'local';const submit=$('#binch-lfg-form [type="submit"]');if(submit){submit.textContent=ok?'Publier pour tous les joueurs':online?'Publication momentanément indisponible':'Enregistrer un brouillon local';submit.disabled=online&&!ok;}
  }
  async function refreshCloud(){
   if(!online||busy)return;busy=true;
-  try{cloudData=await cloud.list();paint()}
-  catch(e){cloudStatus('Le serveur partagé ne répond pas : '+String(e.message||e)+'. Les annonces ne peuvent pas être actualisées.',false)}
+  try{cloudData=await cloud.list();cloudStatus('● Tableau partagé actif : les annonces et réactions sont communes aux sessions connectées. Accès anonyme non réservé à la guilde.',true);paint()}
+  catch(e){cloudStatus('Connexion au tableau partagé interrompue : '+String(e.message||e)+'. Les annonces affichées peuvent être anciennes. Utilise « Actualiser » pour réessayer.',false)}
   finally{busy=false}
  }
  function paintShared(){
