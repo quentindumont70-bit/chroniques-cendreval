@@ -1,0 +1,30 @@
+/* Codex des véritables procs WoW Forever — aucune animation aléatoire. */
+#page-bibliotheque #binch-wow-procs{border:1px solid #889cb9;border-left:4px solid #96b7df;border-radius:13px;margin:21px 0;background:radial-gradient(ellipse at top right,#42638b38,transparent 65%),linear-gradient(130deg,#1f2c3b,#192832);overflow:hidden}
+#binch-wow-procs>summary{list-style:none;display:flex;gap:13px;align-items:center;cursor:pointer;padding:18px;min-height:74px;color:#e8e8eb}
+#binch-wow-procs>summary::-webkit-details-marker{display:none}
+#binch-wow-procs>summary strong{font:750 1.1rem Cinzel,Georgia,serif;color:#e6e6fb}
+#binch-wow-procs>summary small{display:block;color:#afc9dd;margin-top:4px;font-size:.73rem}
+#binch-wow-procs .binch-wow-procs-icon{display:grid;place-items:center;flex:0 0 45px;height:45px;border:1px solid #a8bfec;border-radius:10px;color:#b7daf3;background:#172b42;font-size:1.7rem}
+#binch-wow-procs .binch-wow-procs-pill{margin-left:auto;white-space:nowrap;border:1px solid #92b2cf;border-radius:22px;padding:7px 11px;color:#d7e3f5;font-size:.67rem}
+#binch-wow-procs .binch-wow-procs-body{padding:8px clamp(15px,3vw,27px) 23px}
+#binch-wow-procs .binch-wow-procs-notice{border:1px solid #718e9e;border-left:3px solid #a3d1de;background:#223942;padding:14px;border-radius:8px;color:#dce8e7;font-size:.78rem;line-height:1.7}
+#binch-wow-procs .binch-wow-procs-tools{display:grid;gap:11px;margin:17px 0}
+#binch-wow-procs #binch-wow-procs-search{border:1px solid #758d9b;color:#f4f4ed;background:#182d36;min-height:43px;border-radius:8px;padding:10px 12px;width:100%}
+#binch-wow-procs #binch-wow-procs-filters{display:flex;flex-wrap:wrap;gap:7px}
+#binch-wow-procs #binch-wow-procs-filters button{border:1px solid #788b9b;background:#293b46;color:#dbe2e8;padding:10px 13px;border-radius:8px;cursor:pointer;font-size:.72rem;font-weight:800;min-height:40px}
+#binch-wow-procs #binch-wow-procs-filters button[aria-pressed="true"]{border-color:#e2ce9e;background:#d6b77e;color:#253340}
+#binch-wow-procs #binch-wow-procs-count{font-size:.7rem;color:#b9cddd}
+#binch-wow-procs .binch-wow-procs-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#binch-wow-procs .binch-wow-proc{display:flex;flex-direction:column;gap:10px;border:1px solid #6b889c;border-left:3px solid #8aafd3;background:#24323f;border-radius:11px;padding:18px;min-width:0}
+#binch-wow-procs .binch-wow-proc[data-kind="enchant"]{border-left-color:#bb9ccc;background:linear-gradient(130deg,#303145,#202b3a)}
+#binch-wow-procs .binch-wow-proc[data-kind="trinket"]{border-left-color:#d9b68c;background:linear-gradient(130deg,#3c3437,#24323b)}
+#binch-wow-procs .binch-wow-proc-heading{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#bed5f0;font-size:.64rem}
+#binch-wow-procs .binch-wow-proc h3{margin:0;font:750 clamp(1rem,2vw,1.2rem)/1.36 Cinzel,Georgia,serif;color:#f7e7c5}
+#binch-wow-procs .binch-wow-proc p{margin:0;color:#e1e5e4;font-size:.79rem;line-height:1.6}
+#binch-wow-procs .binch-wow-proc-trigger,#binch-wow-procs .binch-wow-proc-chance{font-size:.75rem;color:#bcd7e4}
+#binch-wow-procs .binch-wow-proc-chance{color:#eed09e}
+#binch-wow-procs .binch-wow-proc small{display:block;color:#b0c4c7;line-height:1.6;font-size:.7rem}
+#binch-wow-procs .binch-wow-proc a{margin-top:auto;font-size:.73rem;font-weight:800;color:#e4d4a2;text-decoration:underline;text-underline-offset:3px}
+#binch-wow-procs .binch-wow-procs-disclaimer{font-size:.69rem;color:#b5c3cf}
+#binch-wow-procs :is(summary,button,input,a):focus-visible{outline:3px solid #f0d49e;outline-offset:2px}
+@media(max-width:750px){#binch-wow-procs .binch-wow-procs-grid{grid-template-columns:1fr}#binch-wow-procs .binch-wow-procs-pill{display:none}}
