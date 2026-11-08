@@ -1,0 +1,12 @@
+/* Paroles d'Azeroth — texte original La Binch, traité comme un petit manuscrit. */
+#page-hub .binch-daily-quote{position:relative;overflow:hidden;margin:0;padding:clamp(18px,3vw,30px);background:radial-gradient(ellipse at 94% 15%,#4e656341,transparent 46%),linear-gradient(115deg,#2b2b32,#1c2b2e);border:1px solid #917f6e;border-left:4px solid #bba37e;border-radius:13px;box-shadow:inset 0 1px #ffffff21,0 8px 25px #0005}
+#page-hub .binch-quote-kicker{font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:#dec69f;font-weight:850}
+#page-hub .binch-quote-layout{display:grid;grid-template-columns:53px 1fr;align-items:start;gap:12px;margin-top:9px}
+#page-hub .binch-quote-glyph{font:700 5rem/.85 Georgia,serif;color:#b49f7c66}
+#page-hub #binch-quote-text{margin:3px 0 12px;max-width:1000px;font:italic clamp(1rem,2.2vw,1.48rem)/1.55 Georgia,serif;letter-spacing:.015em;color:#f5e9cf}
+#page-hub .binch-quote-credit{color:#9eb7ae;font-size:.68rem;line-height:1.5}
+#page-hub .binch-quote-actions{display:flex;align-items:center;flex-wrap:wrap;gap:9px;padding-top:12px;border-top:1px solid #586964}
+#page-hub #binch-quote-count{color:#c6d5ca;flex:1;font-size:.69rem}
+#page-hub .binch-quote-actions button{border:1px solid #9c907a;border-radius:8px;padding:9px 11px;min-height:37px;background:#324039;color:#f2dfbc;cursor:pointer;font-size:.7rem;font-weight:800}
+#page-hub .binch-quote-actions button:focus-visible{outline:3px solid #ffe1a9;outline-offset:2px}
+@media(max-width:600px){#page-hub .binch-quote-layout{grid-template-columns:32px 1fr;gap:6px}#page-hub .binch-quote-glyph{font-size:3.4rem}}
