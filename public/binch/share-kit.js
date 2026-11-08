@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const URL='https://quentindumont70-bit.github.io/chroniques-cendreval/binch/',VERSION='Bêta 0.14 · 8 novembre 2026',$=s=>document.querySelector(s);
+const URL='https://quentindumont70-bit.github.io/chroniques-cendreval/binch/',VERSION='Bêta 0.15 · 8 novembre 2026',$=s=>document.querySelector(s);
 const syncStyle=document.createElement('link');syncStyle.rel='stylesheet';syncStyle.href='./sync-wizard.css';document.head.append(syncStyle);const wizard=document.createElement('script');wizard.src='./sync-wizard.js';wizard.defer=true;document.head.append(wizard);
 const lfgStyle=document.createElement('link');lfgStyle.rel='stylesheet';lfgStyle.href='./lfg.css';document.head.append(lfgStyle);const lfgScript=document.createElement('script');lfgScript.src='./lfg.js';lfgScript.defer=true;document.head.append(lfgScript);
 const procStyle=document.createElement('link');procStyle.rel='stylesheet';procStyle.href='./true-procs.css';document.head.append(procStyle);const procScript=document.createElement('script');procScript.src='./true-procs.js';procScript.defer=true;document.head.append(procScript);
@@ -12,6 +12,7 @@ const css=document.createElement('link');css.rel='stylesheet';css.href='./share-
 const placement=document.createElement('script');placement.src='./sync-placement.js';placement.defer=true;document.head.append(placement);
 const plannerCss=document.createElement('link');plannerCss.rel='stylesheet';plannerCss.href='./guild-planner.css';document.head.append(plannerCss);const plannerJs=document.createElement('script');plannerJs.src='./guild-planner.js';plannerJs.defer=true;document.head.append(plannerJs);
 const soundtrackStyle=document.createElement('link');soundtrackStyle.rel='stylesheet';soundtrackStyle.href='./soundscape.css';document.head.append(soundtrackStyle);const soundtrack=document.createElement('script');soundtrack.src='./soundscape.js';soundtrack.defer=true;document.head.append(soundtrack);
+const quoteStyle=document.createElement('link');quoteStyle.rel='stylesheet';quoteStyle.href='./daily-quotes.css';document.head.append(quoteStyle);const quotes=document.createElement('script');quotes.src='./daily-quotes.js';quotes.defer=true;document.head.append(quotes);
 const gm=document.createElement('script');gm.src='./gm-quick.js';gm.defer=true;document.head.append(gm);
 async function copy(text,button){try{await navigator.clipboard.writeText(text);button.textContent='Copié ✓';setTimeout(()=>button.textContent='Copier le lien',1800)}catch{prompt('Copie ce lien :',text)}}
 function mount(){
