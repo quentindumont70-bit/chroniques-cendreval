@@ -5,12 +5,12 @@
 const $=q=>document.querySelector(q);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function init(){
- const host=$('#page-tresors .binch-treasures');
+ const host=$('#page-bibliotheque');
  const catalog=window.BINCH_LORE_CATALOG;
  const api=window.BINCH_TREASURE_API;
  if(!host||!catalog||!api||$('#binch-lore-codex'))return;
  const region=document.createElement('section');region.id='binch-lore-codex';region.className='binch-lore-codex';
- region.innerHTML='<div class="binch-lore-header"><div class="eyebrow">ARCHIVES D’AZEROTH · CRÉATION ORIGINALE</div><h2>Le théâtre des apparitions</h2><p>Chaque trésor possède son nom, son histoire, sa future mise en scène et ses accessoires. Les références de Warcraft se distinguent des inventions humoristiques propres à La Binch.</p></div><div class="binch-lore-controls"><label>Afficher<select id="binch-lore-filter"><option value="curated">Scènes scénarisées</option><option value="all">Toutes les 80 récompenses</option><option value="owned">Mes découvertes</option></select></label><label>Rechercher<input id="binch-lore-search" type="search" placeholder="Péon, sanglier, artefact…"></label></div><div id="binch-lore-list" class="binch-lore-list"></div><p class="binch-lore-source-note">Textes de présentation originaux. Les extraits de livres ne seront ajoutés qu’après identification vérifiable de l’ouvrage, de la page et des droits de citation. Les scènes proposées ne prétendent pas être des événements canoniques.</p>';
+ region.innerHTML='<div class="binch-lore-header"><div class="eyebrow">ARCHIVES D’AZEROTH · CRÉATION ORIGINALE</div><h2>Encyclopédie des apparitions</h2><p>Chaque trésor possède son nom, son histoire, sa future mise en scène et ses accessoires. Les références de Warcraft se distinguent des inventions humoristiques propres à La Binch.</p></div><div class="binch-lore-controls"><label>Afficher<select id="binch-lore-filter"><option value="curated">Scènes scénarisées</option><option value="all">Toutes les 80 récompenses</option><option value="owned">Mes découvertes</option></select></label><label>Rechercher<input id="binch-lore-search" type="search" placeholder="Péon, sanglier, artefact…"></label></div><div id="binch-lore-list" class="binch-lore-list"></div><p class="binch-lore-source-note">Textes de présentation originaux. Les extraits de livres ne seront ajoutés qu’après identification vérifiable de l’ouvrage, de la page et des droits de citation. Les scènes proposées ne prétendent pas être des événements canoniques.</p>';
  host.append(region);
  const render=()=>{
   const root=$('#binch-lore-list'),mode=$('#binch-lore-filter').value,q=$('#binch-lore-search').value.toLocaleLowerCase('fr').trim();
