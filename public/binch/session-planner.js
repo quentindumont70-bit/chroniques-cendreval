@@ -23,6 +23,10 @@ function objectives(p){
  const entries=read(key,[]);
  return Array.isArray(entries)?entries.filter(x=>x&&typeof x.title==='string'&&!x.done&&Number(x.level)<=p.level+5).slice(0,80):[];
 }
+function selectedZoneId(p){
+ const k='binch.zone.plan.v1.'+[p.name,p.race,p.cls].map(x=>encodeURIComponent(String(x).toLocaleLowerCase('fr'))).join('.');
+ return read(k,{}).zone||'';
+}
 function zoneContext(p){
  const key='binch.zone.plan.v1.'+[p.name,p.race,p.cls].map(x=>encodeURIComponent(String(x).toLocaleLowerCase('fr'))).join('.');
  const saved=read(key,{});
@@ -35,7 +39,7 @@ function zoneContext(p){
 function suggestions(p){
  const jobs=p.jobs.slice(0,3).map(j=>({id:'job:'+j,label:'Faire progresser '+j,group:'Métiers',level:p.level,score:72,detail:'Vérifier les recettes et composants auprès du maître de métier'}));
  const nextClass=(classMilestones[p.cls]||[]).filter(([lvl])=>lvl>=p.level&&lvl<=p.level+8).map(([lvl,label])=>({id:'class:'+lvl,label,group:'Quêtes',level:lvl,score:110-(lvl-p.level)*3,detail:'Jalon de classe indicatif : confirmer les conditions sur WoW Forever'}));
- const personal=objectives(p).map(x=>({id:'custom:'+x.id,label:x.title,group:x.type||'Quêtes',level:Number(x.level)||p.level,score:x.priority==='Essentiel'?120:x.priority==='Normal'?96:65,detail:'Objectif personnel saisi dans La Binch'}));
+ const personal=objectives(p).map(x=>({id:'custom:'+x.id,label:x.title,group:x.type||'Quêtes',level:Number(x.level)||p.level,score:(x.priority==='Essentiel'?120:x.priority==='Normal'?96:65)+(x.zone&&x.zone===selectedZoneId(p)?24:0),detail:'Objectif personnel'+(x.zone?' associé à une zone de l’Atlas':' saisi dans La Binch')}));
  const zone=(window.GRIMOIRE_ZONES||[]).filter(z=>z&&Array.isArray(z.levels)&&z.levels[0]<=p.level+3&&z.levels[1]>=p.level).sort((a,b)=>Math.abs(a.levels[0]-p.level)-Math.abs(b.levels[0]-p.level))[0];
  const exploration=zone?[{id:'zone:'+zone.id,label:'Explorer '+zone.name,group:'Exploration',level:p.level,score:76,detail:'Zone adaptée au niveau indiqué par notre atlas, à vérifier en jeu'}]:[];
  const dungeon=(window.GRIMOIRE_DUNGEONS||[]).filter(d=>d&&Array.isArray(d.levels)&&d.levels[0]<=p.level+4&&d.levels[1]>=p.level).sort((a,b)=>Math.abs(a.levels[0]-p.level)-Math.abs(b.levels[0]-p.level))[0];
