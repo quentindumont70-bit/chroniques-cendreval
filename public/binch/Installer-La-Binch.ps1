@@ -1,4 +1,4 @@
-# La Binch - installation locale GrimoireSync v0.8.1
+# La Binch - installation locale GrimoireSync v0.8.2
 # Source publique : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/
 # Aucune permission administrateur, aucune lecture des identifiants/du dossier WTF, aucune telemetrie.
 $ErrorActionPreference = 'Stop'
@@ -49,7 +49,7 @@ try {
    if ((Get-Item -LiteralPath $out).Length -lt 40) { throw "Le fichier $filename est vide ou invalide." }
   }
   $toc = Get-Content -LiteralPath (Join-Path $staging 'GrimoireSync.toc') -Raw
-  if ($toc -notmatch '(?m)^## SavedVariables: GrimoireSyncDB' -or $toc -notmatch '(?m)^## Version: 0\.8\.1' -or $toc -notmatch '(?m)^Minimap.lua\s*$') {throw 'Le manifeste GrimoireSync ne correspond pas a la version attendue.'}
+  if ($toc -notmatch '(?m)^## SavedVariables: GrimoireSyncDB' -or $toc -notmatch '(?m)^## Version: 0\.8\.2' -or $toc -notmatch '(?m)^Minimap.lua\s*$') {throw 'Le manifeste GrimoireSync ne correspond pas a la version attendue.'}
   if (Test-Path -LiteralPath $installed) {
    # IMPORTANT : Les anciennes interfaces Lua sont retirees du dossier actif.
    Move-Item -LiteralPath $installed -Destination $backup -ErrorAction Stop
