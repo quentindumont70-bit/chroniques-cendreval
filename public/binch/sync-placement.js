@@ -1,0 +1,1 @@
+(()=>{'use strict';function place(){const slot=document.getElementById('binch-sync-import-slot'),fast=document.getElementById('binch-easy-sync');if(slot&&fast&&!slot.contains(fast))slot.prepend(fast)}const start=()=>{setTimeout(place,30);setTimeout(place,250)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start()})();
