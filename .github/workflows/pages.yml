@@ -26,6 +26,8 @@ jobs:
       - run: npm ci
       - run: npm run typecheck:game
       - run: npm test
+      - name: Contrôles du portail La Binch
+        run: node scripts/check-binch.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
