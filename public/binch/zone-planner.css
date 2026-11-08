@@ -1,0 +1,21 @@
+#binch-zone-planner{margin:15px 0;border-color:#8b865e;background:linear-gradient(145deg,#17241e,#101916)}
+#binch-zone-planner h2{margin:.25em 0 .5em}
+#binch-zone-planner label{display:grid;gap:7px;font-size:.86rem;font-weight:650;color:#e3d9bd}
+#binch-zone-planner select,#binch-zone-planner input{min-width:0;width:100%;border:1px solid #697b67;border-radius:7px;background:#0b1713;color:#f1e9d5;padding:10px}
+#binch-zone-planner button{border:1px solid #a88c5f;border-radius:7px;background:#26382c;color:#f5e0b8;cursor:pointer;padding:9px 12px}
+#binch-zone-planner button:focus-visible{outline:2px solid #f3d69d;outline-offset:2px}
+#binch-zone-planner button:hover{border-color:#f4d49c;background:#334b38}
+#binch-zone-planner .binch-zone-planner-head{display:grid;grid-template-columns:minmax(170px,1fr) minmax(220px,2fr);gap:12px;margin:15px 0}
+#binch-zone-planner #binch-zone-summary{background:#0d1c16;border-left:3px solid #c9ad7e;border-radius:4px;padding:12px}
+#binch-zone-planner #binch-zone-summary strong{color:#f1d8a5;font-size:1.18rem}
+#binch-zone-planner #binch-zone-summary p{margin:6px 0 0}
+#binch-zone-planner .binch-zone-planner-actions{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}
+#binch-zone-planner #binch-zone-task-form{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:10px;margin:12px 0}
+#binch-zone-planner #binch-zone-task-form button{min-height:41px;background:#c3a772;color:#172017;font-weight:750}
+#binch-zone-planner .binch-zone-task{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #46584b}
+#binch-zone-planner .binch-zone-task span{flex:1;overflow-wrap:anywhere}
+#binch-zone-planner .binch-zone-task.done span{opacity:.68;text-decoration:line-through}
+#binch-zone-planner .binch-zone-task button{min-width:38px;min-height:38px}
+#binch-zone-planner #binch-zone-progress{font-weight:650;color:#e8d5a3;margin:10px 0}
+@media(max-width:700px){#binch-zone-planner .binch-zone-planner-head,#binch-zone-planner #binch-zone-task-form{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){#binch-zone-planner *{scroll-behavior:auto!important;transition:none!important}}
