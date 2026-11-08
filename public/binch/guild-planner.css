@@ -72,3 +72,36 @@
 #binch-guild-planner .binch-planner-footer p{width:100%;font-size:.75rem;color:#b7c6c4}
 #binch-guild-planner :is(button,input,summary,select):focus-visible{outline:3px solid #fbe7bd;outline-offset:2px}
 @media(max-width:700px){#binch-guild-planner .binch-planner-overview{grid-template-columns:1fr 1fr}#binch-guild-planner form{grid-template-columns:1fr}#binch-guild-planner .binch-planner-request>header{display:grid}#binch-guild-planner .binch-planner-tally{text-align:left}#binch-guild-planner>summary{padding:13px;gap:8px}#binch-guild-planner .binch-planner-summary-count{display:none}}
+
+/* Priorité / type visibles par un GM pressé, sans couleur seule comme signal. */
+#binch-guild-planner .binch-planner-request{
+ --request-accent:#b7a88a;
+ border-left:4px solid var(--request-accent)!important;
+ background:linear-gradient(120deg,color-mix(in srgb,var(--request-accent) 12%,#283338),#1e2c32 75%)!important;
+}
+#binch-guild-planner .binch-planner-request[data-kind="recipe"]{--request-accent:#90aed9}
+#binch-guild-planner .binch-planner-request[data-kind="materials"]{--request-accent:#82bd9e}
+#binch-guild-planner .binch-planner-request[data-kind="craft"]{--request-accent:#d3ab82}
+#binch-guild-planner .binch-planner-request[data-kind="misc"]{--request-accent:#bc9dd5}
+#binch-guild-planner .binch-planner-request[data-priority="high"]{border-top-color:#c9a779}
+#binch-guild-planner .binch-planner-request[data-priority="urgent"]{
+ --request-accent:#eaa29b;
+ border-color:#d6948f!important;
+ background:linear-gradient(125deg,#443131,#272c32 82%)!important;
+}
+#binch-guild-planner .binch-planner-request.is-late{
+ --request-accent:#f0aaa0;
+ box-shadow:inset 0 0 0 1px #e69b904d;
+}
+#binch-guild-planner .binch-planner-request>header small{
+ color:var(--request-accent)!important;
+ font-size:.72rem;letter-spacing:.045em;
+}
+#binch-guild-planner .binch-planner-request[data-priority="urgent"]>header small{
+ text-transform:uppercase;
+}
+#binch-guild-planner .binch-planner-counts span:nth-child(1){border-color:#c5ae7e;color:#ebd6ab}
+#binch-guild-planner .binch-planner-counts span:nth-child(2){border-color:#8bc7af;color:#c9eedc}
+#binch-guild-planner .binch-planner-counts span:nth-child(3){border-color:#aaa7de;color:#dddbfc}
+#binch-guild-planner .binch-planner-counts span:nth-child(4){border-color:#b8d9b0;color:#deefcf}
+#binch-guild-planner .binch-planner-coverage{border:1px solid #7d9e91;border-left:4px solid #9bc6ab;border-radius:11px;background:#233b36;padding:17px}
