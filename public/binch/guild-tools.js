@@ -76,7 +76,7 @@ function macros(){
 function chest(){
  const main=$('#app main');if(!main||$('#page-coffre'))return;makeNav('coffre','Coffre');
  const page=document.createElement('section');page.id='page-coffre';page.className='page';
- page.innerHTML='<section class="panel section binch-chest"><div class="eyebrow">L’INTENDANCE DE GUILDE</div><h2>Le coffre des promesses</h2><p>Propose un objet de tes sacs, ta banque personnelle ou du coffre physique. Cette liste est locale et ne transfère aucun objet dans WoW.</p><form id="binch-chest-form"><label>Objet<input id="binch-chest-item" required maxlength="90" placeholder="Ex. : Étoffe de lin"></label><label>Quantité<input id="binch-chest-count" required type="number" min="1" max="99999" value="1"></label><label>Personnage<input id="binch-chest-owner" maxlength="50" placeholder="Nom du personnage"></label><label>Où se trouve-t-il ?<select id="binch-chest-place"><option>Sacs du personnage</option><option>Banque personnelle</option><option>Coffre physique de guilde</option></select></label><button type="submit">Ajouter une ressource</button></form><div class="binch-chest-bar"><strong id="binch-chest-total">0 ressources</strong><button type="button" id="binch-chest-share">Copier la liste pour Discord</button></div><div id="binch-chest-items"></div><p class="binch-chest-warning">Coffre collaboratif cloud prévu ultérieurement : il nécessitera une authentification et une base de données partagée. Ne communique pas tes fichiers SavedVariables.</p></section>';
+ page.innerHTML='<section class="panel section binch-chest"><div class="eyebrow">L’INTENDANCE DE GUILDE</div><h2>Le coffre des promesses</h2><p>Propose un objet de tes sacs, ta banque personnelle ou du coffre physique. Cette liste est locale et ne transfère aucun objet dans WoW.</p><form id="binch-chest-form"><label>Objet<input id="binch-chest-item" required maxlength="90" placeholder="Ex. : Étoffe de lin"></label><label>Quantité<input id="binch-chest-count" required type="number" min="1" max="99999" value="1"></label><label>Personnage<input id="binch-chest-owner" maxlength="50" placeholder="Nom du personnage"></label><label>Où se trouve-t-il ?<select id="binch-chest-place"><option>Sacs du personnage</option><option>Banque personnelle</option><option>Coffre physique de guilde</option></select></label><button type="submit">Ajouter une ressource</button></form><div class="binch-chest-bar"><strong id="binch-chest-total">0 ressources</strong><button type="button" id="binch-chest-share">Copier la liste pour Discord</button><button type="button" id="binch-chest-export">Exporter JSON</button><label class="binch-chest-upload">Importer les propositions<input type="file" id="binch-chest-import" accept=".json,application/json" hidden></label></div><div id="binch-chest-items"></div><p class="binch-chest-warning">Coffre collaboratif cloud prévu ultérieurement : il nécessitera une authentification et une base de données partagée. Ne communique pas tes fichiers SavedVariables.</p></section>';
  main.append(page);
  const render=()=>{const rows=bank();$('#binch-chest-total').textContent=rows.length+' ressource(s) proposée(s)';$('#binch-chest-items').innerHTML=rows.length?rows.map(x=>'<article class="binch-chest-row"><span class="binch-chest-gem">◆</span><span><b>'+esc(x.item)+'</b><small>'+esc(x.owner)+' · '+esc(x.place)+'</small></span><strong>× '+x.count+'</strong><button type="button" data-del-chest="'+esc(x.id)+'" aria-label="Retirer cette ressource">×</button></article>').join(''):'<p class="binch-chest-empty">Aucune ressource déclarée. Les premiers objets proposés apparaîtront ici.</p>'};
  $('#binch-chest-form').onsubmit=e=>{
@@ -90,6 +90,26 @@ function chest(){
  $('#binch-chest-share').onclick=async()=>{
   const txt=['LA BINCH — RESSOURCES DISPONIBLES','Déclarations locales, à confirmer avec chaque propriétaire','',...bank().map(x=>x.count+' × '+x.item+' — '+x.owner+' ('+x.place+')')].join('\n');
   try{await navigator.clipboard.writeText(txt);$('#binch-chest-share').textContent='Copié ✓'}catch{window.prompt('Copier la liste',txt)}
+ };
+ $('#binch-chest-export').onclick=()=>{
+  const json={format:'la-binch-chest-v1',exportedAt:new Date().toISOString(),resources:bank()};
+  const blob=new Blob([JSON.stringify(json,null,2)],{type:'application/json'}),link=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=link;a.download='la-binch-coffre.json';a.click();setTimeout(()=>URL.revokeObjectURL(link),1500);
+ };
+ $('#binch-chest-import').onchange=async e=>{
+  const file=e.target.files?.[0];e.target.value='';if(!file||file.size>250000)return alert('Fichier absent ou trop volumineux.');
+  try{
+   const data=JSON.parse(await file.text());
+   if(data.format!=='la-binch-chest-v1'||!Array.isArray(data.resources)||data.resources.length>300)throw Error('Format de coffre non reconnu.');
+   const valid=data.resources.map(x=>{
+    if(!x||typeof x!=='object'||typeof x.item!=='string'||!x.item.trim()||x.item.length>90||!Number.isInteger(Number(x.count))||Number(x.count)<1||Number(x.count)>99999||typeof x.owner!=='string'||x.owner.length>50||typeof x.place!=='string'||x.place.length>100)throw Error('Données invalides.');
+    return {id:String(x.id||'').slice(0,100),item:x.item.trim(),count:Number(x.count),owner:x.owner.trim(),place:x.place};
+   });
+   if(!confirm('Importer '+valid.length+' propositions ? Les doublons seront fusionnés par identifiant et les propositions existantes conservées.'))return;
+   const current=bank(),ids=new Set(current.map(x=>x.id));
+   for(const x of valid){if(!x.id||ids.has(x.id))continue;ids.add(x.id);current.push(x)}
+   save(current.slice(0,1000));render();
+  }catch(err){alert('Import refusé : '+err.message)}
  };
  render();
 }
