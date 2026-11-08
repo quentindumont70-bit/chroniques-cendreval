@@ -1,0 +1,19 @@
+#binch-session-planner{margin:18px 0;border:1px solid #8a7a58;background:linear-gradient(145deg,#19291f,#111a18)}
+#binch-session-planner h2{margin:6px 0 9px}
+#binch-session-planner label{display:grid;gap:7px;color:#dfd4b9;font-size:.88rem;font-weight:650}
+#binch-session-planner select,#binch-session-planner textarea{width:100%;background:#0d1813;border:1px solid #617363;color:#f0e7d2;border-radius:7px;padding:10px;min-width:0}
+#binch-session-planner button{border:1px solid #ad9565;background:#273b31;color:#eed8a3;border-radius:7px;padding:10px 13px;cursor:pointer}
+#binch-session-planner button:hover{background:#375344;border-color:#f0d79c}
+#binch-session-planner .binch-session-settings{display:grid;grid-template-columns:1fr 1fr auto;align-items:end;gap:12px;margin:15px 0}
+#binch-session-planner .binch-session-settings button{min-height:42px}
+#binch-session-planner #binch-session-summary{font-weight:700;color:#ecd7ab;padding:9px 0}
+#binch-session-planner .binch-session-step{display:flex;justify-content:space-between;align-items:center;gap:16px;border-top:1px solid #496051;padding:13px 3px}
+#binch-session-planner .binch-session-step strong{display:block;font-size:1rem;color:#f2e4c9}
+#binch-session-planner .binch-session-step small{display:block;color:#b1c7b3;margin:0 0 5px}
+#binch-session-planner .binch-session-step p{margin:4px 0 0;font-size:.86rem;color:#cbd2c4}
+#binch-session-planner .binch-session-step button{min-width:78px}
+#binch-session-planner .binch-session-notes{margin:16px 0}
+#binch-session-planner .binch-session-actions{display:flex;flex-wrap:wrap;gap:9px}
+@media(max-width:720px){#binch-session-planner .binch-session-settings{grid-template-columns:1fr 1fr}#binch-session-planner .binch-session-settings button{grid-column:1/-1}#binch-session-planner .binch-session-step{align-items:flex-start}#binch-session-planner .binch-session-step button{flex:none}}
+@media(max-width:420px){#binch-session-planner .binch-session-settings{grid-template-columns:1fr}#binch-session-planner .binch-session-step{flex-direction:column;align-items:stretch}#binch-session-planner .binch-session-step button{align-self:flex-start}}
+@media(prefers-reduced-motion:reduce){#binch-session-planner *{scroll-behavior:auto!important;transition:none!important}}
