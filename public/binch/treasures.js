@@ -26,6 +26,7 @@ function setExhibit(id){
  displayExhibit();render();
 }
 
+window.BinchTreasureExhibit=setExhibit;
 function setupNavigation(){
  const nav=$('#app nav.nav');if(!nav)return;
  nav.dataset.binchNavRows='1';
