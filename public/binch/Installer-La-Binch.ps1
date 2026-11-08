@@ -36,7 +36,7 @@ try {
  $name = 'GrimoireSync'
  $installed = Join-Path $addons $name
  $backup = Join-Path (Split-Path $addons -Parent) ('LaBinch-Sauvegarde-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
- $base = 'https://quentindumont70-bit.github.io/chroniques-cendreval/binch/addon/GrimoireSync/'
+ $base = 'https://raw.githubusercontent.com/quentindumont70-bit/chroniques-cendreval/main/public/binch/addon/GrimoireSync/'
  $filenames = @('GrimoireSync.toc','Core.lua','Minimap.lua')
  # Recuperation dans un dossier temporaire AVANT toute modification de l'ancien addon.
  $staging = Join-Path ([System.IO.Path]::GetTempPath()) ('binch-'+[guid]::NewGuid().ToString('N'))
