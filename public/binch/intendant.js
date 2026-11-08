@@ -2,24 +2,37 @@
    Moteur local déterministe, sans modèle IA, sans appel réseau ni secret.
    N'effectue aucune action Discord/WoW à la place de l'utilisateur. */
 (()=>{'use strict';
-const KEY='binch.intendant.local.v1', TONE='binch.intendant.brog.tone', $=s=>document.querySelector(s);
-/* Brog est une mascotte fictive et originale : un ancien péon promu intendant.
-   Attachant, organisé, légèrement espiègle ; jamais une excuse pour inventer les faits. */
-const BROG={name:'Brog',title:'Intendant de La Binch',motto:'Une bonne liste vaut mieux que dix allers-retours aux Tarides.'};
-const voice={gm:['La guilde ne va pas se préparer toute seule… mais on peut lui faciliter la vie.','Un chef bien entouré est un chef qui peut enfin finir son café.'],
-lfg:['Pas besoin de rameuter tout Orgrimmar : préparons une annonce claire.','Une table bien remplie, c’est déjà la moitié du donjon.'],
-sync:['Une sauvegarde, un clic, et le carnet suit. Sans magie noire.','Les données restent chez toi : je suis intendant, pas pickpocket.'],
-progression:['Chaque détour évité, c’est une tournée gagnée.','On avance droit, mais on prend le temps de voir le paysage.'],
-metiers:['Le cuivre se mine, les raccourcis se méritent.','Une bonne pioche évite bien des sermons.'],
-general:['À vos ordres, chef !','Par la barbe de mon contremaître, voilà un plan.']};
+const KEY='binch.intendant.local.v1', TONE='binch.intendant.faith.tone', LEGACY_TONE='binch.intendant.brog.tone', $=s=>document.querySelector(s);
+/* Faith — personnage original de fan-fiction La Binch.
+   Esprit d'un troll chaman tombé au combat, ancien porteur de Sulfuras.
+   Lore inventé du projet : PAS un personnage Warcraft officiel/canon. */
+const FAITH={name:'Faith',title:'Esprit-guide de La Binch',motto:'Un esprit passe. La parole reste.'};
+const voice={
+ gm:['Même d’outre-tombe, j’entends quand un raid manque de soigneurs.','À quoi sert une hache légendaire si personne n’a préparé les bandages ?'],
+ lfg:['Rassemble les vivants, camarade. Je connais déjà trop de fantômes.','La taverne est pleine d’histoires. Trouvons des compagnons pour la prochaine.'],
+ sync:['Les esprits gardent la mémoire. Ton fichier, lui, reste sur ton ordinateur.','Sulfuras faisait du bruit. Une sauvegarde bien faite demande moins de cérémonies.'],
+ progression:['J’ai traversé les terres des morts. Quelques chemins d’Azeroth méritent encore qu’on s’y perde.','Le chemin du guerrier ne se lit pas seulement sur une carte. Mais la carte aide bien.'],
+ metiers:['Le feu de la forge me rappelle mon vieux marteau.','Même une arme mythique commence dans les mains d’un artisan.'],
+ evenements:['Le voile est mince aujourd’hui. Une histoire cherche à se raconter.','Ces apparitions sont celles de La Binch, pas des dons du destin en jeu.'],
+ general:['Les ancêtres écoutent. Moi aussi.','Le vent porte ta question jusqu’à moi, camarade.']
+};
 function nudge(query,pageName){let h=0;for(const x of query)h=(h*31+x.charCodeAt(0))>>>0;const lines=voice[pageName]||voice.general;return lines[h%lines.length]}
-function tone(){try{return localStorage.getItem(TONE)!=='sobre'}catch{return true}}
+function tone(){try{const preference=localStorage.getItem(TONE)||localStorage.getItem(LEGACY_TONE);return preference!=='sobre'}catch{return true}}
 function setTone(taquin){try{localStorage.setItem(TONE,taquin?'taquin':'sobre')}catch{}}
 
 const tabs={hub:'Quartier général',progression:'Carte d’expédition',metiers:'Métiers',gm:'Mode GM',sync:'Synchronisation',lfg:'LFG & Rendez-vous',crafting:'Atlas des recettes',loot:'Loot',macros:'Macros',bibliotheque:'Bibliothèque',discoveries:'Secrets',treasures:'Trésors',evenements:'Vrais procs'};
 const normalize=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-const initial=[{who:'intendant',text:'Moi, c’est Brog. Ancien péon, nouvel intendant. J’ai échangé ma pioche contre un carnet — presque sans protester.\nJe peux t’aider à organiser la guilde, préparer les annonces et suivre ton aventure. Tout fonctionne ici, sans crédits ni connexion IA. Je ne fais pas semblant de connaître ce que le guide ignore.'}];
-const read=()=>{try{const v=JSON.parse(localStorage.getItem(KEY));return Array.isArray(v)&&v.length?v.slice(-30):initial.slice()}catch{return initial.slice()}};
+const initial=[{who:'intendant',text:'Je suis Faith, l’écho d’un chaman troll tombé au combat. Sulfuras a jadis répondu à mon appel. Maintenant, je veille sur les vivants depuis le voile des esprits.\nJe connais les chemins de La Binch, les préparatifs de guilde et les annonces à rédiger. Mon pouvoir est local : aucune IA payante, et je n’invente pas ce que je ne sais pas.'}];
+const read=()=>{try{
+ const v=JSON.parse(localStorage.getItem(KEY));
+ if(!Array.isArray(v)||!v.length)return initial.slice();
+ const out=v.slice(-30);
+ // Un ancien échange Brog reste consultable mais s'affiche sous son identité historique.
+ // La nouvelle identité Faith est annoncée une seule fois lors de la migration.
+ const hasBrog=out.some(e=>e.who==='intendant'&&/\bBrog\b/.test(e.text||''));
+ if(hasBrog&&!out.some(e=>e.persona==='Faith'))out.push({who:'intendant',persona:'Faith',text:'Le vent a tourné. Je suis Faith, esprit troll et nouveau gardien de La Binch. Tes anciennes conversations sont préservées.'});
+ return out.slice(-30);
+}catch{return initial.slice()}};
 let history=read(), panel, input, list;
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(history.slice(-30)))}catch{}};
 function current(){return $('#app nav.nav button.active')?.dataset.page||'hub'}
@@ -81,7 +94,7 @@ function response(query){
 function render(){
  list.replaceChildren();history.forEach(entry=>{
   const article=document.createElement('article');article.className='binch-intendant-msg '+(entry.who==='user'?'user':'assistant');
-  const label=document.createElement('small');label.textContent=entry.who==='user'?'Vous':'Brog · Intendant';
+  const label=document.createElement('small');label.textContent=entry.who==='user'?'Vous':entry.persona==='Brog'||(!entry.persona&&/\bBrog\b/.test(entry.text||''))?'Brog · Archives':'Faith · Esprit-guide';
   const body=document.createElement('p');body.textContent=entry.text;article.append(label,body);
   if(entry.draft){const text=document.createElement('textarea');text.className='binch-intendant-draft';text.value=entry.draft;text.rows=5;text.setAttribute('aria-label','Brouillon Discord');text.addEventListener('change',()=>{entry.draft=text.value;save()});article.append(text);
    const copy=document.createElement('button');copy.type='button';copy.textContent='Copier ce brouillon';copy.onclick=async()=>{try{await navigator.clipboard.writeText(text.value);copy.textContent='Copié ✓'}catch{prompt('Copie ce texte :',text.value)}};article.append(copy);
@@ -91,7 +104,7 @@ function render(){
     const dungeon=$('#binch-lfg-dungeon'),note=$('#binch-lfg-note');
     if(!dungeon||!note){say('La Taverne LFG n’est pas encore chargée.','intendant');return}
     if(entry.activity&&entry.activity!=='activité à préciser')dungeon.value=entry.activity;
-    const details=['Préparé par Brog, à confirmer avant publication.'];
+    const details=['Préparé avec Faith, à confirmer avant publication.'];
     if(entry.roleNeeded&&entry.roleNeeded!=='rôles à confirmer')details.push('Rôle recherché : '+entry.roleNeeded+'.');
     if(entry.dayLabel)details.push('Jour mentionné : '+entry.dayLabel+'.');
     if(entry.timeLabel&&entry.timeLabel!=='horaire à confirmer')details.push('Heure indicative : '+entry.timeLabel+'.');
@@ -111,17 +124,17 @@ function submit(question){
  if(tone() && !/incompris|pas compris|impossible|ne pourrai|pas connecté|n'est pas encore/i.test(answer.text) && history.length%3===1)
    answer.text=nudge(s,name)+'\n\n'+answer.text;
  history.push({who:'user',text:s});
- history.push({who:'intendant',...answer});
+ history.push({who:'intendant',persona:'Faith',...answer});
  history=history.slice(-30);save();render();input.value='';
 }
 function mount(){
  if($('#binch-intendant-launcher'))return;
- const btn=document.createElement('button');btn.id='binch-intendant-launcher';btn.type='button';btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-controls','binch-intendant-panel');btn.innerHTML='<span aria-hidden="true">✧</span> Parler à Brog';
+ const btn=document.createElement('button');btn.id='binch-intendant-launcher';btn.type='button';btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-controls','binch-intendant-panel');btn.innerHTML='<span aria-hidden="true">✧</span> Invoquer Faith';
  panel=document.createElement('aside');panel.id='binch-intendant-panel';panel.hidden=true;panel.setAttribute('aria-label','Intendant de La Binch');
- panel.innerHTML='<div class="binch-intendant-header"><span class="binch-brog-portrait" aria-hidden="true"><span>✦</span><b>B</b></span><div class="binch-brog-name"><small>LA BINCH · INTENDANT LOCAL</small><h2>Brog <span class="binch-brog-online">● Disponible</span></h2><span class="binch-brog-motto">« Une bonne liste vaut dix allers-retours. »</span></div><button type="button" id="binch-intendant-close" aria-label="Fermer">✕</button></div><div class="binch-brog-toolbar"><span>Gratuit · local · pas de crédits</span><button type="button" id="binch-brog-tone" aria-pressed="true" title="Activer ou réduire les commentaires humoristiques">Humour : actif</button></div><p class="binch-intendant-note">Brog prépare les plans, mais ne prétend pas être une véritable IA. Aucune publication Discord sans toi.</p><div id="binch-intendant-messages" aria-live="polite"></div><div class="binch-intendant-suggestions"><button type="button">Mes prochaines étapes</button><button type="button">Comment synchroniser ?</button><button type="button">Prépare une annonce pour #général</button><button type="button">Ouvre LFG</button></div><form id="binch-intendant-form"><label for="binch-intendant-query">Ta demande</label><div><input id="binch-intendant-query" autocomplete="off" maxlength="1000" placeholder="Ex. Prépare une annonce de donjon…"><button type="submit">Envoyer</button></div></form>';
+ panel.innerHTML='<div class="binch-intendant-header"><span class="binch-faith-portrait" aria-hidden="true"><span class="binch-faith-mask"><i class="binch-faith-eye left"></i><i class="binch-faith-eye right"></i><i class="binch-faith-tusk left"></i><i class="binch-faith-tusk right"></i></span><span class="binch-faith-wisp">✧</span></span><div class="binch-brog-name"><small>LA BINCH · CONSEILLER SPECTRAL</small><h2>Faith <span class="binch-brog-online">● Disponible</span></h2><span class="binch-brog-motto">« Un esprit passe. La parole reste. »</span></div><button type="button" id="binch-intendant-close" aria-label="Fermer">✕</button></div><div class="binch-brog-toolbar"><span>Esprit-guide · local · sans crédits</span><button type="button" id="binch-brog-tone" aria-pressed="true" title="Activer ou réduire les répliques de Faith">Répliques : actives</button></div><p class="binch-intendant-note">Faith est un personnage imaginaire de La Binch, pas un héros officiel de WoW ni une véritable IA connectée. Aucun message Discord n’est envoyé sans toi.</p><div id="binch-intendant-messages" aria-live="polite"></div><div class="binch-intendant-suggestions"><button type="button">Mes prochaines étapes</button><button type="button">Comment synchroniser ?</button><button type="button">Prépare une annonce pour #général</button><button type="button">Ouvre LFG</button></div><form id="binch-intendant-form"><label for="binch-intendant-query">Ta demande</label><div><input id="binch-intendant-query" autocomplete="off" maxlength="1000" placeholder="Faith, prépare une annonce de donjon…"><button type="submit">Envoyer</button></div></form>';
  document.body.append(btn,panel);list=$('#binch-intendant-messages');input=$('#binch-intendant-query');
  const toneButton=$('#binch-brog-tone');
- function paintTone(){toneButton.textContent=tone()?'Humour : actif':'Humour : discret';toneButton.setAttribute('aria-pressed',String(tone()))}
+ function paintTone(){toneButton.textContent=tone()?'Répliques : actives':'Répliques : discrètes';toneButton.setAttribute('aria-pressed',String(tone()))}
  toneButton.onclick=()=>{setTone(!tone());paintTone()};paintTone();
  const toggle=()=>{panel.hidden=!panel.hidden;btn.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden){render();input.focus()}else btn.focus()};
  btn.onclick=toggle;$('#binch-intendant-close').onclick=toggle;
