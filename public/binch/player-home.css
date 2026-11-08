@@ -145,3 +145,11 @@
 #page-hub .binch-route-step[data-category="Guilde"]{--step-accent:#df9eaa;--step-light:#fbd2d9}
 #page-hub #binch-route-filters button[data-cat="Guilde"]{border-color:#b78696;color:#f7cbd6;background:linear-gradient(135deg,#3b2631,#252530)}
 #page-hub #binch-route-filters button[data-cat="Guilde"].active{background:#d9a5ad;color:#292028}
+
+
+/* Assistance XP GrimoireSync : deux actions complémentaires, sans surcharger le carnet. */
+#page-hub .binch-xp-missing{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+#page-hub .binch-xp-missing>b,#page-hub .binch-xp-missing>small{flex:1 0 100%}
+#page-hub .binch-xp-installer{display:inline-flex;align-items:center;justify-content:center;border:1px solid #9db5a8;border-radius:8px;padding:10px 12px;min-height:39px;color:#c6e0d1;background:#22352d;text-decoration:none;font-size:.76rem;font-weight:800}
+#page-hub .binch-xp-installer:hover{background:#31503e}
+#page-hub .binch-xp-installer:focus-visible{outline:3px solid #f2d4a1;outline-offset:2px}
