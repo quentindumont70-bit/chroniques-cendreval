@@ -16,7 +16,7 @@ function nudge(query,pageName){let h=0;for(const x of query)h=(h*31+x.charCodeAt
 function tone(){try{return localStorage.getItem(TONE)!=='sobre'}catch{return true}}
 function setTone(taquin){try{localStorage.setItem(TONE,taquin?'taquin':'sobre')}catch{}}
 
-const tabs={hub:'Quartier général',progression:'Carte d’expédition',metiers:'Métiers',gm:'Mode GM',sync:'Synchronisation',lfg:'LFG & Rendez-vous',crafting:'Atlas des recettes',loot:'Loot',macros:'Macros',bibliotheque:'Bibliothèque',discoveries:'Secrets',treasures:'Trésors'};
+const tabs={hub:'Quartier général',progression:'Carte d’expédition',metiers:'Métiers',gm:'Mode GM',sync:'Synchronisation',lfg:'LFG & Rendez-vous',crafting:'Atlas des recettes',loot:'Loot',macros:'Macros',bibliotheque:'Bibliothèque',discoveries:'Secrets',treasures:'Trésors',evenements:'Vrais procs'};
 const normalize=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 const initial=[{who:'intendant',text:'Moi, c’est Brog. Ancien péon, nouvel intendant. J’ai échangé ma pioche contre un carnet — presque sans protester.\nJe peux t’aider à organiser la guilde, préparer les annonces et suivre ton aventure. Tout fonctionne ici, sans crédits ni connexion IA. Je ne fais pas semblant de connaître ce que le guide ignore.'}];
 const read=()=>{try{const v=JSON.parse(localStorage.getItem(KEY));return Array.isArray(v)&&v.length?v.slice(-30):initial.slice()}catch{return initial.slice()}};
@@ -63,7 +63,7 @@ function response(query){
  if(/lfg|groupe|rdv|rendez.vous|calendrier/.test(q))
    return {text:'La Taverne LFG prépare des annonces, des réactions locales et des fichiers calendrier .ics avec rappel. Le chat partagé et les réactions interjoueurs nécessitent un service connecté.',buttons:[{label:'Ouvrir LFG',page:'lfg'}]};
  if(/proc|surprise|tresor|relique/.test(q))
-   return {text:'Le Cabinet des surprises et les Trésors sont des collections cosmétiques. Les vrais événements de proc et leurs tables distinctes sont un chantier identifié : je ne prétends pas qu’ils sont déjà terminés.',buttons:[{label:'Voir Secrets',page:'discoveries'}]};
+   return {text:'Le théâtre des vrais procs possède sa propre table de déclencheurs, ses probabilités et ses mini-scènes originales. Ces événements sont uniquement cosmétiques dans La Binch et ne représentent pas les chances de proc du jeu. Le Cabinet et les Trésors restent séparés.',buttons:[{label:'Voir les vrais procs',page:'evenements'},{label:'Voir Secrets',page:'discoveries'}]};
  for(const [name,title] of names)if(q.includes(normalize(title))||q.includes(name))return {text:'Je peux t’ouvrir « '+title+' ».',buttons:[{label:'Ouvrir '+title,page:name}]};
  return {text:'Je n’ai pas compris cette demande avec mes règles locales. Essaie « Mes prochaines étapes », « Prépare une annonce pour #général », « Comment synchroniser ? », « Ouvre LFG » ou « Mes métiers ». Je ne vais pas inventer de réponse sur Forever.'};
 }
@@ -109,7 +109,7 @@ function mount(){
  progression:['Mes prochaines étapes','Mon profil','Mes métiers']};
  function contextual(){
   const suggestions=panel.querySelector('.binch-intendant-suggestions');
-  const xs=pageChips[current()]||['Mes prochaines étapes','Comment synchroniser ?','Prépare une annonce pour #général','Ouvre LFG'];
+  const xs=pageChips[current()]||['Mes prochaines étapes','Comment synchroniser ?','Prépare une annonce pour #général','Ouvre LFG','Voir les vrais procs'];
   suggestions.replaceChildren();
   xs.forEach(text=>{const b=document.createElement('button');b.type='button';b.textContent=text;b.onclick=()=>submit(text);suggestions.append(b)});
  }
