@@ -52,6 +52,8 @@ function init(){
  original.addEventListener('click',()=>{setExpanded(false);requestAnimationFrame(active)});
  const observer=new MutationObserver(active);
  observer.observe(original,{subtree:true,attributes:true,attributeFilter:['class','data-page'],childList:true});
+ const appObserver=new MutationObserver(active);
+ appObserver.observe(app,{attributes:true,attributeFilter:['class']});
  document.addEventListener('grimoire:sync',active);
  window.addEventListener('resize',()=>{if(window.innerWidth>750)setExpanded(false)});
  active();
