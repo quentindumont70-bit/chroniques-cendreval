@@ -38,13 +38,15 @@ for(const file of scripts){
  for(const ref of refs){const localFile=ref.split(/[?#]/,1)[0];if(!present(localFile))fail(file+' charge un fichier absent : '+localFile)}
 }
 const index=read('index.html'),treasures=read('treasures.js');
-if(!index.includes('Bêta de guilde 0.20')||!index.includes('0.20-guild'))fail('Titre ou metadata de version non synchronisé avec 0.20');
+if(!index.includes('Bêta de guilde 0.21')||!index.includes('0.21-guild'))fail('Titre ou metadata de version non synchronisé avec 0.21');
 if(!index.includes('window.BinchRewards')||!index.includes('draw:(canvas,id)')||!treasures.includes('API.draw?.'))fail('Contrat sprite Trésors incomplet');
 const faith=read('faith-avatar.js'),intendant=read('intendant.js');
 if(!faith.includes('window.BinchFaithAvatar')||!faith.includes('requestAnimationFrame')||!faith.includes('reducedMotion()')||!faith.includes("visibilitychange"))fail('Contrat Faith : animation vocale performante ou gestion de visibilité manquante.');
 if(!intendant.includes('binch-faith-canvas')||!intendant.includes("window.BinchFaithAvatar?.speak(answer.text)"))fail('Faith n’est plus relié aux réponses de l’intendant.');
 const planner=read('guild-planner.js');
 if(planner.includes('form.elements.item.value'))fail('Le formulaire Guild Planner utilise une propriété native ambiguë');
+const rareScenes=read('true-procs.js');
+if(!rareScenes.includes('binch-real-procs-jump'))fail('Lien depuis Choc nébulaire vers les procs WoW absent.');
 const trueProcs=read('wow-procs.js');
 if(!trueProcs.includes('Choc nébulaire')||!trueProcs.includes('Non confirmée')||!trueProcs.includes('wowhead.com/forever'))fail('Vrais procs : manque séparation des cosmétiques, sources ou signalement des taux inconnus.');
 const toolkit=read('trade-toolkit.js');
