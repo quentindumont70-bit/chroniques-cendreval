@@ -1,0 +1,29 @@
+/* Salle des trésors : révélation diégétique dans la page active.
+ * Les graphismes actuels restent provisoires : ne pas prétendre AAA.
+ */
+#app main .page #binch-proc-toast{
+ position:relative!important;inset:auto!important;z-index:2!important;
+ display:grid!important;grid-template-columns:clamp(100px,16vw,155px) 1fr;
+ grid-template-rows:auto auto 1fr;column-gap:20px;row-gap:8px;
+ width:100%!important;max-width:100%!important;
+ margin:10px 0 20px;padding:20px clamp(18px,3vw,30px)!important;
+ text-align:left!important;align-items:center!important;justify-items:start!important;
+ border:1px solid var(--proc-accent,#a5ccae)!important;border-left:5px solid var(--proc-accent,#a5ccae)!important;
+ border-radius:13px!important;
+ background:radial-gradient(ellipse at 12% 35%,color-mix(in srgb,var(--proc-accent) 13%,transparent),transparent 65%),linear-gradient(120deg,#283338,#172529)!important;
+ box-shadow:inset 0 1px #ffffff16,0 10px 28px #0007!important;
+ animation:none!important;transform:none!important;pointer-events:auto!important;
+}
+#app main .page #binch-proc-toast[hidden]{display:none!important}
+#app main .page #binch-proc-toast .binch-proc-halo{display:none!important}
+#app main .page #binch-proc-toast canvas{grid-column:1;grid-row:1/4;width:clamp(96px,14vw,140px)!important;height:clamp(96px,14vw,140px)!important;filter:none!important;background:#1a292e;border:1px solid color-mix(in srgb,var(--proc-accent) 65%,#6e7b78);border-radius:12px;padding:8px;image-rendering:pixelated}
+#app main .page #binch-proc-toast #binch-proc-label{grid-column:2;grid-row:1;color:var(--proc-accent);font-size:.68rem}
+#app main .page #binch-proc-toast strong{grid-column:2;grid-row:2;font-size:clamp(1rem,2.3vw,1.55rem);line-height:1.35;max-width:calc(100% - 28px)}
+#app main .page #binch-proc-toast small{grid-column:2;grid-row:3;color:#bacbc8;font-size:.72rem}
+#app main .page #binch-proc-close{top:10px;right:10px;border:1px solid #8d9c91;background:#28393c;border-radius:8px;width:34px;height:34px;font-size:1.2rem}
+@media(max-width:520px){
+ #app main .page #binch-proc-toast{grid-template-columns:85px 1fr;column-gap:12px;padding:14px!important}
+ #app main .page #binch-proc-toast canvas{width:84px!important;height:84px!important}
+ #app main .page #binch-proc-toast strong{font-size:.99rem}
+}
+@media(prefers-reduced-motion:reduce){#app main .page #binch-proc-toast *,#app main .page #binch-proc-toast{animation:none!important;transition:none!important}}
