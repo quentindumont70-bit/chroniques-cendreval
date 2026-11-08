@@ -73,3 +73,106 @@
 #binch-intendant-panel .binch-faith-wisp{position:absolute;right:-8px;top:-14px;color:#dcfaff;font-size:24px;text-shadow:0 0 8px #b5f8f8;pointer-events:none}
 #binch-intendant-panel .binch-brog-toolbar button[aria-pressed="true"]{background:#40365a;border-color:#a298cf;color:#e9dffc}
 @media(max-width:380px){#binch-intendant-panel .binch-faith-portrait{flex-basis:54px;height:60px}#binch-intendant-panel .binch-faith-portrait:before,#binch-intendant-panel .binch-faith-portrait:after{height:22px;width:12px}#binch-intendant-panel .binch-faith-mask{inset:10px 7px 6px}}
+
+
+/* Faith 0.17 — illustration pixel art HD de buste originale.
+   Aucun GIF / asset tiers, aucun rafraîchissement graphique permanent.
+   Animation muette uniquement pendant sa réponse. */
+#binch-intendant-panel .binch-faith-portrait.binch-faith-art{
+ position:relative!important;
+ display:block!important;
+ flex:0 0 96px!important;
+ width:96px!important;
+ height:106px!important;
+ overflow:visible!important;
+ border:1px solid #8dabb9!important;
+ border-radius:12px!important;
+ background:linear-gradient(130deg,#162936,#101a2b)!important;
+ box-shadow:0 0 0 2px #a3cfc319,inset 0 0 0 2px #182a4d,0 5px 20px #0008!important;
+ transform:none!important;
+ isolation:isolate;
+}
+#binch-intendant-panel .binch-faith-art::before,
+#binch-intendant-panel .binch-faith-art::after{display:none!important}
+#binch-intendant-panel .binch-faith-art canvas{
+ display:block;
+ width:100%;
+ height:100%;
+ padding:2px;
+ object-fit:contain;
+ image-rendering:pixelated;
+ image-rendering:crisp-edges;
+ border-radius:10px;
+ background:#142339;
+}
+#binch-intendant-panel .binch-faith-art .binch-faith-wisp{
+ z-index:2;
+ position:absolute;
+ top:-12px!important;
+ right:-9px!important;
+ color:#a9eeec;
+ font-size:19px!important;
+ text-shadow:0 0 5px #b9f2ec;
+ opacity:.8;
+ pointer-events:none;
+}
+#binch-intendant-panel .binch-faith-speaking-indicator{
+ position:absolute;
+ z-index:3;
+ right:-9px;
+ bottom:4px;
+ font-size:.95rem;
+ line-height:1;
+ display:grid;
+ place-items:center;
+ width:24px;
+ height:24px;
+ border:1px solid #9ccfc9;
+ border-radius:50%;
+ background:#1d4a58;
+ color:#dbfef3;
+ opacity:0;
+ transform:scale(.8);
+ pointer-events:none;
+}
+#binch-intendant-panel .binch-faith-art.is-speaking{
+ border-color:#a9e4d5!important;
+ box-shadow:0 0 0 2px #96d8cf2b,inset 0 0 0 2px #29485c,0 0 15px #6bc7d02a!important;
+}
+#binch-intendant-panel .binch-faith-art.is-speaking .binch-faith-speaking-indicator{
+ opacity:1;
+ transform:scale(1);
+}
+#binch-intendant-panel .binch-intendant-header{
+ min-height:135px;
+ gap:14px;
+}
+#binch-intendant-panel .binch-brog-name{
+ min-width:0;
+ flex:1 1 auto;
+}
+#binch-intendant-panel .binch-brog-name h2{
+ gap:7px;
+ line-height:1.18;
+}
+#binch-intendant-panel .binch-brog-motto{line-height:1.4;display:inline-block}
+@media(max-width:480px){
+ #binch-intendant-panel .binch-faith-portrait.binch-faith-art{
+  flex:0 0 72px!important;
+  width:72px!important;
+  height:80px!important;
+ }
+ #binch-intendant-panel .binch-intendant-header{
+  min-height:105px;
+  gap:9px;
+  padding:11px 12px 9px;
+ }
+ #binch-intendant-panel .binch-brog-name h2{font-size:1.19rem}
+ #binch-intendant-panel .binch-brog-name small{font-size:.54rem;letter-spacing:.08em}
+ #binch-intendant-panel .binch-brog-motto{font-size:.61rem}
+ #binch-intendant-panel #binch-intendant-close{width:36px;height:36px;flex:0 0 36px}
+}
+@media(prefers-reduced-motion:reduce){
+ #binch-intendant-panel .binch-faith-art *,
+ #binch-intendant-panel .binch-faith-art.is-speaking{animation:none!important;transition:none!important}
+}
