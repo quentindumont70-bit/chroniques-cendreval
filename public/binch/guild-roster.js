@@ -12,7 +12,7 @@ function restore(){
  record.event=typeof d.event==='string'?d.event.slice(0,100):'';
  record.members=Array.isArray(d.members)?d.members.slice(0,100).filter(m=>m&&validName(m.name)&&ROLES.includes(m.role)&&CLASSES.includes(m.cls)&&['Confirmé','Incertain','Absent'].includes(m.status)&&Number.isInteger(m.group)&&m.group>=0&&m.group<=8).map(m=>({id:String(m.id||'').slice(0,50),name:m.name.trim(),cls:m.cls,role:m.role,status:m.status,group:m.group})):[];}catch{}
 }
-function save(){localStorage.setItem(KEY,JSON.stringify(record));}
+function save(){localStorage.setItem(KEY,JSON.stringify(record));document.dispatchEvent(new Event('binch:roster-change'));}
 function id(){return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9);}
 function init(){
  const page=$('page-gm');if(!page||$('binch-guild-roster'))return;
