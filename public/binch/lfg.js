@@ -63,7 +63,7 @@ function mount(){
   if(!cloud){cloudStatus('Mode local : les annonces sont privées à ce navigateur. Le tableau partagé n’est pas encore activé.');return}
   try{
    const available=await cloud.init();
-   if(!available){cloudStatus('Mode local uniquement : la base de données de guilde n’est pas encore configurée. Les réponses visibles ici ne proviennent pas des autres joueurs.');return}
+   if(!available){cloudStatus('Mode local uniquement : la base de données de guilde n’est pas configurée. Réessaie avec Actualiser après activation.');paint();return}
    online=true;cloudStatus('● Tableau partagé actif : annonces et réponses consultables depuis tous les appareils connectés. Attention : accès par session anonyme, sans restriction de guilde pour le moment.',true);
    await refreshCloud();
   }catch(e){cloudStatus('Mode partagé non disponible : '+String(e.message||e)+'. Aucune annonce locale ne sera présentée comme publiée.',false)}
@@ -105,7 +105,7 @@ function mount(){
   $('#binch-lfg-dungeon').value='';$('#binch-lfg-note').value='';$('#binch-lfg-when').value='';
  });
  page.querySelectorAll('[data-lfg-filter]').forEach(b=>b.onclick=()=>{filter=b.dataset.lfgFilter;page.querySelectorAll('[data-lfg-filter]').forEach(x=>x.classList.toggle('active',x===b));paint()});
- page.querySelector('#binch-lfg-refresh').onclick=()=>online?refreshCloud():paint();
+ page.querySelector('#binch-lfg-refresh').onclick=()=>online?refreshCloud():enableCloud();
  page.addEventListener('click',async event=>{
   const item=event.target.closest('[data-shared-id]'),reaction=event.target.closest('[data-cloud-react]'),action=event.target.closest('[data-cloud-action]');
   if(!online||!item||(!reaction&&!action))return;
