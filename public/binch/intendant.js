@@ -2,10 +2,23 @@
    Moteur local déterministe, sans modèle IA, sans appel réseau ni secret.
    N'effectue aucune action Discord/WoW à la place de l'utilisateur. */
 (()=>{'use strict';
-const KEY='binch.intendant.local.v1', $=s=>document.querySelector(s);
+const KEY='binch.intendant.local.v1', TONE='binch.intendant.brog.tone', $=s=>document.querySelector(s);
+/* Brog est une mascotte fictive et originale : un ancien péon promu intendant.
+   Attachant, organisé, légèrement espiègle ; jamais une excuse pour inventer les faits. */
+const BROG={name:'Brog',title:'Intendant de La Binch',motto:'Une bonne liste vaut mieux que dix allers-retours aux Tarides.'};
+const voice={gm:['La guilde ne va pas se préparer toute seule… mais on peut lui faciliter la vie.','Un chef bien entouré est un chef qui peut enfin finir son café.'],
+lfg:['Pas besoin de rameuter tout Orgrimmar : préparons une annonce claire.','Une table bien remplie, c’est déjà la moitié du donjon.'],
+sync:['Une sauvegarde, un clic, et le carnet suit. Sans magie noire.','Les données restent chez toi : je suis intendant, pas pickpocket.'],
+progression:['Chaque détour évité, c’est une tournée gagnée.','On avance droit, mais on prend le temps de voir le paysage.'],
+metiers:['Le cuivre se mine, les raccourcis se méritent.','Une bonne pioche évite bien des sermons.'],
+general:['À vos ordres, chef !','Par la barbe de mon contremaître, voilà un plan.']};
+function nudge(query,pageName){let h=0;for(const x of query)h=(h*31+x.charCodeAt(0))>>>0;const lines=voice[pageName]||voice.general;return lines[h%lines.length]}
+function tone(){try{return localStorage.getItem(TONE)!=='sobre'}catch{return true}}
+function setTone(taquin){try{localStorage.setItem(TONE,taquin?'taquin':'sobre')}catch{}}
+
 const tabs={hub:'Quartier général',progression:'Carte d’expédition',metiers:'Métiers',gm:'Mode GM',sync:'Synchronisation',lfg:'LFG & Rendez-vous',crafting:'Atlas des recettes',loot:'Loot',macros:'Macros',bibliotheque:'Bibliothèque',discoveries:'Secrets',treasures:'Trésors'};
 const normalize=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-const initial=[{who:'intendant',text:'À tes ordres ! Je fonctionne gratuitement dans ton navigateur. Je peux te guider dans La Binch, retrouver tes objectifs, préparer une annonce de guilde ou t’aider à synchroniser ton personnage. Je ne suis pas encore une IA conversationnelle.'}];
+const initial=[{who:'intendant',text:'Moi, c’est Brog. Ancien péon, nouvel intendant. J’ai échangé ma pioche contre un carnet — presque sans protester.\nJe peux t’aider à organiser la guilde, préparer les annonces et suivre ton aventure. Tout fonctionne ici, sans crédits ni connexion IA. Je ne fais pas semblant de connaître ce que le guide ignore.'}];
 const read=()=>{try{const v=JSON.parse(localStorage.getItem(KEY));return Array.isArray(v)&&v.length?v.slice(-30):initial.slice()}catch{return initial.slice()}};
 let history=read(), panel, input, list;
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(history.slice(-30)))}catch{}};
@@ -57,7 +70,7 @@ function response(query){
 function render(){
  list.replaceChildren();history.forEach(entry=>{
   const article=document.createElement('article');article.className='binch-intendant-msg '+(entry.who==='user'?'user':'assistant');
-  const label=document.createElement('small');label.textContent=entry.who==='user'?'Vous':'L’Intendant';
+  const label=document.createElement('small');label.textContent=entry.who==='user'?'Vous':'Brog · Intendant';
   const body=document.createElement('p');body.textContent=entry.text;article.append(label,body);
   if(entry.draft){const text=document.createElement('textarea');text.className='binch-intendant-draft';text.value=entry.draft;text.rows=5;text.setAttribute('aria-label','Brouillon Discord');article.append(text);
    const copy=document.createElement('button');copy.type='button';copy.textContent='Copier ce brouillon';copy.onclick=async()=>{try{await navigator.clipboard.writeText(text.value);copy.textContent='Copié ✓'}catch{prompt('Copie ce texte :',text.value)}};article.append(copy);
@@ -67,17 +80,41 @@ function render(){
  });list.scrollTop=list.scrollHeight;
 }
 function say(text,who='user'){history.push({who,text});history=history.slice(-30);save();render()}
-function submit(question){const s=String(question||'').trim();if(!s)return;history.push({who:'user',text:s});history.push({who:'intendant',...response(s)});history=history.slice(-30);save();render();input.value=''}
+function submit(question){
+ const s=String(question||'').trim();if(!s)return;
+ const answer=response(s),name=current();
+ if(tone() && !/incompris|pas compris|impossible|ne pourrai|pas connecté|n'est pas encore/i.test(answer.text) && history.length%3===1)
+   answer.text=nudge(s,name)+'\n\n'+answer.text;
+ history.push({who:'user',text:s});
+ history.push({who:'intendant',...answer});
+ history=history.slice(-30);save();render();input.value='';
+}
 function mount(){
  if($('#binch-intendant-launcher'))return;
- const btn=document.createElement('button');btn.id='binch-intendant-launcher';btn.type='button';btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-controls','binch-intendant-panel');btn.innerHTML='<span aria-hidden="true">✧</span> Intendant';
+ const btn=document.createElement('button');btn.id='binch-intendant-launcher';btn.type='button';btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-controls','binch-intendant-panel');btn.innerHTML='<span aria-hidden="true">✧</span> Parler à Brog';
  panel=document.createElement('aside');panel.id='binch-intendant-panel';panel.hidden=true;panel.setAttribute('aria-label','Intendant de La Binch');
- panel.innerHTML='<div class="binch-intendant-header"><div><small>LA BINCH · ASSISTANT LOCAL</small><h2>L’Intendant</h2></div><button type="button" id="binch-intendant-close" aria-label="Fermer">✕</button></div><p class="binch-intendant-note">Gratuit, sans crédits, sans vraie IA. Il utilise les informations et outils disponibles localement dans La Binch.</p><div id="binch-intendant-messages" aria-live="polite"></div><div class="binch-intendant-suggestions"><button type="button">Mes prochaines étapes</button><button type="button">Comment synchroniser ?</button><button type="button">Prépare une annonce pour #général</button><button type="button">Ouvre LFG</button></div><form id="binch-intendant-form"><label for="binch-intendant-query">Ta demande</label><div><input id="binch-intendant-query" autocomplete="off" maxlength="1000" placeholder="Ex. Prépare une annonce de donjon…"><button type="submit">Envoyer</button></div></form>';
+ panel.innerHTML='<div class="binch-intendant-header"><span class="binch-brog-portrait" aria-hidden="true"><span>✦</span><b>B</b></span><div class="binch-brog-name"><small>LA BINCH · INTENDANT LOCAL</small><h2>Brog <span class="binch-brog-online">● Disponible</span></h2><span class="binch-brog-motto">« Une bonne liste vaut dix allers-retours. »</span></div><button type="button" id="binch-intendant-close" aria-label="Fermer">✕</button></div><div class="binch-brog-toolbar"><span>Gratuit · local · pas de crédits</span><button type="button" id="binch-brog-tone" aria-pressed="true" title="Activer ou réduire les commentaires humoristiques">Humour : actif</button></div><p class="binch-intendant-note">Brog prépare les plans, mais ne prétend pas être une véritable IA. Aucune publication Discord sans toi.</p><div id="binch-intendant-messages" aria-live="polite"></div><div class="binch-intendant-suggestions"><button type="button">Mes prochaines étapes</button><button type="button">Comment synchroniser ?</button><button type="button">Prépare une annonce pour #général</button><button type="button">Ouvre LFG</button></div><form id="binch-intendant-form"><label for="binch-intendant-query">Ta demande</label><div><input id="binch-intendant-query" autocomplete="off" maxlength="1000" placeholder="Ex. Prépare une annonce de donjon…"><button type="submit">Envoyer</button></div></form>';
  document.body.append(btn,panel);list=$('#binch-intendant-messages');input=$('#binch-intendant-query');
+ const toneButton=$('#binch-brog-tone');
+ function paintTone(){toneButton.textContent=tone()?'Humour : actif':'Humour : discret';toneButton.setAttribute('aria-pressed',String(tone()))}
+ toneButton.onclick=()=>{setTone(!tone());paintTone()};paintTone();
  const toggle=()=>{panel.hidden=!panel.hidden;btn.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden){render();input.focus()}else btn.focus()};
  btn.onclick=toggle;$('#binch-intendant-close').onclick=toggle;
  panel.querySelector('form').onsubmit=e=>{e.preventDefault();submit(input.value)};
  panel.querySelectorAll('.binch-intendant-suggestions button').forEach(b=>b.onclick=()=>submit(b.textContent));
+ const pageChips={gm:['Préparer un briefing','Ouvre LFG','Prépare une annonce pour #général'],
+ lfg:['Prépare une annonce pour #général','Ouvre le mode GM','Comment synchroniser ?'],
+ sync:['Comment synchroniser ?','Mon profil','Mes prochaines étapes'],
+ metiers:['Mes métiers','Mes prochaines étapes','Ouvre LFG'],
+ progression:['Mes prochaines étapes','Mon profil','Mes métiers']};
+ function contextual(){
+  const suggestions=panel.querySelector('.binch-intendant-suggestions');
+  const xs=pageChips[current()]||['Mes prochaines étapes','Comment synchroniser ?','Prépare une annonce pour #général','Ouvre LFG'];
+  suggestions.replaceChildren();
+  xs.forEach(text=>{const b=document.createElement('button');b.type='button';b.textContent=text;b.onclick=()=>submit(text);suggestions.append(b)});
+ }
+ btn.addEventListener('click',contextual);
+ document.addEventListener('click',e=>{if(e.target.closest('#app nav.nav button[data-page]')&&!panel.hidden)contextual()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden){e.preventDefault();toggle()}});
  render();
 }
