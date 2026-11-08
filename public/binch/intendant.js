@@ -83,7 +83,7 @@ function response(query){
  if(/marteau|blacksmith hammer|cle plate|micro.ajusteur|outillage/.test(q))
    return {text:'Le marteau de forgeron est utile en Ingénierie même sans être forgeron : plusieurs fabrications demandent de l’avoir dans les sacs. La pioche sert au Minage ; la clé plate puis le micro-ajusteur gyromatique sont requis par des recettes plus avancées. Dans Métiers, la Trousse d’artisan indique aussi les outils repérés lors du dernier import, sans prétendre lire les sacs en direct.',buttons:[{label:'Voir ma trousse d’artisan',page:'metiers'}]};
  if(/vrai.*proc|proc.*wow|proc.*sort|proc.*equipement|taux.*proc|chance.*proc/.test(q))
-   return {text:'La Bibliothèque contient maintenant des fiches sourcées sur les vrais effets de déclenchement d’objets de WoW Forever : Sulfuras, Thunderfury, Main d’Antu’sul, Main de justice et enchantements. Les taux absents ou contradictoires restent indiqués comme non confirmés. Choc nébulaire est un système cosmétique distinct.',buttons:[{label:'Vrais procs dans la Bibliothèque',page:'bibliotheque'}]};
+   return {text:'La Bibliothèque contient maintenant des fiches sourcées sur les vrais effets de déclenchement d’objets de WoW Forever : Sulfuras, Thunderfury, Main d’Antu’sul, Main de justice et enchantements. Les taux absents ou contradictoires restent indiqués comme non confirmés. Choc nébulaire est un système cosmétique distinct.',buttons:[{label:'Vrais procs dans la Bibliothèque',page:'bibliotheque',target:'wow-procs'}]};
  if(/metier|profession|forge|couture|ingenier|minage|herbor|depec|alchimi/.test(q))
    return {text:'Ouvre Métiers et l’Atlas des recettes pour tes jalons et matériaux. Les nouveautés Forever doivent être distinguées des données Vanilla non confirmées. '+(p.jobs?.length?'Métiers du profil : '+p.jobs.join(', ')+'.':''),buttons:[{label:'Voir mes métiers',page:'metiers'},{label:'Voir les recettes',page:'crafting'}]};
  if(/ou aller|quelle zone|pex|leveling|prochain|quete|xp|monter.*niveau/.test(q))
@@ -119,7 +119,7 @@ function render(){
    };
    article.append(form);
   }
-  (entry.buttons||[]).forEach(btn=>{const b=document.createElement('button');b.type='button';b.textContent=btn.label;b.onclick=()=>{if(!page(btn.page))say('Cette rubrique n’est pas disponible dans la version actuelle.','intendant')};article.append(b)});
+  (entry.buttons||[]).forEach(btn=>{const b=document.createElement('button');b.type='button';b.textContent=btn.label;b.onclick=()=>{if(!page(btn.page))say('Cette rubrique n’est pas disponible dans la version actuelle.','intendant');else if(btn.target==='wow-procs')setTimeout(()=>window.BinchOpenWoWProcs?.(),80)};article.append(b)});
   list.append(article)
  });list.scrollTop=list.scrollHeight;
 }
