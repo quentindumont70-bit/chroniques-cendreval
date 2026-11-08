@@ -44,6 +44,8 @@ if(!faith.includes('window.BinchFaithAvatar')||!faith.includes('requestAnimation
 if(!intendant.includes('binch-faith-canvas')||!intendant.includes("window.BinchFaithAvatar?.speak(answer.text)"))fail('Faith n’est plus relié aux réponses de l’intendant.');
 const planner=read('guild-planner.js');
 if(planner.includes('form.elements.item.value'))fail('Le formulaire Guild Planner utilise une propriété native ambiguë');
+const player=read('player-home.js'),playerStyle=read('player-home.css');
+if(!player.includes("updateLevelRing(last,p)")||!player.includes("rawXP!==null")||!playerStyle.includes(".binch-level-ring"))fail('Anneau XP : liaison ou garde-fou anti-valeurs absentes manquant.');
 const lfg=read('lfg.js'),config=JSON.parse(read('lfg-cloud-config.json'));
 if(!lfg.includes('Mode local uniquement')||!lfg.includes('online'))fail('Le LFG ne distingue plus clairement les modes local et partagé');
 if(!config.supabaseUrl||!config.supabasePublishableKey)warnings.push('Le LFG collectif n’est PAS encore connecté (configuration Supabase vide).');
