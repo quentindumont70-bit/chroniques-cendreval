@@ -276,6 +276,7 @@ border:1px solid #6f6b50aa;border-radius:6px;color:#f2e3bc;font-size:.72rem}
   <p>Une installation à faire une seule fois sur ton PC, puis un import rapide quand tu veux actualiser ton personnage. Pas de compte, pas de clé API. Tes fichiers sont lus localement dans ton navigateur.</p>
   <span class="binch-sync-badge">PC Windows · WoW Forever · GrimoireSync bêta</span>
   <div id="binch-sync-live-status" class="binch-sync-live-status" data-state="none" role="status">Aucun import identifié sur cet appareil pour l'instant.</div>
+  <p><label for="grimoire-bridge-file" class="btn primary" style="display:inline-block;cursor:pointer;margin:14px 0 2px;color:#1c1408;background:linear-gradient(#f4d99b,#c89d4c);padding:13px 18px;border-radius:6px">Importer maintenant GrimoireSync.lua</label></p><p class="muted">Après /reload dans WoW, choisis le fichier du dossier WTF/Account/.../SavedVariables. Aucun nouveau téléchargement de l’addon nécessaire.</p>
  </div>
  <div class="binch-sync-steps">
   <article class="binch-sync-step">
@@ -1328,7 +1329,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const jump=document.getElementById('binch-sync-jump');
   if(jump)jump.onclick=()=>{
    const target=document.getElementById('grimoire-bridge');
-   if(target){target.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>document.getElementById('grimoire-bridge-file')?.focus(),350)}
+   if(target){document.getElementById('grimoire-bridge-file')?.click()}else{alert('Le module d’import n’est pas chargé : actualise La Binch.')}
   };
   const info=document.getElementById('binch-sync-live-status');if(!info)return;
   let data;
@@ -1343,5 +1344,5 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  };
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
-</script><script src="./sync-easy.js?v=023" defer></script><script src="./player-home.js?v=021" defer></script><script src="./trade-toolkit.js?v=021" defer></script><script src="./wow-procs.js?v=021" defer></script><script src="./equipment-gm.js?v=021" defer></script><script src="./lfg-cloud.js?v=021" defer></script><script src="./share-kit.js?v=021" defer></script><script src="./treasures.js?v=021" defer></script><script src="./treasure-gallery.js?v=021" defer></script><script src="./lore-catalog.js?v=021" defer></script><script src="./lore-codex.js?v=021" defer></script></body></html>
+</script><script src="./sync-easy.js?v=024" defer></script><script src="./player-home.js?v=021" defer></script><script src="./trade-toolkit.js?v=021" defer></script><script src="./wow-procs.js?v=021" defer></script><script src="./equipment-gm.js?v=021" defer></script><script src="./lfg-cloud.js?v=021" defer></script><script src="./share-kit.js?v=021" defer></script><script src="./treasures.js?v=021" defer></script><script src="./treasure-gallery.js?v=021" defer></script><script src="./lore-catalog.js?v=021" defer></script><script src="./lore-codex.js?v=021" defer></script></body></html>
 
