@@ -1,0 +1,95 @@
+/* La Binch — Design system premium, global v1.0
+   Components are coherent, color families distinguish functional areas.
+   No continuous animations and no image requests. */
+:root{
+ --binch-ink:#f6f1e6;--binch-muted:#c8d0cf;--binch-gold:#e9b96d;
+ --binch-jade:#66d5b7;--binch-arcane:#ba9dff;--binch-sky:#72c7ed;
+ --binch-flame:#ee9872;--binch-surface:#141f24;--binch-border:#52676b;
+ --binch-focus:#ffe0a0;
+}
+body{
+ background:radial-gradient(ellipse 70% 26% at 83% 6%,#2b365c60,transparent),
+ radial-gradient(ellipse 65% 40% at 5% 65%,#28594731,transparent),
+ linear-gradient(160deg,#0b101b,#0c1619 45%,#10131e 100%)!important;
+}
+body:after{opacity:.35}
+#app .page{--page-accent:var(--binch-gold);--page-accent-soft:#dca25828;--page-border:#75674f}
+#page-hub{--page-accent:#ecc780!important;--page-accent-soft:#8a63352d!important;--page-border:#847358!important}
+#page-progression{--page-accent:#64cfbd!important;--page-accent-soft:#2465573d!important;--page-border:#4f827a!important}
+#page-metiers,#page-crafting{--page-accent:#e2b46e!important;--page-accent-soft:#81603b40!important;--page-border:#876e4e!important}
+#page-gm{--page-accent:#e59c8d!important;--page-accent-soft:#6f384340!important;--page-border:#926264!important}
+#page-bibliotheque,#page-macros{--page-accent:#92baf1!important;--page-accent-soft:#34517c40!important;--page-border:#607c9b!important}
+#page-discoveries,#page-procs{--page-accent:#bea3f6!important;--page-accent-soft:#624a8a42!important;--page-border:#7866a4!important}
+#page-sync{--page-accent:#80cfe0!important;--page-accent-soft:#2d5c6940!important;--page-border:#5c8592!important}
+#page-loot{--page-accent:#e7be7d!important;--page-accent-soft:#6d4f3048!important;--page-border:#9b8253!important}
+#app .page>.panel.section,#app .page .panel.section{
+ border-radius:13px!important;border-color:var(--page-border)!important;
+ background:radial-gradient(ellipse at 90% 0%,var(--page-accent-soft),transparent 46%),linear-gradient(145deg,#1b2833f5,#101a20f5 70%)!important;
+ box-shadow:inset 0 1px #ffffff19,0 12px 35px #0006;
+}
+#app .page .eyebrow,#app .page .kind{
+ color:var(--page-accent)!important;letter-spacing:.14em;font-weight:800
+}
+#app .page h1,#app .page h2,#app .page h3{color:#faf1e1;line-height:1.2}
+#app .page h2{letter-spacing:-.018em}
+#app .page p,#app .page li,#app .page .muted{color:var(--binch-muted);line-height:1.65}
+#app .page .source-note,#app .page .muted small{color:#aebfc0}
+#app .page :is(.tile,.craft-card,.discovery-card,.knowledge-card,.dungeon-card,.zone-card,.journey-step,.binch-front-widget){
+ border-radius:12px!important;border-color:var(--page-border)!important;
+ box-shadow:inset 0 1px #ffffff12,0 7px 23px #0005;
+}
+#app .page :is(.tile,.craft-card,.discovery-card,.knowledge-card,.journey-step){
+ background:radial-gradient(ellipse at right top,var(--page-accent-soft),transparent 60%),linear-gradient(145deg,#1b2832,#121c24 90%)!important;
+}
+#app .page :is(.tile,.craft-card,.discovery-card,.knowledge-card,.zone-card,.binch-front-widget){
+ transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease,background .18s ease,filter .18s ease
+}
+#app .page :is(.tile,.craft-card,.discovery-card,.knowledge-card,.zone-card,.binch-front-widget):hover{
+ border-color:var(--page-accent)!important;box-shadow:0 13px 32px #0008,0 0 0 1px var(--page-accent-soft);
+ transform:translateY(-2px)
+}
+#app .page :is(button,.btn,input,select,textarea){font-family:Inter,system-ui,sans-serif}
+#app .page :is(button,.btn,select){
+ border-radius:8px;transition:background .18s,border-color .18s,box-shadow .18s,transform .18s,color .18s
+}
+#app .page :is(button,.btn):not(:disabled):hover{filter:brightness(1.12)}
+#app .page :is(button,.btn):not(:disabled):active{transform:scale(.98);filter:brightness(1.06)}
+#app .page :is(button,.btn):disabled{opacity:.48;cursor:not-allowed}
+#app .page :is(button,a,input,select,textarea,[role="button"]):focus-visible{outline:3px solid var(--binch-focus)!important;outline-offset:3px}
+#app .page :is(input,select,textarea){
+ background:#111f28;border:1px solid #647780;color:#f8f0de;border-radius:8px;min-height:43px
+}
+#app .page :is(input,select,textarea):hover{border-color:var(--page-accent)}
+#app .page :is(input,select,textarea):focus{border-color:var(--page-accent);box-shadow:0 0 0 3px var(--page-accent-soft)}
+#app .page :is(input,select,textarea)::placeholder{color:#b1c2c5}
+#page-progression .task{
+ cursor:pointer;display:flex;align-items:flex-start;min-height:58px;gap:14px;
+ padding:15px 16px!important;margin:8px 0;border:1px solid #476e72!important;border-radius:10px;
+ background:linear-gradient(100deg,#1b3540,#10242b)!important;
+ transition:border-color .18s,background .18s,transform .18s,box-shadow .18s
+}
+#page-progression .task:hover{border-color:#8cf0d4!important;transform:translateX(3px);background:#22434c!important;box-shadow:0 4px 17px #63cfc12b}
+#page-progression .task:has(input:checked){border-color:#619d83!important;background:linear-gradient(100deg,#1d4236,#102b2a)!important}
+#page-progression .task span{font-size:.9rem;line-height:1.5;color:#eff7f2;flex:1}
+#page-progression .task:has(input:checked) span{text-decoration:line-through;text-decoration-color:#6ea997;color:#a3c7b9}
+#page-progression .task input{width:21px;height:21px;flex:0 0 auto;accent-color:#64d4ac;cursor:pointer;margin:1px 0 0}
+#page-progression .task:focus-within{outline:2px solid var(--binch-focus);outline-offset:3px}
+#app .page .discovery-actions button,#app .page .craft-actions button{min-height:40px;padding:9px 13px;font-weight:750}
+#app .page .discovery-card:has(input:checked),#app .page .craft-done{border-color:#4d9577!important}
+#app .page .discovery-done,#app .page .craft-done{opacity:.82}
+#app .page .discovery-done:hover,#app .page .craft-done:hover{opacity:1}
+#app .page .binch-front-priority,#app .page .binch-front-task{transition:border-color .18s,transform .18s,box-shadow .18s}
+#app .nav{border:1px solid #546a74;border-radius:11px;background:linear-gradient(105deg,#142333,#142525)!important;box-shadow:inset 0 1px #fff2,0 6px 17px #0007}
+#app .nav button{color:#dae5e9!important;border-color:#415864!important;background:#192d39!important}
+#app .nav button:hover{color:#fff!important;background:#29485a!important;border-color:#7eb4ce!important}
+#app .nav button.active{color:#1b1b20!important;background:linear-gradient(115deg,#ffe0a1,#e0b475)!important;border-color:#ffecbf!important;box-shadow:inset 0 -2px #a27a42,0 4px 15px #0009}
+#app .app-head .identity{border-color:#6c8298!important;background:linear-gradient(100deg,#1d3347,#12202f)!important}
+#app .app-head #mini-name{color:#ffe4a4}
+#page-procs .binch-proc-entry{background:linear-gradient(130deg,#28243b,#141b2b)!important}
+#page-bibliotheque .knowledge-card{border-left:3px solid #8dbdf0!important}
+#page-gm .gm-top{border-radius:11px;background:linear-gradient(115deg,#42313b,#232534)}
+@media(max-width:700px){#app .page>.panel.section,#app .page .panel.section{padding-inline:15px!important}#page-progression .task{padding:12px!important}}
+@media(prefers-reduced-motion:reduce){
+ #app .page :is(.tile,.craft-card,.discovery-card,.knowledge-card,.zone-card,.binch-front-widget,.task,button,.btn,select){transition:none!important;animation:none!important}
+ #app .page :is(.tile,.craft-card,.discovery-card,.knowledge-card,.zone-card,.binch-front-widget,.task):hover{transform:none!important}
+}
