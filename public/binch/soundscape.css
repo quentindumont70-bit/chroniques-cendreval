@@ -1,0 +1,16 @@
+/* La Binch OST — discrète, sans animation de décoration. */
+#binch-ost{position:relative;z-index:60;color:#f2e8da}
+#binch-ost>summary{display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap;list-style:none;padding:11px 14px;border:1px solid #7f9b97;background:linear-gradient(120deg,#263d41,#1c2b35);border-radius:9px;font-size:.76rem;font-weight:850;color:#deedec;min-height:43px}
+#binch-ost>summary::-webkit-details-marker{display:none}
+#binch-ost>summary small{font-size:.61rem;color:#b8d6d0}
+#binch-ost[open]>summary{border-color:#d7c295}
+#binch-ost .binch-ost-body{position:absolute;right:0;top:calc(100% + 8px);width:min(340px,calc(100vw - 35px));display:grid;gap:10px;padding:19px;background:linear-gradient(125deg,#2b3540,#1b2630);border:1px solid #b29d81;border-radius:12px;box-shadow:0 15px 40px #000a}
+#binch-ost .binch-ost-body>strong{font:700 1.15rem Cinzel,Georgia,serif;color:#f5e0b7}
+#binch-ost .binch-ost-body p{margin:0;font-size:.77rem;color:#d0d7d5;line-height:1.63}
+#binch-ost .binch-ost-body label{display:grid;gap:6px;font-size:.74rem;font-weight:850;color:#f0d9b3}
+#binch-ost select{min-height:43px;padding:9px 11px;background:#1a2d37;border:1px solid #86948e;border-radius:7px;color:#e9e9dc;width:100%}
+#binch-ost input[type=range]{width:100%;accent-color:#bc9e79}
+#binch-ost button{cursor:pointer;border:1px solid #f2d5a2;border-radius:8px;background:#e0bf8e;color:#242624;min-height:45px;padding:10px 15px;font-weight:900}
+#binch-ost #binch-ost-status{font-size:.68rem;line-height:1.45;color:#b9ccc8}
+#binch-ost :is(button,select,summary,input):focus-visible{outline:3px solid #eac997;outline-offset:2px}
+@media(max-width:650px){#binch-ost{margin-left:0}#binch-ost>summary{font-size:.71rem;padding:9px 12px}#binch-ost .binch-ost-body{right:-8px}}
