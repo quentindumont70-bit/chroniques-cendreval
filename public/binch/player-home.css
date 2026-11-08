@@ -127,3 +127,12 @@
 @media(prefers-reduced-motion:reduce){
  #page-hub .binch-level,#page-hub .binch-level-ring{animation:none!important;transition:none!important}
 }
+
+/* Raccourci d'import lorsque le client n'a pas fourni l'expérience. */
+#page-hub .binch-xp-missing .binch-xp-sync-link{
+ justify-self:start;margin-top:10px;padding:9px 13px;min-height:38px;
+ color:#f5d7a6;background:linear-gradient(120deg,#283a38,#1c302e);
+ border:1px solid #b3a17e;border-radius:8px;font-size:.73rem;font-weight:850;cursor:pointer
+}
+#page-hub .binch-xp-missing .binch-xp-sync-link:focus-visible{outline:3px solid #f8dca4;outline-offset:2px}
+@media(max-width:580px){#page-hub .binch-xp-missing .binch-xp-sync-link{justify-self:center}}
