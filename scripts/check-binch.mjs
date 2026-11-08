@@ -25,8 +25,8 @@ else {
  }
  const refs=[...html.matchAll(/\b(?:src|href)\s*=\s*["']\.\/([^"']+)["']/gi)].map(x=>x[1]);
  for(const ref of refs) {
-  if(ref.includes('?')||ref.includes('#'))continue;
-  if(!present(ref))fail('Fichier HTML référencé mais absent : '+ref);
+  const localFile=ref.split(/[?#]/,1)[0];
+  if(!present(localFile))fail('Fichier HTML référencé mais absent : '+localFile);
  }
 }
 const scripts=fs.readdirSync(root).filter(x=>x.endsWith('.js')).sort();
@@ -34,10 +34,11 @@ for(const file of scripts){
  const source=read(file);
  try{new vm.Script(source,{filename:file})}
  catch(e){fail('JavaScript invalide '+file+': '+e.message)}
- const refs=[...source.matchAll(/(?:\.src|\.href)\s*=\s*["']\.\/([^"']+\.(?:js|css))["']/g)].map(x=>x[1]);
- for(const ref of refs)if(!present(ref))fail(file+' charge un fichier absent : '+ref);
+ const refs=[...source.matchAll(/(?:\.src|\.href)\s*=\s*["']\.\/([^"']+\.(?:js|css)(?:\?[^"']*)?)["']/g)].map(x=>x[1]);
+ for(const ref of refs){const localFile=ref.split(/[?#]/,1)[0];if(!present(localFile))fail(file+' charge un fichier absent : '+localFile)}
 }
 const index=read('index.html'),treasures=read('treasures.js');
+if(!index.includes('Bêta de guilde 0.18')||!index.includes('0.18-guild'))fail('Titre ou metadata de version non synchronisé avec 0.18');
 if(!index.includes('window.BinchRewards')||!index.includes('draw:(canvas,id)')||!treasures.includes('API.draw?.'))fail('Contrat sprite Trésors incomplet');
 const faith=read('faith-avatar.js'),intendant=read('intendant.js');
 if(!faith.includes('window.BinchFaithAvatar')||!faith.includes('requestAnimationFrame')||!faith.includes('reducedMotion()')||!faith.includes("visibilitychange"))fail('Contrat Faith : animation vocale performante ou gestion de visibilité manquante.');
