@@ -16,7 +16,7 @@ function read(){try{const v=JSON.parse(localStorage.getItem(KEY));return v&&v.ve
 let state=read(),tab='requests',reqFilter='open';
 function save(){state.requests=state.requests.slice(-200);state.characters=state.characters.slice(-100);try{localStorage.setItem(KEY,JSON.stringify(state))}catch{};draw();}
 function profile(){try{const p=JSON.parse(localStorage.getItem('grimoire.hub.v3'))||{};return clean(p.data?.pseudo||p.name||'',40)}catch{return ''}}
-function id(){return (crypto.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,12))}
+function id(){return (window.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,12))}
 function count(r,type){return (r.contributions||[]).filter(c=>!type||c.status===type).reduce((x,c)=>x+Number(c.quantity||0),0)}
 function deadline(r){if(!r.deadline)return 'Sans échéance';const d=new Date(r.deadline);return Number.isFinite(+d)?d.toLocaleString('fr-FR',{dateStyle:'medium',timeStyle:'short'}):'Échéance à confirmer'}
 function isLate(r){return !!r.deadline&&new Date(r.deadline)<Date.now()&&!r.closed&&count(r,'confirmed')<r.quantity}
@@ -28,7 +28,7 @@ function exportJSON(){
  a.href=url;a.download='la-binch-guild-planner.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
 }
 function createRequest(form){
- const title=clean(form.elements.item.value,90),quantity=Number(form.elements.quantity.value),creator=clean(form.elements.creator.value,40)||profile()||'Membre';
+ const title=clean(form.elements.namedItem('item')?.value,90),quantity=Number(form.elements.quantity.value),creator=clean(form.elements.creator.value,40)||profile()||'Membre';
  const deadlineValue=form.elements.deadline.value;
  if(title.length<2||!Number.isInteger(quantity)||quantity<1||quantity>99999){alert('Indique un objectif et une quantité valide.');return}
  if(deadlineValue&&(!Number.isFinite(+new Date(deadlineValue)))){alert('Date invalide.');return}
