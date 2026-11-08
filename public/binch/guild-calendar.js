@@ -6,7 +6,7 @@ const KINDS=['Donjon','Raid','Quêtes','Métiers','Exploration','Réunion de gui
 let events=[],filter='upcoming';
 function storage(){try{const v=JSON.parse(localStorage.getItem(KEY));events=Array.isArray(v)?v.slice(0,MAX).filter(valid).map(x=>({...x,done:!!x.done})):[]}catch{events=[]}}
 function valid(x){return x&&typeof x.title==='string'&&x.title.trim().length>0&&x.title.length<=100&&KINDS.includes(x.kind)&&typeof x.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&!Number.isNaN(Date.parse(x.date+'T00:00:00'))&&typeof x.time==='string'&&/^([01]\d|2[0-3]):[0-5]\d$/.test(x.time)&&typeof x.note==='string'&&x.note.length<=280&&Number.isInteger(x.size)&&x.size>=2&&x.size<=40}
-function persist(){localStorage.setItem(KEY,JSON.stringify(events))}
+function persist(){localStorage.setItem(KEY,JSON.stringify(events));document.dispatchEvent(new Event('binch:calendar-change'))}
 function start(){
  const page=$('page-gm');if(!page||$('binch-guild-calendar'))return;
  storage();
