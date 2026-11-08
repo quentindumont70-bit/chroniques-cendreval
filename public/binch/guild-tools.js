@@ -116,8 +116,28 @@ function chest(){
 function loot(){
  const main=$('#app main');if(!main||$('#page-loot'))return;makeNav('loot','Butins');
  const page=document.createElement('section');page.id='page-loot';page.className='page';
- page.innerHTML='<section class="panel section binch-loot-intro"><div class="eyebrow">ATLAS / TRÉSORS D’AZEROTH</div><h2>Bestiaire & butins</h2><p>Nous construisons un codex de boss, raids, donjons et rares, avec carte, résumé des mécaniques et tables d’objets vérifiés. Les taux non documentés ne seront pas inventés.</p><div class="binch-loot-shortcuts"><button data-loot-go="progression">Cartes de zones ↗</button><button data-loot-go="bibliotheque">Guides disponibles ↗</button><button data-loot-go="metiers">Patrons et recettes ↗</button></div><p class="binch-chest-warning">Catalogue exhaustif en préparation. Cette rubrique ne prétend pas encore proposer toutes les tables de loot.</p></section>';
- main.append(page);page.onclick=e=>{const b=e.target.closest('[data-loot-go]');if(b)go(b.dataset.lootGo)};
+ page.innerHTML='<section class="panel section binch-loot-intro"><div class="eyebrow">BESTIAIRE / TRÉSORS D’AZEROTH</div><h2>Le codex des rencontres</h2><p>Explore le premier index des donjons du monde. La stratégie et les butins seront enrichis par boss, uniquement à partir de données sourcées. Les emplacements et taux non confirmés restent volontairement absents.</p><div class="binch-loot-controls"><label>Rechercher une instance<input id="binch-loot-search" type="search" placeholder="Nom, région ou niveau…"></label><label>Continent<select id="binch-loot-continent"><option value="">Tous les continents</option><option>Kalimdor</option><option>Royaumes de l’Est</option><option>Zéphrass</option></select></label><label>Niveau de l’instance<select id="binch-loot-level"><option value="0">Tous niveaux</option><option value="20">Autour du niveau 20</option><option value="30">Autour du niveau 30</option><option value="40">Autour du niveau 40</option><option value="50">Autour du niveau 50</option></select></label></div><div class="binch-loot-count" id="binch-loot-count"></div><div id="binch-loot-grid" class="binch-loot-grid"></div><details class="binch-loot-method"><summary>Couverture et fiabilité du codex</summary><p>La première version indexe les donjons répertoriés dans notre atlas. Ce n’est pas une base exhaustive des raids, rares, boss ni de leurs butins. Les stratégies, cartes intérieures, tables exactes et taux d’obtention exigent une vérification des sources avant publication.</p></details></section>';
+ main.append(page);
+ function render(){
+  const all=Array.isArray(window.GRIMOIRE_DUNGEONS)?window.GRIMOIRE_DUNGEONS:[],q=$('#binch-loot-search').value.trim().toLocaleLowerCase('fr'),cont=$('#binch-loot-continent').value,lvl=Number($('#binch-loot-level').value)||0;
+  const matched=all.filter(d=>(!cont||d.continent===cont)&&(!lvl||(Number(d.levels?.[0]||0)<=lvl+6&&Number(d.levels?.[1]||60)>=lvl-6))&&(!q||[d.name,d.zone,d.continent,String(d.levels?.[0]),String(d.levels?.[1])].join(' ').toLocaleLowerCase('fr').includes(q)));
+  $('#binch-loot-count').textContent=matched.length+' donjon(s) dans l’index actuel · '+all.length+' au total';
+  $('#binch-loot-grid').innerHTML=matched.map(d=>
+   '<article class="binch-loot-instance"><div class="binch-loot-instance-top"><span>⚔ Donjon</span><small>NV. '+Number(d.levels?.[0]||0)+'–'+Number(d.levels?.[1]||0)+'</small></div>'+
+   '<h3>'+esc(d.name)+'</h3><p>'+esc(d.zone)+' · '+esc(d.continent)+'</p>'+
+   '<div class="binch-loot-evidence"><span>Stratégies : à documenter</span><span>Butins : à sourcer</span></div>'+
+   '<button type="button" data-loot-map="'+esc(d.zone)+'">Localiser la zone sur l’atlas ↗</button></article>'
+  ).join('')||'<div class="binch-loot-empty">Aucune instance pour ces filtres.</div>';
+ }
+ page.querySelector('#binch-loot-search').addEventListener('input',render);
+ page.querySelector('#binch-loot-continent').addEventListener('change',render);
+ page.querySelector('#binch-loot-level').addEventListener('change',render);
+ page.addEventListener('click',e=>{
+  const button=e.target.closest('[data-loot-map]');if(!button)return;
+  go('progression');const query=$('#zone-search');
+  if(query){query.value=button.dataset.lootMap;query.dispatchEvent(new Event('input',{bubbles:true}));const browser=$('#zone-browser');if(browser)browser.scrollIntoView({behavior:'smooth',block:'start'})}
+ });
+ render();
 }
 function init(){gm();macros();chest();loot()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
