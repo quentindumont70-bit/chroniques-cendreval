@@ -1121,6 +1121,8 @@ const DISTRIBUTION=['common','common','common','common','common','common','commo
 const PROBABILITY=.023,COOLDOWN=9500,$=id=>document.getElementById(id);
 const READ=()=>{try{return JSON.parse(localStorage.getItem(STORE))||{}}catch{return {}}};
 const SAVE=v=>{try{localStorage.setItem(STORE,JSON.stringify(v))}catch{}};
+function creatorPreview(){try{const p=JSON.parse(localStorage.getItem('grimoire.hub.v3'));return String(p?.data?.pseudo||p?.name||'').trim().toLocaleLowerCase('fr')==='shaaby'}catch{return false}}
+const canReplay=id=>Number(READ().drops?.[id]||0)>0||creatorPreview();
 const ESC=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ITEMS=CATS.flatMap(c=>CATEGORIES[c.id].map((name,n)=>({id:c.id+'-'+(n+1),name,category:c.id,tier:DISTRIBUTION[n],art:c.art,index:n})));
 const fmt=n=>(n*100).toLocaleString('fr-FR',{maximumFractionDigits:5})+' %';
@@ -1286,7 +1288,7 @@ function makeCodex(){
  button.onclick=openPage;button.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openPage()}};
  $('binch-proc-back').onclick=()=>document.querySelector('#app nav [data-page="hub"]')?.click();
  $('binch-proc-close').onclick=closeToast;
- $('binch-proc-preview').onclick=()=>pop(ITEMS[78],true);
+ $('binch-proc-preview').onclick=()=>{const available=ITEMS.filter(x=>canReplay(x.id));if(available.length)pop(available[Math.floor(Math.random()*available.length)],true);else alert('Découvre d’abord un trésor en explorant La Binch.');};
  $('binch-proc-reset').onclick=()=>{if(confirm('Effacer les découvertes cosmétiques de ce navigateur ?')){SAVE({enabled:READ().enabled!==false});renderCodex()}};
  $('binch-proc-animations').onchange=e=>{const x=READ();x.enabled=e.target.checked;SAVE(x)};
  $('binch-proc-animations').checked=READ().enabled!==false;
@@ -1294,7 +1296,7 @@ function makeCodex(){
  $('binch-proc-motion').onchange=e=>{const x=READ();x.motion=e.target.checked;SAVE(x)};
  $('binch-proc-tabs').onclick=e=>{const btn=e.target.closest('[data-proc-category]');if(!btn)return;activeCategory=btn.dataset.procCategory;renderCodex()};
  page.querySelector('.binch-proc-filters').onclick=e=>{const b=e.target.closest('[data-proc-filter]');if(!b)return;collectionFilter=b.dataset.procFilter;renderCodex()};
- $('binch-proc-list').onclick=e=>{const b=e.target.closest('[data-proc-preview-id]');if(!b)return;const item=ITEMS.find(i=>i.id===b.dataset.procPreviewId);if(item)pop(item,true)};
+ $('binch-proc-list').onclick=e=>{const b=e.target.closest('[data-proc-preview-id]');if(!b)return;const item=ITEMS.find(i=>i.id===b.dataset.procPreviewId);if(item&&canReplay(item.id))pop(item,true)};
 
 }
 function renderCodex(){
@@ -1303,15 +1305,15 @@ function renderCodex(){
  document.querySelectorAll('.binch-proc-filters [data-proc-filter]').forEach(b=>b.classList.toggle('active',b.dataset.procFilter===collectionFilter));
  $('binch-proc-tabs').innerHTML='<button type="button" data-proc-category="all" class="'+(activeCategory==='all'?'active':'')+'">Toutes</button>'+CATS.map(c=>'<button type="button" data-proc-category="'+c.id+'" class="'+(activeCategory===c.id?'active':'')+'">'+c.icon+' '+c.name+'</button>').join('');
  $('binch-proc-list').innerHTML=ITEMS.filter(x=>(activeCategory==='all'||x.category===activeCategory)&&(collectionFilter==='all'||(collectionFilter==='owned'?!!drops[x.id]:!drops[x.id]))).map(item=>{
-   const acquired=!!drops[item.id],tier=TIERS.find(t=>t.id===item.tier);
-   return '<article class="binch-proc-entry" style="--tier-color:'+tier.color+'"><span class="binch-proc-emblem">'+(acquired?'✦':'?')+'</span><div><div class="binch-proc-entry-kind">'+ESC(title(item))+' · '+tier.name+'</div><strong>'+ESC(item.name)+'</strong><small>Chance par clic : '+displayChance(item)+'</small></div><span class="binch-proc-count">'+(acquired?'× '+drops[item.id]:'Non obtenu')+'</span><button type="button" class="binch-proc-preview-item" data-proc-preview-id="'+item.id+'" aria-label="Prévisualiser '+ESC(item.name)+'">✧</button></article>';
+   const acquired=!!drops[item.id],replayable=canReplay(item.id),tier=TIERS.find(t=>t.id===item.tier);
+   return '<article class="binch-proc-entry" style="--tier-color:'+tier.color+'"><span class="binch-proc-emblem">'+(acquired?'✦':'?')+'</span><div><div class="binch-proc-entry-kind">'+ESC(title(item))+' · '+tier.name+'</div><strong>'+ESC(item.name)+'</strong><small>Chance par clic : '+displayChance(item)+'</small></div><span class="binch-proc-count">'+(acquired?'× '+drops[item.id]:replayable?'Aperçu créateur, non obtenu':'À découvrir')+'</span><button type="button" class="binch-proc-preview-item" data-proc-preview-id="'+item.id+'" aria-label="'+(replayable?'Revoir':'Scène verrouillée :')+' '+ESC(item.name)+'"'+(replayable?'':' disabled title="Débloquer en jouant"')+'>'+(replayable?'✧':'◇')+'</button></article>';
  }).join('');
 }
-window.BinchRewards={items:ITEMS.map(x=>({...x,categoryName:title(x),tierName:TIERS.find(t=>t.id===x.tier)?.name||x.tier,color:color(x)})),read:READ,preview:(id,anchor)=>{const item=ITEMS.find(x=>x.id===id);if(item&&Number(READ().drops?.[id]||0)>0)pop(item,true,anchor);},chance:displayChance,
+window.BinchRewards={items:ITEMS.map(x=>({...x,categoryName:title(x),tierName:TIERS.find(t=>t.id===x.tier)?.name||x.tier,color:color(x)})),read:READ,preview:(id,anchor)=>{const item=ITEMS.find(x=>x.id===id);if(item&&canReplay(id))pop(item,true,anchor);},chance:displayChance,
  draw:(canvas,id)=>{const item=ITEMS.find(x=>x.id===id);if(!item||!canvas||canvas.tagName!=='CANVAS')return false;canvas.width=64;canvas.height=64;const ctx=canvas.getContext('2d');if(!ctx)return false;ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,64,64);sprite(ctx,item,0);return true}
 };
 function setup(){
- window.BINCH_TREASURE_API={items:ITEMS.map(x=>({...x,rarityName:TIERS.find(t=>t.id===x.tier)?.name||x.tier,color:color(x),categoryName:title(x)})),read:READ,preview:(id,anchor)=>{const item=ITEMS.find(x=>x.id===id);if(item)pop(item,true,anchor)}};
+ window.BINCH_TREASURE_API={items:ITEMS.map(x=>({...x,rarityName:TIERS.find(t=>t.id===x.tier)?.name||x.tier,color:color(x),categoryName:title(x)})),read:READ,preview:(id,anchor)=>{const item=ITEMS.find(x=>x.id===id);if(item&&canReplay(id))pop(item,true,anchor)}};
  makeCodex();document.addEventListener('click',e=>{if(READ().enabled===false)return;onClick(e)},true);
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeToast()});
 }
