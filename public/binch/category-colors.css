@@ -1,0 +1,50 @@
+/* La Binch — code couleur transversal pour filtres, catégories et états.
+   L'icône et le libellé restent indispensables : la couleur n'est jamais seule. */
+#page-progression .binch-map-controls [data-atlas-filter],
+#map .atlas-toolbar [data-atlas-filter]{
+ --binch-cat:#d9d6bc;
+ border-left:4px solid var(--binch-cat)!important;
+ box-shadow:inset 0 0 0 1px #fff1!important;
+}
+#page-progression [data-atlas-filter="tout"]{--binch-cat:#d9c49a!important}
+#page-progression [data-atlas-filter="transport"]{--binch-cat:#80c9ee!important;background:#1c3a4a!important;color:#c9ebfd!important}
+#page-progression [data-atlas-filter="service"]{--binch-cat:#e9c07b!important;background:#453a2a!important;color:#f8e6c3!important}
+#page-progression [data-atlas-filter="donjon"]{--binch-cat:#e99197!important;background:#4b2936!important;color:#ffd7dc!important}
+#page-progression [data-atlas-filter="metier"]{--binch-cat:#91d8ab!important;background:#214235!important;color:#d4f7dd!important}
+#page-progression [data-atlas-filter="quete"]{--binch-cat:#bda1eb!important;background:#342b4d!important;color:#ebddff!important}
+#page-progression .binch-map-controls [data-atlas-filter].active{
+ border-color:var(--binch-cat)!important;
+ box-shadow:inset 0 -3px var(--binch-cat),0 0 0 2px color-mix(in srgb,var(--binch-cat) 40%,transparent)!important;
+ font-weight:900!important;
+}
+#page-progression .binch-map-controls [data-atlas-filter="tout"].active{background:#efdbac!important;color:#2c271c!important}
+#page-progression .binch-map-controls [data-atlas-filter="transport"].active{background:#9adbf5!important;color:#142c37!important}
+#page-progression .binch-map-controls [data-atlas-filter="service"].active{background:#f1d195!important;color:#302719!important}
+#page-progression .binch-map-controls [data-atlas-filter="donjon"].active{background:#edafb0!important;color:#3d1e28!important}
+#page-progression .binch-map-controls [data-atlas-filter="metier"].active{background:#a8e5c0!important;color:#172e24!important}
+#page-progression .binch-map-controls [data-atlas-filter="quete"].active{background:#d4baf4!important;color:#2c2140!important}
+#page-progression .binch-map-controls [data-continent="kalimdor"]{border-left:3px solid #cfa26e!important}
+#page-progression .binch-map-controls [data-continent="est"]{border-left:3px solid #7ab3db!important}
+#page-progression .binch-map-controls [data-continent="zephras"]{border-left:3px solid #ad9dec!important}
+#page-progression #zone-browser .zone-card{border-left:4px solid #bbad79!important}
+#page-progression #zone-browser .zone-card:has(.zone-faction-horde){border-left-color:#e78387!important}
+#page-progression #zone-browser .zone-card:has(.zone-faction-alliance){border-left-color:#86aee6!important}
+#page-progression #zone-browser .dungeon-card{border-left:4px solid #80c9e2!important}
+#page-discoveries .discovery-card{border-left:4px solid #af98dc!important}
+#page-discoveries .discovery-card.discovery-urgent{border-left-color:#f2be76!important;background:linear-gradient(115deg,#37352c,#23282d)!important}
+#page-discoveries .discovery-card.discovery-done{border-left-color:#81cfa3!important;background:linear-gradient(115deg,#243d34,#172c2e)!important}
+#page-metiers .craft-card,#page-crafting .craft-card{border-left:4px solid #9ed3a6!important}
+#page-metiers .craft-ready,#page-crafting .craft-ready{border-left-color:#e7b56f!important}
+#page-tresors .binch-treasure-card{border-left:4px solid var(--treasure-accent,#caa3dd)!important}
+#page-evenements .binch-procs-entry{border-left:4px solid #e5b58b!important}
+#page-lfg .binch-lfg-card{border-left:4px solid #dcb17b!important}
+#page-gm .gm-top{border-left:4px solid #e7a0a2!important}
+#page-progression .binch-map-controls [data-atlas-filter]:focus-visible,
+#page-discoveries .discovery-card:focus-within,
+#page-progression #zone-browser .zone-card:focus-within{
+ outline:3px solid #f8dfaa!important;outline-offset:2px!important
+}
+@media(prefers-contrast:more){
+ #page-progression .binch-map-controls [data-atlas-filter]{border-left-width:6px!important}
+ #page-discoveries .discovery-card,#page-progression #zone-browser .zone-card,#page-progression #zone-browser .dungeon-card{border-left-width:6px!important}
+}
