@@ -63,3 +63,37 @@
  }
  #app main .page #binch-proc-toast canvas{width:82px!important;height:82px!important}
 }
+
+
+/* Récompense : information durable et action concrète, sans artifice tapageur. */
+#app main .page #binch-proc-toast .binch-proc-actions{
+  grid-column:2;grid-row:4;
+  width:100%;display:flex;flex-wrap:wrap;
+  justify-content:flex-start;align-items:center;gap:12px;
+  margin-top:5px;
+}
+#app main .page #binch-proc-toast .binch-proc-actions small{
+  grid-column:auto;grid-row:auto;
+  display:inline-block;
+  width:auto;max-width:400px;
+  font-size:.68rem;line-height:1.5;color:#bdcbc7;
+}
+#app main .page #binch-proc-toast #binch-proc-exhibit{
+  cursor:pointer;
+  color:#f2e3ba!important;
+  background:linear-gradient(125deg,#3d3e37,#2e3a34)!important;
+  border:1px solid #c9b58d!important;
+  border-radius:8px;
+  font-size:.74rem;
+  font-weight:850;
+  padding:10px 14px;
+  min-height:41px;
+  letter-spacing:.015em;
+}
+#app main .page #binch-proc-toast #binch-proc-exhibit[hidden]{display:none!important}
+#app main .page #binch-proc-toast #binch-proc-exhibit:hover{background:#4a4639!important}
+#app main .page #binch-proc-toast #binch-proc-exhibit:focus-visible{outline:3px solid #f9db9f;outline-offset:2px}
+@media(max-width:550px){
+ #app main .page #binch-proc-toast .binch-proc-actions{grid-column:1/-1;grid-row:auto}
+ #app main .page #binch-proc-toast #binch-proc-exhibit{width:100%}
+}
