@@ -18,3 +18,13 @@
 #binch-leveling-journal .binch-level-log-entry button{color:#ffb2ad}
 @media(max-width:800px){#binch-leveling-journal .binch-level-log-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:450px){#binch-leveling-journal .binch-level-log-form{grid-template-columns:1fr}#binch-leveling-journal .binch-level-log-form>button{width:100%}}
+
+#binch-leveling-journal .binch-level-log-insights{border:1px solid #536d58;border-radius:8px;padding:12px;margin:12px 0;background:#0d1a14}
+#binch-leveling-journal .binch-level-insight-head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;color:#e4d5ae}
+#binch-leveling-journal .binch-level-insight-head small{color:#bdcbb6}
+#binch-leveling-journal .binch-level-insight{display:grid;grid-template-columns:minmax(110px,1fr) minmax(80px,2fr) minmax(100px,1fr);align-items:center;gap:10px;margin:8px 0}
+#binch-leveling-journal .binch-level-insight span{overflow-wrap:anywhere}
+#binch-leveling-journal .binch-level-insight small{text-align:right;color:#bcd1b9}
+#binch-leveling-journal .binch-level-insight-track{height:8px;border-radius:8px;background:#304036;overflow:hidden}
+#binch-leveling-journal .binch-level-insight-track i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#719d79,#dfba75)}
+@media(max-width:560px){#binch-leveling-journal .binch-level-insight{grid-template-columns:1fr auto}#binch-leveling-journal .binch-level-insight-track{grid-column:1/-1;grid-row:2}}
