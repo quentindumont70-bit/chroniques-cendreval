@@ -104,10 +104,11 @@ function init(){
     return (same?4:0)+counts[g]*2+(g-1)*0.005;
    };
    eligible.sort((a,b)=>score(a)-score(b));
-   const group=eligible[0];member.group=group;counts[group]++;changes.push(member.name+' → G'+group);
+   const group=eligible[0];counts[group]++;changes.push({member,group});
   }
   if(!changes.length){alert('Aucun membre de réserve à répartir, ou les huit groupes sont complets.');return;}
-  if(!confirm('Répartir '+changes.length+' membre(s) de la réserve sans modifier les groupes existants ?')){for(const member of reserve)if(changes.some(c=>c.startsWith(member.name+' → ')))member.group=0;return;}
+  if(!confirm('Répartir '+changes.length+' membre(s) de la réserve sans modifier les groupes existants ?'))return;
+  for(const {member,group} of changes)member.group=group;
   save();render();
  };
  $('binch-roster-clear').onclick=()=>{if(record.members.length&&confirm('Effacer tous les effectifs de cette sortie ?')){record.members=[];save();render();}};
