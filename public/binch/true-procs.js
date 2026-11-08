@@ -85,16 +85,20 @@ if(typeof state.enabled!=='boolean')state.enabled=true;
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch{}};
 let stage=null,closing=null;
 const formatPercent=n=>n.toLocaleString('fr-FR',{maximumFractionDigits:2})+' %';
+function previewUnlocked(id){
+ try{const hub=JSON.parse(localStorage.getItem('grimoire.hub.v3'));const name=String(hub?.data?.pseudo||hub?.name||'').toLocaleLowerCase('fr');if(name==='shaaby')return true}catch{}
+ return Number(state.hits?.[id]||0)>0;
+}
 function closeStage(){if(closing)clearTimeout(closing);if(stage){stage.remove();stage=null}document.body.classList.remove('binch-proc-playing')}
 function play(e,preview=false){
  closeStage();
- stage=document.createElement('aside');stage.id='binch-proc-stage';stage.className='binch-proc-scene scene-'+e.kind;stage.setAttribute('role','dialog');stage.setAttribute('aria-modal','false');stage.setAttribute('aria-label','Événement surprise : '+e.title);
+ stage=document.createElement('section');stage.id='binch-proc-stage';stage.className='binch-proc-scene scene-'+e.kind;stage.setAttribute('role','region');stage.setAttribute('aria-label','Scène découverte : '+e.title);
  stage.innerHTML='<div class="binch-proc-curtain" aria-hidden="true"></div><div class="binch-proc-theater"><div class="binch-proc-scene-tag">'+(preview?'REPRÉSENTATION · SANS TIRAGE':'UN PROC ! · '+e.rarity)+'</div><div class="binch-proc-actors"><div class="binch-proc-actor first">'+art[e.actors[0]]+'</div><div class="binch-proc-actor second">'+art[e.actors[1]]+'</div></div><div class="binch-proc-caption"><h3>'+e.title+'</h3><p>'+e.caption+'</p></div><button type="button" class="binch-proc-skip" aria-label="Fermer cette scène">Passer ✕</button></div>';
- document.body.append(stage);document.body.classList.add('binch-proc-playing');
+ const page=document.querySelector('#app main .page.active')||document.querySelector('#page-evenements');if(!page)return;page.prepend(stage);
  stage.querySelector('button').addEventListener('click',closeStage);
- stage.querySelector('button').focus({preventScroll:true});
+ /* Ne vole pas le focus clavier. */
  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
- closing=setTimeout(closeStage,reduce?2800:4900);
+ closing=setTimeout(closeStage,reduce?3800:6500);
  if(!preview){state.hits[e.id]=(Number(state.hits[e.id])||0)+1;state.history.unshift({id:e.id,t:Date.now()});state.history=state.history.slice(0,30);state.last=Date.now();save();render()}
 }
 function roll(){
@@ -113,8 +117,8 @@ function render(){
  table.replaceChildren();
  for(const e of DATA){
   const item=document.createElement('article');item.className='binch-procs-entry';
-  item.innerHTML='<div class="binch-procs-entry-art">'+art[e.actors[0]]+'</div><div class="binch-procs-entry-text"><small>'+e.rarity+' · '+e.trigger+'</small><strong>'+e.title+'</strong><p>'+e.caption+'</p></div><div class="binch-procs-entry-chance"><strong>'+formatPercent(e.chance)+'</strong><small>par navigation éligible</small><span>Vus : '+(state.hits[e.id]||0)+'</span><button type="button">Rejouer la scène</button></div>';
-  item.querySelector('button').onclick=()=>play(e,true);table.append(item);
+  const unlocked=previewUnlocked(e.id);item.classList.toggle('binch-proc-locked',!unlocked);item.innerHTML='<div class="binch-procs-entry-art">'+art[e.actors[0]]+'</div><div class="binch-procs-entry-text"><small>'+e.rarity+' · '+e.trigger+'</small><strong>'+e.title+'</strong><p>'+e.caption+'</p></div><div class="binch-procs-entry-chance"><strong>'+formatPercent(e.chance)+'</strong><small>par navigation éligible</small><span>'+(unlocked?'✦ Débloqué':'◇ Non découvert')+' · vus '+(state.hits[e.id]||0)+'</span><button type="button"'+(unlocked?'':' disabled title="Débloque la scène en la découvrant"')+'>'+(unlocked?'Revoir la scène':'À découvrir')+'</button></div>';
+  item.querySelector('button').onclick=()=>{if(previewUnlocked(e.id))play(e,true)};table.append(item);
  }
  log.replaceChildren();
  if(!state.history.length){log.textContent='Aucun proc naturel pour le moment. Un aperçu ne compte pas comme un tirage.';return}
@@ -128,13 +132,13 @@ function mount(){
  main.append(page);
  button.onclick=()=>{nav.querySelectorAll('button[data-page]').forEach(b=>b.classList.toggle('active',b===button));main.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p===page));scrollTo({top:0,behavior:'instant'});render()};
  $('#binch-procs-enable').onchange=e=>{state.enabled=e.target.checked;save();render()};
- $('#binch-proc-demo').onclick=()=>play(DATA[Math.floor(Math.random()*DATA.length)],true);
+ $('#binch-proc-demo').onclick=()=>{const pool=DATA.filter(e=>previewUnlocked(e.id));if(!pool.length){alert('Découvre ta première scène en naviguant dans La Binch.');return}play(pool[Math.floor(Math.random()*pool.length)],true)};
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&stage){e.preventDefault();closeStage()}});
  document.addEventListener('click',e=>{
   if(!e.isTrusted)return;
   const target=e.target.closest('#app nav.nav button[data-page]');
   if(target)roll()
- },true);
+ },false);
  render();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
