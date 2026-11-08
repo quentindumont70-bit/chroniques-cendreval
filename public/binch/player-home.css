@@ -139,3 +139,9 @@
 }
 #page-hub .binch-xp-missing .binch-xp-sync-link:focus-visible{outline:3px solid #f8dca4;outline-offset:2px}
 @media(max-width:580px){#page-hub .binch-xp-missing .binch-xp-sync-link{justify-self:center}}
+
+
+/* Guild Planner : les missions de guilde épinglées gardent un code couleur propre. */
+#page-hub .binch-route-step[data-category="Guilde"]{--step-accent:#df9eaa;--step-light:#fbd2d9}
+#page-hub #binch-route-filters button[data-cat="Guilde"]{border-color:#b78696;color:#f7cbd6;background:linear-gradient(135deg,#3b2631,#252530)}
+#page-hub #binch-route-filters button[data-cat="Guilde"].active{background:#d9a5ad;color:#292028}
