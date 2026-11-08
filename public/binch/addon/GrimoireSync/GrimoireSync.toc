@@ -1,8 +1,9 @@
 ## Interface: 16001
 ## Title: GrimoireSync
-## Notes: Progression, metiers, quetes suivies et inventaire pour Grimoire Forever
+## Notes: Progression, metiers, quetes suivies et inventaire pour La Binch
 ## Author: WoW Forever Grimoire
-## Version: 0.6.0
+## Version: 0.7.0
 ## SavedVariables: GrimoireSyncDB
 Core.lua
+Minimap.lua
 
