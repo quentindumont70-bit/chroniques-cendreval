@@ -1,0 +1,42 @@
+
+/* La Binch / guide de synchronisation pas-à-pas */
+#page-sync .binch-sync-guide{--page-accent:#92dded;--page-accent-soft:#2a7c8a32}
+#page-sync .binch-sync-header{padding:12px 0 21px;border-bottom:1px solid #466b76}
+#page-sync .binch-sync-header h2{font:700 clamp(1.7rem,3vw,2.5rem)/1.17 Cinzel,Georgia,serif;margin:9px 0}
+#page-sync .binch-sync-header>p{max-width:750px;color:#d0e2e5;line-height:1.7}
+#page-sync .binch-sync-badge{display:inline-block;margin-top:8px;padding:7px 10px;border-radius:7px;background:#20424a;border:1px solid #4f8898;color:#c5f1f8;font-weight:750;font-size:.74rem}
+#page-sync .binch-sync-steps{display:grid;gap:16px;margin:24px 0}
+#page-sync .binch-sync-step{display:grid;grid-template-columns:55px minmax(0,1fr);gap:16px;align-items:start;padding:22px;border-radius:13px;border:1px solid #5b8190;background:radial-gradient(ellipse at 98% 0%,#377c8d37,transparent 55%),linear-gradient(135deg,#18313e,#14202a);box-shadow:inset 0 1px #fff1,0 9px 23px #0005}
+#page-sync .binch-sync-step:nth-child(2){border-color:#5f8d79;background:radial-gradient(ellipse at 98% 0%,#539d7333,transparent 55%),linear-gradient(135deg,#1d3533,#16252d)}
+#page-sync .binch-sync-step:nth-child(3){border-color:#8979aa;background:radial-gradient(ellipse at 98% 0%,#8d6fc43a,transparent 55%),linear-gradient(135deg,#27263d,#1a2030)}
+#page-sync .binch-sync-step:nth-child(4){border-color:#b29360;background:radial-gradient(ellipse at 98% 0%,#c99a4840,transparent 55%),linear-gradient(135deg,#342f31,#1e2429)}
+#page-sync .binch-sync-index{display:grid;place-items:center;min-width:48px;height:48px;border-radius:12px;background:#294958;border:1px solid #94dce7;font:700 1.45rem Cinzel,serif;color:#e7fbff}
+#page-sync .binch-sync-step:nth-child(2) .binch-sync-index{background:#255144;border-color:#7cdec0}
+#page-sync .binch-sync-step:nth-child(3) .binch-sync-index{background:#4b3861;border-color:#c2a1f3}
+#page-sync .binch-sync-step:nth-child(4) .binch-sync-index{background:#5b432e;border-color:#f5d29a}
+#page-sync .binch-sync-step-body{min-width:0}
+#page-sync .binch-sync-step-body h3{margin:2px 0 9px;font:700 1.1rem Cinzel,Georgia,serif}
+#page-sync .binch-sync-step-body p,#page-sync .binch-sync-step-body li{font-size:.86rem;line-height:1.7;color:#d5e2e5}
+#page-sync .binch-sync-step-body p{margin:7px 0 13px}
+#page-sync .binch-sync-step-body ol,#page-sync .binch-sync-step-body ul{padding-left:20px}
+#page-sync .binch-sync-step-body li{margin:7px 0}
+#page-sync .binch-sync-step-body code{background:#0d1822;border:1px solid #536779;color:#f1dfa8;border-radius:5px;padding:3px 6px;overflow-wrap:anywhere;white-space:normal}
+#page-sync .binch-sync-step-body a:not(.binch-sync-main-download){color:#c5f1ff;text-underline-offset:4px}
+#page-sync .binch-sync-main-download,#page-sync .binch-sync-continue{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;min-height:46px;background:linear-gradient(125deg,#f9e4ba,#d1ac72);color:#1b1b1a!important;border:1px solid #ffe5b1;border-radius:9px;font-weight:850;font-size:.84rem;text-decoration:none;cursor:pointer;box-shadow:0 7px 20px #0006}
+#page-sync .binch-sync-manual-files{border:1px solid #667e88;border-radius:9px;background:#122632;padding:13px 16px;margin:16px 0}
+#page-sync .binch-sync-manual-files summary{cursor:pointer;font-weight:800;color:#d1eef2}
+#page-sync .binch-sync-manual-files a{display:inline-block;margin:9px 11px 0 0}
+#page-sync .binch-sync-troubleshoot{margin-top:24px;padding:17px;border-radius:10px;border:1px solid #8e7877;background:linear-gradient(145deg,#30292e,#1b222c)}
+#page-sync .binch-sync-troubleshoot summary{font-weight:850;cursor:pointer;color:#f2d0ad}
+#page-sync .binch-sync-troubleshoot details{margin-top:14px;border-top:1px solid #715f64;padding-top:10px}
+#page-sync .binch-sync-troubleshoot details summary{font-size:.85rem;color:#e9d3bc}
+#page-sync .binch-sync-skip{padding:16px 19px;border-left:3px solid #78b4b9;border-radius:0 9px 9px 0;background:#142d37;margin:25px 0 0}
+#page-sync .binch-sync-skip p{margin:8px 0;color:#cbdfe6}
+#page-sync .binch-sync-skip button{border:1px solid #88d1dd;border-radius:8px;background:#2a5362;color:#e8faff;padding:10px 13px;cursor:pointer;font-weight:800}
+#page-sync .binch-sync-live-status{margin:16px 0 0;padding:12px 15px;border-radius:9px;background:#172b35;border:1px solid #537383;color:#d7e8e8;line-height:1.6}
+#page-sync .binch-sync-live-status[data-state="ok"]{border-color:#5ba88a;background:#173930;color:#d8f6e8}
+#page-sync .binch-sync-live-status[data-state="none"]{border-color:#9b8060}
+#page-sync .binch-sync-flow-note{font-size:.77rem;color:#b9c7cb}
+#page-sync #grimoire-bridge{scroll-margin-top:25px;border-color:#6e9ea9!important}
+#page-sync #grimoire-bridge label[for="grimoire-bridge-file"]{display:inline-flex!important;background:linear-gradient(120deg,#e8d19f,#b9a06b)!important;color:#18231e!important;border:1px solid #ffecb6!important;border-radius:9px!important;padding:13px 18px!important;font-weight:850}
+@media(max-width:600px){#page-sync .binch-sync-step{grid-template-columns:38px minmax(0,1fr);gap:11px;padding:15px}#page-sync .binch-sync-index{min-width:37px;height:37px;font-size:1rem;border-radius:9px}#page-sync .binch-sync-main-download,#page-sync .binch-sync-continue{width:100%;text-align:center}}
