@@ -20,7 +20,7 @@ function nudge(query,pageName){let h=0;for(const x of query)h=(h*31+x.charCodeAt
 function tone(){try{const preference=localStorage.getItem(TONE)||localStorage.getItem(LEGACY_TONE);return preference!=='sobre'}catch{return true}}
 function setTone(taquin){try{localStorage.setItem(TONE,taquin?'taquin':'sobre')}catch{}}
 
-const tabs={hub:'Quartier général',progression:'Carte d’expédition',metiers:'Métiers',gm:'Mode GM',sync:'Synchronisation',lfg:'LFG & Rendez-vous',crafting:'Atlas des recettes',loot:'Loot',macros:'Macros',bibliotheque:'Bibliothèque',discoveries:'Secrets',treasures:'Trésors',evenements:'Vrais procs'};
+const tabs={hub:'Quartier général',progression:'Carte d’expédition',metiers:'Métiers',gm:'Mode GM',sync:'Synchronisation',lfg:'LFG & Rendez-vous',crafting:'Atlas des recettes',coffre:'Coffre de guilde',macros:'Macros',bibliotheque:'Bibliothèque',discoveries:'Secrets',equipment:'Équipement',tresors:'Trésors',evenements:'Choc nébulaire'};
 const normalize=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 const initial=[{who:'intendant',text:'Je suis Faith, l’écho d’un chaman troll tombé au combat. Sulfuras a jadis répondu à mon appel. Maintenant, je veille sur les vivants depuis le voile des esprits.\nJe connais les chemins de La Binch, les préparatifs de guilde et les annonces à rédiger. Mon pouvoir est local : aucune IA payante, et je n’invente pas ce que je ne sais pas.'}];
 const read=()=>{try{
@@ -78,6 +78,8 @@ function response(query){
  if(/quel (?:est )?mon|mon perso|mon niveau|ma classe|ma zone|mon profil/.test(q)){
    return {text:last.name?'Dernier profil importé : '+last.name+' — niveau '+last.level+(last.zone?' · '+last.zone:'')+'.':p.pseudo?'Profil du navigateur : '+p.pseudo+(lvl?' — niveau '+lvl:'')+(p.classe?' · '+p.classe:'')+'. Aucune synchronisation récente confirmée.':'Aucun personnage renseigné dans ce navigateur. Crée ton profil ou importe une sauvegarde GrimoireSync.',buttons:[{label:'Aller au profil',page:'hub'}]};
  }
+ if(/guild planner|planificateur|commande.*guilde|besoin de\s+\d+|feuillereve|liste des recettes|recettes manquantes|autonomi[e]|coffre des promesses|approvisionnement/.test(q))
+   return {text:'Le Guild Planner est dans Mode GM : demandes de ressources, échéances, réponses des joueurs, métiers des mains et rerolls, recettes à acquérir. Pour le moment ce registre fonctionne localement sur cet appareil, pas encore en tableau partagé. Je peux aussi ouvrir le coffre de guilde, où l’inventaire déclaré est placé avant les promesses.',buttons:[{label:'Ouvrir Guild Planner (Mode GM)',page:'gm'},{label:'Ouvrir le coffre',page:'coffre'}]};
  if(/metier|profession|forge|couture|ingenier|minage|herbor|depec|alchimi/.test(q))
    return {text:'Ouvre Métiers et l’Atlas des recettes pour tes jalons et matériaux. Les nouveautés Forever doivent être distinguées des données Vanilla non confirmées. '+(p.jobs?.length?'Métiers du profil : '+p.jobs.join(', ')+'.':''),buttons:[{label:'Voir mes métiers',page:'metiers'},{label:'Voir les recettes',page:'crafting'}]};
  if(/ou aller|quelle zone|pex|leveling|prochain|quete|xp|monter.*niveau/.test(q))
@@ -85,9 +87,9 @@ function response(query){
  if(/gm|maitre de guilde|officier|brief|effectif|organisation/.test(q))
    return {text:'Le Mode GM permet de planifier une sortie, suivre les rôles déclarés, organiser les délégations et copier un briefing officiers. Les effectifs sont locaux et non synchronisés.',buttons:[{label:'Ouvrir le QG',page:'gm'}]};
  if(/lfg|groupe|rdv|rendez.vous|calendrier/.test(q))
-   return {text:'La Taverne LFG prépare des annonces, des réactions locales et des fichiers calendrier .ics avec rappel. Le chat partagé et les réactions interjoueurs nécessitent un service connecté.',buttons:[{label:'Ouvrir LFG',page:'lfg'}]};
+   return {text:'La Taverne LFG crée des brouillons et des fichiers calendrier .ics avec rappel. Les réactions interjoueurs ne sont réelles que si la base de données partagée Supabase est configurée : sinon aucune réaction fictive n’est affichée. Un chat commun reste à construire.',buttons:[{label:'Ouvrir LFG',page:'lfg'}]};
  if(/proc|surprise|tresor|relique/.test(q))
-   return {text:'Le théâtre des vrais procs possède sa propre table de déclencheurs, ses probabilités et ses mini-scènes originales. Ces événements sont uniquement cosmétiques dans La Binch et ne représentent pas les chances de proc du jeu. Le Cabinet et les Trésors restent séparés.',buttons:[{label:'Voir les vrais procs',page:'evenements'},{label:'Voir Secrets',page:'discoveries'}]};
+   return {text:'Choc nébulaire répertorie les scènes cosmétiques internes à La Binch. Leurs probabilités ne sont pas celles des objets ni des sorts du jeu. Les scènes se rejouent après découverte ; le profil créateur Shaaby peut en prévisualiser la galerie. Les vrais procs de Warcraft nécessitent des sources vérifiées.',buttons:[{label:'Ouvrir Choc nébulaire',page:'evenements'},{label:'Voir les trésors',page:'tresors'}]};
  for(const [name,title] of names)if(q.includes(normalize(title))||q.includes(name))return {text:'Je peux t’ouvrir « '+title+' ».',buttons:[{label:'Ouvrir '+title,page:name}]};
  return {text:'Je n’ai pas compris cette demande avec mes règles locales. Essaie « Mes prochaines étapes », « Prépare une annonce pour #général », « Comment synchroniser ? », « Ouvre LFG » ou « Mes métiers ». Je ne vais pas inventer de réponse sur Forever.'};
 }
