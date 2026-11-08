@@ -38,13 +38,15 @@ for(const file of scripts){
  for(const ref of refs){const localFile=ref.split(/[?#]/,1)[0];if(!present(localFile))fail(file+' charge un fichier absent : '+localFile)}
 }
 const index=read('index.html'),treasures=read('treasures.js');
-if(!index.includes('Bêta de guilde 0.18')||!index.includes('0.18-guild'))fail('Titre ou metadata de version non synchronisé avec 0.18');
+if(!index.includes('Bêta de guilde 0.19')||!index.includes('0.19-guild'))fail('Titre ou metadata de version non synchronisé avec 0.19');
 if(!index.includes('window.BinchRewards')||!index.includes('draw:(canvas,id)')||!treasures.includes('API.draw?.'))fail('Contrat sprite Trésors incomplet');
 const faith=read('faith-avatar.js'),intendant=read('intendant.js');
 if(!faith.includes('window.BinchFaithAvatar')||!faith.includes('requestAnimationFrame')||!faith.includes('reducedMotion()')||!faith.includes("visibilitychange"))fail('Contrat Faith : animation vocale performante ou gestion de visibilité manquante.');
 if(!intendant.includes('binch-faith-canvas')||!intendant.includes("window.BinchFaithAvatar?.speak(answer.text)"))fail('Faith n’est plus relié aux réponses de l’intendant.');
 const planner=read('guild-planner.js');
 if(planner.includes('form.elements.item.value'))fail('Le formulaire Guild Planner utilise une propriété native ambiguë');
+const toolkit=read('trade-toolkit.js');
+if(!toolkit.includes('Marteau de forgeron')||!toolkit.includes('Ingénierie')||!toolkit.includes('inventory'))fail('Conseiller métiers et dépendance au marteau de forgeron manquants.');
 const player=read('player-home.js'),playerStyle=read('player-home.css');
 if(!player.includes("updateLevelRing(last,p)")||!player.includes("rawXP!==null")||!playerStyle.includes(".binch-level-ring"))fail('Anneau XP : liaison ou garde-fou anti-valeurs absentes manquant.');
 const addonCore=read('addon/GrimoireSync/Core.lua'),addonToc=read('addon/GrimoireSync/GrimoireSync.toc'),installer=read('Installer-La-Binch.ps1');
