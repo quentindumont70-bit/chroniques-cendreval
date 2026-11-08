@@ -187,7 +187,10 @@ local function startAuctionScan()
   else print("|cffff7777GrimoireSync|r : API de scan inconnue. Utilise /grimoire debug.") end
 end
 
-for _,event in ipairs({"PLAYER_LOGIN","PLAYER_LEVEL_UP","PLAYER_XP_UPDATE","UPDATE_EXHAUSTION","ZONE_CHANGED_NEW_AREA","PLAYER_MONEY","BAG_UPDATE_DELAYED","PLAYER_LOGOUT","QUEST_TURNED_IN","QUEST_LOG_UPDATE","SKILL_LINES_CHANGED"}) do addon:RegisterEvent(event) end
+for _,event in ipairs({"PLAYER_LOGIN","PLAYER_LEVEL_UP","PLAYER_XP_UPDATE","UPDATE_EXHAUSTION","ZONE_CHANGED_NEW_AREA","PLAYER_MONEY","BAG_UPDATE_DELAYED","PLAYER_LOGOUT","QUEST_TURNED_IN","QUEST_LOG_UPDATE","SKILL_LINES_CHANGED"}) do
+  -- Custom clients may omit individual events: skip them rather than abort loading.
+  pcall(addon.RegisterEvent,addon,event)
+end
 addon:SetScript("OnEvent",function(_,event,unit)
   if event=="PLAYER_XP_UPDATE" or event=="UPDATE_EXHAUSTION" then
     captureXP()
