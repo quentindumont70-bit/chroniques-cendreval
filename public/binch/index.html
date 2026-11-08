@@ -1109,7 +1109,7 @@ function weighted(list){const sum=list.reduce((a,x)=>a+x.weight,0);let hit=Math.
 function roll(){const cat=weighted(CATS),tier=weighted(TIERS);const pool=ITEMS.filter(x=>x.category===cat.id&&x.tier===tier.id);return pool[Math.floor(Math.random()*pool.length)]}
 function probability(item){const cat=CATS.find(x=>x.id===item.category),tier=TIERS.find(x=>x.id===item.tier);return PROBABILITY*cat.weight/100*tier.weight/100/ITEMS.filter(x=>x.category===item.category&&x.tier===item.tier).length}
 function displayChance(item){return fmt(probability(item))}
-function logDrop(item){const state=READ();state.drops=state.drops||{};state.total=(state.total||0)+1;state.drops[item.id]=(state.drops[item.id]||0)+1;state.last=item.id;SAVE(state)}
+function logDrop(item){const state=READ();state.drops=state.drops||{};state.total=(state.total||0)+1;state.drops[item.id]=(state.drops[item.id]||0)+1;state.last=item.id;SAVE(state);document.dispatchEvent(new CustomEvent('binch:treasure',{detail:{id:item.id}}))}
 function color(item){return TIERS.find(t=>t.id===item.tier)?.color||'#b7dac8'}
 function title(item){return CATS.find(x=>x.id===item.category)?.name||'Surprise'}
 function hash(n){let x=n|0;x=Math.imul(x^x>>>16,0x7feb352d);x=Math.imul(x^x>>>15,0x846ca68b);return (x^x>>>16)>>>0}
@@ -1278,6 +1278,7 @@ function renderCodex(){
    return '<article class="binch-proc-entry" style="--tier-color:'+tier.color+'"><span class="binch-proc-emblem">'+(acquired?'✦':'?')+'</span><div><div class="binch-proc-entry-kind">'+ESC(title(item))+' · '+tier.name+'</div><strong>'+ESC(item.name)+'</strong><small>Chance par clic : '+displayChance(item)+'</small></div><span class="binch-proc-count">'+(acquired?'× '+drops[item.id]:'Non obtenu')+'</span><button type="button" class="binch-proc-preview-item" data-proc-preview-id="'+item.id+'" aria-label="Prévisualiser '+ESC(item.name)+'">✧</button></article>';
  }).join('');
 }
+window.BinchRewards={items:ITEMS.map(x=>({...x,categoryName:title(x),tierName:TIERS.find(t=>t.id===x.tier)?.name||x.tier,color:color(x)})),read:READ,preview:id=>{const item=ITEMS.find(x=>x.id===id);if(item&&Number(READ().drops?.[id]||0)>0)pop(item,true);},chance:displayChance};
 function setup(){
  makeCodex();document.addEventListener('click',e=>{if(READ().enabled===false)return;onClick(e)},true);
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeToast()});
