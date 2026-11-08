@@ -30,7 +30,7 @@ function init(){
  '<button type="submit">Ajouter le membre</button></form>'+
  '<p id="binch-roster-summary" role="status" aria-live="polite"></p>'+
  '<div id="binch-roster-groups" class="binch-roster-groups"></div>'+
- '<div class="binch-roster-actions"><button type="button" id="binch-roster-copy">Copier pour Discord</button><button type="button" id="binch-roster-export">Exporter JSON</button><label class="binch-roster-file">Importer JSON<input type="file" id="binch-roster-import" accept=".json,application/json" hidden></label><button type="button" id="binch-roster-clear">Effacer les effectifs</button></div>';
+ '<div class="binch-roster-actions"><button type="button" id="binch-roster-arrange">Composer les groupes depuis la réserve</button><button type="button" id="binch-roster-copy">Copier pour Discord</button><button type="button" id="binch-roster-export">Exporter JSON</button><label class="binch-roster-file">Importer JSON<input type="file" id="binch-roster-import" accept=".json,application/json" hidden></label><button type="button" id="binch-roster-clear">Effacer les effectifs</button></div>';
  const hub=$('binch-gm-hub');
  if(hub)hub.insertAdjacentElement('afterend',section);else page.prepend(section);
  $('binch-roster-event').value=record.event;
@@ -88,6 +88,28 @@ function init(){
    record={event:typeof data.event==='string'?data.event.slice(0,100):'',members};save();$('binch-roster-event').value=record.event;render();
   }catch(error){alert('Import refusé : '+error.message)}
  };
+ $('binch-roster-arrange').onclick=()=>{
+  // Only assign reserve volunteers; never overwrite the organiser's existing groups.
+  const reserve=record.members.filter(m=>m.group===0&&m.status!=='Absent');
+  const rank={Tank:0,Soigneur:1,Flexible:2,DPS:3};
+  reserve.sort((a,b)=>(a.status==='Confirmé'?0:1)-(b.status==='Confirmé'?0:1)||rank[a.role]-rank[b.role]);
+  const counts=Array.from({length:9},(_,i)=>record.members.filter(m=>m.group===i&&m.status!=='Absent').length);
+  const changes=[];
+  for(const member of reserve){
+   const eligible=Array.from({length:8},(_,i)=>i+1).filter(g=>counts[g]<5);
+   if(!eligible.length)break;
+   const score=g=>{
+    const list=record.members.filter(m=>m.group===g&&m.status!=='Absent');
+    const same=list.some(m=>m.role===member.role);
+    return (same?4:0)+counts[g]*2+(g-1)*0.005;
+   };
+   eligible.sort((a,b)=>score(a)-score(b));
+   const group=eligible[0];member.group=group;counts[group]++;changes.push(member.name+' → G'+group);
+  }
+  if(!changes.length){alert('Aucun membre de réserve à répartir, ou les huit groupes sont complets.');return;}
+  if(!confirm('Répartir '+changes.length+' membre(s) de la réserve sans modifier les groupes existants ?')){for(const member of reserve)if(changes.some(c=>c.startsWith(member.name+' → ')))member.group=0;return;}
+  save();render();
+ };
  $('binch-roster-clear').onclick=()=>{if(record.members.length&&confirm('Effacer tous les effectifs de cette sortie ?')){record.members=[];save();render();}};
  function render(){
   const confirmed=record.members.filter(m=>m.status==='Confirmé'),uncertain=record.members.filter(m=>m.status==='Incertain');
@@ -96,7 +118,10 @@ function init(){
   $('binch-roster-groups').innerHTML=Array.from({length:9},(_,g)=>{
    const members=record.members.filter(m=>m.group===g);
    if(g>0&&!members.length)return '';
-   return '<section class="binch-roster-group"><h3>'+(g?'Groupe '+g:'Réserve / sans groupe')+' <small>'+members.filter(m=>m.status==='Confirmé').length+' confirmé(s)</small></h3>'+
+   const active=members.filter(m=>m.status!=='Absent');
+   const tanks=active.filter(m=>m.role==='Tank').length,healers=active.filter(m=>m.role==='Soigneur').length;
+   const readiness=g===0?'':('<p class="binch-roster-readiness">'+active.length+'/5 participants · '+(active.length>5?'⚠ Groupe surchargé · ':'')+(tanks===0?'⚠ Tank manquant · ':'')+(healers===0?'⚠ Soigneur manquant · ':'')+(active.length<=5&&tanks>0&&healers>0?'Composition équilibrée':'Composition à ajuster')+'</p>');
+   return '<section class="binch-roster-group"><h3>'+(g?'Groupe '+g:'Réserve / sans groupe')+' <small>'+members.filter(m=>m.status==='Confirmé').length+' confirmé(s)</small></h3>'+readiness+
    (members.length?members.map(m=>'<div class="binch-roster-member"><b>'+esc(m.name)+'</b><small>'+esc(m.cls)+'</small>'+
     '<select aria-label="Rôle de '+esc(m.name)+'" data-roster-id="'+esc(m.id)+'" data-roster-field="role">'+ROLES.map(v=>'<option'+(v===m.role?' selected':'')+'>'+v+'</option>').join('')+'</select>'+
     '<select aria-label="Statut de '+esc(m.name)+'" data-roster-id="'+esc(m.id)+'" data-roster-field="status">'+['Confirmé','Incertain','Absent'].map(v=>'<option'+(v===m.status?' selected':'')+'>'+v+'</option>').join('')+'</select>'+
