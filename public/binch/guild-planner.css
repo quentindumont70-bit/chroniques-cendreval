@@ -1,0 +1,74 @@
+
+/* Guild Planner — interface locale, claire sur sa portée. */
+#binch-guild-planner{--g:#d1ab95;display:block;margin:20px 0 30px;border:1px solid #947a75;border-radius:17px;background:linear-gradient(130deg,#302931,#18252a 70%);color:#f2e7db;scroll-margin-top:90px}
+#binch-guild-planner>summary{display:flex;align-items:center;gap:13px;padding:22px;cursor:pointer;list-style:none}
+#binch-guild-planner>summary::-webkit-details-marker{display:none}
+#binch-guild-planner>summary>span:first-child{display:grid;place-items:center;font:750 1.8rem Georgia,serif;width:52px;height:52px;border:1px solid #af8e78;border-radius:11px;background:#503b3c;color:#f6d7a6}
+#binch-guild-planner>summary>span:nth-child(2){flex:1}
+#binch-guild-planner>summary strong{display:block;font:700 1.45rem Cinzel,Georgia,serif;color:#ffe0ba}
+#binch-guild-planner>summary small{display:block;font-size:.76rem;color:#ccd4d2;line-height:1.5}
+#binch-guild-planner .binch-planner-summary-count{border:1px solid #786d6b;padding:8px 11px;border-radius:8px;white-space:nowrap;font-size:.71rem;color:#eedccf}
+#binch-guild-planner[open]>summary{border-bottom:1px solid #816f70}
+#binch-guild-planner .binch-planner-body{padding:clamp(16px,2.5vw,28px)}
+#binch-guild-planner .binch-planner-alert{padding:12px 15px;background:#423830;border-left:4px solid #d3aa75;color:#edd9bf;line-height:1.7;font-size:.78rem}
+#binch-guild-planner .binch-planner-overview{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+#binch-guild-planner .binch-planner-overview>div{display:grid;gap:3px;padding:13px;border:1px solid #726b6b;border-radius:10px;background:#213138}
+#binch-guild-planner .binch-planner-overview strong{color:#f6d29c;font:700 1.8rem Cinzel,Georgia,serif}
+#binch-guild-planner .binch-planner-overview span{color:#bfcfce;font-size:.71rem}
+#binch-guild-planner .binch-planner-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}
+#binch-guild-planner :is(.binch-planner-tabs button,#binch-planner-request-filters button){cursor:pointer;padding:10px 12px;border:1px solid #788e8e;border-radius:8px;background:#263a3e;color:#e6eded;font-size:.75rem;font-weight:800}
+#binch-guild-planner :is(.binch-planner-tabs button,#binch-planner-request-filters button).active{border-color:#f0c9a2;color:#1e2527;background:#f0cba4}
+#binch-guild-planner [data-planner-view][hidden]{display:none!important}
+#binch-guild-planner .binch-planner-editor{border:1px solid #857c70;border-radius:10px;background:#242f30;margin-bottom:17px}
+#binch-guild-planner .binch-planner-editor summary{padding:14px;cursor:pointer;font-weight:850;color:#f7d6a4}
+#binch-guild-planner form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px}
+#binch-guild-planner form label{display:grid;gap:6px;color:#efdabb;font-size:.74rem;font-weight:850}
+#binch-guild-planner .binch-planner-wide{grid-column:1/-1}
+#binch-guild-planner :is(input,textarea,select){width:100%;min-width:0;min-height:42px;padding:10px;border:1px solid #778d8c;border-radius:8px;background:#15272d;color:#f3e9dd}
+#binch-guild-planner form>button{grid-column:1/-1;justify-self:start;cursor:pointer;padding:11px 16px;border:1px solid #f4d4a2;border-radius:9px;background:#e9c599;color:#29211c;font-weight:900}
+#binch-guild-planner .binch-planner-views{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+#binch-guild-planner #binch-planner-search{flex:1 1 215px}
+#binch-guild-planner #binch-planner-request-filters{display:flex;gap:7px;flex-wrap:wrap}
+#binch-guild-planner :is(#binch-planner-count,#binch-prof-count){font-size:.77rem;margin:13px 0;color:#ebcbb2}
+#binch-guild-planner :is(#binch-planner-requests,#binch-planner-characters){display:grid;gap:12px}
+#binch-guild-planner .binch-planner-request{padding:16px;border:1px solid #7e7775;border-left:4px solid #d3af8c;border-radius:11px;background:linear-gradient(120deg,#303235,#202d32)}
+#binch-guild-planner .binch-planner-request.is-late{border-left-color:#ed9391}
+#binch-guild-planner .binch-planner-request.is-closed{opacity:.72}
+#binch-guild-planner .binch-planner-request>header{display:flex;justify-content:space-between;gap:13px;align-items:start}
+#binch-guild-planner .binch-planner-request h3{font:700 1.1rem Cinzel,Georgia,serif;color:#f3dec1;margin:6px 0}
+#binch-guild-planner .binch-planner-request header small{color:#e6b997;letter-spacing:.08em;font-size:.68rem;font-weight:850}
+#binch-guild-planner .binch-planner-request p{color:#c8d1cf;font-size:.79rem;line-height:1.6}
+#binch-guild-planner .binch-planner-tally{text-align:right;display:grid;gap:5px;white-space:nowrap}
+#binch-guild-planner .binch-planner-tally strong{font:700 1.4rem Cinzel,Georgia,serif;color:#f2d3a1}
+#binch-guild-planner .binch-planner-tally span{font-size:.66rem;color:#d5d5d0}
+#binch-guild-planner .binch-planner-deadline{font-size:.73rem;color:#e8c3a4;padding:7px 0}
+#binch-guild-planner .binch-planner-track{height:9px;overflow:hidden;border-radius:20px;background:#111e24;border:1px solid #7a8172}
+#binch-guild-planner .binch-planner-track i{display:block;height:100%;background:#90c4a1}
+#binch-guild-planner .binch-planner-counts{display:flex;gap:7px;flex-wrap:wrap;margin:13px 0}
+#binch-guild-planner .binch-planner-counts span{padding:7px;border:1px solid #667b73;border-radius:7px;font-size:.69rem;background:#1b3032;color:#f4e6d9}
+#binch-guild-planner .binch-planner-contributors{font-size:.76rem}
+#binch-guild-planner .binch-planner-contributors summary{cursor:pointer;padding:7px;color:#e8d4aa}
+#binch-guild-planner .binch-planner-contributors li{padding:7px;display:flex;justify-content:space-between;border-bottom:1px solid #576565}
+#binch-guild-planner .binch-planner-respond{display:flex;flex-wrap:wrap;align-items:end;gap:8px;margin:11px 0}
+#binch-guild-planner .binch-planner-respond label{flex:1 1 125px;display:grid;font-size:.7rem;gap:5px;color:#edd7ba}
+#binch-guild-planner .binch-planner-respond button,#binch-guild-planner .binch-planner-request footer button{cursor:pointer;padding:10px 12px;min-height:40px;border:1px solid #b9a18b;color:#eee3d3;border-radius:8px;background:#39403e;font-size:.72rem;font-weight:850}
+#binch-guild-planner .binch-planner-respond [data-answer="ready"]{background:#294e40;border-color:#91cdb0}
+#binch-guild-planner .binch-planner-respond [data-answer="deposited"]{background:#3b3d5a;border-color:#ada9e0}
+#binch-guild-planner .binch-planner-respond [data-answer="confirm"]{background:#62452a;border-color:#edc697}
+#binch-guild-planner .binch-planner-request footer{display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid #46565a;padding-top:12px}
+#binch-guild-planner .binch-planner-character{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px;background:#223638;border:1px solid #668781;border-left:4px solid #8abfc3;border-radius:10px}
+#binch-guild-planner .binch-planner-character h3{color:#f3dcaf;margin:8px 0}
+#binch-guild-planner .binch-planner-character p{font-size:.77rem;color:#d2e1d8}
+#binch-guild-planner .binch-planner-character button{cursor:pointer;padding:9px;border:1px solid #c9a9a3;border-radius:8px;background:#403035;color:#f9e3d8}
+#binch-guild-planner .binch-planner-empty{border:1px dashed #697f7e;border-radius:10px;padding:20px;color:#c4d2d1;font-size:.8rem}
+#binch-guild-planner .binch-planner-coverage{display:flex;align-items:center;gap:13px}
+#binch-guild-planner .binch-planner-coverage strong{font:750 2rem Cinzel,Georgia,serif;color:#e3d1a7}
+#binch-guild-planner #binch-planner-independence :is(h3,p){margin:12px 0}
+#binch-guild-planner .binch-planner-recipe-goals{display:grid;gap:10px}
+#binch-guild-planner .binch-planner-recipe-goals article{display:grid;gap:5px;padding:14px;border:1px solid #7e7b72;border-left:4px solid #d3b07d;border-radius:9px;background:#243036}
+#binch-guild-planner .binch-planner-source-note{font-size:.72rem;color:#b5c9c7}
+#binch-guild-planner .binch-planner-footer{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px;border-top:1px solid #776e6b;padding-top:18px}
+#binch-guild-planner .binch-planner-footer :is(button,.binch-planner-import),#binch-guild-planner #binch-planner-open-recipes{cursor:pointer;padding:10px 12px;border:1px solid #c5af91;border-radius:8px;background:#4a3e37;color:#f1e4cd}
+#binch-guild-planner .binch-planner-footer p{width:100%;font-size:.75rem;color:#b7c6c4}
+#binch-guild-planner :is(button,input,summary,select):focus-visible{outline:3px solid #fbe7bd;outline-offset:2px}
+@media(max-width:700px){#binch-guild-planner .binch-planner-overview{grid-template-columns:1fr 1fr}#binch-guild-planner form{grid-template-columns:1fr}#binch-guild-planner .binch-planner-request>header{display:grid}#binch-guild-planner .binch-planner-tally{text-align:left}#binch-guild-planner>summary{padding:13px;gap:8px}#binch-guild-planner .binch-planner-summary-count{display:none}}
