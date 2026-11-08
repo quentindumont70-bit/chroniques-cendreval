@@ -1,0 +1,49 @@
+/* La Binch — outils du maître de guilde */
+.binch-gm-hub{color:#f7eee1;margin:10px 0 26px}
+.binch-gm-banner{padding:clamp(25px,4vw,48px);border:1px solid #c79377;border-radius:14px;background:radial-gradient(ellipse at 88% 18%,#b26e6b49,transparent 50%),linear-gradient(125deg,#3c303c,#1b1e2a 70%,#101923);box-shadow:0 14px 42px #0007,inset 0 1px #fff2}
+.binch-gm-banner .eyebrow{color:#f2bfa4!important;font-size:.72rem;letter-spacing:.16em}
+.binch-gm-banner h1{font:750 clamp(1.7rem,3.5vw,3.1rem)/1.1 Cinzel,Georgia,serif;margin:17px 0 12px;max-width:850px}
+.binch-gm-banner p{max-width:650px;font-size:.92rem;line-height:1.75;color:#d6d6de}
+.binch-gm-banner button{margin-top:15px;border:1px solid #ffe0bd;padding:12px 18px;border-radius:9px;color:#241c1b;background:linear-gradient(125deg,#f9dcbe,#d89d75);font-weight:850;cursor:pointer}
+.binch-gm-menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:22px 0}
+.binch-gm-menu button{position:relative;min-height:150px;display:grid;grid-template-columns:60px minmax(0,1fr);align-items:center;gap:14px;padding:23px;border:1px solid #6d6171;border-radius:12px;text-align:left;color:#f5ede3;background:radial-gradient(ellipse at 98% 0%,#9868aa39,transparent 70%),linear-gradient(130deg,#282638,#171d2b);cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s}
+.binch-gm-menu button:nth-child(2){background:radial-gradient(ellipse at 98% 0%,#c9a75b37,transparent 70%),linear-gradient(130deg,#3a3028,#1a2022);border-color:#786547}
+.binch-gm-menu button:nth-child(3){background:radial-gradient(ellipse at 98% 0%,#71b7d440,transparent 70%),linear-gradient(130deg,#22394a,#141e31);border-color:#577e9d}
+.binch-gm-menu button:nth-child(4){background:radial-gradient(ellipse at 98% 0%,#a66e8c36,transparent 70%),linear-gradient(130deg,#362739,#19202a);border-color:#856184}
+.binch-gm-menu button:hover{transform:translateY(-3px);border-color:#f0d19b;box-shadow:0 13px 30px #0008,0 0 0 1px #e6bf884d}
+.binch-gm-menu button>span:first-child{display:grid;place-items:center;border:1px solid #d8b88983;border-radius:13px;width:56px;height:56px;font-size:2rem;color:#eac68c;background:#151e2abf}
+.binch-gm-menu strong{display:block;font:700 1.15rem/1.35 Cinzel,Georgia,serif;color:#f9eacb}
+.binch-gm-menu small{display:block;color:#c4cddd;font-size:.79rem;line-height:1.5;margin-top:8px;max-width:310px}
+.binch-gm-note,.binch-chest-warning{border-left:3px solid #b5a2d3;padding:11px 14px;background:#252336;border-radius:0 8px 8px 0;color:#d4cadf;font-size:.79rem;line-height:1.6}
+.binch-gm-details{margin:18px 0 28px;border:1px solid #8a6871;border-radius:12px;padding:14px 18px;background:#241e2c}
+.binch-gm-details summary{cursor:pointer;color:#f6d0bb;font-weight:800;padding:10px 4px}
+.binch-gm-details[open]>section{margin-top:15px}
+.binch-macros .binch-macro-controls{display:flex;gap:10px;margin:22px 0;flex-wrap:wrap}
+.binch-macros .binch-macro-controls input{flex:2 1 220px}
+.binch-macros .binch-macro-controls select{flex:1 1 180px}
+.binch-macro-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.binch-macro-item{min-width:0;display:flex;flex-direction:column;padding:18px;border:1px solid #597fa5;border-radius:12px;background:linear-gradient(145deg,#202c42,#141d2c);box-shadow:0 8px 25px #0005}
+.binch-macro-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;color:#abd6ff;font-size:.75rem}
+.binch-macro-meta span{border:1px solid #6f9abf;background:#203a54;border-radius:6px;padding:4px 7px}
+.binch-macro-meta small{font-size:.71rem}
+.binch-macro-item h3{font:700 1.03rem/1.35 Cinzel,Georgia,serif;margin:17px 0;color:#f4e8d2}
+.binch-macro-item pre{white-space:pre-wrap;overflow-wrap:anywhere;border:1px solid #6385a2;border-radius:9px;background:#0c1724;padding:14px;color:#c3ecff;font-size:.76rem;line-height:1.65}
+.binch-macro-item p{color:#c9d4df;line-height:1.6;font-size:.78rem;flex:1}
+.binch-macro-item button{align-self:start;padding:10px 13px;border:1px solid #c7deff;background:#376081;color:#f5faff;border-radius:8px;font-weight:800;cursor:pointer}
+.binch-chest form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0}
+.binch-chest form label{display:flex;flex-direction:column;gap:8px;font-size:.8rem;font-weight:750;color:#e6cea0}
+.binch-chest form input,.binch-chest form select{width:100%;min-width:0}
+.binch-chest form button{grid-column:1/-1;justify-self:start;padding:12px 18px;border:1px solid #ffdc99;background:linear-gradient(120deg,#f4d6a1,#c59c61);color:#211b13;border-radius:8px;font-weight:850;cursor:pointer}
+.binch-chest-bar{display:flex;gap:13px;justify-content:space-between;align-items:center;margin:20px 0;flex-wrap:wrap}
+.binch-chest-bar button,.binch-loot-shortcuts button{padding:11px 15px;border-radius:8px;border:1px solid #d4b880;background:#364234;color:#fbe5b2;font-weight:750;cursor:pointer}
+.binch-chest-row{display:flex;align-items:center;gap:13px;padding:14px 16px;margin:8px 0;border:1px solid #76684a;border-radius:9px;background:linear-gradient(100deg,#26342e,#161d22)}
+.binch-chest-gem{color:#f8c77c;font-size:1.45rem}
+.binch-chest-row>span:nth-child(2){flex:1;min-width:0}
+.binch-chest-row b,.binch-chest-row small{display:block;overflow-wrap:anywhere}
+.binch-chest-row small{font-size:.72rem;color:#c3d3c8;margin-top:4px}
+.binch-chest-row>button{font-size:1.1rem;width:33px;height:33px;border-radius:7px;border:1px solid #a77c6b;color:#ffddd0;background:#432929;cursor:pointer}
+.binch-chest-empty{padding:35px 18px;text-align:center;color:#c5d4c6;border:1px dashed #7d775e;border-radius:11px}
+.binch-loot-shortcuts{display:flex;gap:13px;flex-wrap:wrap;margin:22px 0}
+@media(max-width:1040px){.binch-macro-list{grid-template-columns:repeat(2,minmax(0,1fr))}.binch-chest form{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.binch-gm-menu,.binch-macro-list{grid-template-columns:1fr}.binch-gm-menu button{min-height:112px}.binch-chest form{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.binch-gm-menu button{transition:none}.binch-gm-menu button:hover{transform:none}}
