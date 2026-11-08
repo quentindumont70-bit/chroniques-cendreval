@@ -1,0 +1,19 @@
+/* La Binch · conseil d'outillage, section artisan lisible à un coup d'œil. */
+#page-metiers #binch-trade-toolkit{border:1px solid #88a99b;border-left:4px solid #a7c6a6;border-radius:15px;padding:clamp(18px,3vw,29px);background:radial-gradient(ellipse at 85% 12%,#536e463b,transparent 65%),linear-gradient(120deg,#22372d,#18272e);box-shadow:inset 0 1px #ffffff16}
+#page-metiers #binch-trade-toolkit[hidden]{display:none!important}
+#binch-trade-toolkit header{margin-bottom:16px}
+#binch-trade-toolkit .eyebrow{color:#cbd4a2;letter-spacing:.15em;font-size:.67rem;font-weight:850}
+#binch-trade-toolkit h2{font:750 clamp(1.2rem,2.7vw,1.8rem)/1.3 Cinzel,Georgia,serif;color:#f5e0ba;margin:8px 0}
+#binch-trade-toolkit header p,#binch-trade-toolkit p{color:#c7d4ca;font-size:.77rem;line-height:1.65}
+#binch-trade-toolkit .binch-toolkit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#binch-trade-toolkit .binch-toolkit-card{display:flex;gap:13px;min-width:0;border:1px solid #6e8e82;border-left:3px solid #8ebd95;background:linear-gradient(130deg,#29433b,#202e36);border-radius:10px;padding:16px}
+#binch-trade-toolkit .binch-toolkit-card[data-tool="hammer"]{border-left-color:#dcad7b;background:linear-gradient(130deg,#3a382f,#233038)}
+#binch-trade-toolkit .binch-toolkit-card[data-tool="hammer"] strong{color:#f3d3a7}
+#binch-trade-toolkit .binch-toolkit-sigil{display:grid;place-items:center;flex:0 0 49px;height:49px;border:1px solid #a3bca1;border-radius:10px;background:#182c30;color:#d4deae;font-size:1.55rem}
+#binch-trade-toolkit .binch-toolkit-card strong{display:block;color:#f3ead4;font-weight:900;font-size:.95rem}
+#binch-trade-toolkit .binch-toolkit-state{display:inline-block;border:1px solid #8b9c94;border-radius:18px;color:#dce0d9;font-size:.65rem;padding:2px 9px;margin-top:7px}
+#binch-trade-toolkit .binch-toolkit-card[data-presence="yes"] .binch-toolkit-state{border-color:#83bf98;color:#b7e6c6;background:#264635}
+#binch-trade-toolkit .binch-toolkit-card p{margin:9px 0 0}
+#binch-trade-toolkit .binch-toolkit-confidence{border-top:1px solid #658779;margin:18px 0 0;padding-top:14px;font-size:.72rem}
+#binch-trade-toolkit .binch-toolkit-confidence a{color:#e9cd8f;text-underline-offset:3px}
+@media(max-width:720px){#binch-trade-toolkit .binch-toolkit-grid{grid-template-columns:1fr}}
