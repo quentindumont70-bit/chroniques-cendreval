@@ -3,6 +3,7 @@
 const URL='https://quentindumont70-bit.github.io/chroniques-cendreval/binch/',VERSION='Bêta 0.8 · 8 novembre 2026',$=s=>document.querySelector(s);
 const syncStyle=document.createElement('link');syncStyle.rel='stylesheet';syncStyle.href='./sync-wizard.css';document.head.append(syncStyle);const wizard=document.createElement('script');wizard.src='./sync-wizard.js';wizard.defer=true;document.head.append(wizard);
 const lfgStyle=document.createElement('link');lfgStyle.rel='stylesheet';lfgStyle.href='./lfg.css';document.head.append(lfgStyle);const lfgScript=document.createElement('script');lfgScript.src='./lfg.js';lfgScript.defer=true;document.head.append(lfgScript);
+const intendantStyle=document.createElement('link');intendantStyle.rel='stylesheet';intendantStyle.href='./intendant.css';document.head.append(intendantStyle);const intendantScript=document.createElement('script');intendantScript.src='./intendant.js';intendantScript.defer=true;document.head.append(intendantScript);
 const css=document.createElement('link');css.rel='stylesheet';css.href='./share-kit.css';document.head.append(css);
 const placement=document.createElement('script');placement.src='./sync-placement.js';placement.defer=true;document.head.append(placement);
 const gm=document.createElement('script');gm.src='./gm-quick.js';gm.defer=true;document.head.append(gm);
