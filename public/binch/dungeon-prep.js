@@ -12,9 +12,9 @@ const TASKS=[
  ['strategies','Boss et mécaniques étudiés (si sources fiables)'],
  ['loot','Règles de butin décidées avant de partir']
 ];
-let state={dungeon:'',note:'',checked:{}},selected='',search='';
+let state={dungeon:'',notes:{},checked:{}},selected='',search='';
 function read(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}}
-function safe(){const d=read(KEY,{});state={dungeon:typeof d.dungeon==='string'?d.dungeon.slice(0,120):'',note:typeof d.note==='string'?d.note.slice(0,500):'',checked:d.checked&&typeof d.checked==='object'&&!Array.isArray(d.checked)?d.checked:{}};selected=state.dungeon}
+function safe(){const d=read(KEY,{});state={dungeon:typeof d.dungeon==='string'?d.dungeon.slice(0,120):'',notes:d.notes&&typeof d.notes==='object'&&!Array.isArray(d.notes)?d.notes:{},checked:d.checked&&typeof d.checked==='object'&&!Array.isArray(d.checked)?d.checked:{}};selected=state.dungeon}
 function save(){localStorage.setItem(KEY,JSON.stringify(state))}
 function catalog(){return Array.isArray(window.GRIMOIRE_DUNGEONS)?window.GRIMOIRE_DUNGEONS.filter(d=>d&&typeof d.name==='string'&&d.name.length<=120):[]}
 function members(){const r=read(ROSTER,{});return Array.isArray(r.members)?r.members.filter(m=>m&&m.status==='Confirmé'&&m.group>0&&m.group<=8):[]}
@@ -22,6 +22,7 @@ function events(){const data=read(EVENTS,[]);return Array.isArray(data)?data.fil
 function current(){return catalog().find(d=>d.name===selected)}
 function key(){return encodeURIComponent(selected)}
 function check(){const v=state.checked[key()];return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}
+function note(){const n=state.notes[key()];return typeof n==='string'?n.slice(0,500):''}
 function init(){
  const host=$('page-gm');if(!host||$('binch-dungeon-prep'))return;
  safe();
@@ -48,17 +49,17 @@ function init(){
   const input=e.target.closest('input[data-dungeon-task]');if(!input||!selected)return;
   const all=state.checked[key()]||{};all[input.dataset.dungeonTask]=input.checked;state.checked[key()]=all;save();render();
  });
- $('binch-dungeon-note').oninput=e=>{state.note=e.target.value.slice(0,500);save()};
+ $('binch-dungeon-note').oninput=e=>{if(!selected)return;state.notes[key()]=e.target.value.slice(0,500);save()};
  $('binch-dungeon-clear').onclick=()=>{
   if(!selected||!confirm('Effacer la checklist et les notes de « '+selected+' » ?'))return;
-  delete state.checked[key()];state.note='';save();render()
+  delete state.checked[key()];delete state.notes[key()];save();render()
  };
  $('binch-dungeon-copy').onclick=async()=>{
   const d=current();if(!d)return;
   const done=check(),level=Array.isArray(d.levels)?d.levels.join('–'):'À confirmer';
   const lines=['LA BINCH — BRIEFING DONJON',d.name,'Zone : '+(d.zone||'à confirmer')+' · Niveaux indicatifs : '+level,'',
     ...TASKS.map(([id,t])=>(done[id]?'[x] ':'[ ] ')+t)];
-  if(state.note.trim())lines.push('','Notes : '+state.note.trim());
+  if(note().trim())lines.push('','Notes : '+note().trim());
   const roster=members();if(roster.length)lines.push('','Effectifs confirmés :',...roster.map(m=>'G'+m.group+' · '+m.name+' — '+m.role));
   lines.push('','Données d’instance indicatives. Vérifier les particularités de WoW Forever en jeu.');
   try{await navigator.clipboard.writeText(lines.join('\n'));$('binch-dungeon-status').textContent='Briefing copié pour Discord.'}
@@ -67,7 +68,7 @@ function init(){
  function render(){
   options();
   const d=current(),checks=check();
-  $('binch-dungeon-note').value=state.note;
+  $('binch-dungeon-note').value=note();
   if(!d){
    $('binch-dungeon-info').textContent='Sélectionne une instance du catalogue pour préparer ta sortie.';
    $('binch-dungeon-checklist').innerHTML='';
