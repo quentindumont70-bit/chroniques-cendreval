@@ -48,3 +48,30 @@
  #page-progression .binch-map-controls [data-atlas-filter]{border-left-width:6px!important}
  #page-discoveries .discovery-card,#page-progression #zone-browser .zone-card,#page-progression #zone-browser .dungeon-card{border-left-width:6px!important}
 }
+
+
+/* Variante atelier : accent par discipline, texte catégoriel conservé */
+#page-hub .craft-card,#page-crafting .craft-card{--craft-accent:#9db7a3;border-left:4px solid var(--craft-accent)!important;box-shadow:inset 0 1px #fff1}
+#page-hub .craft-card[data-profession="engineering"],#page-crafting .craft-card[data-profession="engineering"]{--craft-accent:#e5b778;background:linear-gradient(120deg,#342d2a,#1a262a)!important}
+#page-hub .craft-card[data-profession="cooking"],#page-crafting .craft-card[data-profession="cooking"]{--craft-accent:#d7b57e;background:linear-gradient(120deg,#302e25,#192529)!important}
+#page-hub .craft-card[data-profession="alchemy"],#page-crafting .craft-card[data-profession="alchemy"]{--craft-accent:#a1c69b}
+#page-hub .craft-card[data-profession="tailoring"],#page-crafting .craft-card[data-profession="tailoring"]{--craft-accent:#b8a0e7}
+#page-hub .craft-card[data-profession="blacksmithing"],#page-crafting .craft-card[data-profession="blacksmithing"]{--craft-accent:#dd998a}
+#page-hub .craft-card[data-profession="leatherworking"],#page-crafting .craft-card[data-profession="leatherworking"]{--craft-accent:#c7a77a}
+#page-hub .craft-card[data-profession="enchanting"],#page-crafting .craft-card[data-profession="enchanting"]{--craft-accent:#9ec7dc}
+#page-hub .craft-card[data-profession="first-aid"],#page-crafting .craft-card[data-profession="first-aid"]{--craft-accent:#d8a5aa}
+#page-hub .craft-card .craft-meta,#page-crafting .craft-card .craft-meta{color:var(--craft-accent)!important;font-weight:800}
+#page-hub .craft-card .craft-actions,#page-crafting .craft-card .craft-actions{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+#page-hub .craft-card .binch-pin-external,#page-crafting .craft-card .binch-pin-external,.discovery-card .binch-pin-external{display:inline-flex;align-items:center;min-height:38px;padding:8px 12px;border:1px solid #b29e79;border-radius:8px;background:#393831;color:#f5d8a4;font-size:.77rem;font-weight:850;cursor:pointer}
+#page-hub .craft-card .binch-pin-external[aria-pressed="true"],#page-crafting .craft-card .binch-pin-external[aria-pressed="true"],.discovery-card .binch-pin-external[aria-pressed="true"]{color:#172c2d;background:#e8cca0;border-color:#ffdfab}
+.discovery-card{--quest-accent:#ac95d7;border-left:4px solid var(--quest-accent)!important;background:linear-gradient(125deg,color-mix(in srgb,var(--quest-accent) 7%,#172525),#132127)!important}
+.discovery-card[data-discovery-category="Quête de classe"]{--quest-accent:#b49add}
+.discovery-card[data-discovery-category="Donjon"]{--quest-accent:#d99f8d}
+.discovery-card[data-discovery-category="Sac gratuit"]{--quest-accent:#e4ba7d}
+.discovery-card[data-discovery-category="Métier gratuit"]{--quest-accent:#87c4a2}
+.discovery-card[data-discovery-category="Bonus XP"]{--quest-accent:#8bbbd6}
+.discovery-card[data-discovery-category="Inventaire"]{--quest-accent:#b8c7a3}
+.discovery-card[data-discovery-category="Secret majeur"]{--quest-accent:#d2b17b}
+.discovery-card .discovery-meta{color:var(--quest-accent)!important}
+.discovery-card .discovery-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+@media(prefers-contrast:more){#page-hub .craft-card,.discovery-card{border-left-width:6px!important}}
