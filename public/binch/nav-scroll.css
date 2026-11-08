@@ -1,0 +1,42 @@
+/* La Binch — barre d'onglets mieux intégrée aux pages longues */
+#app nav.nav{
+ position:sticky!important;top:0!important;z-index:35!important;
+ isolation:isolate;
+ background:linear-gradient(120deg,#17242bf2,#1b2826f2)!important;
+ border:1px solid #6c7674!important;
+ border-radius:12px!important;
+ box-shadow:0 8px 25px #0008,inset 0 1px #fff2!important;
+ padding:10px!important;
+ margin:8px 0 12px;
+}
+#app nav.nav button[data-page]{transition:background .16s,border-color .16s,box-shadow .16s;color:#e5e5e0;min-height:42px;}
+#app nav.nav.binch-nav-condensed{
+ display:flex!important;flex-wrap:nowrap!important;align-items:center!important;
+ gap:6px!important;
+ grid-template-columns:none!important;grid-template-rows:none!important;
+ overflow-x:auto!important;overflow-y:hidden!important;
+ overscroll-behavior-x:contain;scrollbar-width:thin;
+ background:#152329f7!important;
+ border:1px solid #84959a!important;border-radius:0 0 12px 12px!important;
+ padding:7px 10px!important;margin-top:0!important;
+ box-shadow:0 10px 28px #000a!important;
+ backdrop-filter:blur(8px)!important;
+}
+#app nav.nav.binch-nav-condensed button[data-page]{
+ flex:0 0 auto!important;min-width:0!important;width:auto!important;
+ min-height:38px!important;height:38px!important;
+ padding:8px 11px!important;line-height:1.1!important;
+ font-size:.72rem!important;white-space:nowrap!important;
+ border-radius:8px!important;
+}
+#app nav.nav.binch-nav-condensed button.active{
+ background:linear-gradient(110deg,#ffe0a1,#dcb274)!important;
+ color:#242225!important;border-color:#ffe9b9!important;
+}
+#app .page [id]{scroll-margin-top:85px}
+#app nav.nav button:focus-visible{outline:3px solid #f8d69b!important;outline-offset:2px}
+@media(max-width:650px){
+ #app nav.nav.binch-nav-condensed{padding:7px 6px!important;gap:5px!important;border-radius:0 0 10px 10px!important}
+ #app nav.nav.binch-nav-condensed button[data-page]{font-size:.69rem!important;min-height:41px!important;height:41px!important;padding:9px 10px!important}
+}
+@media(prefers-reduced-motion:reduce){#app nav.nav,#app nav.nav button{transition:none!important;animation:none!important}}
