@@ -24,3 +24,5 @@
 #binch-sync-wizard button:focus-visible,#binch-sync-wizard a:focus-visible,#binch-sync-wizard input:focus-visible{outline:3px solid #ffe1a8;outline-offset:3px}
 @media(max-width:750px){#binch-sync-wizard .binch-wizard-tasks{grid-template-columns:1fr}#binch-sync-wizard .binch-wizard-actions{display:grid}#binch-sync-wizard .binch-wizard-count{flex-basis:67px;height:70px}#binch-sync-wizard .binch-wizard-count span{font-size:1.1rem}}
 @media(prefers-reduced-motion:reduce){#binch-sync-wizard .binch-wizard-track span{transition:none}}
+
+#page-sync .binch-wizard-legacy{margin:0 0 20px;border:1px solid #66869a;border-radius:12px;background:#13232e;padding:15px}#page-sync .binch-wizard-legacy>summary{cursor:pointer;color:#d3eaf3;font-weight:850;font-size:.87rem;padding:5px}#page-sync .binch-wizard-legacy[open] .binch-sync-steps{margin:15px 0 0}
