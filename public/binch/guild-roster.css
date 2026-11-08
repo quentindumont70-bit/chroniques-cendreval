@@ -1,0 +1,25 @@
+/* La Binch — registre des groupes de guilde. */
+#binch-guild-roster{margin:18px 0;border-color:#967e54;background:linear-gradient(140deg,#16221d,#0d1717)}
+#binch-guild-roster h2{margin:.35em 0 .5em}
+#binch-guild-roster label{display:grid;gap:5px;font-size:.84rem;color:#dfcfb0;font-weight:650}
+#binch-guild-roster input,#binch-guild-roster select{background:#0d1715;border:1px solid #61716c;color:#f2eee3;border-radius:6px;padding:10px;min-width:0;width:100%}
+#binch-guild-roster button,#binch-guild-roster .binch-roster-file{border:1px solid #a68e5f;background:#25332c;border-radius:6px;padding:9px 13px;color:#f4dfb9;cursor:pointer}
+#binch-guild-roster button:hover,#binch-guild-roster .binch-roster-file:hover{background:#34463b;border-color:#eed19b}
+#binch-guild-roster .binch-roster-event{max-width:520px;margin:12px 0}
+#binch-guild-roster .binch-roster-form{display:grid;grid-template-columns:minmax(130px,2fr) repeat(4,minmax(105px,1fr)) auto;gap:10px;align-items:end;margin:18px 0;padding:15px;border:1px solid #58645d;background:#09130f;border-radius:10px}
+#binch-guild-roster .binch-roster-form button{min-height:43px;background:#bfa16c;color:#151b14;font-weight:800}
+#binch-guild-roster #binch-roster-summary{padding:10px;border-left:3px solid #d5b47a;background:#202d26;font-weight:650}
+#binch-guild-roster .binch-roster-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr));gap:13px}
+#binch-guild-roster .binch-roster-group{border:1px solid #53675c;border-radius:9px;padding:13px;background:#0e1916}
+#binch-guild-roster .binch-roster-group h3{font-size:1rem;color:#f4d9a3;display:flex;justify-content:space-between;align-items:center;margin:0 0 12px}
+#binch-guild-roster .binch-roster-group h3 small{color:#a9c7b4;font:500 .75rem Inter,system-ui}
+#binch-guild-roster .binch-roster-member{display:grid;grid-template-columns:minmax(80px,1fr) minmax(72px,.85fr) minmax(90px,1fr) minmax(100px,1.1fr) 80px 34px;align-items:center;gap:6px;padding:8px 0;border-top:1px solid #35483e}
+#binch-guild-roster .binch-roster-member b{overflow-wrap:anywhere}
+#binch-guild-roster .binch-roster-member small{color:#b5bbad}
+#binch-guild-roster .binch-roster-member select{font-size:.75rem;padding:7px 3px}
+#binch-guild-roster .binch-roster-member button{padding:5px;color:#ffbab4}
+#binch-guild-roster .binch-roster-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}
+#binch-guild-roster .binch-roster-file{display:inline-flex;align-items:center}
+#binch-guild-roster .binch-roster-actions label{font-weight:600}
+@media(max-width:1050px){#binch-guild-roster .binch-roster-form{grid-template-columns:repeat(3,minmax(0,1fr))}#binch-guild-roster .binch-roster-form button{grid-column:span 3}}
+@media(max-width:680px){#binch-guild-roster .binch-roster-form{grid-template-columns:repeat(2,minmax(0,1fr))}#binch-guild-roster .binch-roster-form button{grid-column:span 2}#binch-guild-roster .binch-roster-member{grid-template-columns:1fr 1fr 1fr}#binch-guild-roster .binch-roster-member b{grid-column:1/3}#binch-guild-roster .binch-roster-member small{text-align:right}#binch-guild-roster .binch-roster-member select{width:100%}}
