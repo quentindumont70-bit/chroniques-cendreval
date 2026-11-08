@@ -1,4 +1,4 @@
-# La Binch - installation locale GrimoireSync v0.7
+# La Binch - installation locale GrimoireSync v0.8.1
 # Source publique : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/
 # Aucune permission administrateur, aucune lecture des identifiants/du dossier WTF, aucune telemetrie.
 $ErrorActionPreference = 'Stop'
@@ -49,7 +49,28 @@ try {
    if ((Get-Item -LiteralPath $out).Length -lt 40) { throw "Le fichier $filename est vide ou invalide." }
   }
   $toc = Get-Content -LiteralPath (Join-Path $staging 'GrimoireSync.toc') -Raw
-  if ($toc -notmatch '(?m)^## SavedVariables: GrimoireSyncDB' -or $toc -notmatch '(?m)^Minimap.lua\s*$') {throw 'Le manifeste GrimoireSync ne correspond pas a la version attendue.'}
+  if ($toc -notmatch '(?m)^## SavedVariables: GrimoireSyncDB' -or $toc -notmatch '(?m)^## Version: 0\.8\.1' -or $toc -notmatch '(?m)^Minimap.lua\s* {throw 'Le manifeste GrimoireSync ne correspond pas a la version attendue.'}
+  if (Test-Path -LiteralPath $installed) {
+   # IMPORTANT : Les anciennes interfaces Lua sont retirees du dossier actif.
+   Move-Item -LiteralPath $installed -Destination $backup -ErrorAction Stop
+  }
+  New-Item -ItemType Directory -Path $installed -Force | Out-Null
+  foreach ($filename in $filenames) {
+   Copy-Item -LiteralPath (Join-Path $staging $filename) -Destination (Join-Path $installed $filename) -Force
+  }
+ } finally {
+  Remove-Item -LiteralPath $staging -Recurse -Force -ErrorAction SilentlyContinue
+ }
+ $message = "GrimoireSync installe !" + [Environment]::NewLine + [Environment]::NewLine +
+ "Dossier : $installed" + [Environment]::NewLine
+ if (Test-Path -LiteralPath $backup) { $message += "Ancienne version sauvegardee : $backup" + [Environment]::NewLine }
+ $message += [Environment]::NewLine + "Lance WoW, active GrimoireSync, clique sur le petit livre pres de la mini-carte puis importe GrimoireSync.lua dans La Binch."
+ Tell $message 'La Binch - Installation terminee'
+} catch {
+ Tell ("Installation interrompue : " + $_.Exception.Message + [Environment]::NewLine + "Aucun dossier WTF/SavedVariables n'a ete modifie.") 'La Binch - Erreur'
+ exit 1
+}
+) {throw 'Le manifeste GrimoireSync ne correspond pas a la version attendue.'}
   if (Test-Path -LiteralPath $installed) {
    # IMPORTANT : Les anciennes interfaces Lua sont retirees du dossier actif.
    Move-Item -LiteralPath $installed -Destination $backup -ErrorAction Stop
