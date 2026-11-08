@@ -27,3 +27,39 @@
  #app main .page #binch-proc-toast strong{font-size:.99rem}
 }
 @media(prefers-reduced-motion:reduce){#app main .page #binch-proc-toast *,#app main .page #binch-proc-toast{animation:none!important;transition:none!important}}
+
+
+/* Une carte peut ouvrir son écrin au même endroit plutôt qu'en haut ou bas de page. */
+#app main .page #binch-proc-toast{
+  grid-column:1/-1;
+  flex:0 0 100%;
+  box-sizing:border-box;
+  min-width:0;
+}
+#app main .page .binch-treasure-collection>#binch-proc-toast{
+  margin:0 0 8px;
+  width:100%;
+  align-self:stretch;
+}
+#app main .page .binch-route-list>#binch-proc-toast{
+  margin:10px 0;
+}
+#app main .page #binch-proc-toast canvas{
+  image-rendering:pixelated;
+  box-shadow:inset 0 0 0 1px #ffffff1b;
+}
+#app main .page #binch-proc-toast #binch-proc-title{
+  color:#f6ecd9;
+  text-wrap:balance;
+}
+#app main .page #binch-proc-toast #binch-proc-chance{
+  font-variant-numeric:tabular-nums;
+}
+@media(max-width:600px){
+ #app main .page #binch-proc-toast{
+   grid-template-columns:88px minmax(0,1fr)!important;
+   column-gap:11px;
+   padding:14px 12px!important;
+ }
+ #app main .page #binch-proc-toast canvas{width:82px!important;height:82px!important}
+}
