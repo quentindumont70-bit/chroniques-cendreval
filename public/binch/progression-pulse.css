@@ -1,0 +1,11 @@
+#binch-progression-pulse{margin:16px 0;background:linear-gradient(135deg,#1a2a20,#111b18);border-color:#827752}
+#binch-progression-pulse h2{font-size:clamp(1.4rem,3vw,1.95rem);margin:4px 0 13px}
+#binch-progression-pulse .binch-pulse-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#binch-progression-pulse .binch-pulse-cards article{display:flex;flex-direction:column;gap:7px;min-width:0;padding:14px;border:1px solid #607563;border-radius:9px;background:#101d17}
+#binch-progression-pulse .binch-pulse-cards article>span{font-size:.77rem;text-transform:uppercase;letter-spacing:.06em;color:#accab4}
+#binch-progression-pulse .binch-pulse-cards article>strong{color:#f4deae;font:750 1.1rem Cinzel,Georgia,serif;overflow-wrap:anywhere}
+#binch-progression-pulse .binch-pulse-cards article>small{color:#b8c9b9;line-height:1.5}
+#binch-progression-pulse .binch-pulse-cards button{align-self:flex-start;margin-top:auto;border:1px solid #b39869;color:#f4dfb6;background:#2d4535;border-radius:6px;padding:9px 12px;cursor:pointer}
+#binch-progression-pulse .binch-pulse-cards button:hover{border-color:#f4d68f;background:#416148}
+#binch-progression-pulse .binch-pulse-help{color:#b9c8b6;font-size:.79rem;margin:13px 0 0}
+@media(max-width:800px){#binch-progression-pulse .binch-pulse-cards{grid-template-columns:1fr}#binch-progression-pulse .binch-pulse-cards article{min-height:120px}}
