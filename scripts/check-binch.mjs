@@ -70,7 +70,7 @@ if(!toolkit.includes('Marteau de forgeron')||!toolkit.includes('Ingénierie')||!
 const player=read('player-home.js'),playerStyle=read('player-home.css');
 if(!player.includes("updateLevelRing(last,p)")||!player.includes("rawXP!==null")||!playerStyle.includes(".binch-level-ring"))fail('Anneau XP : liaison ou garde-fou anti-valeurs absentes manquant.');
 const addonCore=read('addon/GrimoireSync/Core.lua'),addonToc=read('addon/GrimoireSync/GrimoireSync.toc'),installer=read('Installer-La-Binch.ps1');
-if(!addonCore.includes('PLAYER_XP_UPDATE')||!addonCore.includes('UNIT_XP')||!addonCore.includes('captureXP()')||!addonCore.includes('GrimoireSyncDB.xpStatus'))fail('Addon GrimoireSync : suivi XP ou diagnostic manquant.');
+if(!addonCore.includes('PLAYER_XP_UPDATE')||!addonCore.includes('UnitXP')||!addonCore.includes('captureXP()')||!addonCore.includes('GrimoireSyncDB.xpStatus'))fail('Addon GrimoireSync : suivi XP ou diagnostic manquant.');
 const addonVersion=addonToc.match(/^## Version:\s*([0-9]+(?:\.[0-9]+)+)\s*$/m)?.[1];
 if(!addonVersion)fail('Version GrimoireSync absente du TOC.');
 else {
