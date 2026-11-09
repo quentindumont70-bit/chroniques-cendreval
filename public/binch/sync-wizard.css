@@ -26,3 +26,11 @@
 @media(prefers-reduced-motion:reduce){#binch-sync-wizard .binch-wizard-track span{transition:none}}
 
 #page-sync .binch-wizard-legacy{margin:0 0 20px;border:1px solid #66869a;border-radius:12px;background:#13232e;padding:15px}#page-sync .binch-wizard-legacy>summary{cursor:pointer;color:#d3eaf3;font-weight:850;font-size:.87rem;padding:5px}#page-sync .binch-wizard-legacy[open] .binch-sync-steps{margin:15px 0 0}
+
+/* CTA principal : visible, accessible et sans animation permanente. */
+#binch-sync-wizard #binch-wizard-go{background:linear-gradient(120deg,#fbe9bd,#f0c66d)!important;color:#17252b!important;border:2px solid #fff2c2!important;font-weight:900!important;box-shadow:0 0 0 3px #f4d59555,0 0 23px 5px #f4cd7d77,0 6px 16px #0008!important;transition:box-shadow .18s ease,transform .18s ease}
+#binch-sync-wizard #binch-wizard-go:hover{transform:translateY(-2px);box-shadow:0 0 0 4px #ffe2a088,0 0 31px 10px #ffcf7d99,0 8px 20px #0008!important}
+#binch-sync-wizard #binch-wizard-go:active{transform:translateY(0)}
+#binch-wizard-feedback{color:#ffcf9f!important;font-weight:750}
+#page-sync .binch-import-target{outline:3px solid #ffdc94;outline-offset:5px;box-shadow:0 0 28px #ffd99555!important}
+@media(prefers-reduced-motion:reduce){#binch-sync-wizard #binch-wizard-go{transition:none!important}}
