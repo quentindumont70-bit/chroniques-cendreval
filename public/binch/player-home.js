@@ -117,7 +117,9 @@ function renderRoute(){
   const nav=document.querySelector('#app nav.nav [data-page="'+slug+'"]');
   if(nav)nav.click();
   if(zone){
-   const chooser=$('binch-zone-choice'),id=item.id.replace(/^z-/,'');
+   const id=item.id.replace(/^z-/,'');
+   const filter=$('binch-zone-filter');let chooser=$('binch-zone-choice');
+   if(chooser&&![...chooser.options].some(o=>o.value===id)&&filter){filter.value='all';filter.dispatchEvent(new Event('change',{bubbles:true}));chooser=$('binch-zone-choice');}
    if(chooser&&[...chooser.options].some(o=>o.value===id)){chooser.value=id;chooser.dispatchEvent(new Event('change',{bubbles:true}));}
    $('binch-zone-planner')?.scrollIntoView({behavior:'smooth',block:'start'});
   }else{
