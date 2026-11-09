@@ -3,18 +3,19 @@
 const $=s=>document.querySelector(s);
 const ITEMS=[['hub','Carnet','⌂'],['progression','Carte','◈'],['bibliotheque','Biblio','▤'],['gm','Guilde','♜']];
 function init(){
- const app=$('#app');if(!app||$('#binch-mobile-navigation'))return;
+ const app=$('#app'),original=$('#app nav.nav');if(!app||!original||$('#binch-mobile-navigation'))return;
  const nav=document.createElement('nav');nav.id='binch-mobile-navigation';
  nav.setAttribute('aria-label','Navigation rapide sur mobile');
  nav.innerHTML=ITEMS.map(([id,label,icon])=>'<button type="button" data-mobile-page="'+id+'" aria-label="'+label+'"><span aria-hidden="true">'+icon+'</span><small>'+label+'</small></button>').join('')+
  '<button type="button" id="binch-mobile-more" aria-expanded="false" aria-label="Afficher la navigation complète"><span aria-hidden="true">☷</span><small>Plus</small></button>';
  app.append(nav);
- const original=$('#app nav.nav');
- if(!original)return;
+ app.classList.add('binch-mobile-nav-ready');
  let expanded=false;
  function active(){
-  if(app.classList.contains('hidden')){nav.hidden=true;return;}
-  nav.hidden=false;
+  const visible=!app.classList.contains('hidden');
+  nav.hidden=!visible;
+  document.body.classList.toggle('binch-mobile-active',visible&&window.matchMedia('(max-width:750px)').matches);
+  if(!visible)return;
   const selected=$('#app nav.nav button.active[data-page]')?.dataset.page||'hub';
   nav.querySelectorAll('[data-mobile-page]').forEach(b=>{
    const on=b.dataset.mobilePage===selected;
@@ -55,7 +56,7 @@ function init(){
  const appObserver=new MutationObserver(active);
  appObserver.observe(app,{attributes:true,attributeFilter:['class']});
  document.addEventListener('grimoire:sync',active);
- window.addEventListener('resize',()=>{if(window.innerWidth>750)setExpanded(false)});
+ window.addEventListener('resize',()=>{if(window.innerWidth>750)setExpanded(false);active()});
  active();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
