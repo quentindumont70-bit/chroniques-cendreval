@@ -41,9 +41,10 @@ async function run(){
  finally{busy=false;$('binch-direct-run').disabled=!selected}
 }
 function mount(){
- const page=$('page-sync');if(!page||$('binch-direct-import'))return;
+ const page=$('page-sync');if(!page)return;
  const guide=page.querySelector('.binch-sync-guide');
- const box=document.createElement('section');box.id='binch-direct-import';box.className='panel section';
+ let box=$('binch-direct-import');
+ if(!box){box=document.createElement('section');box.id='binch-direct-import';box.className='panel section';
  box.innerHTML=`<div class="eyebrow">SYNCHRONISATION LOCALE · GRIMOIRESYNC</div>
  <h2>Importer mon druide depuis WoW</h2>
  <p>Après <code>/reload</code> dans WoW, dépose <strong>GrimoireSync.lua</strong> ici ou sélectionne-le avec Windows.</p>
@@ -55,7 +56,7 @@ function mount(){
  <details><summary>Où est mon fichier ? Et peut-on importer automatiquement ?</summary>
  <p>Chemin courant : <code>World of Warcraft\\_forever_\\WTF\\Account\\TON_COMPTE\\SavedVariables\\GrimoireSync.lua</code>. Tu peux aussi glisser le fichier depuis l’Explorateur Windows. Un site web ne peut pas lire un chemin saisi sans sélection ou permission du navigateur.</p>
  <p>Pour un import automatique après chaque <code>/reload</code>, utilise « Suivre automatiquement les prochains /reload » plus bas, dans un navigateur compatible. Ce dépôt ne fait aucun envoi sur Internet.</p></details>`;
- (guide||page.firstElementChild)?.before(box);
+ (guide||page.firstElementChild)?.before(box);}
  const input=$('binch-direct-file'),drop=$('binch-direct-drop');
  input.addEventListener('change',()=>setFile(input.files?.[0]));
  drop.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();input.click()}});
