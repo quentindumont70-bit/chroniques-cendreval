@@ -1,0 +1,15 @@
+/* La Binch — diagnostics internes, affichés uniquement avec ?binch-test=1. */
+#binch-site-diagnostics{position:fixed;z-index:99999;top:16px;right:16px;width:min(520px,calc(100vw - 24px));max-height:calc(100vh - 32px);overflow:auto;padding:16px;border:1px solid #d5ad64;border-radius:10px;box-shadow:0 20px 80px #000c;background:#111d19;color:#f3ead5;font:14px/1.45 Inter,system-ui,sans-serif}
+#binch-site-diagnostics header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+#binch-site-diagnostics header strong{color:#f3d499;font-size:1.15rem}
+#binch-site-diagnostics button{padding:8px 12px;border:1px solid #a58d61;border-radius:7px;background:#293d32;color:#f4dfb1;cursor:pointer}
+#binch-site-diagnostics>p{font-size:.83rem;color:#b8c8bb}
+#binch-diag-overview{margin:12px 0;padding:11px;border:1px solid #69826b;background:#182d22;border-radius:7px;font-weight:750}
+#binch-diag-overview[data-status=fail]{border-color:#b37664;background:#35211d}
+#binch-diag-results{list-style:none;margin:12px 0;padding:0}
+#binch-diag-results li{display:flex;gap:10px;align-items:flex-start;margin:0;padding:8px 0;border-bottom:1px solid #425348}
+#binch-diag-results li>span{display:grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:#28563b;color:#dcf5d9}
+#binch-diag-results li.failed>span{background:#72362d;color:#ffe1d8}
+#binch-diag-results li strong,#binch-diag-results li small{display:block}
+#binch-diag-results li small{color:#dfaaa0;overflow-wrap:anywhere}
+@media(max-width:630px){#binch-site-diagnostics{top:6px;right:6px;width:calc(100vw - 12px);max-height:calc(100dvh - 12px);padding:12px}}
