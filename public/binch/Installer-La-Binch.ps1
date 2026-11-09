@@ -62,7 +62,7 @@ try {
    if ((Get-Item -LiteralPath $out).Length -lt 40) { throw "Le fichier $filename est vide ou invalide." }
   }
   $toc = Get-Content -LiteralPath (Join-Path $staging 'GrimoireSync.toc') -Raw
-  if ($toc -notmatch '(?m)^## SavedVariables: GrimoireSyncDB' -or $toc -notmatch '(?m)^## Version: 0\.8\.3' -or $toc -notmatch '(?m)^Minimap.lua\s*$') {throw 'Le manifeste GrimoireSync ne correspond pas a la version attendue.'}
+  if ($toc -notmatch '(?m)^## SavedVariables: GrimoireSyncDB' -or $toc -notmatch '(?m)^## Version: 0\.8\.4' -or $toc -notmatch '(?m)^Minimap.lua\s*$') {throw 'Le manifeste GrimoireSync ne correspond pas a la version attendue.'}
   $minimapCode = Get-Content -LiteralPath (Join-Path $staging 'Minimap.lua') -Raw
   if ($minimapCode -match 'dialog:SetBackdrop\(' -or $minimapCode -match 'button:SetBackdrop\(') { throw 'Minimap.lua non compatible avec WoW Forever.' }
   if (Test-Path -LiteralPath $installed) {
@@ -86,7 +86,7 @@ try {
   Remove-Item -LiteralPath $staging -Recurse -Force -ErrorAction SilentlyContinue
  }
  $installedToc = Get-Content -LiteralPath (Join-Path $installed 'GrimoireSync.toc') -Raw
- if ($installedToc -notmatch '(?m)^## Version: 0\.8\.3\s*$') { throw 'Version installee incorrecte.' }
+ if ($installedToc -notmatch '(?m)^## Version: 0\.8\.4\s*$') { throw 'Version installee incorrecte.' }
  $message = "GrimoireSync v0.8.4 installe - fichiers controles (SHA-256)." + [Environment]::NewLine + [Environment]::NewLine +
  "Dossier : $installed" + [Environment]::NewLine +
  "Version precedente : $previousVersion" + [Environment]::NewLine
