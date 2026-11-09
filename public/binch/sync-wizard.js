@@ -33,21 +33,20 @@ input.addEventListener('change',()=>{const all=getState();all[i]=input.checked;s
 function render(){const all=getState();const n=all.filter(Boolean).length;$('#binch-wizard-count').textContent=n+' / '+steps.length;$('#binch-wizard-progress').style.width=(100*n/steps.length)+'%';list.querySelectorAll('input').forEach((x,i)=>x.checked=!!all[i]);wizard.dataset.complete=n===steps.length?'true':'false'}
 $('#binch-wizard-reset').addEventListener('click',()=>{setState(Array(steps.length).fill(false));render()});
 $('#binch-wizard-go').addEventListener('click',()=>{
- // La sélection du fichier doit être déclenchée directement par le geste utilisateur :
- // un simple scrollIntoView peut échouer et ne déclenche jamais l'import.
- const automatic=$('#binch-easy-action');
+ // Priorité au champ natif : le navigateur intégré peut bloquer showOpenFilePicker.
+ // Un click direct sur input[type=file] doit rester dans le geste utilisateur.
  const manual=$('#grimoire-bridge-file')||$('#grimoire-bridge input[type="file"]');
- const destination=automatic||manual;
- if(destination){
-  const section=destination.closest('#binch-easy-sync,#grimoire-bridge');
-  if(section){section.scrollIntoView({block:'center',behavior:'instant'});section.classList.add('binch-import-target');setTimeout(()=>section.classList.remove('binch-import-target'),2200)}
-  destination.click();
- }else{
-  const status=$('#binch-wizard-feedback')||document.createElement('p');
-  status.id='binch-wizard-feedback';status.setAttribute('role','alert');
-  status.textContent='Le module d’import n’est pas prêt. Recharge La Binch puis réessaie.';
-  wizard.querySelector('.binch-wizard-actions').after(status);
+ const message=$('#binch-wizard-feedback')||document.createElement('p');
+ message.id='binch-wizard-feedback';message.setAttribute('role','status');
+ wizard.querySelector('.binch-wizard-actions').after(message);
+ if(manual){
+  message.textContent='Sélectionne GrimoireSync.lua dans la fenêtre qui s’ouvre.';
+  try{manual.click()}catch(err){message.textContent='Ouverture bloquée : utilise le bouton « Choisir GrimoireSync.lua » du panneau inférieur.'}
+  return;
  }
+ const action=$('#binch-easy-action');
+ if(action){message.textContent='Ouverture de la sélection…';action.click();return}
+ message.textContent='Import indisponible : recharge la page. Si le problème persiste, utilise un navigateur classique.';
 });
 render();
 }
