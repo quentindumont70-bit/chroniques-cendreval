@@ -13,3 +13,6 @@
 #binch-diag-results li strong,#binch-diag-results li small{display:block}
 #binch-diag-results li small{color:#dfaaa0;overflow-wrap:anywhere}
 @media(max-width:630px){#binch-site-diagnostics{top:6px;right:6px;width:calc(100vw - 12px);max-height:calc(100dvh - 12px);padding:12px}}
+
+#binch-site-diagnostics .binch-diag-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#binch-site-diagnostics .binch-diag-actions button{flex:1 1 auto}
