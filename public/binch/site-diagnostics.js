@@ -48,6 +48,20 @@ function run(){
  }else{
   test('Onboarding actif (modules du personnage non testables)',()=>true);
  }
+ test('Toutes les destinations du menu pointent vers une page',()=>{
+  const nav=$('#app nav.nav');if(!nav)return 'Navigation absente';
+  const broken=[...nav.querySelectorAll('[data-page]')].filter(b=>{
+   const slug=b.dataset.page;
+   return !slug||!document.getElementById('page-'+slug);
+  });
+  return broken.length?'Pages inexistantes : '+broken.map(b=>b.dataset.page||'?').join(', '):true;
+ });
+ test('Boutons sans destination dans le centre GM',()=>{
+  const commands=[...document.querySelectorAll('#binch-gm-hub [data-gm-destination]')];
+  const destinations={event:'#page-gm .binch-gm-details',roster:'#binch-guild-roster',calendar:'#binch-guild-calendar',dungeon:'#binch-dungeon-prep',coffre:'#page-coffre',macros:'#page-macros',planner:'#binch-guild-planner',bibliotheque:'#page-bibliotheque'};
+  const missing=commands.filter(b=>{const selector=destinations[b.dataset.gmDestination];return !selector||!$(selector)});
+  return missing.length?('Commandes sans cible : '+missing.map(b=>b.dataset.gmDestination).join(', ')):true;
+ });
  test('Navigation principale fonctionnelle',()=>{
   const nav=$('#app nav.nav');
   if(!nav)return 'Barre de navigation absente';
