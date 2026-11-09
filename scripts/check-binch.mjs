@@ -47,8 +47,9 @@ if(!portal.includes('import-drop.js?v=')||!portal.includes('import-direct.css?v=
  fail('Import Opera : ressources de synchronisation non reliées au portail.');
 if(!importer.includes('window.BinchSync.parsePayload')||!importer.includes('window.BinchSync.importCharacter'))
  fail('Import Opera : parseur ou import réel non relié.');
-if(!/^GrimoireSync\\.lua$/i.test('GrimoireSync.lua')||!importer.includes('GrimoireSync\\.lua'))
- fail('Import Opera : validation du nom de fichier invalide.');
+const validLuaPattern='^GrimoireSync'+String.fromCharCode(92)+'.lua$';
+if(!importer.includes('/'+validLuaPattern+'/i'))fail('Import Opera : expression régulière du nom GrimoireSync.lua incorrecte.');
+if(!new RegExp(validLuaPattern,'i').test('GrimoireSync.lua'))fail('Import Opera : nom de fichier refusé.');
 if(portal.includes('chatgpt.site'))fail('La Binch : dépendance à chatgpt.site encore présente dans la page.');
 if(!present('binch-backdrop.svg'))fail('La Binch : fond local manquant.');
 
