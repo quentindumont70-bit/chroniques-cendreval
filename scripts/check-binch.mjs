@@ -82,6 +82,17 @@ if(present('command-layout.js')){
  if(layout.includes('MutationObserver('))fail('Cockpit personnalisable : observateur global interdit en continu.');
 }
 
+// Faith V3 : le radar et les suggestions exploitent exactement le catalogue affiché.
+for(const file of ['command-discoveries.js','command-discoveries.css']){
+ if(!present(file))fail('Radar de découvertes : ressource absente : '+file);
+ if(!portal.includes('./'+file+'?v='))fail('Radar de découvertes : ressource non chargée : '+file);
+}
+if(!portal.includes('window.BinchDiscoveries'))fail('Faith : accès au catalogue de découvertes manquant dans le portail.');
+if(present('command-discoveries.js')){
+ const radar=read('command-discoveries.js');
+ if(!radar.includes('BinchDiscoveries')||!radar.includes('BinchPinned'))fail('Radar : source ou action épingler non fonctionnelle.');
+}
+
 // Interface publique des chantiers et premières décisions locales de Faith.
 for(const file of ['todo-community.js','todo-community.css','faith-strategist.js','faith-strategist.css']){
  if(!present(file))fail('Communauté/Faith : ressource absente : '+file);
