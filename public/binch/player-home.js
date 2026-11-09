@@ -84,6 +84,8 @@ function mount(){
  $('binch-route-search').oninput=renderRoute;
  root.addEventListener('click',e=>{if(e.target.closest('#binch-xp-open-sync'))document.querySelector('#app nav.nav [data-page="sync"]')?.click()});
  enhanceProfile();
+ // Other deferred modules may initialize before the adventure panel exists.
+ document.dispatchEvent(new Event('binch:adventure-ready'));
 }
 function renderRoute(){
  const p=profile(),natural=route(p),stored=pins(p),done=read(DONE+key(p));
