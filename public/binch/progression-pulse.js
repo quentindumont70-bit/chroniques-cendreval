@@ -60,5 +60,6 @@ function render(){
  '<article><span>Objectifs prioritaires</span><strong>'+goals+'</strong><small>'+esc(stage)+'</small><button data-pulse-action="goals" type="button">Mes objectifs</button></article>'+
  '<article><span>Prochaine session</span><strong>'+(x.minutes?x.minutes+' minutes':'À préparer')+'</strong><small>Plan local ajustable selon tes disponibilités</small><button data-pulse-action="session" type="button">Préparer ma session</button></article>';
 }
+document.addEventListener('binch:adventure-ready',init);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
