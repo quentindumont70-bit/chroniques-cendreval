@@ -5,7 +5,10 @@ if(query.get('binch-test')!=='1')return;
 const $=sel=>document.querySelector(sel);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const failures=[],results=[];
+const runtimeErrors=[];
 let started=false;
+window.addEventListener('error',e=>{if(runtimeErrors.length<30)runtimeErrors.push({type:'Erreur JavaScript',message:String(e.message||e.target?.src||'Ressource non chargée').slice(0,300)})},true);
+window.addEventListener('unhandledrejection',e=>{if(runtimeErrors.length<30)runtimeErrors.push({type:'Promesse rejetée',message:String(e.reason?.message||e.reason||'Raison inconnue').slice(0,300)})});
 function test(name,check){
  try{const info=check();const okay=info===true;results.push({name,pass:okay,note:okay?'':String(info||'Échec sans détail')});if(!okay)failures.push(name)}
  catch(e){results.push({name,pass:false,note:String(e&&e.message||e)});failures.push(name)}
@@ -15,9 +18,10 @@ function run(){
  if(started)return;started=true;
  const diagnostic=document.createElement('aside');diagnostic.id='binch-site-diagnostics';
  diagnostic.setAttribute('role','region');diagnostic.setAttribute('aria-label','Tests du portail La Binch');
- diagnostic.innerHTML='<header><strong>Diagnostic de La Binch</strong><button type="button" id="binch-diag-close" aria-label="Fermer le diagnostic">×</button></header><p>Tests non destructifs des pages, des contrôles et des chargements. Aucune progression, aucune inscription et aucune sauvegarde n’est modifiée.</p><div id="binch-diag-overview"></div><ul id="binch-diag-results"></ul><button type="button" id="binch-diag-copy">Copier le rapport</button>';
+ diagnostic.innerHTML='<header><strong>Diagnostic de La Binch</strong><button type="button" id="binch-diag-close" aria-label="Fermer le diagnostic">×</button></header><p>Tests non destructifs des pages et des contrôles, sans écriture dans les données du joueur. Les deux tests de navigation peuvent faire défiler la page.</p><div id="binch-diag-overview"></div><ul id="binch-diag-results"></ul><div class="binch-diag-actions"><button type="button" id="binch-diag-copy">Copier le rapport</button><button type="button" id="binch-diag-rerun">Relancer les tests</button></div>';
  document.body.append(diagnostic);
  const app=$('#app'),onboarding=Boolean(app&&app.classList.contains('hidden'));
+ failures.length=0;results.length=0;
  sectionCheck('app','Application principale');
  sectionCheck('page-hub','Carnet de route');
  sectionCheck('page-progression','Carte / progression');
@@ -54,7 +58,7 @@ function run(){
  });
  test('Navigation mobile câblée',()=>{
   const panel=$('#binch-mobile-navigation');
-  return panel&&panel.querySelectorAll('[data-mobile-page]').length>=4&&$('#binch-mobile-more')?'OK'=== 'OK': 'Contrôles mobiles absents';
+  return panel&&panel.querySelectorAll('[data-mobile-page]').length>=4&&$('#binch-mobile-more')?true:'Contrôles mobiles absents';
  });
  test('Formulaire GM et copie Discord',()=>{
   return $('#binch-roster-form')&&$('#binch-roster-copy')&&$('#binch-calendar-form')&&$('#binch-weekly-copy')&&$('#binch-dungeon-copy')?true:'Un des contrôles GM manque';
@@ -88,13 +92,15 @@ function run(){
    finally{const original=document.querySelector('#app nav.nav [data-page="'+String(before||'page-hub').replace(/^page-/,'')+'"]');if(original)original.click();}
   });
  }
+ test('Erreurs JavaScript observées depuis l’ouverture du diagnostic',()=>runtimeErrors.length?runtimeErrors.map(e=>e.type+' : '+e.message).join(' ; '):true);
  const pass=results.filter(x=>x.pass).length;
  $('#binch-diag-overview').textContent=pass+' / '+results.length+' vérifications réussies'+(failures.length?' · '+failures.length+' échec(s)':'')+(onboarding?' · personnage non configuré':'');
  $('#binch-diag-overview').dataset.status=failures.length?'fail':'pass';
  $('#binch-diag-results').innerHTML=results.map(x=>'<li class="'+(x.pass?'passed':'failed')+'"><span>'+(x.pass?'✓':'×')+'</span><div><strong>'+esc(x.name)+'</strong>'+(x.note?'<small>'+esc(x.note)+'</small>':'')+'</div></li>').join('');
  $('#binch-diag-close').onclick=()=>diagnostic.remove();
+ $('#binch-diag-rerun').onclick=()=>{diagnostic.remove();started=false;run()};
  $('#binch-diag-copy').onclick=()=>{
-  const report=['La Binch — diagnostic local','Total : '+pass+'/'+results.length,'Appareil : '+(window.innerWidth<751?'mobile':'ordinateur'),'',''].concat(results.map(x=>(x.pass?'OK':'ÉCHEC')+' — '+x.name+(x.note?' : '+x.note:''))).join('\n');
+  const report=['La Binch — diagnostic local','Total : '+pass+'/'+results.length,'Appareil : '+(window.innerWidth<751?'mobile':'ordinateur'),'Date : '+new Date().toISOString(),'URL : '+location.origin+location.pathname,'',''].concat(results.map(x=>(x.pass?'OK':'ÉCHEC')+' — '+x.name+(x.note?' : '+x.note:''))).join('\n');
   if(navigator.clipboard?.writeText)navigator.clipboard.writeText(report).then(()=>{$('#binch-diag-copy').textContent='Rapport copié ✓'}).catch(()=>prompt('Copier le rapport',report));
   else prompt('Copier le rapport',report);
  };
