@@ -1,4 +1,4 @@
-# La Binch - installation locale GrimoireSync v0.8.3
+# La Binch - installation locale GrimoireSync v0.8.4
 # Source publique : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/
 # Aucune permission administrateur, aucune lecture des identifiants/du dossier WTF, aucune telemetrie.
 $ErrorActionPreference = 'Stop'
@@ -87,7 +87,7 @@ try {
  }
  $installedToc = Get-Content -LiteralPath (Join-Path $installed 'GrimoireSync.toc') -Raw
  if ($installedToc -notmatch '(?m)^## Version: 0\.8\.3\s*$') { throw 'Version installee incorrecte.' }
- $message = "GrimoireSync v0.8.3 installe - fichiers controles (SHA-256)." + [Environment]::NewLine + [Environment]::NewLine +
+ $message = "GrimoireSync v0.8.4 installe - fichiers controles (SHA-256)." + [Environment]::NewLine + [Environment]::NewLine +
  "Dossier : $installed" + [Environment]::NewLine +
  "Version precedente : $previousVersion" + [Environment]::NewLine
  if (Test-Path -LiteralPath $backup) { $message += "Ancienne version sauvegardee : $backup" + [Environment]::NewLine }
