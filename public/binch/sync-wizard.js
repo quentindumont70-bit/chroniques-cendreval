@@ -13,7 +13,7 @@ function getState(){try{const d=JSON.parse(localStorage.getItem(KEY));return Arr
 function setState(v){try{localStorage.setItem(KEY,JSON.stringify(v))}catch{}}
 function mount(){const target=$('#page-sync .binch-sync-guide');if(!target||$('#binch-sync-wizard'))return;
 const wizard=document.createElement('section');wizard.id='binch-sync-wizard';wizard.setAttribute('aria-label','Assistant de première synchronisation');
-wizard.innerHTML='<div class="binch-wizard-top"><div><span class="binch-wizard-overline">CONFIGURATION GUIDÉE · SANS PYTHON</span><h3>Connexion WoW en 5 missions</h3><p>Quelques minutes une seule fois. Ensuite, un simple <code>/reload</code> et le suivi peut actualiser ton profil si tu l’as autorisé.</p></div><div class="binch-wizard-count"><span id="binch-wizard-count">0 / 5</span><small>missions</small></div></div><div class="binch-wizard-track"><span id="binch-wizard-progress"></span></div><div id="binch-wizard-tasks" class="binch-wizard-tasks"></div><div class="binch-wizard-actions"><a href="./Installer-La-Binch.cmd" download>↓ Télécharger l’installateur</a><button type="button" id="binch-wizard-go">Accéder à l’import</button><button type="button" id="binch-wizard-reset">Réinitialiser les étapes</button></div><details class="binch-wizard-details"><summary>Je suis bloqué : quel fichier choisir et où le trouver ?</summary><p>Le fichier attendu s’appelle <code>GrimoireSync.lua</code> et se trouve habituellement dans <code>World of Warcraft/_forever_/WTF/Account/&lt;compte&gt;/SavedVariables/</code>. Le fichier <code>Core.lua</code> situé dans <code>Interface/AddOns</code> n’est pas une sauvegarde.</p><p>Si le fichier n’existe pas : vérifie que l’addon apparaît comme compatible et activé dans WoW, puis utilise <code>/grimoire</code> et <code>/reload</code>. Si le fichier existe mais est refusé, assure-toi que WoW a fini de sauvegarder, puis recommence l’import.</p><p>Opera, Chrome et Edge peuvent mémoriser l’accès choisi. Selon les autorisations et la version du navigateur, une confirmation sera parfois redemandée ; sur les autres navigateurs, utilise l’import manuel.</p></details><p class="binch-wizard-disclaimer">L’addon n’envoie rien sur Internet. Les étapes cochées sont stockées dans ce navigateur. Aucun compte Battle.net, mot de passe ou clé API n’est demandé.</p>';
+wizard.innerHTML='<div class="binch-wizard-top"><div><span class="binch-wizard-overline">CONFIGURATION GUIDÉE · SANS PYTHON</span><h3>Connexion WoW en 5 missions</h3><p>Quelques minutes une seule fois. Ensuite, un simple <code>/reload</code> et le suivi peut actualiser ton profil si tu l’as autorisé.</p></div><div class="binch-wizard-count"><span id="binch-wizard-count">0 / 5</span><small>missions</small></div></div><div class="binch-wizard-track"><span id="binch-wizard-progress"></span></div><div id="binch-wizard-tasks" class="binch-wizard-tasks"></div><div class="binch-wizard-actions"><a href="./Installer-La-Binch.cmd" download>↓ Télécharger l’installateur</a><button type="button" id="binch-wizard-go">✦ Choisir mon fichier WoW (.lua)</button><button type="button" id="binch-wizard-reset">Réinitialiser les étapes</button></div><details class="binch-wizard-details"><summary>Je suis bloqué : quel fichier choisir et où le trouver ?</summary><p>Le fichier attendu s’appelle <code>GrimoireSync.lua</code> et se trouve habituellement dans <code>World of Warcraft/_forever_/WTF/Account/&lt;compte&gt;/SavedVariables/</code>. Le fichier <code>Core.lua</code> situé dans <code>Interface/AddOns</code> n’est pas une sauvegarde.</p><p>Si le fichier n’existe pas : vérifie que l’addon apparaît comme compatible et activé dans WoW, puis utilise <code>/grimoire</code> et <code>/reload</code>. Si le fichier existe mais est refusé, assure-toi que WoW a fini de sauvegarder, puis recommence l’import.</p><p>Opera, Chrome et Edge peuvent mémoriser l’accès choisi. Selon les autorisations et la version du navigateur, une confirmation sera parfois redemandée ; sur les autres navigateurs, utilise l’import manuel.</p></details><p class="binch-wizard-disclaimer">L’addon n’envoie rien sur Internet. Les étapes cochées sont stockées dans ce navigateur. Aucun compte Battle.net, mot de passe ou clé API n’est demandé.</p>';
 target.insertBefore(wizard,target.querySelector('.binch-sync-steps'));
 const legacy=target.querySelector('.binch-sync-steps');
 if(legacy){
@@ -32,7 +32,23 @@ input.addEventListener('change',()=>{const all=getState();all[i]=input.checked;s
 });
 function render(){const all=getState();const n=all.filter(Boolean).length;$('#binch-wizard-count').textContent=n+' / '+steps.length;$('#binch-wizard-progress').style.width=(100*n/steps.length)+'%';list.querySelectorAll('input').forEach((x,i)=>x.checked=!!all[i]);wizard.dataset.complete=n===steps.length?'true':'false'}
 $('#binch-wizard-reset').addEventListener('click',()=>{setState(Array(steps.length).fill(false));render()});
-$('#binch-wizard-go').addEventListener('click',()=>{const el=$('#binch-easy-sync')||$('#grimoire-bridge');if(el){el.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});el.querySelector('button,input[type="file"]')?.focus({preventScroll:true})}});
+$('#binch-wizard-go').addEventListener('click',()=>{
+ // La sélection du fichier doit être déclenchée directement par le geste utilisateur :
+ // un simple scrollIntoView peut échouer et ne déclenche jamais l'import.
+ const automatic=$('#binch-easy-action');
+ const manual=$('#grimoire-bridge-file')||$('#grimoire-bridge input[type="file"]');
+ const destination=automatic||manual;
+ if(destination){
+  const section=destination.closest('#binch-easy-sync,#grimoire-bridge');
+  if(section){section.scrollIntoView({block:'center',behavior:'instant'});section.classList.add('binch-import-target');setTimeout(()=>section.classList.remove('binch-import-target'),2200)}
+  destination.click();
+ }else{
+  const status=$('#binch-wizard-feedback')||document.createElement('p');
+  status.id='binch-wizard-feedback';status.setAttribute('role','alert');
+  status.textContent='Le module d’import n’est pas prêt. Recharge La Binch puis réessaie.';
+  wizard.querySelector('.binch-wizard-actions').after(status);
+ }
+});
 render();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
