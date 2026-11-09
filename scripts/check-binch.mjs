@@ -94,6 +94,8 @@ if(present('todo-community.js')){
 }
 if(present('faith-strategist.js')){
  const strategist=read('faith-strategist.js');
+ if(!strategist.includes('BinchDiscoveries')||!strategist.includes('BinchPinned'))fail('Faith V3 : liaison des découvertes et épingles absente.');
+ if(!portal.includes('window.BinchDiscoveries'))fail('Faith V3 : catalogue de découvertes non exposé depuis le site.');
  if(!strategist.includes('grimoire.bridge.last')||!strategist.includes('binch-faith-advice'))
   fail('Faith stratège : recommandations ou source de données manquantes.');
 }
