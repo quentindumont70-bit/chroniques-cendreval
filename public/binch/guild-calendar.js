@@ -10,7 +10,7 @@ function attendances(e){return Array.isArray(e.attendees)?e.attendees.filter(a=>
 function confirmed(e){return attendances(e).filter(a=>a.status==='Confirmé')}
 function download(filename,mime,text){const url=URL.createObjectURL(new Blob([text],{type:mime})),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500)}
 function icalEscape(value){return String(value??'').replace(/\\/g,'\\\\').replace(/\r?\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;')}
-function invite(e){const stamp=e.date.replace(/-/g,'')+'T'+e.time.replace(':','')+'00';const description=[e.note,'Places : '+e.size,...confirmed(e).map(a=>a.name+' ('+a.role+')')].filter(Boolean).join('\n');const uid='la-binch-'+String(e.id).replace(/[^a-zA-Z0-9-]/g,'')+'@local';return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//La Binch//Calendrier de guilde//FR','CALSCALE:GREGORIAN','BEGIN:VEVENT','UID:'+uid,'DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'') ,'DTSTART:'+stamp,'SUMMARY:'+icalEscape(e.title),'DESCRIPTION:'+icalEscape(description),'END:VEVENT','END:VCALENDAR'].join('\r\n')+'\r\n'}
+function invite(e){const start=new Date(e.date+'T'+e.time+':00');const end=new Date(start.getTime()+90*60*1000);const fmt=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('')+'T'+[d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,'0')).join('');const stamp=fmt(start),finish=fmt(end);const description=[e.note,'Places : '+e.size,...confirmed(e).map(a=>a.name+' ('+a.role+')')].filter(Boolean).join('\n');const uid='la-binch-'+String(e.id).replace(/[^a-zA-Z0-9-]/g,'')+'@local';return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//La Binch//Calendrier de guilde//FR','CALSCALE:GREGORIAN','BEGIN:VEVENT','UID:'+uid,'DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'') ,'DTSTART:'+stamp,'DTEND:'+finish,'SUMMARY:'+icalEscape(e.title),'DESCRIPTION:'+icalEscape(description),'END:VEVENT','END:VCALENDAR'].join('\r\n')+'\r\n'}
 function storage(){try{const v=JSON.parse(localStorage.getItem(KEY));events=Array.isArray(v)?v.slice(0,MAX).filter(valid).map(x=>({...x,done:!!x.done,attendees:attendances(x)})):[]}catch{events=[]}}
 function valid(x){return x&&typeof x.title==='string'&&x.title.trim().length>0&&x.title.length<=100&&KINDS.includes(x.kind)&&typeof x.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&!Number.isNaN(Date.parse(x.date+'T00:00:00'))&&typeof x.time==='string'&&/^([01]\d|2[0-3]):[0-5]\d$/.test(x.time)&&typeof x.note==='string'&&x.note.length<=280&&Number.isInteger(x.size)&&x.size>=2&&x.size<=40}
 function persist(){localStorage.setItem(KEY,JSON.stringify(events));document.dispatchEvent(new Event('binch:calendar-change'))}
@@ -35,15 +35,29 @@ function start(){
  const now=new Date(),yyyy=now.getFullYear(),mm=String(now.getMonth()+1).padStart(2,'0'),dd=String(now.getDate()).padStart(2,'0');
  dateInput.value=yyyy+'-'+mm+'-'+dd;
  form.onsubmit=e=>{
-  e.preventDefault();if(events.length>=MAX)return alert('Maximum de '+MAX+' événements atteint.');
-  const d=new FormData(form),x={id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),title:String(d.get('title')||'').trim(),kind:String(d.get('kind')),date:String(d.get('date')),time:String(d.get('time')),size:Number(d.get('size')),note:String(d.get('note')||'').trim(),done:false};
+  e.preventDefault();
+  const editing=form.dataset.editId;
+  const previous=editing?events.find(x=>x.id===editing):null;
+  if(!previous&&events.length>=MAX)return alert('Maximum de '+MAX+' événements atteint.');
+  const d=new FormData(form),x={id:previous?.id||(Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8)),title:String(d.get('title')||'').trim(),kind:String(d.get('kind')),date:String(d.get('date')),time:String(d.get('time')),size:Number(d.get('size')),note:String(d.get('note')||'').trim(),done:previous?.done||false,attendees:previous?.attendees||[]};
   if(!valid(x))return alert('Complète correctement la sortie.');
-  events.push(x);persist();render();form.elements.namedItem('title').value='';form.elements.namedItem('note').value='';
+  if(previous)Object.assign(previous,x);else events.push(x);
+  persist();render();delete form.dataset.editId;
+  form.querySelector('[type="submit"]').textContent='Ajouter la sortie';
+  form.elements.namedItem('title').value='';form.elements.namedItem('note').value='';
  };
  box.addEventListener('click',async e=>{
   const f=e.target.closest('[data-cal-filter]');if(f){filter=f.dataset.calFilter;render();return;}
   const b=e.target.closest('[data-cal-action]');if(!b)return;
   const event=events.find(x=>x.id===b.dataset.calId);if(!event)return;
+  if(b.dataset.calAction==='edit'){
+   form.dataset.editId=event.id;
+   for(const field of ['title','kind','date','time','size','note'])form.elements.namedItem(field).value=event[field];
+   form.querySelector('[type="submit"]').textContent='Enregistrer les modifications';
+   form.scrollIntoView({behavior:'smooth',block:'center'});
+   form.elements.namedItem('title').focus();
+   return;
+  }
   if(b.dataset.calAction==='done'){event.done=!event.done;persist();render();return;}
   if(b.dataset.calAction==='delete'){if(!confirm('Supprimer la sortie '+event.title+' ?'))return;events=events.filter(x=>x!==event);persist();render();return;}
   if(b.dataset.calAction==='ics'){download('la-binch-'+event.date+'.ics','text/calendar;charset=utf-8',invite(event));return;}
@@ -79,7 +93,7 @@ function start(){
   $('binch-calendar-list').innerHTML=list.length?list.map(x=>{
    const people=attendances(x),yes=confirmed(x),wait=people.filter(a=>a.status==='Incertain'),roles=ROLES.map(role=>role+' : '+yes.filter(a=>a.role===role).length).join(' · ');
    return '<article class="binch-calendar-event'+(x.done?' done':'')+'"><div><small>'+esc(x.kind)+' · '+x.date.split('-').reverse().join('/')+' à '+x.time+'</small><h3>'+esc(x.title)+'</h3><p>'+esc(x.note||'Rendez-vous à confirmer')+'</p><span>'+yes.length+' / '+x.size+' places confirmées · '+wait.length+' incertain(s)'+(yes.length>x.size?' · ⚠ Capacité dépassée':'')+'</span><small class="binch-cal-role-count">'+esc(roles)+'</small></div>'+
-   '<div class="binch-calendar-actions"><button type="button" data-cal-action="copy" data-cal-id="'+esc(x.id)+'">Copier pour Discord</button><button type="button" data-cal-action="ics" data-cal-id="'+esc(x.id)+'">Ajouter à mon calendrier (.ics)</button><button type="button" data-cal-action="done" data-cal-id="'+esc(x.id)+'">'+(x.done?'Rouvrir':'Terminer')+'</button><button type="button" data-cal-action="delete" data-cal-id="'+esc(x.id)+'">Supprimer</button></div>'+
+   '<div class="binch-calendar-actions"><button type="button" data-cal-action="edit" data-cal-id="'+esc(x.id)+'">Modifier</button><button type="button" data-cal-action="copy" data-cal-id="'+esc(x.id)+'">Copier pour Discord</button><button type="button" data-cal-action="ics" data-cal-id="'+esc(x.id)+'">Ajouter à mon calendrier (.ics)</button><button type="button" data-cal-action="done" data-cal-id="'+esc(x.id)+'">'+(x.done?'Rouvrir':'Terminer')+'</button><button type="button" data-cal-action="delete" data-cal-id="'+esc(x.id)+'">Supprimer</button></div>'+
    '<details class="binch-cal-attendance" data-cal-open="'+esc(x.id)+'"><summary>Inscriptions · '+people.length+' membre(s)</summary><form class="binch-cal-signup" data-cal-signup="'+esc(x.id)+'"><input name="name" required maxlength="36" aria-label="Nom du personnage" placeholder="Personnage"/><select name="role" aria-label="Rôle">'+ROLES.map(v=>'<option>'+v+'</option>').join('')+'</select><select name="status" aria-label="Disponibilité">'+STATES.map(v=>'<option>'+v+'</option>').join('')+'</select><button type="submit">Ajouter / modifier</button></form>'+
    '<div class="binch-cal-attendees">'+(people.length?people.map(a=>'<div><span>'+esc(a.name)+' — '+esc(a.role)+' · '+esc(a.status)+'</span><button type="button" data-cal-event="'+esc(x.id)+'" data-cal-attendee-remove="'+esc(a.name)+'" aria-label="Retirer '+esc(a.name)+'">×</button></div>').join(''):'<p class="muted">Aucun inscrit : les inscriptions sont saisies manuellement, sur cet appareil.</p>')+'</div></details></article>';
   }).join(''):'<p class="muted">Aucune sortie dans cette vue.</p>';
