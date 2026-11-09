@@ -28,23 +28,31 @@ function start(){
  '<label>Heure locale<input type="time" name="time" value="20:30" required></label>'+
  '<label>Places<input type="number" name="size" min="2" max="40" value="5" required></label>'+
  '<label class="binch-calendar-note">Instructions / lieu de rendez-vous<textarea maxlength="280" name="note" rows="2" placeholder="Canal vocal, point de rendez-vous, prérequis…"></textarea></label>'+
- '<button type="submit">Ajouter la sortie</button></form>'+
+ '<button type="submit">Ajouter la sortie</button><button type="button" id="binch-calendar-cancel" hidden>Annuler la modification</button></form>'+
  '<div class="binch-calendar-filters" role="group" aria-label="Filtrer les événements"><button type="button" data-cal-filter="upcoming">À venir</button><button type="button" data-cal-filter="all">Tous</button><button type="button" data-cal-filter="done">Terminés</button></div>'+
  '<p id="binch-calendar-count" role="status" aria-live="polite"></p><div id="binch-calendar-list"></div>';
  const roster=$('binch-guild-roster');if(roster)roster.insertAdjacentElement('afterend',box);else page.prepend(box);
  const form=$('binch-calendar-form'),dateInput=form.elements.namedItem('date');
  const now=new Date(),yyyy=now.getFullYear(),mm=String(now.getMonth()+1).padStart(2,'0'),dd=String(now.getDate()).padStart(2,'0');
  dateInput.value=yyyy+'-'+mm+'-'+dd;
+ function finishEditing(){
+  delete form.dataset.editId;
+  form.querySelector('[type="submit"]').textContent='Ajouter la sortie';
+  $('binch-calendar-cancel').hidden=true;
+ }
+ $('binch-calendar-cancel').onclick=()=>{
+  finishEditing();form.reset();dateInput.value=yyyy+'-'+mm+'-'+dd;
+ };
  form.onsubmit=e=>{
   e.preventDefault();
   const editing=form.dataset.editId;
   const previous=editing?events.find(x=>x.id===editing):null;
+  if(editing&&!previous){finishEditing();return alert('Cette sortie n’existe plus. La modification a été annulée.');}
   if(!previous&&events.length>=MAX)return alert('Maximum de '+MAX+' événements atteint.');
   const d=new FormData(form),x={id:previous?.id||(Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8)),title:String(d.get('title')||'').trim(),kind:String(d.get('kind')),date:String(d.get('date')),time:String(d.get('time')),size:Number(d.get('size')),note:String(d.get('note')||'').trim(),done:previous?.done||false,attendees:previous?.attendees||[]};
   if(!valid(x))return alert('Complète correctement la sortie.');
   if(previous)Object.assign(previous,x);else events.push(x);
-  persist();render();delete form.dataset.editId;
-  form.querySelector('[type="submit"]').textContent='Ajouter la sortie';
+  persist();render();finishEditing();
   form.elements.namedItem('title').value='';form.elements.namedItem('note').value='';
  };
  box.addEventListener('click',async e=>{
@@ -55,12 +63,13 @@ function start(){
    form.dataset.editId=event.id;
    for(const field of ['title','kind','date','time','size','note'])form.elements.namedItem(field).value=event[field];
    form.querySelector('[type="submit"]').textContent='Enregistrer les modifications';
+   $('binch-calendar-cancel').hidden=false;
    form.scrollIntoView({behavior:'smooth',block:'center'});
    form.elements.namedItem('title').focus();
    return;
   }
   if(b.dataset.calAction==='done'){event.done=!event.done;persist();render();return;}
-  if(b.dataset.calAction==='delete'){if(!confirm('Supprimer la sortie '+event.title+' ?'))return;events=events.filter(x=>x!==event);persist();render();return;}
+  if(b.dataset.calAction==='delete'){if(!confirm('Supprimer la sortie '+event.title+' ?'))return;if(form.dataset.editId===event.id)finishEditing();events=events.filter(x=>x!==event);persist();render();return;}
   if(b.dataset.calAction==='ics'){download('la-binch-'+event.date+'.ics','text/calendar;charset=utf-8',invite(event));return;}
   if(b.dataset.calAction==='copy'){
    const lines=['LA BINCH — '+event.kind.toUpperCase(),event.title, 'Date : '+event.date.split('-').reverse().join('/')+' à '+event.time+' (heure locale)', 'Places : '+confirmed(event).length+' / '+event.size+' confirmées', event.note||'Rendez-vous à confirmer','',...attendances(event).map(a=>'• '+a.name+' — '+a.role+' ('+a.status+')'),'','Répondez avec votre personnage, classe et rôle.'];
