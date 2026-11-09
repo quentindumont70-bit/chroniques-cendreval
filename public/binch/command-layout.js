@@ -96,14 +96,6 @@ function mount(){
  hero.after(toolbar);
  const deck=document.createElement('div');deck.id='binch-command-deck';shell.insertBefore(deck,toolbar.nextSibling);
  GROUPS.forEach(group=>{const element=shell.querySelector(group.selector);if(element){element.dataset.commandWidget=group.id;deck.append(element)}});
- // Modules that mount later (Faith strategist / notes / session) keep their original
- // parent nodes; the session and notes nodes are already available because scripts are deferred.
- // Attach a mutation observer only to the shell until the optional modules have mounted.
- const pending=GROUPS.filter(group=>!block(group.id));
- if(pending.length){
-  const observer=new MutationObserver(()=>{for(const group of pending){const element=shell.querySelector(group.selector);if(element&&!element.dataset.commandWidget){element.dataset.commandWidget=group.id;deck.append(element)}}layout();if(pending.every(g=>block(g.id)))observer.disconnect()});
-  observer.observe(shell,{childList:true,subtree:true});setTimeout(()=>observer.disconnect(),10000);
- }
  const button=$('binch-command-customize'),panel=$('binch-command-settings');
  button.addEventListener('click',()=>{panel.hidden=!panel.hidden;button.setAttribute('aria-expanded',String(!panel.hidden))});
  $('binch-command-preset').addEventListener('change',e=>{if(PRESETS[e.target.value])applyPreset(e.target.value)});
