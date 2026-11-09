@@ -85,6 +85,7 @@ try {
  # The saved path is local to Windows, and must resolve to an existing AddOns folder.
  $known = Get-LastFolder
  $addons = Find-Addons $known
+ $rememberedValid = [bool]$addons
  if (-not $addons) {
   $suggestions = @('D:\World of Warcraft\_forever_', 'C:\Program Files (x86)\World of Warcraft\_forever_', 'C:\Program Files\World of Warcraft\_forever_')
   foreach ($suggestion in $suggestions) {
@@ -92,7 +93,7 @@ try {
    if ($candidate) { $addons = $candidate; break }
   }
  }
- if ($addons) {
+ if ($addons -and -not $rememberedValid) {
   $choice = "Dossier WoW detecte :" + [Environment]::NewLine + [Environment]::NewLine + $addons + [Environment]::NewLine + [Environment]::NewLine + "Utiliser ce dossier ?" + [Environment]::NewLine + "(Non = choisir un autre emplacement)"
   if (-not (Confirm-Choice $choice 'La Binch - WoW detecte')) { $addons = $null }
  }
@@ -110,6 +111,8 @@ try {
   Tell 'Dossier Interface\AddOns introuvable. Selectionne le dossier WoW Forever ou directement Interface\AddOns.' 'Installation non effectuee'
   exit 1
  }
+ # To change the saved path, decline an auto-detection on first run or delete
+ # %LOCALAPPDATA%\LaBinch\wow-forever-path.txt to force a new selection.
  # Resolve and validate the location before any file write.
  $addons = (Resolve-Path -LiteralPath $addons).ProviderPath
  # If WoW is running, the old addon remains loaded until a full client restart.
