@@ -731,10 +731,12 @@ function parsePayload(raw){
  const lvl=+level;if(!name||!Number.isInteger(lvl)||lvl<1||lvl>60)throw Error('Niveau ou personnage invalide');
  const skills={};for(const row of (chunks.P||'').split(';')){const [name,rank]=row.split(',');if(name&&Number.isFinite(+rank)&&+rank>=0&&+rank<=450)skills[decode(name)]=+rank}
  const questIds=[...new Set((chunks.Q||'').split(';').filter(x=>/^\d{1,8}$/.test(x)))].slice(0,10000);
+ const questLog=(chunks.L||'').split(';').filter(Boolean).slice(0,100).map(row=>{const [id,title,complete]=row.split(',');return {id:Number(id),title:decode(title||''),complete:complete==='1'}}).filter(q=>Number.isInteger(q.id)&&q.id>0&&q.id<10000000&&q.title);
+ const questLogAPI=chunks.LS?decode(chunks.LS):'unavailable';
  const inventory=(chunks.I||'').split(';').filter(Boolean).slice(0,500).map(row=>{const [id,count,bag,slot,quality,vendor,name]=row.split(',');return {id:+id,count:+count||1,bag:+bag,slot:+slot,quality:+quality||0,vendor:+vendor||0,name:decode(name)}}).filter(item=>item.id>0);
  const equipment=(chunks.E||'').split(';').filter(Boolean).slice(0,19).map(row=>{const [id,slot,quality,name]=row.split(',');return {id:+id,slot:+slot,quality:+quality||0,name:decode(name)}}).filter(item=>item.id>0);
  const parsedXP=Number(xp),parsedXPMax=Number(xpMax),parsedRested=Number(restedXP);
- return {schema:payload.slice(0,3),name:decode(name),realm:decode(realm),level:lvl,cls:decode(cls),race:decode(race),faction:decode(faction),zone:decode(zone),timestamp:+timestamp||0,xp:Number.isFinite(parsedXP)?parsedXP:null,xpMax:parsedXPMax>0?parsedXPMax:null,restedXP:Number.isFinite(parsedRested)?parsedRested:null,questIds,skills,inventory,equipment};
+ return {schema:payload.slice(0,3),name:decode(name),realm:decode(realm),level:lvl,cls:decode(cls),race:decode(race),faction:decode(faction),zone:decode(zone),timestamp:+timestamp||0,xp:Number.isFinite(parsedXP)?parsedXP:null,xpMax:parsedXPMax>0?parsedXPMax:null,restedXP:Number.isFinite(parsedRested)?parsedRested:null,questIds,questLog,questLogAPI,skills,inventory,equipment};
 }
 function renderStatus(text,isError=false){const el=$('grimoire-bridge-status');if(el){el.textContent=text;el.style.color=isError?'#ff9a89':'var(--gold)'}}
 function importCharacter(snap){
@@ -752,12 +754,12 @@ function importCharacter(snap){
  let completed=0;
  for(const id of snap.questIds){const discovery=FLAG_TO_DISCOVERY[id];if(discovery&&!done[discovery]){done[discovery]=true;completed++}}
  localStorage.setItem(doneKey,JSON.stringify(done));
- const last={name:next,realm:snap.realm,level:snap.level,zone:snap.zone,xp:snap.xp,xpMax:snap.xpMax,restedXP:snap.restedXP,questIds:snap.questIds.length,inventory:snap.inventory,equipment:snap.equipment,updated:new Date().toISOString(),completed};
+ const last={name:next,realm:snap.realm,level:snap.level,zone:snap.zone,xp:snap.xp,xpMax:snap.xpMax,restedXP:snap.restedXP,questIds:snap.questIds.length,questLog:snap.questLog||[],questLogAPI:snap.questLogAPI||'unavailable',inventory:snap.inventory,equipment:snap.equipment,updated:new Date().toISOString(),completed};
  last.bagQuestStep=BAG_CHAIN.reduce((a,[id,label])=>snap.questIds.includes(id)?label:a,'Pas encore détectée');
  last.questIdList=snap.questIds;
  localStorage.setItem('grimoire.bridge.last',JSON.stringify(last));
  const craftKey='grimoire.craft.v1';let craft={};try{craft=JSON.parse(localStorage.getItem(craftKey))||{}}catch{}craft.imports=craft.imports||{};craft.imports=Object.assign(craft.imports,{[next.trim().toLowerCase()+'-'+newRace+'-'+newClass]:{skills:snap.skills||{},updated:new Date().toISOString()}});localStorage.setItem(craftKey,JSON.stringify(craft));
- renderStatus('Profil importé : '+next+' · niveau '+snap.level+' · '+snap.zone+' · '+completed+' quête(s) automatiquement validée(s) · '+Object.keys(snap.skills||{}).length+' métiers.');
+ renderStatus('Profil importé : '+next+' · niveau '+snap.level+' · '+snap.zone+' · '+(snap.questLogAPI!=='unavailable'?(snap.questLog||[]).length+' quêtes actives identifiées':'journal de quêtes indisponible')+' · '+completed+' découverte(s) validée(s) · '+Object.keys(snap.skills||{}).length+' métiers.');
  const name=$('pseudo'),level=$('level');if(name)name.value=next;if(level)level.value=snap.level;
  document.dispatchEvent(new CustomEvent('grimoire:sync',{detail:last}));
  // Original hub reads its own in-memory state and will reload it from localStorage at startup.
