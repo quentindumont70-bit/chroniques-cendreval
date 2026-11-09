@@ -269,6 +269,22 @@ border:1px solid #6f6b50aa;border-radius:6px;color:#f2e3bc;font-size:.72rem}
 <section id="page-metiers" class="page"><section class="panel section"><div class="eyebrow">Atelier</div><h2 id="jobs-title"></h2><div id="jobs-content" class="grid"></div></section></section>
 <section id="page-gm" class="page"><section class="panel section"><div class="eyebrow">Maître de guilde · 3 minutes</div><h2>La soirée en un coup d’œil</h2><div class="fields"><label class="field">Guilde<input id="guild"></label><label class="field">Activité<input id="event"></label><label class="field">Date et heure<input id="when"></label><label class="field">Objectif<input id="goal"></label><label class="field">Tanks<input id="tanks" type="number" min="0" value="0"></label><label class="field">Soigneurs<input id="heals" type="number" min="0" value="0"></label><label class="field">DPS<input id="dps" type="number" min="0" value="0"></label><label class="field">Remplaçants<input id="bench" type="number" min="0" value="0"></label></div><div id="gm-summary" class="gm-top" style="margin-top:12px"></div><label class="field">Délégations<textarea id="delegation" rows="3"></textarea></label><label class="field">Note<textarea id="notes" rows="2"></textarea></label><div class="actions"><button id="copy-announcement" class="btn primary">Copier l’annonce</button><button id="copy-brief" class="btn">Briefing officiers</button></div></section></section>
 <section id="page-sync" class="page">
+<section id="binch-direct-import" class="panel section" aria-label="Importer les données WoW">
+ <div class="eyebrow">SYNCHRONISATION LOCALE · GRIMOIRESYNC</div>
+ <h2>Importer mon personnage WoW</h2>
+ <p>Après <code>/reload</code>, sélectionne <strong>GrimoireSync.lua</strong> depuis tes sauvegardes WoW. Tu peux également le glisser ici.</p>
+ <label id="binch-direct-drop" for="binch-direct-file" tabindex="0"><strong>↓ Dépose GrimoireSync.lua ici</strong><span>ou clique pour sélectionner le fichier sur ton PC</span></label>
+ <div class="binch-direct-controls">
+  <div><label class="binch-direct-select" for="binch-direct-file">Parcourir les fichiers…</label><input id="binch-direct-file" type="file" accept=".lua,.txt" aria-label="Choisir le fichier GrimoireSync.lua"></div>
+  <label class="binch-direct-path-label" for="binch-direct-path">Fichier sélectionné<input id="binch-direct-path" type="text" readonly placeholder="Aucun fichier sélectionné"></label>
+  <button id="binch-direct-run" type="button" disabled>Importer mon personnage</button>
+ </div>
+ <p id="binch-direct-import-status" role="status" aria-live="polite">Sélectionne ou dépose ton GrimoireSync.lua pour commencer.</p>
+ <details><summary>Où trouver GrimoireSync.lua et comment automatiser ?</summary>
+ <p>Dans <code>World of Warcraft / _forever_ / WTF / Account / NOM_DU_COMPTE / SavedVariables / GrimoireSync.lua</code>. La zone « Suivre automatiquement les prochains /reload » permet ensuite le suivi lorsque le navigateur dispose de l'autorisation nécessaire.</p>
+ <p>Pour des raisons de sécurité, saisir simplement le chemin d'un fichier ne donne pas au navigateur le droit de le lire. Aucune sauvegarde n'est envoyée à un serveur.</p></details>
+</section>
+
 <section class="panel section binch-sync-guide">
  <div class="binch-sync-header">
   <div class="eyebrow">LA BINCH / PREMIÈRE CONNEXION</div>
@@ -1344,5 +1360,5 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  };
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
-</script><script src="./sync-easy.js?v=024" defer></script><script src="./import-drop.js?v=028" defer></script><script src="./player-home.js?v=024" defer></script><script src="./trade-toolkit.js?v=021" defer></script><script src="./wow-procs.js?v=021" defer></script><script src="./equipment-gm.js?v=021" defer></script><script src="./lfg-cloud.js?v=021" defer></script><script src="./share-kit.js?v=022" defer></script><script src="./treasures.js?v=021" defer></script><script src="./treasure-gallery.js?v=021" defer></script><script src="./lore-catalog.js?v=021" defer></script><script src="./lore-codex.js?v=021" defer></script><script src="./sync-wizard.js?v=025" defer></script><script src="./copilot-local.js?v=001" defer></script></body></html>
+</script><script src="./sync-easy.js?v=024" defer></script><script src="./import-drop.js?v=029" defer></script><script src="./player-home.js?v=024" defer></script><script src="./trade-toolkit.js?v=021" defer></script><script src="./wow-procs.js?v=021" defer></script><script src="./equipment-gm.js?v=021" defer></script><script src="./lfg-cloud.js?v=021" defer></script><script src="./share-kit.js?v=022" defer></script><script src="./treasures.js?v=021" defer></script><script src="./treasure-gallery.js?v=021" defer></script><script src="./lore-catalog.js?v=021" defer></script><script src="./lore-codex.js?v=021" defer></script><script src="./sync-wizard.js?v=025" defer></script><script src="./copilot-local.js?v=001" defer></script></body></html>
 
