@@ -14,8 +14,8 @@ const GROUPS=[
 ];
 const PRESETS={
  leveling:{density:'comfortable',columns:3,visible:['journey','statistics','session','faith','discoveries','questlog','pins','notes'],order:GROUPS.map(g=>g.id)},
- minimal:{density:'compact',columns:2,visible:['journey','faith','discoveries','questlog','pins'],order:['journey','faith','pins','statistics','session','notes']},
- gathering:{density:'comfortable',columns:2,visible:['statistics','faith','discoveries','questlog','pins','notes','journey','session'],order:['statistics','faith','notes','pins','journey','session']}
+ minimal:{density:'compact',columns:2,visible:['journey','faith','discoveries','questlog','pins'],order:['journey','faith','questlog','discoveries','pins','statistics','session','notes']},
+ gathering:{density:'comfortable',columns:2,visible:['statistics','faith','discoveries','questlog','pins','notes','journey','session'],order:['statistics','faith','notes','questlog','discoveries','pins','journey','session']}
 };
 const read=()=>{try{const v=JSON.parse(localStorage.getItem(KEY));return v&&typeof v==='object'?v:null}catch{return null}};
 let settings=read()||{...PRESETS.leveling,preset:'leveling'},dragId=null;
