@@ -1,0 +1,41 @@
+
+/* La Binch — Cockpit configurable, all rendering idle except deliberate user interaction. */
+#page-command .binch-command-layout{margin:12px 0;padding:13px 15px;border:1px solid #907e5a;border-radius:11px;background:linear-gradient(110deg,#263a37,#1a2a2e)}
+#page-command .binch-command-layout-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#page-command .binch-command-layout-heading>div{display:flex;flex-direction:column;gap:3px}
+#page-command .binch-command-layout-heading strong{font-family:Cinzel,Georgia,serif;color:#efdaaf}
+#page-command .binch-command-layout-heading small{font-size:.7rem;color:#a7c3be}
+#page-command #binch-command-settings[hidden],#page-command #binch-command-deck [hidden]{display:none!important}
+#page-command #binch-command-settings{margin-top:15px;padding:16px;border:1px solid #9f8f745c;border-radius:8px;background:#1022229c}
+#page-command .binch-command-layout-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#page-command .binch-command-layout-options label{display:flex;flex-direction:column;gap:7px;color:#e6d1a1;font-size:.77rem;font-weight:800}
+#page-command .binch-command-layout-options select{width:100%;padding:9px;border:1px solid #857857;border-radius:7px;background:#1d2d30;color:#f7e3c4;font:inherit}
+#page-command .binch-command-layout-hint{margin:15px 0 10px;font-size:.78rem;color:#c0d2cc}
+#page-command .binch-command-widget-control{display:grid;grid-template-columns:20px 22px minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 6px;border-bottom:1px solid #ffffff19}
+#page-command .binch-command-widget-control.is-dragged{opacity:.5}
+#page-command .binch-command-widget-control label{color:#f0e4cd;font-size:.81rem}
+#page-command .binch-command-widget-control input{width:18px;height:18px;accent-color:#e2c68c}
+#page-command .binch-command-grip{color:#e7c28b;cursor:grab;font-size:1.45rem;line-height:1}
+#page-command .binch-command-move{display:flex;gap:5px}
+#page-command .binch-command-move button{min-width:32px;min-height:32px;padding:3px 9px!important}
+#page-command .binch-command-move button:disabled{opacity:.3;cursor:default}
+#page-command .binch-command-layout-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px;align-items:center}
+#page-command .binch-command-layout-actions button{min-height:39px}
+#page-command .binch-command-import{position:relative;cursor:pointer;display:flex;align-items:center;border:1px solid #b69a69;border-radius:7px;color:#f6e6c5;background:#273d3b;padding:9px 13px;min-height:39px;font-weight:800;font-size:.84rem}
+#page-command .binch-command-import input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+#page-command .binch-command-import:focus-within{outline:3px solid #f6d99b;outline-offset:2px}
+#page-command #binch-command-config-status{font-size:.76rem;color:#d8bf92}
+#page-command #binch-command-deck{display:flex;flex-direction:column;gap:13px}
+#page-command #binch-command-deck > *{margin-top:0!important;margin-bottom:0!important;min-width:0}
+#page-command[data-command-density=compact] .binch-command-card{padding:12px 14px;min-height:155px}
+#page-command[data-command-density=compact] .binch-command-card p{line-height:1.35;margin:6px 0 8px;font-size:.75rem}
+#page-command[data-command-density=compact] .binch-command-label{padding-bottom:7px;margin-bottom:9px}
+#page-command[data-command-density=compact] .binch-command-card h3{font-size:1.12rem}
+#page-command[data-command-density=compact] .binch-command-stats{gap:8px}
+#page-command[data-command-density=compact] .binch-command-stat{padding:9px 11px}
+#page-command[data-command-columns="2"] .binch-command-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+#page-command[data-command-columns="2"] .binch-command-row .binch-command-card:last-child{grid-column:1/-1;min-height:155px}
+#page-command[data-command-columns="2"] .binch-command-bottom{grid-template-columns:1fr 1fr}
+@media(max-width:850px){#page-command .binch-command-layout-options{grid-template-columns:1fr 1fr}#page-command[data-command-columns="2"] .binch-command-bottom{grid-template-columns:1fr}}
+@media(max-width:650px){#page-command .binch-command-layout-options{grid-template-columns:1fr}#page-command[data-command-columns="2"] .binch-command-row{grid-template-columns:1fr}#page-command[data-command-columns="2"] .binch-command-row .binch-command-card:last-child{grid-column:auto}}
+@media(prefers-reduced-motion:reduce){#page-command .binch-command-layout *{animation:none!important;transition:none!important}}
