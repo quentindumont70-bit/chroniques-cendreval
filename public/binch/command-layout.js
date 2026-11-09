@@ -7,13 +7,14 @@ const GROUPS=[
  {id:'statistics',label:'Chiffres du personnage',selector:'.binch-command-stats'},
  {id:'session',label:'Chronique de session',selector:'.binch-command-progress'},
  {id:'faith',label:'Conseils de Faith & butin',selector:'.binch-command-bottom'},
+ {id:'discoveries',label:'Radar des découvertes',selector:'#binch-command-discoveries'},
  {id:'pins',label:'Objectifs épinglés',selector:'.binch-command-pin-wrap'},
  {id:'notes',label:'Carnet de terrain',selector:'#binch-command-notes'}
 ];
 const PRESETS={
- leveling:{density:'comfortable',columns:3,visible:['journey','statistics','session','faith','pins','notes'],order:GROUPS.map(g=>g.id)},
- minimal:{density:'compact',columns:2,visible:['journey','faith','pins'],order:['journey','faith','pins','statistics','session','notes']},
- gathering:{density:'comfortable',columns:2,visible:['statistics','faith','pins','notes','journey','session'],order:['statistics','faith','notes','pins','journey','session']}
+ leveling:{density:'comfortable',columns:3,visible:['journey','statistics','session','faith','discoveries','pins','notes'],order:GROUPS.map(g=>g.id)},
+ minimal:{density:'compact',columns:2,visible:['journey','faith','discoveries','pins'],order:['journey','faith','pins','statistics','session','notes']},
+ gathering:{density:'comfortable',columns:2,visible:['statistics','faith','discoveries','pins','notes','journey','session'],order:['statistics','faith','notes','pins','journey','session']}
 };
 const read=()=>{try{const v=JSON.parse(localStorage.getItem(KEY));return v&&typeof v==='object'?v:null}catch{return null}};
 let settings=read()||{...PRESETS.leveling,preset:'leveling'},dragId=null;
