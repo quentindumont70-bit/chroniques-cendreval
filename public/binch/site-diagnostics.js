@@ -91,6 +91,28 @@ function run(){
   const wrapper=$('#binch-adventure-tools');if(!wrapper)return 'Ateliers du joueur absents';
   return ['binch-session-planner','binch-personal-objectives','binch-leveling-journal'].every(id=>$('#'+id)?.closest('details.binch-tool-accordion')?.dataset.tool===id)?true:'Un panneau est mal positionné';
  });
+ // Exercise every available tab without changing the user's saved progress.
+ if(!onboarding){
+  test('Clic de tous les onglets de navigation',()=>{
+   const nav=$('#app nav.nav');if(!nav)return 'Menu principal absent';
+   const before=nav.querySelector('button.active[data-page]')?.dataset.page||'hub';
+   const broken=[];
+   const buttons=[...nav.querySelectorAll('button[data-page]')];
+   try{
+    for(const button of buttons){
+     const slug=button.dataset.page;
+     if(!slug||!$('#page-'+slug))continue;
+     button.click();
+     const current=$('#page-'+slug);
+     if(!current?.classList.contains('active'))broken.push(slug);
+    }
+   }finally{
+    const initial=nav.querySelector('button[data-page="'+before+'"]')||nav.querySelector('button[data-page="hub"]');
+    if(initial)initial.click();
+   }
+   return broken.length?'Onglets inactifs : '+broken.join(', '):true;
+  });
+ }
  // Execute real click navigation on established buttons; restore state immediately.
  if(!onboarding){
   test('Clic de navigation vers la progression',()=>{
