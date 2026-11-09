@@ -18,7 +18,7 @@ function run(){
  if(started)return;started=true;
  const diagnostic=document.createElement('aside');diagnostic.id='binch-site-diagnostics';
  diagnostic.setAttribute('role','region');diagnostic.setAttribute('aria-label','Tests du portail La Binch');
- diagnostic.innerHTML='<header><strong>Diagnostic de La Binch</strong><button type="button" id="binch-diag-close" aria-label="Fermer le diagnostic">×</button></header><p>Tests non destructifs des pages et des contrôles, sans écriture dans les données du joueur. Les deux tests de navigation peuvent faire défiler la page.</p><div id="binch-diag-overview"></div><ul id="binch-diag-results"></ul><div class="binch-diag-actions"><button type="button" id="binch-diag-copy">Copier le rapport</button><button type="button" id="binch-diag-rerun">Relancer les tests</button></div>';
+ diagnostic.innerHTML='<header><strong>Diagnostic de La Binch</strong><button type="button" id="binch-diag-close" aria-label="Fermer le diagnostic">×</button></header><p>Tests sans envoi de formulaire ni import de données. Les essais de navigation peuvent faire défiler la page et déclencher les sauvegardes habituelles des modules.</p><div id="binch-diag-overview"></div><ul id="binch-diag-results"></ul><div class="binch-diag-actions"><button type="button" id="binch-diag-copy">Copier le rapport</button><button type="button" id="binch-diag-rerun">Relancer les tests</button></div>';
  document.body.append(diagnostic);
  const app=$('#app'),onboarding=Boolean(app&&app.classList.contains('hidden'));
  failures.length=0;results.length=0;
@@ -157,5 +157,19 @@ function run(){
   else prompt('Copier le rapport',report);
  };
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(run,150));else setTimeout(run,150);
+function scheduleFirstRun(){
+ // Dynamic modules (e.g. Guild Planner, Bibliothèque) can mount after DOMContentLoaded.
+ // Prefer a complete DOM rather than a misleading list of temporary missing elements.
+ const ready=()=>{
+  const app=$('#app'),onboarding=app?.classList.contains('hidden');
+  return Boolean($('#page-bibliotheque')&&$('#binch-gm-workspace')&&$('#binch-mobile-navigation')&&(onboarding||$('#binch-adventure-home')));
+ };
+ if(ready()){setTimeout(run,100);return;}
+ const observer=new MutationObserver(()=>{
+  if(ready()){observer.disconnect();clearTimeout(expiry);setTimeout(run,100);}
+ });
+ observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+ const expiry=setTimeout(()=>{observer.disconnect();run()},6500);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scheduleFirstRun);else scheduleFirstRun();
 })();
