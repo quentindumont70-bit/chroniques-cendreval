@@ -51,3 +51,8 @@ body:has(#page-sync.active) #app.shell,
 #page-sync.active .binch-sync-guide{height:auto!important;max-height:none!important;min-height:0;overflow:visible!important;overscroll-behavior-y:auto!important}
 #page-sync.active :is(#binch-sync-wizard,#binch-easy-sync,#grimoire-bridge){max-height:none!important;overflow:visible!important}
 #page-sync.active{padding-bottom:max(48px,env(safe-area-inset-bottom))}
+
+/* Synchronisation : éviter le piège scroll/sticky propre à cette page longue. */
+html:has(#page-sync.active){scroll-behavior:auto!important;overflow-y:auto!important}
+body:has(#page-sync.active) #app nav.nav{position:relative!important;top:auto!important;touch-action:auto!important;overscroll-behavior:auto!important}
+#page-sync.active{overflow:visible!important;contain:none!important}
