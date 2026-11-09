@@ -1,0 +1,16 @@
+/* La Binch — panneaux GM repliables et lisibles sur mobile. */
+#binch-gm-workspace{margin:16px 0;border:1px solid #7b7654;background:linear-gradient(140deg,#14231d,#0f1718);border-radius:10px;padding:14px}
+#binch-gm-workspace .binch-gm-workspace-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:2px 0 15px}
+#binch-gm-workspace .binch-gm-workspace-head h2{margin:5px 0 7px;font-size:clamp(1.4rem,3.3vw,2rem)}
+#binch-gm-workspace .binch-gm-workspace-head p{margin:0;color:#b7c8b9}
+#binch-gm-workspace .binch-gm-workspace-head button{flex:none;border:1px solid #b49d72;background:#293d31;border-radius:7px;padding:10px 12px;color:#f3dfad;cursor:pointer}
+#binch-gm-workspace .binch-gm-workspace-group{border:1px solid #56695d;background:#101d18;margin:9px 0;border-radius:8px}
+#binch-gm-workspace .binch-gm-workspace-group>summary{display:flex;align-items:center;gap:11px;cursor:pointer;list-style:none;padding:16px}
+#binch-gm-workspace .binch-gm-workspace-group>summary::-webkit-details-marker{display:none}
+#binch-gm-workspace .binch-gm-workspace-group>summary:before{content:'+';font-weight:800;font-size:1.2rem;color:#e7cb93}
+#binch-gm-workspace .binch-gm-workspace-group[open]>summary:before{content:'−'}
+#binch-gm-workspace .binch-gm-workspace-group>summary strong{color:#f4dba8;margin-right:auto}
+#binch-gm-workspace .binch-gm-workspace-group>summary small{color:#b6c8b6;font-size:.78rem}
+#binch-gm-workspace .binch-gm-workspace-group>summary:focus-visible{outline:2px solid #f0d394;outline-offset:2px}
+#binch-gm-workspace .binch-gm-workspace-group>section.panel{margin:0 12px 12px}
+@media(max-width:680px){#binch-gm-workspace{padding:8px}#binch-gm-workspace .binch-gm-workspace-head{display:block;padding:8px}#binch-gm-workspace .binch-gm-workspace-head button{margin-top:11px}#binch-gm-workspace .binch-gm-workspace-group>summary{display:grid;grid-template-columns:20px 1fr;gap:4px 9px}#binch-gm-workspace .binch-gm-workspace-group>summary:before{grid-row:1/3;align-self:center}#binch-gm-workspace .binch-gm-workspace-group>summary small{grid-column:2}#binch-gm-workspace .binch-gm-workspace-group>section.panel{margin:0 6px 8px}}
