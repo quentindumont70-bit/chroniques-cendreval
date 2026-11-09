@@ -47,7 +47,7 @@ function syncExternalButtons(){
  })
 }
 window.BinchPinned={has:id=>!!pins()[id],set:item=>pinItem(item)};
-function xp(last){const x=Number(last.xp),m=Number(last.xpMax);if(!(last.xp!==undefined&&last.xp!==null&&last.xp!==''&&last.xpMax!==undefined&&last.xpMax!==null&&last.xpMax!==''&&Number.isFinite(x)&&Number.isFinite(m)&&m>0&&x>=0&&x<=m))return '<div class="binch-xp-missing"><b>XP non synchronisée</b><small>Installe GrimoireSync 0.8.1 si nécessaire, lance /grimoire debug pour afficher XP et XP max, puis fais /reload et réimporte GrimoireSync.lua. Un simple rafraîchissement de cette page ne met pas à jour le fichier du jeu.</small><button type="button" class="binch-xp-sync-link" id="binch-xp-open-sync">↻ Ouvrir la synchronisation</button><a class="binch-xp-installer" href="./Installer-La-Binch.cmd" download>↓ Installer / actualiser GrimoireSync 0.8.1</a></div>';return '<div class="binch-xp-line"><span>Expérience</span><b>'+x.toLocaleString('fr-FR')+' / '+m.toLocaleString('fr-FR')+'</b></div><div class="binch-xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="'+m+'" aria-valuenow="'+x+'"><i style="width:'+(x/m*100).toFixed(2)+'%"></i></div>'}
+function xp(last){const x=Number(last.xp),m=Number(last.xpMax);if(!(last.xp!==undefined&&last.xp!==null&&last.xp!==''&&last.xpMax!==undefined&&last.xpMax!==null&&last.xpMax!==''&&Number.isFinite(x)&&Number.isFinite(m)&&m>0&&x>=0&&x<=m))return '<div class="binch-xp-missing binch-xp-manual"><b>Progression manuelle</b><small>Tu peux noter ton niveau, préparer ta route et suivre tes objectifs sans installer d’addon. Le suivi automatique de l’XP n’est pas encore disponible dans cette bêta.</small><button type="button" class="binch-xp-edit" id="binch-xp-edit-profile">Modifier mon niveau</button></div>';return '<div class="binch-xp-line"><span>Expérience</span><b>'+x.toLocaleString('fr-FR')+' / '+m.toLocaleString('fr-FR')+'</b></div><div class="binch-xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="'+m+'" aria-valuenow="'+x+'"><i style="width:'+(x/m*100).toFixed(2)+'%"></i></div>'}
 function updateLevelRing(last,p){
  const ring=$('binch-level-ring');
  if(!ring)return;
@@ -88,7 +88,7 @@ function mount(){
  '<section class="binch-route"><header><div><div class="binch-kicker">TA ROUTE, MAINTENANT</div><h2>Les prochaines étapes</h2><p>Épingle les étapes qui comptent, coche celles que tu termines. Une seule timeline pour tes objectifs.</p></div><div id="binch-route-count"></div></header><div class="binch-route-tools"><input id="binch-route-search" type="search" placeholder="Quête, donjon, métier, recette…"><div id="binch-route-filters"></div></div><div id="binch-route-list"></div></section>';
  hub.prepend(root);hub.classList.add('binch-adventure-ready');
  $('binch-route-search').oninput=renderRoute;
- root.addEventListener('click',e=>{if(e.target.closest('#binch-xp-open-sync'))document.querySelector('#app nav.nav [data-page="sync"]')?.click()});
+ root.addEventListener('click',e=>{if(e.target.closest('#binch-xp-edit-profile')){const profile=$('binch-edit-profile');if(profile){profile.open=true;profile.scrollIntoView({behavior:'smooth',block:'start'});const level=$('level');if(level)level.focus();}}});
  enhanceProfile();
  // Other deferred modules may initialize before the adventure panel exists.
  document.dispatchEvent(new Event('binch:adventure-ready'));
