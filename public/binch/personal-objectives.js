@@ -15,7 +15,7 @@ function load(){
  const next=getKey();if(currentKey===next)return;
  currentKey=next;try{const v=JSON.parse(localStorage.getItem(currentKey));items=Array.isArray(v)?v.slice(0,120).filter(x=>x&&typeof x.title==='string'&&x.title.length<=100&&TYPES.includes(x.type)&&PRIORITIES.includes(x.priority)&&Number.isInteger(x.level)&&x.level>=1&&x.level<=60).map(x=>({id:String(x.id||''),title:x.title,type:x.type,priority:x.priority,level:x.level,zone:typeof x.zone==='string'?x.zone.slice(0,80):'',done:!!x.done})):[]}catch{items=[]}
 }
-function save(){localStorage.setItem(currentKey,JSON.stringify(items))}
+function save(){localStorage.setItem(currentKey,JSON.stringify(items));document.dispatchEvent(new Event('binch:objectives-change'))}
 function init(){
  const hub=$('page-hub');if(!hub||$('binch-personal-objectives'))return;
  const box=document.createElement('section');box.id='binch-personal-objectives';box.className='panel section';
