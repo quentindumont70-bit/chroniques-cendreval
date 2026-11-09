@@ -87,6 +87,24 @@ function run(){
  test('Formulaire GM et copie Discord',()=>{
   return $('#binch-roster-form')&&$('#binch-roster-copy')&&$('#binch-calendar-form')&&$('#binch-weekly-copy')&&$('#binch-dungeon-copy')?true:'Un des contrôles GM manque';
  });
+ test('Suggestions de zones cohérentes avec la faction',()=>{
+  if(onboarding)return true;
+  let profile;try{profile=JSON.parse(localStorage.getItem('grimoire.hub.v3'))||{}}catch{profile={}}
+  const race=profile.race;
+  const faction=['Humain','Nain','Elfe','Gnome'].includes(race)?'Alliance':['Orc','Tauren','Troll','MortVivant'].includes(race)?'Horde':'Neutre';
+  if(faction==='Neutre')return true;
+  const zones=Array.isArray(window.GRIMOIRE_ZONES)?window.GRIMOIRE_ZONES:[];
+  const row=$('#binch-route-list [data-category="Zone"] strong');
+  if(!row)return 'Aucune zone affichée dans le Carnet';
+  const chosen=zones.find(z=>row.textContent==='Explorer '+z.name);
+  if(!chosen)return 'Zone de l’itinéraire absente du catalogue';
+  return ['Neutre','Mixte',faction].includes(chosen.faction||'Neutre')?true:'Zone adverse proposée : '+chosen.name;
+ });
+ test('Raccourcis des objectifs vers les outils',()=>{
+  if(onboarding)return true;
+  const rows=[...document.querySelectorAll('#binch-route-list [data-category="Zone"], #binch-route-list [data-category="Donjon"]')];
+  return rows.every(row=>row.querySelector('[data-route-open]'))?true:'Un raccourci de zone/donjon est manquant';
+ });
  test('Formulaires et notes du joueur',()=>{
   if(onboarding)return true;
   return $('#binch-objective-form')&&$('#binch-session-copy')&&$('#binch-level-log-form')&&$('#binch-backup-export')?true:'Un des contrôles du joueur manque';
