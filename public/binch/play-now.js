@@ -26,9 +26,10 @@ function paint(){
 function mount(){
  const hub=$('page-hub');if(!hub||$('binch-play-today'))return;
  const panel=document.createElement('section');panel.id='binch-play-today';panel.className='panel section';panel.setAttribute('aria-label','Mode jeu');
- panel.innerHTML='<div class="eyebrow">MODE JEU · SANS CONFIGURATION SUPPLÉMENTAIRE</div><h2 id="binch-play-title">Prêt pour ton prochain niveau ?</h2><p id="binch-play-character"></p><p id="binch-play-status" role="status"></p><div class="binch-play-actions"><button id="binch-play-route" type="button">▶ Jouer : ouvrir mon carnet de route</button><button id="binch-play-sync" type="button">↻ Actualiser après /reload</button></div><details><summary>Ma checklist de session (facultative)</summary><div id="binch-play-steps"></div><p class="muted">La checklist est enregistrée localement pour ce personnage et ce niveau.</p></details>';
+ panel.innerHTML='<div class="eyebrow">MODE JEU · SANS CONFIGURATION SUPPLÉMENTAIRE</div><h2 id="binch-play-title">Prêt pour ton prochain niveau ?</h2><p id="binch-play-character"></p><p id="binch-play-status" role="status"></p><div class="binch-play-actions"><button id="binch-play-command" type="button">✦ Poste de commandement — 2e écran</button><button id="binch-play-route" type="button">▶ Jouer : ouvrir mon carnet de route</button><button id="binch-play-sync" type="button">↻ Actualiser après /reload</button></div><details><summary>Ma checklist de session (facultative)</summary><div id="binch-play-steps"></div><p class="muted">La checklist est enregistrée localement pour ce personnage et ce niveau.</p></details>';
  const hero=hub.querySelector('#binch-front')||hub.firstElementChild;
  if(hero)hero.before(panel);else hub.append(panel);
+ $('binch-play-command').addEventListener('click',()=>go('command'));
  $('binch-play-route').addEventListener('click',()=>go('progression'));
  $('binch-play-sync').addEventListener('click',()=>go('sync'));
  window.addEventListener('storage',e=>{if([STORE,'grimoire.hub.v3','grimoire.bridge.last'].includes(e.key))paint()});
