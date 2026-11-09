@@ -172,7 +172,7 @@ function scheduleFirstRun(){
  // Prefer a complete DOM rather than a misleading list of temporary missing elements.
  const ready=()=>{
   const app=$('#app'),onboarding=app?.classList.contains('hidden');
-  return Boolean($('#page-bibliotheque')&&$('#binch-gm-workspace')&&$('#binch-mobile-navigation')&&(onboarding||$('#binch-adventure-home')));
+  return Boolean($('#page-bibliotheque')&&$('#binch-gm-workspace')&&$('#binch-mobile-navigation')&&$('#binch-share-kit')&&(onboarding||($('#binch-adventure-home')&&$('#binch-adventure-tools'))));
  };
  if(ready()){setTimeout(run,100);return;}
  const observer=new MutationObserver(()=>{
