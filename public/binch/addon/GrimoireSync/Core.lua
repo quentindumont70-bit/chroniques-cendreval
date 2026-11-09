@@ -50,25 +50,29 @@ local function captureEquipment()
 end
 local function captureQuestFlags()
   GrimoireSyncDB.completedTrackedQuests=GrimoireSyncDB.completedTrackedQuests or {}
-  local list=nil
-  if type(GetQuestsCompleted)=="function" then list=safe(GetQuestsCompleted) end
+  local list,api=nil,nil
+  if C_QuestLog and type(C_QuestLog.GetAllCompletedQuestIDs)=="function" then
+    list=safe(C_QuestLog.GetAllCompletedQuestIDs)
+    if type(list)=="table" then api="C_QuestLog.GetAllCompletedQuestIDs" end
+  end
+  if type(list)~="table" and type(GetQuestsCompleted)=="function" then
+    list=safe(GetQuestsCompleted)
+    if type(list)=="table" then api="GetQuestsCompleted" end
+  end
   if type(list)=="table" then
-    -- Les identifiants sont locaux : aucune requete reseau ni modification de quete.
-    -- Remplacer l'etat par le dernier instantane confirme de l'API du client.
-    local fresh={}
-    local n=0
+    local fresh,n={},0
+    -- Newer clients return arrays of quest IDs; older ones return { [questID]=true }.
     for id,yes in pairs(list) do
-      local questID=tonumber(id)
-      if yes and questID and questID>0 and questID<10000000 then
+      local questID=type(yes)=="number" and tonumber(yes) or (yes and tonumber(id))
+      if questID and questID>0 and questID<10000000 then
         fresh[questID]=true
         n=n+1
         if n>=10000 then break end
       end
     end
     GrimoireSyncDB.completedTrackedQuests=fresh
-    GrimoireSyncDB.questAPI="GetQuestsCompleted"
+    GrimoireSyncDB.questAPI=api or "completedList"
   else
-    -- Conserver les validations anciennes et tester quelques IDs connus.
     for _,id in ipairs(trackedQuestIDs) do
       if type(IsQuestFlaggedCompleted)=="function" and safe(IsQuestFlaggedCompleted,id) then
         GrimoireSyncDB.completedTrackedQuests[id]=true
@@ -77,6 +81,44 @@ local function captureQuestFlags()
     GrimoireSyncDB.questAPI=type(IsQuestFlaggedCompleted)=="function" and "IsQuestFlaggedCompleted" or "unavailable"
   end
 end
+
+local function captureQuestLog()
+  local entries,status={}, "unavailable"
+  local count=nil
+  if C_QuestLog and type(C_QuestLog.GetNumQuestLogEntries)=="function" and type(C_QuestLog.GetInfo)=="function" then
+    count=safe(C_QuestLog.GetNumQuestLogEntries)
+    if type(count)=="number" then
+      status="C_QuestLog.GetInfo"
+      for i=1,math.min(count,100) do
+        local info=safe(C_QuestLog.GetInfo,i)
+        if type(info)=="table" and not info.isHeader then
+          local id=tonumber(info.questID)
+          if id and id>0 and id<10000000 then
+            entries[#entries+1]={id=id,title=tostring(info.title or ("Quest "..id)),complete=info.isComplete==true}
+          end
+        end
+      end
+    end
+  end
+  if status=="unavailable" and type(GetNumQuestLogEntries)=="function" and type(GetQuestLogTitle)=="function" then
+    count=safe(GetNumQuestLogEntries)
+    if type(count)=="number" then
+      status="GetQuestLogTitle"
+      for i=1,math.min(count,100) do
+        local title,level,tag,group,isHeader,collapsed,isComplete,frequency,id=safe(GetQuestLogTitle,i)
+        if not isHeader and type(title)=="string" then
+          id=tonumber(id) or (type(GetQuestLogQuestID)=="function" and safe(GetQuestLogQuestID,i))
+          if tonumber(id) and tonumber(id)>0 then
+            entries[#entries+1]={id=tonumber(id),title=title,complete=isComplete==true}
+          end
+        end
+      end
+    end
+  end
+  GrimoireSyncDB.activeQuests=entries
+  GrimoireSyncDB.questLogAPI=status
+end
+
 local function captureProfessions()
   local previous=GrimoireSyncDB.professions or {}
   local result={}
@@ -113,7 +155,11 @@ local function rebuildPayload()
   local q={};for id,yes in pairs(GrimoireSyncDB.completedTrackedQuests or {}) do if yes then q[#q+1]=tonumber(id) end end
   table.sort(q)
   for i=1,#q do q[i]=tostring(q[i]) end
-  GrimoireSyncDB.payload="GF6|C:"..character.."|P:"..table.concat(prof,";").."|Q:"..table.concat(q,";").."|I:"..table.concat(inventory,";").."|E:"..table.concat(equipment,";").."|AH:"..ahMeta.."|A:"..table.concat(auctions,";")
+  local active={}
+  for _,item in ipairs(GrimoireSyncDB.activeQuests or {}) do
+    active[#active+1]=table.concat({tonumber(item.id) or 0,enc(item.title),item.complete and 1 or 0},",")
+  end
+  GrimoireSyncDB.payload="GF6|C:"..character.."|P:"..table.concat(prof,";").."|Q:"..table.concat(q,";").."|L:"..table.concat(active,";").."|LS:"..enc(GrimoireSyncDB.questLogAPI or "unavailable").."|I:"..table.concat(inventory,";").."|E:"..table.concat(equipment,";").."|AH:"..ahMeta.."|A:"..table.concat(auctions,";")
 end
 local function capture()
   GrimoireSyncDB=type(GrimoireSyncDB)=="table" and GrimoireSyncDB or {}
@@ -124,7 +170,7 @@ local function capture()
   local build,buildNumber,_,interfaceVersion=safe(GetBuildInfo); local key=tostring(name or "Unknown").."-"..tostring(realm)
   GrimoireSyncDB.schema=6; GrimoireSyncDB.lastCharacter=key; GrimoireSyncDB.characters=GrimoireSyncDB.characters or {}
   GrimoireSyncDB.characters[key]={name=name or "Unknown",realm=realm,level=safe(UnitLevel,"player") or 0,class=class or "Unknown",classToken=classToken or "UNKNOWN",race=race or "Unknown",raceToken=raceToken or "UNKNOWN",faction=safe(UnitFactionGroup,"player") or "Unknown",zone=zone,gold=safe(GetMoney) or 0,xp=safe(UnitXP,"player") or 0,xpMax=safe(UnitXPMax,"player") or 0,restedXP=safe(GetXPExhaustion) or 0,client=build or "Unknown",build=buildNumber or "",interface=tonumber(interfaceVersion) or 0,timestamp=now()}
-  captureInventory(); captureEquipment(); captureProfessions(); captureQuestFlags(); rebuildPayload()
+  captureInventory(); captureEquipment(); captureProfessions(); captureQuestFlags(); captureQuestLog(); rebuildPayload()
 end
 -- Capture XP legere : ne rescane pas les sacs et quetes a chaque gain d'XP.
 -- /reload persiste les SavedVariables sur disque, un import navigateur reste requis.
@@ -214,7 +260,7 @@ SlashCmdList.GRIMOIRESYNC=function(message)
   message=(message or ""):lower():match("^%s*(.-)%s*$")
   if message=="scan" then startAuctionScan(); return end
   capture()
-  if message=="debug" then print("GrimoireSync schema="..tostring(GrimoireSyncDB.schema).." quetes="..tostring((function()local n=0 for _ in pairs(GrimoireSyncDB.completedTrackedQuests or {}) do n=n+1 end return n end)()).." API_QUETES="..tostring(GrimoireSyncDB.questAPI).." inventaire="..tostring(#(GrimoireSyncDB.inventory or {})).." API_AH="..tostring(C_AuctionHouse and C_AuctionHouse.ReplicateItems~=nil).." XP="..tostring(safe(UnitXP,"player")).."/"..tostring(safe(UnitXPMax,"player")).." statut="..tostring(GrimoireSyncDB.xpStatus or "capture initiale")); return end
+  if message=="debug" then print("GrimoireSync schema="..tostring(GrimoireSyncDB.schema).." quetes="..tostring((function()local n=0 for _ in pairs(GrimoireSyncDB.completedTrackedQuests or {}) do n=n+1 end return n end)()).." API_QUETES="..tostring(GrimoireSyncDB.questAPI).." JOURNAL="..tostring(GrimoireSyncDB.questLogAPI).." ACTIVES="..tostring(#(GrimoireSyncDB.activeQuests or {})).." inventaire="..tostring(#(GrimoireSyncDB.inventory or {})).." API_AH="..tostring(C_AuctionHouse and C_AuctionHouse.ReplicateItems~=nil).." XP="..tostring(safe(UnitXP,"player")).."/"..tostring(safe(UnitXPMax,"player")).." statut="..tostring(GrimoireSyncDB.xpStatus or "capture initiale")); return end
   print("|cffd9b56cGrimoireSync|r : "..tostring(GrimoireSyncDB.lastCharacter)..", "..#(GrimoireSyncDB.inventory or {}).." piles dans les sacs.")
   print("|cffd9b56cGrimoireSync|r : ouvre l'hotel des ventes puis tape |cffffffff/grimoire scan|r. /reload enregistre les donnees.")
 end
