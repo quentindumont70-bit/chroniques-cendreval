@@ -1,0 +1,14 @@
+#page-hub #binch-play-today{margin:12px 0 18px;padding:18px 22px;border:1px solid #9c8558;border-radius:14px;background:linear-gradient(125deg,#172b27,#1a2628);color:#f4edde}
+#binch-play-today h2{font-size:clamp(1.25rem,3vw,1.85rem);color:#f5d99c;margin:8px 0}
+#binch-play-today #binch-play-character{font-weight:700;margin:6px 0}
+#binch-play-today #binch-play-status{font-size:.8rem;color:#c1d6cf;margin:8px 0 14px}
+#binch-play-today .binch-play-actions{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+#binch-play-today button{border:1px solid #d7bb87;color:#f6eee2;background:#2a4544;border-radius:9px;padding:10px 13px;min-height:42px;font-weight:750;cursor:pointer}
+#binch-play-today #binch-play-route{background:linear-gradient(120deg,#f5d99d,#cba56c);color:#242418;border-color:#ffecbd}
+#binch-play-today details{padding:10px 0;border-top:1px solid #ffffff21}
+#binch-play-today summary{cursor:pointer;font-weight:700}
+#binch-play-today .binch-play-task{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;margin:10px 0}
+#binch-play-today .binch-play-task input{width:18px;height:18px;accent-color:#cda767}
+#binch-play-today .binch-play-task label{font-size:.88rem}
+#binch-play-today :is(button,summary,input):focus-visible{outline:3px solid #f5d99d;outline-offset:2px}
+@media(max-width:600px){#binch-play-today .binch-play-actions{display:grid}#binch-play-today .binch-play-actions button{width:100%}}
