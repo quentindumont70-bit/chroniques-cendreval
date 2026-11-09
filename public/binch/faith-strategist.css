@@ -1,0 +1,13 @@
+#page-command #binch-faith-advisor{margin-top:19px;padding-top:16px;border-top:1px solid #ab92c15c}
+#page-command .binch-faith-advisor-head{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-bottom:13px;flex-wrap:wrap}
+#page-command .binch-faith-advisor-head h4{font-size:1.05rem;margin:0;color:#e6c6f9;font-family:Cinzel,Georgia,serif}
+#page-command .binch-faith-advisor-head label{color:#c1cddd;font-size:.73rem;display:flex;gap:8px;align-items:center}
+#page-command #binch-faith-goal{border:1px solid #927eb0;border-radius:7px;background:#1d2935;color:#f0dfed;min-height:36px;padding:5px 9px;font:inherit;max-width:240px}
+#page-command #binch-faith-goal:focus-visible{outline:3px solid #e7b8f6;outline-offset:2px}
+#page-command .binch-faith-action{display:grid;grid-template-columns:28px minmax(0,1fr) 42px;gap:12px;align-items:start;padding:13px 0;border-top:1px solid #ffffff17}
+#page-command .binch-faith-num{font-family:Georgia,serif;color:#e9c88e;font-size:1.3rem}
+#page-command .binch-faith-action strong{font-size:.9rem;color:#f3eadb}
+#page-command .binch-faith-action p{font-size:.77rem;line-height:1.55;margin:4px 0!important;color:#b9cbd6}
+#page-command .binch-faith-action small{font-size:.67rem;color:#bdace0}
+#page-command .binch-faith-action button{min-width:34px;min-height:34px;padding:4px 8px}
+#page-command #binch-faith-integrity{font-size:.67rem;color:#adb7ca;border-top:1px solid #ffffff1d;padding-top:11px;margin:5px 0 0}
