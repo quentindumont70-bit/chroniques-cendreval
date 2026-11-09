@@ -37,6 +37,21 @@ for(const file of scripts){
  const refs=[...source.matchAll(/(?:\.src|\.href)\s*=\s*["']\.\/([^"']+\.(?:js|css)(?:\?[^"']*)?)["']/g)].map(x=>x[1]);
  for(const ref of refs){const localFile=ref.split(/[?#]/,1)[0];if(!present(localFile))fail(file+' charge un fichier absent : '+localFile)}
 }
+
+// Regressions connues : le sélecteur doit exister dans le HTML, même sans JS.
+const portal=read('index.html'),importer=read('import-drop.js');
+for(const id of ['binch-direct-import','binch-direct-drop','binch-direct-file','binch-direct-run','binch-direct-import-status']){
+ if(!portal.includes('id="'+id+'"'))fail('Import Opera : contrôle HTML manquant : '+id);
+}
+if(!portal.includes('import-drop.js?v=')||!portal.includes('import-direct.css?v='))
+ fail('Import Opera : ressources de synchronisation non reliées au portail.');
+if(!importer.includes('window.BinchSync.parsePayload')||!importer.includes('window.BinchSync.importCharacter'))
+ fail('Import Opera : parseur ou import réel non relié.');
+if(!/^GrimoireSync\\.lua$/i.test('GrimoireSync.lua')||!importer.includes('GrimoireSync\\.lua'))
+ fail('Import Opera : validation du nom de fichier invalide.');
+if(portal.includes('chatgpt.site'))fail('La Binch : dépendance à chatgpt.site encore présente dans la page.');
+if(!present('binch-backdrop.svg'))fail('La Binch : fond local manquant.');
+
 const index=read('index.html'),treasures=read('treasures.js');
 if(!index.includes('Bêta de guilde 0.21')||!index.includes('0.21-guild'))fail('Titre ou metadata de version non synchronisé avec 0.21');
 if(!index.includes('window.BinchRewards')||!index.includes('draw:(canvas,id)')||!treasures.includes('API.draw?.'))fail('Contrat sprite Trésors incomplet');
