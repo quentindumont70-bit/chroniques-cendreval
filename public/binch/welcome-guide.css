@@ -1,0 +1,13 @@
+#binch-first-visit{margin:20px 0 0;padding:18px;border:1px solid #796f53;border-radius:12px;background:linear-gradient(140deg,#15271e,#111d1e);color:#ecedde}
+#binch-first-visit .binch-welcome-kicker{font-size:.7rem;font-weight:800;letter-spacing:.13em;color:#d7b47b}
+#binch-first-visit h2{font-size:clamp(1.15rem,2.7vw,1.6rem);margin:7px 0 10px;color:#f3ddb4}
+#binch-first-visit p{line-height:1.55;margin:8px 0 12px;color:#cbd8cb}
+#binch-first-visit .binch-welcome-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:15px 0}
+#binch-first-visit .binch-welcome-steps>div{min-width:0;padding:12px;border:1px solid #506b58;border-radius:8px;background:#12231a}
+#binch-first-visit .binch-welcome-steps strong{display:block;font-size:.84rem;color:#f1d9ab}
+#binch-first-visit .binch-welcome-steps small{display:block;margin-top:6px;line-height:1.5;color:#b9cdbf}
+#binch-first-visit details{padding:10px 0;border-top:1px solid #3d5547}
+#binch-first-visit summary{cursor:pointer;font-size:.87rem;font-weight:700;color:#f2d8ac}
+#binch-first-visit summary:focus-visible{outline:2px solid #f1d6a4;outline-offset:3px}
+#binch-first-visit details p{font-size:.82rem;margin:10px 0 4px}
+@media(max-width:630px){#binch-first-visit{padding:12px}#binch-first-visit .binch-welcome-steps{grid-template-columns:1fr}}
