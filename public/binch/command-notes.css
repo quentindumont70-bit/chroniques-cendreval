@@ -1,0 +1,12 @@
+#page-command #binch-command-notes{margin-top:13px;padding:17px 19px;background:linear-gradient(120deg,#1f302e,#1a2427);border:1px solid #677368;border-radius:10px}
+#page-command #binch-command-notes .binch-command-label{margin-bottom:10px}
+#page-command #binch-command-notes-form{display:flex;gap:10px;margin:13px 0}
+#page-command #binch-command-notes-input{flex:1;min-width:0;min-height:42px;padding:10px 12px;background:#111f24;border:1px solid #688079;border-radius:7px;color:#fff4dc}
+#page-command #binch-command-notes-form button{border:1px solid #d4b476;border-radius:7px;background:#3a4b43;color:#ffe7b8;font-weight:850;padding:9px 16px;cursor:pointer}
+#page-command .binch-command-note{display:flex;align-items:center;gap:10px;padding:9px 8px;border-bottom:1px solid #ffffff1a;font-size:.86rem}
+#page-command .binch-command-note input{accent-color:#e7c28b;width:17px;height:17px}
+#page-command .binch-command-note span{flex:1;overflow-wrap:anywhere}
+#page-command .binch-command-note span.done{color:#92b7a8;text-decoration:line-through}
+#page-command .binch-command-note button{min-height:32px;padding:5px 10px;font-size:1.15rem}
+#page-command #binch-command-notes-count{display:block;margin-top:11px;color:#9eb9b0;font-size:.7rem}
+@media(max-width:550px){#page-command #binch-command-notes-form{flex-direction:column}}
