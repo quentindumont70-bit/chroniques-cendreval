@@ -41,6 +41,13 @@ try {
  }
  $name = 'GrimoireSync'
  $installed = Join-Path $addons $name
+ $previousVersion = 'aucune'
+ $previousToc = Join-Path $installed 'GrimoireSync.toc'
+ if (Test-Path -LiteralPath $previousToc -PathType Leaf) {
+  $existingToc = Get-Content -LiteralPath $previousToc -Raw
+  if ($existingToc -match '(?m)^## Version: ([0-9]+(?:\.[0-9]+)+)\s*$') { $previousVersion = $Matches[1] }
+  else { $previousVersion = 'inconnue' }
+ }
  $backup = Join-Path (Split-Path $addons -Parent) ('LaBinch-Sauvegarde-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
  $base = 'https://raw.githubusercontent.com/quentindumont70-bit/chroniques-cendreval/main/public/binch/addon/GrimoireSync/'
  $filenames = @('GrimoireSync.toc','Core.lua','Minimap.lua')
@@ -81,7 +88,8 @@ try {
  $installedToc = Get-Content -LiteralPath (Join-Path $installed 'GrimoireSync.toc') -Raw
  if ($installedToc -notmatch '(?m)^## Version: 0\.8\.3\s*$') { throw 'Version installee incorrecte.' }
  $message = "GrimoireSync v0.8.3 installe - fichiers controles (SHA-256)." + [Environment]::NewLine + [Environment]::NewLine +
- "Dossier : $installed" + [Environment]::NewLine
+ "Dossier : $installed" + [Environment]::NewLine +
+ "Version precedente : $previousVersion" + [Environment]::NewLine
  if (Test-Path -LiteralPath $backup) { $message += "Ancienne version sauvegardee : $backup" + [Environment]::NewLine }
  $message += [Environment]::NewLine + "Lance WoW, active GrimoireSync, clique sur le petit livre pres de la mini-carte puis importe GrimoireSync.lua dans La Binch."
  Tell $message 'La Binch - Installation terminee'
