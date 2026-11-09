@@ -97,7 +97,7 @@ function paint(){
  const status=$('binch-faith-integrity');if(status){
  const date=p.updated?new Date(p.updated):null,ok=date&&!isNaN(+date);
  const age=ok?Math.round((Date.now()-+date)/60000):null;
- status.textContent='Faith V2 · '+(ok?'Dernier import '+date.toLocaleString('fr-FR')+(age>30?' (données anciennes)':''):'Pas d’import confirmé')+' · Quêtes actives inconnues · Suggestions issues du catalogue La Binch et des données locales, sans IA distante.';
+ status.textContent='Faith V4 · '+(ok?'Dernier import '+date.toLocaleString('fr-FR')+(age>30?' (données anciennes)':''):'Pas d’import confirmé')+(p.questLogAPI==='unavailable'?' · Journal inconnu':' · Journal exporté : '+p.questLog.length+' quête(s)')+' · Conseils locaux, aucune IA distante.';
  }
 }
 function mount(){
