@@ -1,0 +1,16 @@
+#page-command .binch-command-questlog{padding:18px;background:linear-gradient(125deg,#26353c,#162630);border:1px solid #64787b;border-radius:11px;color:#f2e6d4}
+#page-command .binch-command-questlog .binch-command-label{display:flex;justify-content:space-between;gap:8px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #ffffff27;font-size:.69rem;font-weight:850;letter-spacing:.08em;color:#c5d7df}
+#page-command .binch-command-quest-heading{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+#page-command .binch-command-quest-heading h3{font:1.35rem Cinzel,Georgia,serif;color:#f1e7d6;margin:0}
+#page-command .binch-command-quest-heading em{font-style:normal;color:#b2d2e5}
+#page-command .binch-command-quest-heading button{font-size:.76rem}
+#page-command #binch-command-quest-status{color:#b8cfce;font-size:.76rem;line-height:1.5;margin:11px 0}
+#page-command #binch-command-quest-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+#page-command .binch-command-quest-entry{display:flex;align-items:center;gap:12px;min-width:0;padding:10px 12px;border:1px solid #486268;border-radius:8px;background:#142b31b0}
+#page-command .binch-command-quest-mark{font-size:1.15rem;color:#d7bf90}
+#page-command .binch-command-quest-entry>div{display:flex;flex:1;flex-direction:column;gap:3px;min-width:0}
+#page-command .binch-command-quest-entry strong{font-size:.82rem;font-weight:800;color:#f5e7d0;overflow-wrap:anywhere}
+#page-command .binch-command-quest-entry small{font-size:.65rem;color:#acc4c2}
+#page-command .binch-command-quest-entry button{min-width:31px;min-height:31px;padding:4px 7px}
+#page-command .binch-command-quest-empty{font-size:.78rem;color:#c7d3cb}
+@media(max-width:860px){#page-command #binch-command-quest-list{grid-template-columns:1fr}}
