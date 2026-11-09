@@ -7,6 +7,68 @@ Add-Type -AssemblyName System.Windows.Forms
 function Tell([string]$message,[string]$title='La Binch') {
  [System.Windows.Forms.MessageBox]::Show($message,$title,[System.Windows.Forms.MessageBoxButtons]::OK,[System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
 }
+# One local configuration file, in the user's profile. No WoW data is uploaded.
+$configDirectory = Join-Path $env:LOCALAPPDATA 'LaBinch'
+$configFile = Join-Path $configDirectory 'wow-forever-path.txt'
+function Get-LastFolder {
+ if (-not (Test-Path -LiteralPath $configFile -PathType Leaf)) { return $null }
+ try { return (Get-Content -LiteralPath $configFile -TotalCount 1 -ErrorAction Stop).Trim() } catch { return $null }
+}
+function Save-LastFolder([string]$folder) {
+ if (-not $folder) { return }
+ if (-not (Test-Path -LiteralPath $configDirectory)) { New-Item -ItemType Directory -Path $configDirectory -Force | Out-Null }
+ [System.IO.File]::WriteAllText($configFile, $folder, [System.Text.Encoding]::UTF8)
+}
+function Confirm-Choice([string]$message,[string]$title='La Binch') {
+ return [System.Windows.Forms.MessageBox]::Show($message,$title,[System.Windows.Forms.MessageBoxButtons]::YesNo,[System.Windows.Forms.MessageBoxIcon]::Question) -eq [System.Windows.Forms.DialogResult]::Yes
+}
+function Show-InstallResult([string]$heading,[string]$version,[string]$location,[string]$previous,[string]$backup) {
+ $form = New-Object System.Windows.Forms.Form
+ $form.Text = 'La Binch - Mise a jour GrimoireSync'
+ $form.StartPosition = 'CenterScreen'
+ $form.Size = New-Object System.Drawing.Size(790,365)
+ $form.MinimumSize = New-Object System.Drawing.Size(630,320)
+ $form.BackColor = [System.Drawing.Color]::FromArgb(24,34,40)
+ $form.ForeColor = [System.Drawing.Color]::FromArgb(245,230,205)
+ $form.Font = New-Object System.Drawing.Font('Segoe UI',10)
+ $title = New-Object System.Windows.Forms.Label
+ $title.Text = $heading
+ $title.ForeColor = [System.Drawing.Color]::FromArgb(229,194,132)
+ $title.Font = New-Object System.Drawing.Font('Segoe UI',16,[System.Drawing.FontStyle]::Bold)
+ $title.Location = New-Object System.Drawing.Point(22,17)
+ $title.AutoSize = $true
+ $form.Controls.Add($title)
+ $info = New-Object System.Windows.Forms.TextBox
+ $info.Multiline = $true
+ $info.ReadOnly = $true
+ $info.BorderStyle = [System.Windows.Forms.BorderStyle]::None
+ $info.ScrollBars = [System.Windows.Forms.ScrollBars]::Vertical
+ $info.BackColor = $form.BackColor
+ $info.ForeColor = $form.ForeColor
+ $info.Font = New-Object System.Drawing.Font('Consolas',10)
+ $info.Location = New-Object System.Drawing.Point(24,65)
+ $info.Size = New-Object System.Drawing.Size(725,190)
+ $info.Anchor = 'Top,Left,Right,Bottom'
+ $info.Text = "Version disponible : $version" + [Environment]::NewLine + "Version precedente : $previous" + [Environment]::NewLine + [Environment]::NewLine + "Dossier :" + [Environment]::NewLine + $location + [Environment]::NewLine + [Environment]::NewLine + "Sauvegarde de l'ancienne version : " + $(if ($backup) {$backup} else {'aucune (pas de changement)'})
+ $form.Controls.Add($info)
+ $open = New-Object System.Windows.Forms.Button
+ $open.Text = 'Ouvrir le dossier'
+ $open.Location = New-Object System.Drawing.Point(24,273)
+ $open.Size = New-Object System.Drawing.Size(180,40)
+ $open.Anchor = 'Bottom,Left'
+ $open.Add_Click({ Start-Process -FilePath 'explorer.exe' -ArgumentList @($location) })
+ $form.Controls.Add($open)
+ $ok = New-Object System.Windows.Forms.Button
+ $ok.Text = 'Terminer'
+ $ok.DialogResult = [System.Windows.Forms.DialogResult]::OK
+ $ok.Location = New-Object System.Drawing.Point(617,273)
+ $ok.Size = New-Object System.Drawing.Size(130,40)
+ $ok.Anchor = 'Bottom,Right'
+ $form.AcceptButton = $ok
+ $form.Controls.Add($ok)
+ [void]$form.ShowDialog()
+ $form.Dispose()
+}
 function Find-Addons([string]$path) {
  if (-not $path) { return $null }
  $candidates = @($path)
@@ -20,19 +82,36 @@ function Find-Addons([string]$path) {
  return $null
 }
 try {
- $folder = New-Object System.Windows.Forms.FolderBrowserDialog
- $folder.Description = 'Selectionne le dossier WoW Forever (ou son dossier Interface\AddOns)'
- $folder.ShowNewFolderButton = $false
- foreach ($suggestion in @('C:\Program Files (x86)\World of Warcraft','C:\Program Files\World of Warcraft','C:\Games\World of Warcraft')) {
-  if (Test-Path -LiteralPath $suggestion -PathType Container) { $folder.SelectedPath = $suggestion; break }
+ # The saved path is local to Windows, and must resolve to an existing AddOns folder.
+ $known = Get-LastFolder
+ $addons = Find-Addons $known
+ if (-not $addons) {
+  $suggestions = @('D:\World of Warcraft\_forever_', 'C:\Program Files (x86)\World of Warcraft\_forever_', 'C:\Program Files\World of Warcraft\_forever_')
+  foreach ($suggestion in $suggestions) {
+   $candidate = Find-Addons $suggestion
+   if ($candidate) { $addons = $candidate; break }
+  }
  }
- if ($folder.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { exit 0 }
- $gameRoot = $folder.SelectedPath
- $addons = Find-Addons $gameRoot
- if (-not $addons -and (Split-Path -Leaf $gameRoot) -eq 'AddOns' -and (Split-Path -Leaf (Split-Path $gameRoot)) -eq 'Interface') {
-  $addons = $gameRoot
+ if ($addons) {
+  $choice = "Dossier WoW detecte :" + [Environment]::NewLine + [Environment]::NewLine + $addons + [Environment]::NewLine + [Environment]::NewLine + "Utiliser ce dossier ?" + [Environment]::NewLine + "(Non = choisir un autre emplacement)"
+  if (-not (Confirm-Choice $choice 'La Binch - WoW detecte')) { $addons = $null }
  }
- if (-not $addons) { Tell 'Dossier Interface\AddOns introuvable. Selectionne le dossier de la version WoW Forever, ou directement Interface\AddOns.' 'Installation non effectuee'; exit 1 }
+ if (-not $addons) {
+  $folder = New-Object System.Windows.Forms.FolderBrowserDialog
+  $folder.Description = 'Selectionne WoW Forever ou Interface\AddOns (une seule fois)'
+  $folder.ShowNewFolderButton = $false
+  if ($known -and (Test-Path -LiteralPath $known -PathType Container)) { $folder.SelectedPath = $known }
+  if ($folder.ShowDialog() -ne [System.Windows.Forms.DialogResult]::OK) { exit 0 }
+  $chosen = $folder.SelectedPath
+  $addons = Find-Addons $chosen
+  if (-not $addons -and (Split-Path -Leaf $chosen) -eq 'AddOns' -and (Split-Path -Leaf (Split-Path $chosen)) -eq 'Interface') { $addons = $chosen }
+ }
+ if (-not $addons) {
+  Tell 'Dossier Interface\AddOns introuvable. Selectionne le dossier WoW Forever ou directement Interface\AddOns.' 'Installation non effectuee'
+  exit 1
+ }
+ # Resolve and validate the location before any file write.
+ $addons = (Resolve-Path -LiteralPath $addons).ProviderPath
  # If WoW is running, the old addon remains loaded until a full client restart.
  $wowProcesses = @(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -match '^(Wow|WowClassic|WowForever|WorldOfWarcraft)(\.exe)?$' })
  if ($wowProcesses.Count -gt 0) {
@@ -63,6 +142,20 @@ try {
   }
   $toc = Get-Content -LiteralPath (Join-Path $staging 'GrimoireSync.toc') -Raw
   if ($toc -notmatch '(?m)^## SavedVariables: GrimoireSyncDB' -or $toc -notmatch '(?m)^## Version: 0\.8\.4' -or $toc -notmatch '(?m)^Minimap.lua\s*$') {throw 'Le manifeste GrimoireSync ne correspond pas a la version attendue.'}
+  # Idempotent upgrade: do not make a new backup if files are already current.
+  $sameFiles = Test-Path -LiteralPath $installed -PathType Container
+  if ($sameFiles) {
+   foreach ($filename in $filenames) {
+    $oldFile = Join-Path $installed $filename
+    if (-not (Test-Path -LiteralPath $oldFile -PathType Leaf)) { $sameFiles = $false; break }
+    if ((Get-FileHash -LiteralPath $oldFile -Algorithm SHA256).Hash -ne (Get-FileHash -LiteralPath (Join-Path $staging $filename) -Algorithm SHA256).Hash) { $sameFiles = $false; break }
+   }
+  }
+  if ($sameFiles) {
+   Save-LastFolder $addons
+   Show-InstallResult 'Deja a jour !' '0.8.4' $installed $previousVersion ''
+   exit 0
+  }
   $minimapCode = Get-Content -LiteralPath (Join-Path $staging 'Minimap.lua') -Raw
   if ($minimapCode -match 'dialog:SetBackdrop\(' -or $minimapCode -match 'button:SetBackdrop\(') { throw 'Minimap.lua non compatible avec WoW Forever.' }
   if (Test-Path -LiteralPath $installed) {
@@ -87,12 +180,9 @@ try {
  }
  $installedToc = Get-Content -LiteralPath (Join-Path $installed 'GrimoireSync.toc') -Raw
  if ($installedToc -notmatch '(?m)^## Version: 0\.8\.4\s*$') { throw 'Version installee incorrecte.' }
- $message = "GrimoireSync v0.8.4 installe - fichiers controles (SHA-256)." + [Environment]::NewLine + [Environment]::NewLine +
- "Dossier : $installed" + [Environment]::NewLine +
- "Version precedente : $previousVersion" + [Environment]::NewLine
- if (Test-Path -LiteralPath $backup) { $message += "Ancienne version sauvegardee : $backup" + [Environment]::NewLine }
- $message += [Environment]::NewLine + "Lance WoW, active GrimoireSync, clique sur le petit livre pres de la mini-carte puis importe GrimoireSync.lua dans La Binch."
- Tell $message 'La Binch - Installation terminee'
+ Save-LastFolder $addons
+ Show-InstallResult 'Mise a jour reussie !' '0.8.4' $installed $previousVersion $(if (Test-Path -LiteralPath $backup) {$backup} else {''})
+
 } catch {
  Tell ("Installation interrompue : " + $_.Exception.Message + [Environment]::NewLine + "Aucun dossier WTF/SavedVariables n'a ete modifie.") 'La Binch - Erreur'
  exit 1
