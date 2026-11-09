@@ -19,7 +19,7 @@ function save(){localStorage.setItem(KEY,JSON.stringify(state))}
 function catalog(){return Array.isArray(window.GRIMOIRE_DUNGEONS)?window.GRIMOIRE_DUNGEONS.filter(d=>d&&typeof d.name==='string'&&d.name.length<=120):[]}
 function members(){const r=read(ROSTER,{});return Array.isArray(r.members)?r.members.filter(m=>m&&m.status==='Confirmé'&&m.group>0&&m.group<=8):[]}
 function events(){const data=read(EVENTS,[]);return Array.isArray(data)?data.filter(e=>e&&!e.done&&typeof e.date==='string'&&typeof e.title==='string'):[]}
-function matchingEvents(d){return events().filter(e=>e.title.toLocaleLowerCase('fr').includes(d.name.toLocaleLowerCase('fr'))).sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time)).slice(0,3)}
+function matchingEvents(d){const today=new Date();today.setHours(0,0,0,0);return events().filter(e=>e.title.toLocaleLowerCase('fr').includes(d.name.toLocaleLowerCase('fr'))&&new Date(e.date+'T00:00:00')>=today).sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time)).slice(0,3)}
 function eventMembers(e){return Array.isArray(e.attendees)?e.attendees.filter(a=>a&&a.status==='Confirmé'&&typeof a.name==='string'&&['Tank','Soigneur','DPS','Flexible'].includes(a.role)).slice(0,40):[]}
 function current(){return catalog().find(d=>d.name===selected)}
 function key(){return encodeURIComponent(selected)}
