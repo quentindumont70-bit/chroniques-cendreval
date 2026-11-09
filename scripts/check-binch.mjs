@@ -127,8 +127,21 @@ const toolkit=read('trade-toolkit.js');
 if(!toolkit.includes('Marteau de forgeron')||!toolkit.includes('Ingénierie')||!toolkit.includes('inventory'))fail('Conseiller métiers et dépendance au marteau de forgeron manquants.');
 const player=read('player-home.js'),playerStyle=read('player-home.css');
 if(!player.includes("updateLevelRing(last,p)")||!player.includes("rawXP!==null")||!playerStyle.includes(".binch-level-ring"))fail('Anneau XP : liaison ou garde-fou anti-valeurs absentes manquant.');
+// Real quest-log plumbing must be present end-to-end, not a decorative widget.
+for(const file of ['command-questlog.js','command-questlog.css']){
+ if(!present(file))fail('Journal de quêtes : ressource absente : '+file);
+ if(!portal.includes('./'+file+'?v='))fail('Journal de quêtes : non chargé dans le portail : '+file);
+}
+if(!portal.includes('questLogAPI')||!portal.includes('questLog:snap.questLog'))
+ fail('Journal de quêtes : métadonnées GF6 non importées dans le profil');
+if(present('command-questlog.js')){
+ const questView=read('command-questlog.js');
+ if(!questView.includes('last.questLog')||!questView.includes('BinchPinned'))
+  fail('Journal de quêtes : liste exportée et épinglage non reliés.');
+}
 const addonCore=read('addon/GrimoireSync/Core.lua'),addonToc=read('addon/GrimoireSync/GrimoireSync.toc'),installer=read('Installer-La-Binch.ps1');
 if(!addonCore.includes('PLAYER_XP_UPDATE')||!addonCore.includes('UnitXP')||!addonCore.includes('captureXP()')||!addonCore.includes('GrimoireSyncDB.xpStatus'))fail('Addon GrimoireSync : suivi XP ou diagnostic manquant.');
+if(!addonCore.includes('GetAllCompletedQuestIDs')||!addonCore.includes('captureQuestLog()')||!addonCore.includes('questLogAPI'))fail('Addon GrimoireSync : collecte du journal de quêtes incomplète.');
 const addonVersion=addonToc.match(/^## Version:\s*([0-9]+(?:\.[0-9]+)+)\s*$/m)?.[1];
 if(!addonVersion)fail('Version GrimoireSync absente du TOC.');
 else {
