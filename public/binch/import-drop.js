@@ -11,7 +11,7 @@ async function setFile(file){
  if(field)field.value=file?.name||'';
  runButton.disabled=true;
  if(!file){report('Aucun fichier sélectionné.',true);return}
- if(!/^GrimoireSync\\.lua$/i.test(file.name)){report('Fichier incorrect : sélectionne GrimoireSync.lua depuis SavedVariables, pas Core.lua.',true);return}
+ if(!/^GrimoireSync\.lua$/i.test(file.name)){report('Fichier incorrect : sélectionne GrimoireSync.lua depuis SavedVariables, pas Core.lua.',true);return}
  if(file.size>MAX){report('Fichier trop volumineux (20 Mo maximum).',true);return}
  if(!window.BinchSync){report('Module de synchronisation non disponible. Recharge la page.',true);return}
  report('Lecture et validation locale du fichier…');
