@@ -126,7 +126,8 @@ function init(){
    if(g>0&&!members.length)return '';
    const active=members.filter(m=>m.status!=='Absent');
    const tanks=active.filter(m=>m.role==='Tank').length,healers=active.filter(m=>m.role==='Soigneur').length;
-   const readiness=g===0?'':('<p class="binch-roster-readiness">'+active.length+'/5 participants · '+(active.length>5?'⚠ Groupe surchargé · ':'')+(tanks===0?'⚠ Tank manquant · ':'')+(healers===0?'⚠ Soigneur manquant · ':'')+(active.length<=5&&tanks>0&&healers>0?'Composition équilibrée':'Composition à ajuster')+'</p>');
+   const ready=g!==0&&active.length===5&&tanks===1&&healers===1&&active.every(m=>m.status==='Confirmé');
+   const readiness=g===0?'':('<p class="binch-roster-readiness">'+active.length+'/5 participants · '+(active.length>5?'⚠ Groupe surchargé · ':'')+(tanks===0?'⚠ Tank manquant · ':'')+(healers===0?'⚠ Soigneur manquant · ':'')+(active.some(m=>m.status!=='Confirmé')?'Confirmations en attente · ':'')+(ready?'Groupe complet, rôles couverts':'Composition à finaliser')+'</p>');
    return '<section class="binch-roster-group"><h3>'+(g?'Groupe '+g:'Réserve / sans groupe')+' <small>'+members.filter(m=>m.status==='Confirmé').length+' confirmé(s)</small></h3>'+readiness+
    (members.length?members.map(m=>'<div class="binch-roster-member"><b>'+esc(m.name)+'</b><small>'+esc(m.cls)+'</small>'+
     '<select aria-label="Rôle de '+esc(m.name)+'" data-roster-id="'+esc(m.id)+'" data-roster-field="role">'+ROLES.map(v=>'<option'+(v===m.role?' selected':'')+'>'+v+'</option>').join('')+'</select>'+
