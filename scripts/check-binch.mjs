@@ -55,7 +55,14 @@ const player=read('player-home.js'),playerStyle=read('player-home.css');
 if(!player.includes("updateLevelRing(last,p)")||!player.includes("rawXP!==null")||!playerStyle.includes(".binch-level-ring"))fail('Anneau XP : liaison ou garde-fou anti-valeurs absentes manquant.');
 const addonCore=read('addon/GrimoireSync/Core.lua'),addonToc=read('addon/GrimoireSync/GrimoireSync.toc'),installer=read('Installer-La-Binch.ps1');
 if(!addonCore.includes('PLAYER_XP_UPDATE')||!addonCore.includes('UNIT_XP')||!addonCore.includes('captureXP()')||!addonCore.includes('GrimoireSyncDB.xpStatus'))fail('Addon GrimoireSync : suivi XP ou diagnostic manquant.');
-if(!addonToc.includes('## Version: 0.8.1')||!installer.includes('Version: 0\\.8\\.1'))fail('Version 0.8.1 non alignée entre TOC et installateur.');
+const addonVersion=addonToc.match(/^## Version:\s*([0-9]+(?:\.[0-9]+)+)\s*$/m)?.[1];
+if(!addonVersion)fail('Version GrimoireSync absente du TOC.');
+else {
+ const installerVersion=installer.match(/installation locale GrimoireSync v([0-9]+(?:\.[0-9]+)+)/)?.[1];
+ if(installerVersion!==addonVersion)fail('La version installateur ('+installerVersion+') diffère du TOC ('+addonVersion+').');
+ const escapedVersion=addonVersion.replace(/\./g,'\\.');
+ if(!installer.includes('Version: '+escapedVersion))fail('La validation de version dans l’installateur ne correspond pas au TOC.');
+}
 if(!installer.includes("Minimap.lua\\\\s*")&&!installer.includes("Minimap.lua\\s*"))fail('Validation des fichiers de l’installateur non reconnue.');
 const lfg=read('lfg.js'),config=JSON.parse(read('lfg-cloud-config.json'));
 if(!lfg.includes('Mode local uniquement')||!lfg.includes('online'))fail('Le LFG ne distingue plus clairement les modes local et partagé');
