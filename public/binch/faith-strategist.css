@@ -11,3 +11,8 @@
 #page-command .binch-faith-action small{font-size:.67rem;color:#bdace0}
 #page-command .binch-faith-action button{min-width:34px;min-height:34px;padding:4px 8px}
 #page-command #binch-faith-integrity{font-size:.67rem;color:#adb7ca;border-top:1px solid #ffffff1d;padding-top:11px;margin:5px 0 0}
+
+#page-command .binch-faith-buttons{display:flex;gap:8px;margin-top:8px}
+#page-command .binch-faith-buttons button.binch-faith-pin{font-size:.68rem;min-height:29px;padding:4px 9px;background:#3b3551;color:#efd6fb;border-color:#8f78ac}
+#page-command .binch-faith-buttons button.binch-faith-pin:hover{background:#57466e}
+#page-command .binch-faith-buttons button.binch-faith-pin:disabled{opacity:.7;cursor:default}
