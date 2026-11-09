@@ -7,7 +7,7 @@ const ITEMS=[
 ['SYNC-03','P0','À faire','Journal de quêtes réel','Corriger questAPI unavailable, contrôler APIs du client Forever et distinguer actives/terminées.','Synchronisation'],
 ['SYNC-04','P0','À faire','Données fiables et multi-personnages','XP, zone, inventaire, équipement et sources horodatées sans mélange entre personnages.','Synchronisation'],
 ['PLAY-01','P0','Publié · test requis','Poste de commandement deuxième écran','Interface publiée : XP, personnage, cartes, Brog, ressources, chroniques et carnet de terrain ; QA Opera à réaliser.','Compagnon'],
-['PLAY-02','P0','À faire','Cockpit modulable','Widgets déplaçables/redimensionnables, disposition persistante, vue compacte, modes leveling/donjon/raid.','Compagnon'],
+['PLAY-02','P0','Publié · test requis','Cockpit modulable','Panneaux réordonnables/masquables, préréglages Leveling, Minimaliste, Récolte & métiers, vue compacte et export/import de disposition. Redimensionnement libre et modes donjon/raid restent à faire.','Compagnon'],
 ['PLAY-03','P0','À faire','Conseils réellement actionnables','Trois prochains objectifs pertinents basés sur le personnage, les quêtes et les ressources vérifiées.','Compagnon'],
 ['PERF-01','P0','À faire','Performance Opera et navigation','Mesurer mémoire/CPU en longue session, éviter animations et boucles hors écran, corriger le défilement.','Qualité'],
 ['QA-01','P0','À faire','Tests Wow, PC et mobile','Valider profils, import, quêtes, raccourcis, filtres, UI, mobile et accessibilité avec captures.','Qualité'],
