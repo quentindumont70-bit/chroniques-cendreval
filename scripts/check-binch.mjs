@@ -68,6 +68,20 @@ if(present('command-center.js')){
   warnings.push('Poste de commandement : vérifier la source locale et les liens de navigation.');
 }
 
+// Cockpit deuxième écran : disposition persistante, contrôles vrais et absence de télémétrie.
+for(const file of ['command-layout.js','command-layout.css']){
+ if(!present(file))fail('Cockpit personnalisable : ressource absente : '+file);
+ if(!portal.includes('./'+file+'?v='))fail('Cockpit personnalisable : ressource non liée : '+file);
+}
+if(present('command-layout.js')){
+ const layout=read('command-layout.js');
+ for(const token of ['binch.command.layout.v1','binch-command-widget-list','binch-command-deck','commandColumns','leveling','minimal','gathering']){
+  // The grid property is represented by dataset.commandColumns on the page element.
+  if(!layout.includes(token))fail('Cockpit personnalisable : contrat manquant : '+token);
+ }
+ if(layout.includes('MutationObserver('))fail('Cockpit personnalisable : observateur global interdit en continu.');
+}
+
 // Interface publique des chantiers et premières décisions locales de Faith.
 for(const file of ['todo-community.js','todo-community.css','faith-strategist.js','faith-strategist.css']){
  if(!present(file))fail('Communauté/Faith : ressource absente : '+file);
