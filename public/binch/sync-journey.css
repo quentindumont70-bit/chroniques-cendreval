@@ -40,3 +40,14 @@
 #page-sync #grimoire-bridge{scroll-margin-top:25px;border-color:#6e9ea9!important}
 #page-sync #grimoire-bridge label[for="grimoire-bridge-file"]{display:inline-flex!important;background:linear-gradient(120deg,#e8d19f,#b9a06b)!important;color:#18231e!important;border:1px solid #ffecb6!important;border-radius:9px!important;padding:13px 18px!important;font-weight:850}
 @media(max-width:600px){#page-sync .binch-sync-step{grid-template-columns:38px minmax(0,1fr);gap:11px;padding:15px}#page-sync .binch-sync-index{min-width:37px;height:37px;font-size:1rem;border-radius:9px}#page-sync .binch-sync-main-download,#page-sync .binch-sync-continue{width:100%;text-align:center}}
+
+/* Correctif défilement : la page Synchronisation doit suivre le scroll normal du document,
+   comme les autres onglets, sans conteneur interne coupé à la hauteur de l'écran. */
+html:has(#page-sync.active),
+body:has(#page-sync.active){height:auto!important;min-height:100%!important;max-height:none!important;overflow-y:auto!important;overscroll-behavior-y:auto!important}
+body:has(#page-sync.active) #app,
+body:has(#page-sync.active) #app.shell,
+#page-sync.active,
+#page-sync.active .binch-sync-guide{height:auto!important;max-height:none!important;min-height:0;overflow:visible!important;overscroll-behavior-y:auto!important}
+#page-sync.active :is(#binch-sync-wizard,#binch-easy-sync,#grimoire-bridge){max-height:none!important;overflow:visible!important}
+#page-sync.active{padding-bottom:max(48px,env(safe-area-inset-bottom))}
