@@ -40,12 +40,23 @@ function suggestions(p){
  const jobs=p.jobs.slice(0,3).map(j=>({id:'job:'+j,label:'Faire progresser '+j,group:'Métiers',level:p.level,score:72,detail:'Vérifier les recettes et composants auprès du maître de métier'}));
  const nextClass=(classMilestones[p.cls]||[]).filter(([lvl])=>lvl>=p.level&&lvl<=p.level+8).map(([lvl,label])=>({id:'class:'+lvl,label,group:'Quêtes',level:lvl,score:110-(lvl-p.level)*3,detail:'Jalon de classe indicatif : confirmer les conditions sur WoW Forever'}));
  const personal=objectives(p).map(x=>({id:'custom:'+x.id,label:x.title,group:x.type||'Quêtes',level:Number(x.level)||p.level,score:(x.priority==='Essentiel'?120:x.priority==='Normal'?96:65)+(x.zone&&x.zone===selectedZoneId(p)?24:0),detail:'Objectif personnel'+(x.zone?' associé à une zone de l’Atlas':' saisi dans La Binch')}));
- const zone=(window.GRIMOIRE_ZONES||[]).filter(z=>z&&Array.isArray(z.levels)&&z.levels[0]<=p.level+3&&z.levels[1]>=p.level).sort((a,b)=>Math.abs(a.levels[0]-p.level)-Math.abs(b.levels[0]-p.level))[0];
+ const alliance=['Humain','Nain','Elfe','Gnome'],horde=['Orc','Tauren','Troll','MortVivant'];
+ const faction=alliance.includes(p.race)?'Alliance':horde.includes(p.race)?'Horde':'Neutre';
+ const zone=(window.GRIMOIRE_ZONES||[]).filter(z=>z&&Array.isArray(z.levels)&&z.levels[0]<=p.level+3&&z.levels[1]>=p.level&&
+  (['Neutre','Mixte'].includes(z.faction||'Neutre')||faction==='Neutre'||z.faction===faction))
+  .sort((a,b)=>Math.abs(a.levels[0]-p.level)-Math.abs(b.levels[0]-p.level))[0];
  const exploration=zone?[{id:'zone:'+zone.id,label:'Explorer '+zone.name,group:'Exploration',level:p.level,score:76,detail:'Zone adaptée au niveau indiqué par notre atlas, à vérifier en jeu'}]:[];
  const dungeon=(window.GRIMOIRE_DUNGEONS||[]).filter(d=>d&&Array.isArray(d.levels)&&d.levels[0]<=p.level+4&&d.levels[1]>=p.level).sort((a,b)=>Math.abs(a.levels[0]-p.level)-Math.abs(b.levels[0]-p.level))[0];
  const dungeons=dungeon?[{id:'dungeon:'+dungeon.id,label:'Préparer '+dungeon.name,group:'Donjons',level:dungeon.levels[0],score:60,detail:'Préparer les quêtes, le groupe et les consommables — accès à confirmer'}]:[];
  const basics=[{id:'baseline:training',label:'Vérifier les compétences et l’équipement',group:'Quêtes',level:p.level,score:64,detail:'Un contrôle rapide avant le départ'},{id:'baseline:route',label:'Préparer un trajet et ses quêtes regroupées',group:'Quêtes',level:p.level,score:69,detail:'Limiter les allers-retours inutiles'}];
- return [...personal,...zoneContext(p),...nextClass,...exploration,...jobs,...dungeons,...basics].filter(x=>!plan.done[x.id]).map(x=>({...x,score:x.score+(plan.focus==='Mixte'?0:x.group===plan.focus?35:-15)})).sort((a,b)=>b.score-a.score||a.level-b.level);
+ return [...personal,...zoneContext(p),...nextClass,...exploration,...jobs,...dungeons,...basics]
+ .filter(x=>!plan.done[x.id])
+ .map(x=>({...x,score:x.score+(plan.focus==='Mixte'?0:
+  ((plan.focus==='Quêtes'&&['Quête','Quêtes'].includes(x.group))||
+   (plan.focus==='Métiers'&&['Métier','Métiers'].includes(x.group))||
+   (plan.focus==='Donjons'&&['Donjon','Donjons'].includes(x.group))||
+   plan.focus===x.group?35:-15))}))
+ .sort((a,b)=>b.score-a.score||a.level-b.level);
 }
 function schedule(p){
  const mins=plan.duration;const budget=Math.max(10,mins-10),list=suggestions(p),selected=[],types=new Set();
