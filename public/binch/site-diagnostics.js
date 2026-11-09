@@ -92,6 +92,22 @@ function run(){
    finally{const original=document.querySelector('#app nav.nav [data-page="'+String(before||'page-hub').replace(/^page-/,'')+'"]');if(original)original.click();}
   });
  }
+ test('Identifiants HTML sans doublons',()=>{
+  const ids=new Set(),duplicates=new Set();
+  document.querySelectorAll('[id]').forEach(node=>{if(ids.has(node.id))duplicates.add(node.id);else ids.add(node.id)});
+  return duplicates.size?('Identifiants répétés : '+[...duplicates].slice(0,6).join(', ')):true;
+ });
+ test('Pas de débordement horizontal de la page',()=>{
+  const overflow=document.documentElement.scrollWidth-window.innerWidth;
+  return overflow<=5?true:('Débordement horizontal de '+Math.ceil(overflow)+' px');
+ });
+ if(!onboarding&&window.matchMedia('(max-width:750px)').matches){
+  test('Zones tactiles du menu mobile',()=>{
+   const controls=[...document.querySelectorAll('#binch-mobile-navigation button')];
+   const narrow=controls.filter(b=>{const rect=b.getBoundingClientRect();return rect.width<40||rect.height<44});
+   return narrow.length?('Boutons trop petits : '+narrow.map(b=>b.getAttribute('aria-label')||b.textContent.trim()).join(', ')):true;
+  });
+ }
  test('Erreurs JavaScript observées depuis l’ouverture du diagnostic',()=>runtimeErrors.length?runtimeErrors.map(e=>e.type+' : '+e.message).join(' ; '):true);
  const pass=results.filter(x=>x.pass).length;
  $('#binch-diag-overview').textContent=pass+' / '+results.length+' vérifications réussies'+(failures.length?' · '+failures.length+' échec(s)':'')+(onboarding?' · personnage non configuré':'');
