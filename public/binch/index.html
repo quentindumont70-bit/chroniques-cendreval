@@ -692,6 +692,21 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-discovery-
  const done=flags();done[id.slice(10)]=!!e.detail.done;localStorage.setItem(doneKey(),JSON.stringify(done));render();
 });return true}
 function render(){if(!$('discovery-carnet'))return;const p=profile(),done=flags(),mine=QUESTS.filter(q=>relevant(q,p)),now=mine.filter(q=>active(q,p,done)&&urgency(q,p)==='now').sort((a,b)=>b.priority-a.priority),soon=mine.filter(q=>!done[q.id]&&q.rec>p.level&&q.rec<=p.level+5).sort((a,b)=>a.level-b.level);const box=$('discovery-carnet');let snap=null;try{snap=JSON.parse(localStorage.getItem('grimoire.bridge.last'))}catch{}const syncNote=snap&&snap.name?.toLowerCase()===p.name.toLowerCase()?'<p class="muted">Dernier import WoW : '+esc(snap.zone||'zone inconnue')+' · '+(snap.questIds||0)+' quêtes relevées · sac : '+esc(snap.bagQuestStep||'non détecté')+'</p>':'';box.innerHTML='<div class="eyebrow">Ton carnet de route · niveau '+p.level+'</div><h2>À ne pas manquer'+(now.length?'<span class="discovery-alert-count">'+now.length+'</span>':'')+'</h2><p class="muted">Alertes liées à ta race et à ton niveau. Le grimoire met en avant les récompenses utiles au bon moment.</p>'+syncNote+'<div class="discovery-list">'+(now.length?now.slice(0,3).map(q=>item(q,p,done,true)).join(''):'<p>Aucune découverte prioritaire en retard. Bonne route !</p>')+(soon.length?'<p class="muted">Bientôt : '+soon.slice(0,2).map(q=>esc(q.title)+' (niv. '+q.rec+')').join(' · ')+'</p>':'')+'</div><p><button id="discovery-open" class="reset">Voir toutes les découvertes →</button></p>';$('discovery-open').onclick=()=>$('app').querySelector('nav [data-page="discoveries"]').click();const filter=$('discovery-filter')?.value||'mine',type=$('discovery-type')?.value||'all';let list=QUESTS.filter(q=>{if(type!=='all'&&q.category!==type)return false;const search=($('discovery-search')?.value||'').toLocaleLowerCase('fr');if(search&&![q.title,q.reward,q.summary,q.category].join(' ').toLocaleLowerCase('fr').includes(search))return false;if(filter==='all')return true;if(filter==='done')return !!done[q.id];if(filter==='urgent')return relevant(q,p)&&available(q,p)&&!done[q.id]&&q.priority>=88;if(!relevant(q,p))return false;if(filter==='available')return available(q,p)&&!done[q.id];if(filter==='future')return !available(q,p)&&!done[q.id];return true});list.sort((a,b)=>Number(!!done[a.id])-Number(!!done[b.id])||(a.rec<=p.level?0:1)-(b.rec<=p.level?0:1)||b.priority-a.priority||a.rec-b.rec);$('discovery-all').innerHTML=list.length?list.map(q=>item(q,p,done,false)).join(''):'<p class="muted">Aucune découverte pour ce filtre.</p>'}
+// Accès local en lecture seule aux découvertes sourcées pour les conseils de Faith.
+// Les quêtes sont filtrées par race, classe et validation manuelle ; pas par journal de WoW.
+window.BinchDiscoveries={
+ recommendations(){
+  const p=profile(),marked=flags();
+  return QUESTS.filter(q=>relevant(q,p)&&!marked[q.id]&&Number.isFinite(q.level)&&Number.isFinite(q.rec))
+   .map(q=>({id:q.id,title:q.title,category:q.category,level:q.level,rec:q.rec,priority:q.priority||0,source:q.source||'',sourceName:q.sourceName||'',verified:!!q.verified,reward:q.reward||'',summary:q.summary||'',available:available(q,p),distance:Number(q.rec)-p.level}))
+   .sort((a,b)=>{
+    const pa=a.distance>=-2&&a.distance<=3?0:a.distance>3?1:2,pb=b.distance>=-2&&b.distance<=3?0:b.distance>3?1:2;
+    return pa-pb||b.priority-a.priority||Math.abs(a.distance)-Math.abs(b.distance)
+   }).slice(0,12)
+ },
+ getCount(){return QUESTS.length}
+};
+
 function init(){if(mount())render()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
