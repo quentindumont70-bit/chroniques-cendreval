@@ -19,3 +19,16 @@
 #binch-zone-planner #binch-zone-progress{font-weight:650;color:#e8d5a3;margin:10px 0}
 @media(max-width:700px){#binch-zone-planner .binch-zone-planner-head,#binch-zone-planner #binch-zone-task-form{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){#binch-zone-planner *{scroll-behavior:auto!important;transition:none!important}}
+
+#binch-zone-planner .binch-zone-roadmap{margin:18px 0;padding:13px;border:1px solid #607861;background:#102019;border-radius:9px}
+#binch-zone-planner .binch-zone-roadmap h3{margin:4px 0;color:#efd4a1}
+#binch-zone-planner #binch-zone-recommendations{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,285px),1fr));gap:9px;margin:12px 0}
+#binch-zone-planner .binch-zone-roadmap-card{display:flex;text-align:left;align-items:center;gap:10px;min-width:0;padding:12px;border:1px solid #56715d;background:#16271e;border-radius:7px}
+#binch-zone-planner .binch-zone-roadmap-card.active{background:#33442b;border-color:#f2d398}
+#binch-zone-planner .binch-zone-roadmap-index{display:grid;place-items:center;width:26px;height:26px;flex:none;border-radius:50%;background:#394938;color:#f9dfaa;font-weight:800}
+#binch-zone-planner .binch-zone-roadmap-main{min-width:0;flex:1}
+#binch-zone-planner .binch-zone-roadmap-main strong,#binch-zone-planner .binch-zone-roadmap-main small,#binch-zone-planner .binch-zone-roadmap-main em{display:block;overflow-wrap:anywhere}
+#binch-zone-planner .binch-zone-roadmap-main strong{color:#f4dfa8}
+#binch-zone-planner .binch-zone-roadmap-main small,#binch-zone-planner .binch-zone-roadmap-main em{color:#b5cbb9;font-size:.76rem}
+#binch-zone-planner .binch-zone-roadmap-status{font-size:.72rem;white-space:nowrap;color:#f2cc87}
+@media(max-width:500px){#binch-zone-planner .binch-zone-roadmap-card{flex-wrap:wrap}#binch-zone-planner .binch-zone-roadmap-status{margin-left:36px}}
