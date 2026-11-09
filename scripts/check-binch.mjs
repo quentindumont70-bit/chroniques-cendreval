@@ -53,6 +53,21 @@ if(!new RegExp(validLuaPattern,'i').test('GrimoireSync.lua'))fail('Import Opera 
 if(portal.includes('chatgpt.site'))fail('La Binch : dépendance à chatgpt.site encore présente dans la page.');
 if(!present('binch-backdrop.svg'))fail('La Binch : fond local manquant.');
 
+
+// Console deuxième écran : toute la chaîne doit survivre à la compilation et rester autonome.
+for(const file of ['command-center.js','command-center.css','command-notes.js','command-notes.css','command-session.js','command-session.css','play-now.js']){
+ if(!present(file))fail('Poste de commandement : ressource absente : '+file);
+ if(!portal.includes('./'+file+'?v='))fail('Poste de commandement : ressource non chargée : '+file);
+}
+if(present('command-center.js')){
+ const command=read('command-center.js');
+ for(const id of ['page-command','binch-command-name','binch-command-level','binch-command-xp-fill','binch-command-stats']){
+  if(!command.includes(id))fail('Poste de commandement : point d’ancrage manquant : '+id);
+ }
+ if(!command.includes("grimoire.bridge.last")||!command.includes("data-command-link")&&!command.includes("data-command-link"))
+  warnings.push('Poste de commandement : vérifier la source locale et les liens de navigation.');
+}
+
 const index=read('index.html'),treasures=read('treasures.js');
 if(!index.includes('Bêta de guilde 0.21')||!index.includes('0.21-guild'))fail('Titre ou metadata de version non synchronisé avec 0.21');
 if(!index.includes('window.BinchRewards')||!index.includes('draw:(canvas,id)')||!treasures.includes('API.draw?.'))fail('Contrat sprite Trésors incomplet');
