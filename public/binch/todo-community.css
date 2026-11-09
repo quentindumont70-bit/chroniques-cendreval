@@ -1,0 +1,55 @@
+#app nav.nav .binch-todo-tab{background:linear-gradient(120deg,#35304c,#243b40);border-color:#ad95cd;color:#f7dfeb}
+#page-todo .binch-todo{color:#f1e7d7;background:linear-gradient(135deg,#101d22,#1b202d 60%,#1c2826);border:1px solid #6d7481;border-radius:16px;padding:clamp(16px,2.3vw,32px);box-shadow:0 28px 75px #0008}
+#page-todo .binch-todo h1,#page-todo .binch-todo h2,#page-todo .binch-todo h3{font-family:Cinzel,Georgia,serif;color:#f7e8d0;margin:0}
+#page-todo .binch-todo em{font-style:normal;color:#e3b7fa}
+#page-todo .binch-todo-hero{background:radial-gradient(ellipse at 80% 10%,#ad79de34,transparent 46%),linear-gradient(110deg,#232f42,#1a2732);border:1px solid #816f9c;border-radius:12px;padding:clamp(18px,3vw,36px);position:relative;overflow:hidden}
+#page-todo .binch-todo-hero:after{content:"✧";position:absolute;right:5%;top:0;line-height:1;font-size:11rem;color:#e2c1ff0b;pointer-events:none}
+#page-todo .binch-todo-overline{font-size:.68rem;font-weight:900;color:#cfa7eb;letter-spacing:.17em}
+#page-todo .binch-todo-hero h1{font-size:clamp(2rem,4vw,3.5rem);line-height:1.15;margin:9px 0}
+#page-todo .binch-todo-hero p{max-width:740px;color:#cad3de;font-size:.9rem;line-height:1.7}
+#page-todo .binch-todo-hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:19px}
+#page-todo .binch-todo-hero-actions a{color:#f1e5ff;background:#393957;border:1px solid #987eb3;border-radius:8px;padding:10px 14px;text-decoration:none;font-weight:750;font-size:.83rem;position:relative;z-index:1}
+#page-todo .binch-todo-hero-actions a:hover{background:#575071;border-color:#e1bdf6}
+#page-todo .binch-todo-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:15px 0 27px}
+#page-todo .binch-todo-kpis>div{display:flex;flex-direction:column;gap:5px;background:linear-gradient(135deg,#233639,#1e2831);border:1px solid #5b6970;border-radius:9px;padding:16px}
+#page-todo .binch-todo-kpis b{font-family:Georgia,serif;color:#e7c39d;font-size:2.1rem;line-height:1.1}
+#page-todo .binch-todo-kpis span{color:#bbc9ca;font-size:.72rem}
+#page-todo .binch-todo-intro{margin:20px 0 12px}
+#page-todo .binch-todo-intro h2{font-size:1.5rem}
+#page-todo .binch-todo-intro p{font-size:.83rem;color:#aebfc8;margin:7px 0}
+#page-todo .binch-todo-filters{display:grid;grid-template-columns:1fr 1fr 1.6fr;gap:12px;margin:16px 0}
+#page-todo .binch-todo-filters label,#page-todo .binch-todo-form label{display:flex;flex-direction:column;gap:6px;color:#d8c7e8;font-size:.77rem;font-weight:800}
+#page-todo .binch-todo :is(select,input,textarea){width:100%;min-width:0;background:#121f27;border:1px solid #677b88;border-radius:7px;color:#f5e9d9;padding:10px 12px;min-height:43px;font:inherit}
+#page-todo .binch-todo :is(select,input,textarea):focus-visible{outline:3px solid #bf8be1;outline-offset:2px}
+#page-todo .binch-todo-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#page-todo .binch-todo-card{display:flex;flex-direction:column;gap:10px;padding:17px;background:linear-gradient(130deg,#223239,#1b2931);border:1px solid #526672;border-radius:10px;min-height:195px;box-shadow:inset 0 1px #ffffff0a}
+#page-todo .binch-todo-card:hover{border-color:#a38da7}
+#page-todo .binch-todo-card-top{display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:.67rem;color:#9ac8c6;font-weight:800}
+#page-todo .binch-todo-priority{font-size:.68rem;font-weight:900;padding:3px 7px;border-radius:5px;background:#5a4253;color:#f8d4d4}
+#page-todo .binch-todo-priority.p1{background:#45466b;color:#e5d2fb}
+#page-todo .binch-todo-priority.p2{background:#285d5a;color:#cef7de}
+#page-todo .binch-todo-priority.p3{background:#465262;color:#d1dbea}
+#page-todo .binch-todo-card h3{font-size:1.05rem;line-height:1.3}
+#page-todo .binch-todo-card p{color:#c3d1d2;line-height:1.55;font-size:.78rem;margin:0;flex:1}
+#page-todo .binch-todo-card-bottom{border-top:1px solid #ffffff19;padding-top:10px}
+#page-todo .binch-todo-status{color:#dfc48e;font-weight:800;font-size:.7rem}
+#page-todo .binch-todo-empty,#page-todo .binch-todo-muted{color:#bfd0d0;font-size:.84rem}
+#page-todo .binch-todo-public{margin-top:30px;border-top:1px solid #866d9c;padding-top:17px}
+#page-todo .binch-todo-idea{border-bottom:1px solid #506273;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 3px}
+#page-todo .binch-todo-idea div{display:flex;flex-direction:column;gap:5px}
+#page-todo .binch-todo-idea a{color:#e4c9fc;font-weight:800;text-decoration:none}
+#page-todo .binch-todo-idea a:hover{text-decoration:underline}
+#page-todo .binch-todo-idea small{font-size:.7rem;color:#adc2bf}
+#page-todo .binch-todo button{min-height:42px;padding:10px 14px;background:#483d61;color:#f9e6ff;border:1px solid #be9bd7;border-radius:7px;cursor:pointer;font-weight:850;margin-top:12px}
+#page-todo .binch-todo button:hover{background:#5c4a7a}
+#page-todo .binch-todo button:focus-visible{outline:3px solid #ddafff;outline-offset:2px}
+#page-todo .binch-todo-form{max-width:780px;margin-top:20px;padding:22px;background:linear-gradient(110deg,#292a43,#1f3035);border:1px solid #796a90;border-radius:12px}
+#page-todo .binch-todo-form h3{font-size:1.2rem}
+#page-todo .binch-todo-form p{font-size:.78rem;color:#c6d0cf;line-height:1.6}
+#page-todo .binch-todo-form label{margin:13px 0}
+#page-todo .binch-todo-form textarea{resize:vertical;min-height:110px}
+#page-todo #binch-idea-feedback{color:#e5c2fc}
+#page-todo .binch-todo>footer{margin:22px 0 0;color:#a6b3ba;font-size:.71rem}
+@media(max-width:1000px){#page-todo .binch-todo-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){#page-todo .binch-todo-list{grid-template-columns:1fr}#page-todo .binch-todo-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}#page-todo .binch-todo-filters{grid-template-columns:1fr}#page-todo .binch-todo-hero-actions a{width:100%;text-align:center}}
+@media(prefers-reduced-motion:reduce){#page-todo *{transition:none!important;animation:none!important}}
