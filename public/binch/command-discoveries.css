@@ -1,0 +1,16 @@
+#page-command .binch-command-discoveries{padding:17px 19px;background:linear-gradient(120deg,#2a2c37,#192b2c);border:1px solid #85745a;border-radius:11px;color:#f1e5d4}
+#page-command .binch-command-discoveries .binch-command-label{display:flex;justify-content:space-between;gap:10px;padding-bottom:11px;margin-bottom:14px;border-bottom:1px solid #ffffff24;color:#dcc18b;font-size:.67rem;font-weight:900;letter-spacing:.08em}
+#page-command .binch-command-discoveries-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#page-command .binch-command-discoveries-heading h3{margin:0;font:1.4rem Cinzel,Georgia,serif;color:#f5e8d1}
+#page-command .binch-command-discoveries-heading em{font-style:normal;color:#d2b6eb}
+#page-command .binch-command-discoveries-heading button{min-height:37px}
+#page-command #binch-command-discoveries-info{font-size:.75rem;margin:11px 0 16px;color:#bcc9c7}
+#page-command #binch-command-discoveries-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+#page-command .binch-command-discovery{display:flex;flex-direction:column;gap:8px;background:linear-gradient(120deg,#1d3335,#1b2630);border:1px solid #60706e;border-radius:9px;padding:13px;min-width:0}
+#page-command .binch-command-discovery-top{display:flex;justify-content:space-between;gap:10px;color:#e3cba0;font-size:.66rem;font-weight:800}
+#page-command .binch-command-discovery>strong{font:1.02rem Cinzel,Georgia,serif;color:#f5e3c9;line-height:1.35}
+#page-command .binch-command-discovery p{font-size:.76rem;line-height:1.55;color:#bfcecb;margin:0;flex:1}
+#page-command .binch-command-discovery-bottom{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;border-top:1px solid #ffffff1c;padding-top:9px}
+#page-command .binch-command-discovery-bottom a{color:#c4ddec;font-size:.72rem;text-decoration:underline;text-underline-offset:2px}
+#page-command .binch-command-discovery-bottom button{font-size:.73rem;min-height:34px;padding:6px 10px}
+@media(max-width:850px){#page-command #binch-command-discoveries-list{grid-template-columns:1fr}}
