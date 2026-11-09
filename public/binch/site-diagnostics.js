@@ -95,7 +95,7 @@ function run(){
   if(faction==='Neutre')return true;
   const zones=Array.isArray(window.GRIMOIRE_ZONES)?window.GRIMOIRE_ZONES:[];
   const row=$('#binch-route-list [data-category="Zone"] strong');
-  if(!row)return 'Aucune zone affichée dans le Carnet';
+  if(!row)return $('#binch-route-search')?.value||document.querySelector('#binch-route-filters button.active')?.dataset.cat!=='Toutes'?true:'Aucune zone affichée dans le Carnet';
   const chosen=zones.find(z=>row.textContent==='Explorer '+z.name);
   if(!chosen)return 'Zone de l’itinéraire absente du catalogue';
   return ['Neutre','Mixte',faction].includes(chosen.faction||'Neutre')?true:'Zone adverse proposée : '+chosen.name;
