@@ -68,6 +68,22 @@ if(present('command-center.js')){
   warnings.push('Poste de commandement : vérifier la source locale et les liens de navigation.');
 }
 
+// Interface publique des chantiers et premières décisions locales de Faith.
+for(const file of ['todo-community.js','todo-community.css','faith-strategist.js','faith-strategist.css']){
+ if(!present(file))fail('Communauté/Faith : ressource absente : '+file);
+ if(!portal.includes('./'+file+'?v='))fail('Communauté/Faith : ressource non chargée : '+file);
+}
+if(present('todo-community.js')){
+ const todo=read('todo-community.js');
+ if(!todo.includes('page-todo')||!todo.includes('issues/new')||!todo.includes('Submit new issue'))
+  fail('Onglet To Do : navigation ou publication explicite des idées manquante.');
+}
+if(present('faith-strategist.js')){
+ const strategist=read('faith-strategist.js');
+ if(!strategist.includes('grimoire.bridge.last')||!strategist.includes('binch-faith-advice'))
+  fail('Faith stratège : recommandations ou source de données manquantes.');
+}
+
 const index=read('index.html'),treasures=read('treasures.js');
 if(!index.includes('Bêta de guilde 0.21')||!index.includes('0.21-guild'))fail('Titre ou metadata de version non synchronisé avec 0.21');
 if(!index.includes('window.BinchRewards')||!index.includes('draw:(canvas,id)')||!treasures.includes('API.draw?.'))fail('Contrat sprite Trésors incomplet');
