@@ -19,6 +19,8 @@ function save(){localStorage.setItem(KEY,JSON.stringify(state))}
 function catalog(){return Array.isArray(window.GRIMOIRE_DUNGEONS)?window.GRIMOIRE_DUNGEONS.filter(d=>d&&typeof d.name==='string'&&d.name.length<=120):[]}
 function members(){const r=read(ROSTER,{});return Array.isArray(r.members)?r.members.filter(m=>m&&m.status==='Confirmé'&&m.group>0&&m.group<=8):[]}
 function events(){const data=read(EVENTS,[]);return Array.isArray(data)?data.filter(e=>e&&!e.done&&typeof e.date==='string'&&typeof e.title==='string'):[]}
+function matchingEvents(d){return events().filter(e=>e.title.toLocaleLowerCase('fr').includes(d.name.toLocaleLowerCase('fr'))).sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time)).slice(0,3)}
+function eventMembers(e){return Array.isArray(e.attendees)?e.attendees.filter(a=>a&&a.status==='Confirmé'&&typeof a.name==='string'&&['Tank','Soigneur','DPS','Flexible'].includes(a.role)).slice(0,40):[]}
 function current(){return catalog().find(d=>d.name===selected)}
 function key(){return encodeURIComponent(selected)}
 function check(){const v=state.checked[key()];return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}
@@ -60,7 +62,7 @@ function init(){
   const lines=['LA BINCH — BRIEFING DONJON',d.name,'Zone : '+(d.zone||'à confirmer')+' · Niveaux indicatifs : '+level,'',
     ...TASKS.map(([id,t])=>(done[id]?'[x] ':'[ ] ')+t)];
   if(note().trim())lines.push('','Notes : '+note().trim());
-  const roster=members();if(roster.length)lines.push('','Effectifs confirmés :',...roster.map(m=>'G'+m.group+' · '+m.name+' — '+m.role));
+  const outing=matchingEvents(d)[0];const roster=outing?eventMembers(outing):members();if(roster.length)lines.push('','Effectifs confirmés'+(outing?' pour la sortie '+outing.date:' du registre général')+' :',...roster.map(m=>(outing?'':('G'+m.group+' · '))+m.name+' — '+m.role));
   lines.push('','Données d’instance indicatives. Vérifier les particularités de WoW Forever en jeu.');
   try{await navigator.clipboard.writeText(lines.join('\n'));$('binch-dungeon-status').textContent='Briefing copié pour Discord.'}
   catch{window.prompt('Copier le briefing',lines.join('\n'))}
@@ -83,11 +85,11 @@ function init(){
   $('binch-dungeon-checklist').innerHTML=TASKS.map(([id,text])=>'<label><input type="checkbox" data-dungeon-task="'+id+'"'+(checks[id]?' checked':'')+'> <span>'+esc(text)+'</span></label>').join('');
   const count=TASKS.filter(([id])=>checks[id]).length;
   $('binch-dungeon-status').textContent=count+' / '+TASKS.length+' préparatifs effectués · sauvegarde locale.';
-  const roster=members();
-  const groups=[...new Set(roster.map(m=>m.group))].sort((a,b)=>a-b);
-  $('binch-dungeon-roster').innerHTML='<h3>Effectifs confirmés</h3>'+(groups.length?groups.map(g=>'<p>Groupe '+g+' : '+roster.filter(m=>m.group===g).map(m=>esc(m.name)+' ('+esc(m.role)+')').join(', ')+'</p>').join(''):'<p class="muted">Aucun membre confirmé : complète les effectifs dans le Mode GM.</p>');
-  const upcoming=events().filter(e=>e.title.toLocaleLowerCase('fr').includes(d.name.toLocaleLowerCase('fr'))).slice(0,3);
-  $('binch-dungeon-events').innerHTML=upcoming.length?'<h3>Sorties déjà prévues</h3>'+upcoming.map(e=>'<p>'+esc(e.date)+' à '+esc(e.time)+' — '+esc(e.title)+'</p>').join(''):'';
+  const upcoming=matchingEvents(d),outing=upcoming[0],roster=outing?eventMembers(outing):members();
+  const groups=[...new Set(roster.map(m=>Number(m.group)||0))].sort((a,b)=>a-b);
+  const title=outing?'Effectifs confirmés pour la sortie du '+outing.date:'Effectifs du registre général';
+  $('binch-dungeon-roster').innerHTML='<h3>'+title+'</h3>'+(groups.length?groups.map(g=>'<p>'+(g?'Groupe '+g+' : ':'Participants : ')+roster.filter(m=>(Number(m.group)||0)===g).map(m=>esc(m.name)+' ('+esc(m.role)+')').join(', ')+'</p>').join(''):'<p class="muted">Aucun membre confirmé : ajoute les inscriptions à la sortie dans le calendrier GM.</p>');
+  $('binch-dungeon-events').innerHTML=upcoming.length?'<h3>Sorties déjà prévues</h3>'+upcoming.map(e=>'<p>'+esc(e.date)+' à '+esc(e.time)+' — '+esc(e.title)+' · '+eventMembers(e).length+'/'+Number(e.size||0)+' confirmés</p>').join(''):'';
  }
  options();render();
  document.addEventListener('binch:roster-change',render);
