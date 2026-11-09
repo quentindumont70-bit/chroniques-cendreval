@@ -93,18 +93,23 @@ function init(){
   const reserve=record.members.filter(m=>m.group===0&&m.status!=='Absent');
   const rank={Tank:0,Soigneur:1,Flexible:2,DPS:3};
   reserve.sort((a,b)=>(a.status==='Confirmé'?0:1)-(b.status==='Confirmé'?0:1)||rank[a.role]-rank[b.role]);
-  const counts=Array.from({length:9},(_,i)=>record.members.filter(m=>m.group===i&&m.status!=='Absent').length);
+  // Draft rosters include each planned assignment, so later choices see earlier ones.
+  const draft=Array.from({length:9},(_,i)=>record.members.filter(m=>m.group===i&&m.status!=='Absent').slice());
   const changes=[];
   for(const member of reserve){
-   const eligible=Array.from({length:8},(_,i)=>i+1).filter(g=>counts[g]<5);
+   const eligible=Array.from({length:8},(_,i)=>i+1).filter(g=>draft[g].length<5);
    if(!eligible.length)break;
    const score=g=>{
-    const list=record.members.filter(m=>m.group===g&&m.status!=='Absent');
-    const same=list.some(m=>m.role===member.role);
-    return (same?4:0)+counts[g]*2+(g-1)*0.005;
+    const roster=draft[g],tanks=roster.filter(m=>m.role==='Tank').length,healers=roster.filter(m=>m.role==='Soigneur').length;
+    const count=roster.length;
+    // Prefer supplying a missing tank/healer, then distributing DPS and group size.
+    const rolePenalty=member.role==='Tank'?(tanks?35:-25)
+      :member.role==='Soigneur'?(healers?35:-25)
+      :member.role==='DPS'?(tanks&&healers?-8:0):5;
+    return rolePenalty+count*8+(g-1)*0.001;
    };
    eligible.sort((a,b)=>score(a)-score(b));
-   const group=eligible[0];counts[group]++;changes.push({member,group});
+   const group=eligible[0];draft[group].push(member);changes.push({member,group});
   }
   if(!changes.length){alert('Aucun membre de réserve à répartir, ou les huit groupes sont complets.');return;}
   if(!confirm('Répartir '+changes.length+' membre(s) de la réserve sans modifier les groupes existants ?'))return;
