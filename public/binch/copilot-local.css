@@ -1,0 +1,13 @@
+#page-sync #binch-copilot{border:1px solid #6caaad;border-radius:14px;background:linear-gradient(135deg,#142c35,#122329);margin:16px 0 24px;color:#edf5f1}
+#binch-copilot h2{color:#ffe1a0;margin:8px 0}
+#binch-copilot #binch-copilot-content{line-height:1.65}
+#binch-copilot #binch-copilot-content ul{padding-left:22px;margin:14px 0}
+#binch-copilot #binch-copilot-content li{margin:10px 0}
+#binch-copilot .binch-copilot-meta{color:#b8d1d4;font-size:.82rem}
+#binch-copilot .binch-copilot-actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+#binch-copilot button{min-height:45px;padding:10px 15px;border:1px solid #a5d3d6;background:#214652;border-radius:9px;color:#f0faf9;cursor:pointer;font-weight:800}
+#binch-copilot #binch-copilot-copy{background:linear-gradient(115deg,#ffe4ac,#d9b574);border-color:#ffecbe;color:#1c2a2c}
+#binch-copilot button:disabled{opacity:.5;cursor:not-allowed}
+#binch-copilot button:focus-visible{outline:3px solid #ffe4ac;outline-offset:3px}
+#binch-copilot #binch-copilot-status{color:#b9e6d6;font-size:.84rem}
+@media(max-width:600px){#binch-copilot .binch-copilot-actions{display:grid}#binch-copilot button{width:100%}}
