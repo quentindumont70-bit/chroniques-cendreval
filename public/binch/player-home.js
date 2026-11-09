@@ -105,11 +105,28 @@ function renderRoute(){
  const selected=all.filter(i=>(cat==='Toutes'||(cat==='Épinglés'?!!stored[i.id]:i.c===cat))&&(!query||(i.t+' '+i.d+' '+i.c).toLocaleLowerCase('fr').includes(query)));
  $('binch-route-count').innerHTML='<b>'+pinned.filter(i=>!done[i.id]).length+'</b><span>épinglée(s) à faire</span>';
  const list=$('binch-route-list');
- list.innerHTML=selected.map((i,n)=>'<article data-category="'+esc(i.c)+'" class="binch-route-step '+esc(i.s||'next')+' cat-'+esc(i.c.toLocaleLowerCase('fr').replace(/[^a-z0-9]/g,'-'))+' '+(done[i.id]?'done':'')+' '+(stored[i.id]?'pinned':'')+'"><i>'+(done[i.id]?'✓':n+1)+'</i><div class="binch-route-task"><button class="binch-route-main" data-done="'+esc(i.id)+'" aria-pressed="'+!!done[i.id]+'"><small>'+esc(i.c)+' · niveau '+i.n+'</small><strong>'+esc(i.t)+'</strong><span>'+esc(i.d)+'</span><em>'+(done[i.id]?'↶ Marquer à faire':'✓ Marquer terminé')+'</em></button><button type="button" class="binch-route-pin" data-route-pin="'+esc(i.id)+'" aria-label="'+(stored[i.id]?'Désépingler ':'Épingler ')+esc(i.t)+'" aria-pressed="'+!!stored[i.id]+'" title="Épingler / désépingler">'+(stored[i.id]?'★':'☆')+'</button></div></article>').join('')||'<p class="binch-route-empty">Aucun résultat pour ce filtre.</p>';
+ list.innerHTML=selected.map((i,n)=>'<article data-category="'+esc(i.c)+'" class="binch-route-step '+esc(i.s||'next')+' cat-'+esc(i.c.toLocaleLowerCase('fr').replace(/[^a-z0-9]/g,'-'))+' '+(done[i.id]?'done':'')+' '+(stored[i.id]?'pinned':'')+'"><i>'+(done[i.id]?'✓':n+1)+'</i><div class="binch-route-task"><button class="binch-route-main" data-done="'+esc(i.id)+'" aria-pressed="'+!!done[i.id]+'"><small>'+esc(i.c)+' · niveau '+i.n+'</small><strong>'+esc(i.t)+'</strong><span>'+esc(i.d)+'</span><em>'+(done[i.id]?'↶ Marquer à faire':'✓ Marquer terminé')+'</em></button>'+(i.c==='Zone'||i.c==='Donjon'?'<button type="button" class="binch-route-open" data-route-open="'+esc(i.id)+'">'+(i.c==='Zone'?'Carte ↗':'Préparer ↗')+'</button>':'')+'<button type="button" class="binch-route-pin" data-route-pin="'+esc(i.id)+'" aria-label="'+(stored[i.id]?'Désépingler ':'Épingler ')+esc(i.t)+'" aria-pressed="'+!!stored[i.id]+'" title="Épingler / désépingler">'+(stored[i.id]?'★':'☆')+'</button></div></article>').join('')||'<p class="binch-route-empty">Aucun résultat pour ce filtre.</p>';
  list.querySelectorAll('[data-done]').forEach(b=>b.onclick=()=>{
   const id=b.dataset.done;done[id]=!done[id];
   localStorage.setItem(DONE+key(p),JSON.stringify(done));
   document.dispatchEvent(new CustomEvent('binch:route-complete',{detail:{id,done:!!done[id]}}));renderRoute()
+ });
+ list.querySelectorAll('[data-route-open]').forEach(b=>b.onclick=()=>{
+  const item=all.find(x=>x.id===b.dataset.routeOpen);if(!item)return;
+  const zone=item.c==='Zone',slug=zone?'progression':'gm';
+  const nav=document.querySelector('#app nav.nav [data-page="'+slug+'"]');
+  if(nav)nav.click();
+  if(zone){
+   const chooser=$('binch-zone-choice'),id=item.id.replace(/^z-/,'');
+   if(chooser&&[...chooser.options].some(o=>o.value===id)){chooser.value=id;chooser.dispatchEvent(new Event('change',{bubbles:true}));}
+   $('binch-zone-planner')?.scrollIntoView({behavior:'smooth',block:'start'});
+  }else{
+   const section=$('binch-dungeon-prep'),wrapper=section?.closest('details.binch-gm-workspace-group');if(wrapper)wrapper.open=true;
+   const field=$('binch-dungeon-select'),search=$('binch-dungeon-search');
+   if(search){search.value='';search.dispatchEvent(new Event('input',{bubbles:true}));}
+   if(field&&[...field.options].some(o=>o.value===item.t)){field.value=item.t;field.dispatchEvent(new Event('change',{bubbles:true}));}
+   section?.scrollIntoView({behavior:'smooth',block:'start'});
+  }
  });
  list.querySelectorAll('[data-route-pin]').forEach(b=>b.onclick=()=>{const i=all.find(i=>i.id===b.dataset.routePin);if(i)pinItem(i,p)});
  showGuard(p,all,done,stored);syncExternalButtons();
