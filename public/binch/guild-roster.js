@@ -102,11 +102,13 @@ function init(){
    const score=g=>{
     const roster=draft[g],tanks=roster.filter(m=>m.role==='Tank').length,healers=roster.filter(m=>m.role==='Soigneur').length;
     const count=roster.length;
-    // Prefer supplying a missing tank/healer, then distributing DPS and group size.
-    const rolePenalty=member.role==='Tank'?(tanks?35:-25)
-      :member.role==='Soigneur'?(healers?35:-25)
-      :member.role==='DPS'?(tanks&&healers?-8:0):5;
-    return rolePenalty+count*8+(g-1)*0.001;
+    // Build usable parties rather than spreading a few members across all eight groups.
+    // Tank slots start new parties; healers join tank-led parties; DPS fill viable parties.
+    const rolePenalty=member.role==='Tank'?(tanks?120:(count?-15:30))
+      :member.role==='Soigneur'?(healers?120:(tanks?-30:(count?-10:30)))
+      :member.role==='DPS'?(tanks&&healers?-30:(count?-5:30))
+      :(count?-5:30);
+    return rolePenalty+count*4+(g-1)*0.001;
    };
    eligible.sort((a,b)=>score(a)-score(b));
    const group=eligible[0];draft[group].push(member);changes.push({member,group});
