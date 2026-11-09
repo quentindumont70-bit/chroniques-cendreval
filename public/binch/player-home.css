@@ -153,3 +153,9 @@
 #page-hub .binch-xp-installer{display:inline-flex;align-items:center;justify-content:center;border:1px solid #9db5a8;border-radius:8px;padding:10px 12px;min-height:39px;color:#c6e0d1;background:#22352d;text-decoration:none;font-size:.76rem;font-weight:800}
 #page-hub .binch-xp-installer:hover{background:#31503e}
 #page-hub .binch-xp-installer:focus-visible{outline:3px solid #f2d4a1;outline-offset:2px}
+
+/* Quick route actions keep completion, pinning and navigation separate. */
+#page-hub .binch-route-task:has(.binch-route-open){grid-template-columns:minmax(0,1fr) auto 54px}
+#page-hub .binch-route-step .binch-route-open{align-self:center;margin:8px 4px;min-height:44px;padding:8px 11px;border:1px solid #c7a775;border-radius:8px;background:#273d31;color:#f2dda9;cursor:pointer;font-size:.8rem;font-weight:750}
+#page-hub .binch-route-step .binch-route-open:hover,#page-hub .binch-route-step .binch-route-open:focus-visible{background:#395743;outline-offset:2px}
+@media(max-width:540px){#page-hub .binch-route-task:has(.binch-route-open){grid-template-columns:minmax(0,1fr) 54px}#page-hub .binch-route-step .binch-route-open{grid-column:1;grid-row:2;margin:0 10px 12px 18px;justify-self:start}#page-hub .binch-route-step .binch-route-pin{grid-column:2;grid-row:1/3}}
