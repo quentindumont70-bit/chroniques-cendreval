@@ -45,5 +45,6 @@ function init(){
   const wrapper=target.closest('details.binch-tool-accordion');if(wrapper&&!wrapper.open)wrapper.open=true;
  });
 }
+document.addEventListener('binch:adventure-ready',init);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
