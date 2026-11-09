@@ -36,6 +36,7 @@ function run(){
  sectionCheck('binch-gm-workspace','Ateliers GM repliables');
  sectionCheck('binch-zone-planner','Parcours par zone');
  sectionCheck('binch-mobile-navigation','Navigation mobile');
+ if(onboarding)sectionCheck('binch-first-visit','Guide de première visite');
  // These are created only when the character dashboard is mounted.
  if(!onboarding){
   sectionCheck('binch-adventure-home','Accueil du personnage');
@@ -62,6 +63,11 @@ function run(){
   const missing=commands.filter(b=>{const selector=destinations[b.dataset.gmDestination];if(b.dataset.gmDestination==='planner'&&!$(selector)&&document.querySelector('script[src*="guild-planner.js"]'))return false;return !selector||!$(selector)});
   return missing.length?('Commandes sans cible : '+missing.map(b=>b.dataset.gmDestination).join(', ')):true;
  });
+ test('Guide de démarrage non bloquant',()=>{
+  if(!onboarding)return true;
+  const guide=$('#binch-first-visit');
+  return guide&&$('#next')&&$('#race-choices')&&$('#class-choices')?true:'La première visite ou les contrôles du profil sont absents';
+ });
  test('Navigation principale fonctionnelle',()=>{
   const nav=$('#app nav.nav');
   if(!nav)return 'Barre de navigation absente';
@@ -69,6 +75,10 @@ function run(){
    if(!nav.querySelector('[data-page="'+id+'"]'))return 'Lien manquant : '+id;
   }
   return true;
+ });
+ test('Partage de la bêta sans confusion',()=>{
+  const share=$('#binch-share-kit');if(!share)return 'Panneau de partage absent';
+  return share.querySelector('#binch-share-copy')&&share.querySelector('#binch-share-invite')?true:'Boutons de partage incomplets';
  });
  test('Navigation mobile câblée',()=>{
   const panel=$('#binch-mobile-navigation');
