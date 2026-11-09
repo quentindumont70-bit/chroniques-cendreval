@@ -17,3 +17,17 @@
 #binch-guild-calendar .binch-calendar-actions{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end;max-width:370px}
 @media(max-width:880px){#binch-guild-calendar .binch-calendar-form{grid-template-columns:repeat(2,minmax(0,1fr))}#binch-guild-calendar .binch-calendar-form label:first-child{grid-column:1/-1}}
 @media(max-width:620px){#binch-guild-calendar .binch-calendar-event{display:block}#binch-guild-calendar .binch-calendar-actions{justify-content:flex-start;margin-top:12px}#binch-guild-calendar .binch-calendar-form{grid-template-columns:1fr}#binch-guild-calendar .binch-calendar-form label:first-child{grid-column:auto}}
+
+/* Inscriptions propres à chaque sortie. */
+#binch-guild-calendar .binch-calendar-event{flex-wrap:wrap}
+#binch-guild-calendar .binch-calendar-event>div:first-child{flex:1 1 300px;min-width:0}
+#binch-guild-calendar .binch-cal-role-count{display:block;margin:7px 0;color:#c6d3be}
+#binch-guild-calendar .binch-cal-attendance{flex:1 1 100%;border-top:1px solid #51675a;padding:10px 0 2px}
+#binch-guild-calendar .binch-cal-attendance>summary{cursor:pointer;color:#f3d4a2;font-weight:700}
+#binch-guild-calendar .binch-cal-signup{display:grid;grid-template-columns:minmax(135px,2fr) repeat(2,minmax(100px,1fr)) auto;gap:8px;align-items:center;margin:12px 0}
+#binch-guild-calendar .binch-cal-signup button{white-space:nowrap}
+#binch-guild-calendar .binch-cal-attendees>div{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid #33493d}
+#binch-guild-calendar .binch-cal-attendees>div>span{overflow-wrap:anywhere}
+#binch-guild-calendar .binch-cal-attendees>div>button{color:#ffc5b7;padding:5px 12px}
+@media(max-width:800px){#binch-guild-calendar .binch-cal-signup{grid-template-columns:repeat(2,minmax(0,1fr))}#binch-guild-calendar .binch-cal-signup input,#binch-guild-calendar .binch-cal-signup button{grid-column:1/-1}}
+@media(max-width:430px){#binch-guild-calendar .binch-cal-signup{grid-template-columns:1fr}#binch-guild-calendar .binch-cal-signup input,#binch-guild-calendar .binch-cal-signup button{grid-column:auto}}
