@@ -58,8 +58,23 @@ function paint(){
  for(let i=0;i<adv.length;i++){const a=adv[i],article=document.createElement('article');article.className='binch-faith-action';
  const num=document.createElement('span');num.textContent=String(i+1).padStart(2,'0');num.className='binch-faith-num';
  const content=document.createElement('div');const title=document.createElement('strong');title.textContent=a.title;const detail=document.createElement('p');detail.textContent=a.reason;const provenance=document.createElement('small');provenance.textContent='Source : '+a.source;
- content.append(title,detail,provenance);const btn=document.createElement('button');btn.type='button';btn.textContent='↗';btn.title='Ouvrir '+a.page;btn.setAttribute('aria-label','Ouvrir '+a.title);btn.onclick=()=>jump(a.page);article.append(num,content,btn);target.append(article)}
- const status=$('binch-faith-integrity');if(status)status.textContent='Faith utilise uniquement les informations disponibles. Journal des quêtes : non fiable. Réponses locales, sans IA ni accès direct au jeu.';
+ content.append(title,detail,provenance);
+ const actions=document.createElement('div');actions.className='binch-faith-buttons';
+ const pin=document.createElement('button');pin.type='button';pin.className='binch-faith-pin';pin.textContent='☆ Épingler';pin.title='Ajouter cet objectif à mon carnet de route';
+ pin.addEventListener('click',()=>{
+  const item={id:'faith:'+goal+':'+a.title.slice(0,70),n:p.level,c:'Faith',t:a.title,d:a.reason,s:'next',source:a.source};
+  if(window.BinchPinned&&typeof window.BinchPinned.set==='function'){
+   window.BinchPinned.set(item);
+   pin.textContent='✓ Épingle mise à jour';pin.disabled=true;
+  }else{pin.textContent='Épinglage indisponible';pin.disabled=true}
+ });
+ actions.append(pin);content.append(actions);
+ const btn=document.createElement('button');btn.type='button';btn.textContent='↗';btn.title='Ouvrir '+a.page;btn.setAttribute('aria-label','Ouvrir '+a.title);btn.onclick=()=>jump(a.page);article.append(num,content,btn);target.append(article)}
+ const status=$('binch-faith-integrity');if(status){
+ const date=p.updated?new Date(p.updated):null,ok=date&&!isNaN(+date);
+ const age=ok?Math.round((Date.now()-+date)/60000):null;
+ status.textContent='Faith V2 · '+(ok?'Dernier import '+date.toLocaleString('fr-FR')+(age>30?' (données anciennes)':''):'Pas d’import confirmé')+' · Quêtes actives inconnues · Suggestions issues du catalogue La Binch et des données locales, sans IA distante.';
+ }
 }
 function mount(){
  const card=$('page-command')?.querySelector('.binch-command-brog');if(!card||$('binch-faith-advisor'))return;
