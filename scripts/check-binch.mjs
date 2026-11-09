@@ -151,6 +151,12 @@ else {
  if(!installer.includes('Version: '+escapedVersion))fail('La validation de version dans l’installateur ne correspond pas au TOC.');
 }
 if(!installer.includes("Minimap.lua\\\\s*")&&!installer.includes("Minimap.lua\\s*"))fail('Validation des fichiers de l’installateur non reconnue.');
+
+for(const token of ['Get-LastFolder','Save-LastFolder','Show-InstallResult','if ($sameFiles)','Get-FileHash','wowProcesses']){
+ if(!installer.includes(token))fail('Installateur un clic : composant manquant '+token);
+}
+if(!portal.includes('Installer ou mettre à jour GrimoireSync'))fail('Portail : instructions de mise à jour simplifiée absentes.');
+
 const lfg=read('lfg.js'),config=JSON.parse(read('lfg-cloud-config.json'));
 if(!lfg.includes('Mode local uniquement')||!lfg.includes('online'))fail('Le LFG ne distingue plus clairement les modes local et partagé');
 if(!config.supabaseUrl||!config.supabasePublishableKey)warnings.push('Le LFG collectif n’est PAS encore connecté (configuration Supabase vide).');
