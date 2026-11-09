@@ -3,13 +3,29 @@
 const $=id=>document.getElementById(id),MAX=20*1024*1024;
 let selected=null,busy=false;
 function report(msg,error=false){const el=$('binch-direct-import-status');if(el){el.textContent=msg;el.dataset.state=error?'error':'ok'}const old=$('grimoire-bridge-status');if(old)old.textContent=msg}
-function setFile(file){
- if(!file)return;
- if(!/^GrimoireSync\.lua$/i.test(file.name)){selected=null;report('Fichier incorrect : sélectionne exactement GrimoireSync.lua (SavedVariables), pas Core.lua.',true)}
- else if(file.size>MAX){selected=null;report('Fichier trop volumineux (20 Mo maximum).',true)}
- else {selected=file;report('Prêt à importer : '+file.name+' ('+Math.ceil(file.size/1024)+' Ko). Clique sur « Importer le personnage ».')}
- const field=$('binch-direct-path');if(field)field.value=selected?selected.name:'';
- $('binch-direct-run').disabled=!selected||busy;
+let selectionId=0;
+async function setFile(file){
+ const sequence=++selectionId;
+ selected=null;
+ const field=$('binch-direct-path'),runButton=$('binch-direct-run');
+ if(field)field.value=file?.name||'';
+ runButton.disabled=true;
+ if(!file){report('Aucun fichier sélectionné.',true);return}
+ if(!/^GrimoireSync\\.lua$/i.test(file.name)){report('Fichier incorrect : sélectionne GrimoireSync.lua depuis SavedVariables, pas Core.lua.',true);return}
+ if(file.size>MAX){report('Fichier trop volumineux (20 Mo maximum).',true);return}
+ if(!window.BinchSync){report('Module de synchronisation non disponible. Recharge la page.',true);return}
+ report('Lecture et validation locale du fichier…');
+ try{
+  const raw=typeof file.text==='function'?await file.text():await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result||''));reader.onerror=()=>reject(reader.error);reader.readAsText(file)});
+  if(sequence!==selectionId)return;
+  const snap=window.BinchSync.parsePayload(raw);
+  selected=file;
+  report('Fichier valide : '+snap.name+' · niveau '+snap.level+' · '+snap.zone+'. Clique sur « Importer le personnage » pour confirmer.');
+  runButton.disabled=busy;
+ }catch(error){
+  if(sequence!==selectionId)return;
+  report('Ce fichier ne contient pas une sauvegarde GrimoireSync reconnue : '+(error?.message||String(error)),true);
+ }
 }
 async function run(){
  if(busy||!selected){report('Dépose ou sélectionne GrimoireSync.lua avant de lancer l’import.',true);return}
