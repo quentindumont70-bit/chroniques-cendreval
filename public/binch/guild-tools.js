@@ -27,7 +27,16 @@ function gm(){
  home.addEventListener('click',e=>{
  const b=e.target.closest('[data-gm-destination]');if(!b)return;
  if(b.dataset.gmDestination==='event'){details.open=true;details.scrollIntoView({behavior:'smooth',block:'start'});}
- else if(b.dataset.gmDestination==='planner'){const planner=$('#binch-guild-planner');if(planner){planner.open=true;planner.scrollIntoView({behavior:'smooth',block:'start'});}else alert('Guild Planner non chargé. Actualise la page.');}
+ else if(b.dataset.gmDestination==='planner'){
+  const reveal=()=>{const planner=$('#binch-guild-planner');if(!planner)return false;planner.open=true;planner.scrollIntoView({behavior:'smooth',block:'start'});return true;};
+  if(!reveal()){
+   const main=$('#app main');
+   if(!main){alert('Guild Planner indisponible : application non chargée.');return;}
+   const observer=new MutationObserver(()=>{if(reveal())observer.disconnect()});
+   observer.observe(main,{childList:true,subtree:true});
+   setTimeout(()=>{observer.disconnect();if(!$('#binch-guild-planner'))alert('Guild Planner non disponible : recharge la page pour retenter son chargement.');},3500);
+  }
+ }
  else if(b.dataset.gmDestination==='roster'){const roster=$('#binch-guild-roster');if(roster)roster.scrollIntoView({behavior:'smooth',block:'start'});}
  else if(b.dataset.gmDestination==='calendar'){const calendar=$('#binch-guild-calendar');if(calendar)calendar.scrollIntoView({behavior:'smooth',block:'start'});}
  else if(b.dataset.gmDestination==='dungeon'){const prep=$('#binch-dungeon-prep');if(prep)prep.scrollIntoView({behavior:'smooth',block:'start'});}
