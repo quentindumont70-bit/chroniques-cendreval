@@ -34,6 +34,7 @@ function mount(){
  const msg=document.createElement('span');msg.setAttribute('role','status');msg.className='binch-command-copy-message';
  copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(direct.toString());msg.textContent='Lien copié';}catch{msg.textContent='Copie refusée par le navigateur';}});
  links.append(open,copy,msg);page.querySelector('.binch-command-controls')?.append(links);
+ const roadmap=document.createElement('button');roadmap.type='button';roadmap.textContent='☷ To Do & Idées';roadmap.title='Feuille de route et suggestions de la guilde';roadmap.addEventListener('click',()=>navigate('todo'));links.append(roadmap);
  function activate(){nav.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b===tab));main.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x===page));window.scrollTo({top:0,behavior:'auto'});focus();render()}
  tab.addEventListener('click',activate);
  page.querySelectorAll('[data-command-link]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.commandLink)));
