@@ -10,7 +10,7 @@ function snapshot(){
  const xp=same&&last.xp!=null&&last.xp!==''?Number(last.xp):null,xpMax=same&&last.xpMax!=null&&last.xpMax!==''?Number(last.xpMax):null;
  const jobsKey=name.trim().toLowerCase()+'-'+race+'-'+cls,skills=read('grimoire.craft.v1').imports?.[jobsKey]?.skills||{};
  const pinKey='binch.route.pins.v1.'+(name+'-'+race+'-'+cls).toLowerCase().replace(/[^a-z0-9]+/g,'-');
- return {name,race,cls,level:Math.max(1,Math.min(60,Number(d.level)||Number(same?last.level:1)||1)),zone:(same?last.zone:null)||d.zone||'Zone non renseignée',same,updated:same?last.updated:null,xp,xpMax,copper:cnt(2770),stones:cnt(2835),jobs:Object.entries(skills).filter(([k,v])=>k&&Number.isFinite(Number(v))),pins:Object.values(read(pinKey)).filter(i=>i&&i.t).slice(0,5),faction:['Tauren','Orc','Troll','MortVivant'].includes(race)?'Horde':['Humain','Nain','Elfe','Gnome'].includes(race)?'Alliance':'Neutre'};
+ return {name,race,cls,level:Math.max(1,Math.min(60,Number(d.level)||Number(same?last.level:1)||1)),zone:(same?last.zone:null)||d.zone||'Zone non renseignée',same,updated:same?last.updated:null,xp,xpMax,copper:cnt(2770),stones:cnt(2835),jobs:Object.entries(skills).filter(([k,v])=>k&&Number.isFinite(Number(v))),pins:Object.values(read(pinKey)).filter(i=>i&&i.t).slice(0,5),questLog:same&&Array.isArray(last.questLog)?last.questLog.filter(q=>q&&Number(q.id)>0&&typeof q.title==='string'):[],questLogAPI:same?(last.questLogAPI||'unavailable'):'unavailable',faction:['Tauren','Orc','Troll','MortVivant'].includes(race)?'Horde':['Humain','Nain','Elfe','Gnome'].includes(race)?'Alliance':'Neutre'};
 }
 const classMilestones={Druide:[[10,'Forme d’ours'],[16,'Forme aquatique'],[20,'Forme de félin']],Chaman:[[4,'Totem de terre'],[10,'Totem de feu'],[30,'Totem d’air']],Guerrier:[[10,'Posture défensive']],Chasseur:[[10,'Apprivoiser un familier']],Démoniste:[[10,'Marcheur du Vide']],Voleur:[[20,'Poisons']],Paladin:[[12,'Rédemption']]};
 function nearbyZones(p){
@@ -25,6 +25,16 @@ function recommendations(p,goal){
  const suggestions=[];
  function add(priority,title,reason,source,page){if(!suggestions.some(x=>x.title===title))suggestions.push({priority,title,reason,source,page})}
  if(!p.same)add(120,'Importer ton personnage','Sans import de ce personnage, Faith ne peut pas confirmer tes sacs, ton XP ni ta zone actuelle.','Synchronisation non confirmée','sync');
+ if(p.questLogAPI!=='unavailable'&&p.questLog.length&&(goal==='balanced'||goal==='quick'||goal==='class')){
+  const completed=p.questLog.filter(q=>q.complete===true);
+  for(const quest of completed.slice(0,2)){
+   add(117,'Rendre : '+quest.title.slice(0,85),'Cette quête figure comme terminée dans le dernier journal sauvegardé. Vérifie le PNJ de remise dans WoW.','Journal GrimoireSync · statut exporté','command');
+  }
+  const pending=p.questLog.filter(q=>q.complete!==true);
+  for(const quest of pending.slice(0,2)){
+   add(goal==='quick'?107:102,'Poursuivre : '+quest.title.slice(0,85),'Quête présente dans le journal exporté. Les objectifs et la position exacte ne sont pas disponibles.','Journal GrimoireSync · présence confirmée','command');
+  }
+ }
  const next=(classMilestones[p.cls]||[]).find(([lv])=>lv>=p.level);
  if(next&&next[0]-p.level<=5&&(goal==='class'||goal==='balanced'||goal==='quick'))
   add(goal==='class'?105:90,'Préparer '+next[1],'Jalon de '+p.cls+' autour du niveau '+next[0]+'. Consulte la route et confirme les conditions spécifiques à Forever.','Catalogue indicatif des classes','progression');
@@ -48,7 +58,7 @@ function recommendations(p,goal){
  }
  if(goal!=='craft'){
   const zs=nearbyZones(p);
-  if(zs.length){const z=zs[0];add(goal==='quick'?110:goal==='dungeon'?40:80,'Explorer '+z.name,'Zone répertoriée pour les niveaux '+z.levels.join('–')+'. Points d’intérêt : '+String(z.places||'à consulter dans la carte').slice(0,150)+'. Le journal de quêtes actif reste inconnu.','Atlas des zones La Binch (indicatif)','progression')}
+  if(zs.length){const z=zs[0];add(goal==='quick'?110:goal==='dungeon'?40:80,'Explorer '+z.name,'Zone répertoriée pour les niveaux '+z.levels.join('–')+'. Points d’intérêt : '+String(z.places||'à consulter dans la carte').slice(0,150)+'. Le journal des quêtes peut être incomplet selon l’API Forever.','Atlas des zones La Binch (indicatif)','progression')}
   else add(60,'Préparer ta prochaine zone','Aucune zone fiable correspondante trouvée dans notre catalogue local pour ce personnage.','Couverture du catalogue incomplète','progression');
  }
  if(goal==='dungeon'){
