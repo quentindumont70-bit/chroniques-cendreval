@@ -29,13 +29,20 @@ function init(){
  box.innerHTML='<div class="eyebrow">CARNET DE VOYAGE / LEVELING</div><h2>Organiser mon parcours par zone</h2>'+
  '<p class="muted">Le classement est indicatif : niveau et faction du profil manuel. Il ne prétend pas connaître les quêtes actives ou les parcours exacts sur Forever.</p>'+
  '<div class="binch-zone-planner-head"><label>Liste des zones<select id="binch-zone-filter"><option value="recommended">Adaptées au personnage</option><option value="all">Toutes les zones</option></select></label><label>Zone à préparer<select id="binch-zone-choice"></select></label></div>'+
- '<div id="binch-zone-summary" role="status" aria-live="polite"></div>'+
+ '<div id="binch-zone-summary" role="status" aria-live="polite"></div><div class="binch-zone-roadmap"><h3>Parcours conseillé</h3><p class="muted">Suggestions indicatives selon ton niveau et ta faction. Choisir une zone ne valide aucune quête.</p><div id="binch-zone-recommendations"></div></div>'+
  '<div class="binch-zone-planner-actions"><button type="button" id="binch-zone-open-map">Ouvrir dans l’Atlas</button><button type="button" id="binch-zone-copy">Copier mon itinéraire</button></div>'+
  '<form id="binch-zone-task-form"><label>Ajouter une étape manuelle dans cette zone<input name="title" required maxlength="120" placeholder="Ex. : Rendre les quêtes au camp"></label><button type="submit">Ajouter l’étape</button></form>'+
  '<div id="binch-zone-tasks"></div><div id="binch-zone-progress"></div>'+
  '<small class="muted">Les objectifs ajoutés ici sont stockés uniquement dans ton navigateur, séparément pour chaque personnage.</small>';
  const atlas=$('zone-browser');if(atlas)page.insertBefore(box,atlas);else page.append(box);
  $('binch-zone-filter').onchange=e=>{filter=e.target.value;render()};
+ $('binch-zone-recommendations').addEventListener('click',e=>{
+  const button=e.target.closest('[data-zone-recommend]');if(!button)return;
+  const id=button.dataset.zoneRecommend;
+  if(!zones().some(z=>z.id===id))return;
+  state.zone=id;save();render();
+  $('binch-zone-summary').scrollIntoView({behavior:'smooth',block:'nearest'});
+ });
  $('binch-zone-choice').onchange=e=>{state.zone=e.target.value;save();render()};
  $('binch-zone-task-form').onsubmit=e=>{
   e.preventDefault();const p=profile();load(p);
@@ -83,6 +90,13 @@ function render(){
  const select=$('binch-zone-choice');
  select.innerHTML=display.map(z=>'<option value="'+esc(z.id)+'"'+(z.id===state.zone?' selected':'')+'>'+esc(z.name)+' (nv. '+z.levels.join('–')+')</option>').join('');
  const score=suit(chosen,p);
+ const proposals=all.map(z=>({...z,score:suit(z,p)})).filter(z=>z.score>=0).sort((a,b)=>b.score-a.score||a.levels[0]-b.levels[0]).slice(0,7);
+ $('binch-zone-recommendations').innerHTML=proposals.length?proposals.map((z,i)=>{
+  const tasks=state.tasks.filter(t=>t.zone===z.id),completed=tasks.filter(t=>t.done).length;
+  const progress=tasks.length?completed+' / '+tasks.length+' étapes manuelles': 'Aucune étape renseignée';
+  const label=z.score>=95?'Adaptée':z.score>=60?'À préparer':'Plus tard';
+  return '<button type="button" class="binch-zone-roadmap-card'+(z.id===state.zone?' active':'')+'" data-zone-recommend="'+esc(z.id)+'" aria-pressed="'+(z.id===state.zone)+'"><span class="binch-zone-roadmap-index">'+(i+1)+'</span><span class="binch-zone-roadmap-main"><strong>'+esc(z.name)+'</strong><small>Niv. '+z.levels.join('–')+' · '+esc(z.continent||'')+'</small><em>'+progress+'</em></span><span class="binch-zone-roadmap-status">'+label+'</span></button>';
+ }).join(''):'<p class="muted">Aucune recommandation compatible avec la faction de ton profil pour ce niveau.</p>';
  $('binch-zone-summary').innerHTML='<strong>'+esc(chosen.name)+'</strong><p>'+esc(chosen.continent||'')+' · Niveaux '+chosen.levels.join('–')+' · '+esc(chosen.faction||'Neutre')+'</p><p>'+(score>=95?'Niveaux cohérents avec ton profil.':score>=60?'Zone proche de ton niveau, préparation conseillée.':'Zone moins adaptée au profil actuel — décision manuelle.')+'</p>';
  const tasks=state.tasks.filter(t=>t.zone===state.zone),done=tasks.filter(t=>t.done).length;
  $('binch-zone-progress').textContent=done+' / '+tasks.length+' étapes terminées dans cette zone.';
