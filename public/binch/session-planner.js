@@ -17,7 +17,7 @@ function restore(p){
  currentKey=k;const x=read(k,{});
  plan={duration:DURATIONS.includes(x.duration)?x.duration:60,focus:FOCUS.includes(x.focus)?x.focus:'Mixte',done:x.done&&typeof x.done==='object'&&!Array.isArray(x.done)?x.done:{},notes:typeof x.notes==='string'?x.notes.slice(0,350):'',updated:Number(x.updated)||0};
 }
-function save(){plan.updated=Date.now();localStorage.setItem(currentKey,JSON.stringify(plan))}
+function save(){plan.updated=Date.now();localStorage.setItem(currentKey,JSON.stringify(plan));document.dispatchEvent(new Event('binch:session-change'))}
 function objectives(p){
  const key='binch.custom.objectives.v1.'+[p.name.toLocaleLowerCase('fr'),p.race,p.cls].map(x=>encodeURIComponent(String(x))).join('.');
  const entries=read(key,[]);
