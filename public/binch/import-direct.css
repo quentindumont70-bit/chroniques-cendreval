@@ -1,0 +1,22 @@
+/* La Binch : import fiable sur Opera, Chrome, Edge et Firefox. */
+#page-sync #binch-direct-import{margin:16px 0 24px;padding:clamp(18px,3vw,28px);border:1px solid #a8c4c3;border-radius:16px;background:linear-gradient(140deg,#172e36,#102329);color:#e9f6f5}
+#binch-direct-import h2{margin:6px 0 12px;color:#ffe3af}
+#binch-direct-import #binch-direct-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;min-height:142px;margin:16px 0;padding:20px;border:3px dashed #d2bd82;border-radius:14px;background:#2a3740;color:#fff0c9;text-align:center;cursor:pointer;transition:background .15s,border-color .15s}
+#binch-direct-drop strong{font-size:1.2rem}
+#binch-direct-drop span{font-size:.86rem;color:#c8dadd}
+#binch-direct-import #binch-direct-drop:hover,#binch-direct-import #binch-direct-drop.binch-drag-active{background:#365147;border-color:#ffe2a1}
+#binch-direct-import .binch-direct-controls{display:grid;grid-template-columns:minmax(165px,1fr) minmax(165px,1.5fr) auto;gap:12px;align-items:end}
+#binch-direct-import .binch-direct-select,#binch-direct-import #binch-direct-run{display:flex;align-items:center;justify-content:center;min-height:48px;padding:11px 14px;border-radius:9px;border:1px solid #f4d99b;font-weight:800;text-align:center;cursor:pointer}
+#binch-direct-import .binch-direct-select{background:#354b52;color:#fff1ce}
+#binch-direct-import #binch-direct-run{background:linear-gradient(120deg,#ffe5aa,#e1b66d);color:#1b262d;box-shadow:0 0 17px #efd08e55}
+#binch-direct-import #binch-direct-run:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+#binch-direct-import .binch-direct-path-label{font-size:.78rem;color:#d2e9e8;font-weight:700}
+#binch-direct-import #binch-direct-path{display:block;width:100%;min-width:0;margin-top:5px;min-height:46px;padding:9px 12px;border:1px solid #78969a;border-radius:8px;background:#0f1d25;color:#e8f8f8}
+#binch-direct-import #binch-direct-file{position:absolute;width:1px;height:1px;opacity:.01;overflow:hidden}
+#binch-direct-import #binch-direct-import-status{margin:16px 0 10px;padding:13px;border-left:3px solid #8ce1b2;background:#143b34;border-radius:6px}
+#binch-direct-import #binch-direct-import-status[data-state=error]{border-color:#ffad9f;background:#462a2e}
+#binch-direct-import details{margin-top:12px;color:#d4e4e8}
+#binch-direct-import summary{cursor:pointer;font-weight:700}
+#binch-direct-import :is(label,button,input):focus-visible{outline:3px solid #ffe09e;outline-offset:3px}
+@media(max-width:850px){#binch-direct-import .binch-direct-controls{grid-template-columns:1fr}#binch-direct-import .binch-direct-select,#binch-direct-import #binch-direct-run{width:100%}}
+@media(prefers-reduced-motion:reduce){#binch-direct-import *{transition:none!important}}
