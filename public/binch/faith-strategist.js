@@ -33,6 +33,19 @@ function recommendations(p,goal){
  }
  if((goal==='balanced'||goal==='quick')&&p.xp!==null&&p.xpMax>0&&Number.isFinite(p.xp)&&p.xp/p.xpMax>=.8)
   add(95,'Préparer le niveau suivant','Tu es à '+Math.round(p.xp/p.xpMax*100)+' % du niveau : pense au maître de classe et au prochain parcours.','XP de la dernière sauvegarde','progression');
+ // Repères du vrai catalogue La Binch, déjà filtrés par classe/race et progression manuelle.
+ // Ce sont des opportunités connues, jamais une détection du journal de quêtes WoW.
+ if(goal==='balanced'||goal==='quick'||goal==='class'){
+  const discoveries=window.BinchDiscoveries?.recommendations?.()||[];
+  const suitable=discoveries.filter(q=>q.verified&&q.level<=p.level+3&&q.distance>=-6);
+  for(const q of suitable.slice(0,2)){
+   const levelNote=q.available?'accessible selon le niveau':'à anticiper au niveau '+q.level;
+   const reward=q.reward?' Récompense : '+String(q.reward).slice(0,100)+'.':'';
+   add(goal==='quick'?Math.min(114,78+Math.round(q.priority/5)):goal==='class'?96:Math.min(112,80+Math.round(q.priority/5)),
+    q.title,'Découverte '+levelNote+' (recommandée niv. '+q.rec+'). '+String(q.summary).slice(0,135)+'.'+reward,
+    'Catalogue de découvertes · '+(q.sourceName||'source référencée')+' · quête non confirmée', 'discoveries');
+  }
+ }
  if(goal!=='craft'){
   const zs=nearbyZones(p);
   if(zs.length){const z=zs[0];add(goal==='quick'?110:goal==='dungeon'?40:80,'Explorer '+z.name,'Zone répertoriée pour les niveaux '+z.levels.join('–')+'. Points d’intérêt : '+String(z.places||'à consulter dans la carte').slice(0,150)+'. Le journal de quêtes actif reste inconnu.','Atlas des zones La Binch (indicatif)','progression')}
@@ -54,6 +67,7 @@ function recommendations(p,goal){
 function jump(page){document.querySelector('#app nav.nav [data-page="'+page+'"]')?.click();window.scrollTo({top:0,behavior:'auto'})}
 function paint(){
  const target=$('binch-faith-advice');if(!target)return;const p=snapshot(),goal=localStorage.getItem(KEY)||'balanced',adv=recommendations(p,goal);
+ if(goal==='balanced'&&window.BinchDiscoveries?.getCount){const c=window.BinchDiscoveries.getCount();const status=$('binch-faith-catalog-count');if(status)status.textContent=c+' découvertes indexées dans le catalogue local.';}
  target.textContent='';const intro=$('binch-faith-title');if(intro)intro.textContent='Trois prochaines actions · '+p.name;
  for(let i=0;i<adv.length;i++){const a=adv[i],article=document.createElement('article');article.className='binch-faith-action';
  const num=document.createElement('span');num.textContent=String(i+1).padStart(2,'0');num.className='binch-faith-num';
@@ -79,7 +93,7 @@ function paint(){
 function mount(){
  const card=$('page-command')?.querySelector('.binch-command-brog');if(!card||$('binch-faith-advisor'))return;
  const box=document.createElement('div');box.id='binch-faith-advisor';
- box.innerHTML='<div class="binch-faith-advisor-head"><h4 id="binch-faith-title">Trois prochaines actions</h4><label>Priorité<select id="binch-faith-goal"><option value="balanced">Progression équilibrée</option><option value="quick">XP rapide</option><option value="craft">Métiers et ressources</option><option value="class">Classe et compétences</option><option value="dungeon">Préparation donjon</option></select></label></div><div id="binch-faith-advice"></div><p id="binch-faith-integrity"></p>';
+ box.innerHTML='<div class="binch-faith-advisor-head"><h4 id="binch-faith-title">Trois prochaines actions</h4><label>Priorité<select id="binch-faith-goal"><option value="balanced">Progression équilibrée</option><option value="quick">XP rapide</option><option value="craft">Métiers et ressources</option><option value="class">Classe et compétences</option><option value="dungeon">Préparation donjon</option></select></label></div><small id="binch-faith-catalog-count"></small><div id="binch-faith-advice"></div><p id="binch-faith-integrity"></p>';
  card.append(box);
  const select=$('binch-faith-goal');select.value=localStorage.getItem(KEY)||'balanced';select.addEventListener('change',()=>{localStorage.setItem(KEY,select.value);paint()});
  $('binch-command-refresh')?.addEventListener('click',paint);
