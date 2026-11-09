@@ -1,0 +1,18 @@
+/* La Binch — progression lisible, panneaux légers et repliables. */
+#binch-adventure-tools{margin:18px 0;padding:14px;border:1px solid #7b7152;background:linear-gradient(135deg,#15211a,#101917);border-radius:10px}
+#binch-adventure-tools .binch-adventure-tools-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:3px 0 14px}
+#binch-adventure-tools .binch-adventure-tools-head h2{margin:4px 0 6px;font-size:clamp(1.3rem,3vw,1.85rem)}
+#binch-adventure-tools .binch-adventure-tools-head p{margin:0;color:#b6c8b9}
+#binch-adventure-tools .binch-adventure-tools-head button{flex:none;border:1px solid #a18b61;padding:10px 13px;background:#253c2e;border-radius:7px;color:#f1dcad;cursor:pointer}
+#binch-adventure-tools .binch-tool-accordion{margin:9px 0;border:1px solid #536b59;border-radius:8px;background:#121f18;overflow:visible}
+#binch-adventure-tools .binch-tool-accordion>summary{list-style:none;cursor:pointer;padding:15px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+#binch-adventure-tools .binch-tool-accordion>summary::-webkit-details-marker{display:none}
+#binch-adventure-tools .binch-tool-accordion>summary:before{content:'+';font-size:1.25rem;font-weight:900;color:#dfc48a}
+#binch-adventure-tools .binch-tool-accordion[open]>summary:before{content:'−'}
+#binch-adventure-tools .binch-tool-accordion>summary strong{margin-right:auto;color:#f3e0b6}
+#binch-adventure-tools .binch-tool-accordion>summary small{font-size:.78rem;color:#b9c8b7}
+#binch-adventure-tools .binch-tool-accordion>summary:focus-visible{outline:2px solid #ecd08b;outline-offset:2px}
+#binch-adventure-tools .binch-tool-accordion>section.panel{margin:0 12px 12px}
+#binch-adventure-tools .binch-tool-existing details.panel{margin:10px 0}
+#binch-adventure-tools .binch-tool-accordion:not([open])>section{display:none}
+@media(max-width:650px){#binch-adventure-tools{padding:8px}#binch-adventure-tools .binch-adventure-tools-head{display:block;padding:8px}#binch-adventure-tools .binch-adventure-tools-head button{margin-top:11px}#binch-adventure-tools .binch-tool-accordion>summary{display:grid;grid-template-columns:20px 1fr;gap:5px 12px}#binch-adventure-tools .binch-tool-accordion>summary:before{grid-row:1/3;align-self:center}#binch-adventure-tools .binch-tool-accordion>summary small{grid-column:2}#binch-adventure-tools .binch-tool-accordion>section.panel{margin:0 6px 8px}}
