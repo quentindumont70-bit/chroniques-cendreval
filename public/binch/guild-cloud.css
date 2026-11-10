@@ -1,0 +1,23 @@
+.binch-gcloud{margin:20px 0;padding:20px;border:1px solid #8c805a;border-radius:12px;background:linear-gradient(160deg,#182621,#0f1b1e);color:#eadfca}
+.binch-gcloud h2{font:700 clamp(1.2rem,2.5vw,1.7rem) Cinzel,Georgia,serif;color:#efd3a2;margin:5px 0}
+.binch-gcloud h3{font:700 1rem Cinzel,Georgia,serif;color:#e6cd9a}
+.binch-gcloud p{color:#bdcfc1;font-size:.84rem;line-height:1.5}
+.binch-gcloud header{margin-bottom:14px}
+.binch-gcloud input,.binch-gcloud select{min-width:0;max-width:100%;padding:9px;border:1px solid #627d68;border-radius:7px;background:#0d1b1c;color:#f5e8cc}
+.binch-gcloud button{padding:8px 12px;min-height:36px;border-radius:7px;border:1px solid #a38a5e;background:#294238;color:#f3dbaf;cursor:pointer}
+.binch-gcloud button:hover,.binch-gcloud button:focus-visible{border-color:#f7dc9a}
+.binch-gcloud label{display:grid;gap:5px;font-size:.82rem}
+.binch-gcloud #binch-gcloud-auth{display:flex;align-items:end;gap:10px;flex-wrap:wrap}
+.binch-gcloud-actions{display:flex;align-items:end;gap:9px;flex-wrap:wrap;padding:12px 0}
+.binch-gcloud-actions label{flex:1;min-width:160px}
+.binch-gcloud-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:16px 0}
+.binch-gcloud-columns section{padding:14px;border:1px solid #526b57;border-radius:9px;min-width:0;background:#0f201c}
+.binch-gcloud-columns form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.binch-gcloud-columns form button{grid-column:1/-1}
+.binch-gcloud-columns article{display:grid;gap:5px;border-top:1px solid #4e614d;padding:12px 0;font-size:.85rem}
+.binch-gcloud-columns article b{color:#f2d6a3}
+.binch-gcloud-columns article small{color:#b5c8b7}
+.binch-gcloud #binch-gcloud-notice[data-error=yes]{color:#ffbfae}
+.binch-gcloud #binch-gcloud-notice{overflow-wrap:anywhere}
+.binch-gcloud [hidden]{display:none!important}
+@media(max-width:750px){.binch-gcloud{padding:13px}.binch-gcloud-columns{grid-template-columns:1fr}.binch-gcloud-columns form{grid-template-columns:1fr}}
