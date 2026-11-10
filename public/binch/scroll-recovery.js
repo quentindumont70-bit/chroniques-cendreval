@@ -49,7 +49,28 @@ function init(){
  let scheduled=false;
  function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(()=>{scheduled=false;paint()})}
  window.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule,{passive:true});
- document.querySelector('#app nav.nav')?.addEventListener('click',()=>setTimeout(()=>{unlock();paint()},0));
+ const nav=document.querySelector('#app nav.nav');
+ nav?.addEventListener('click',()=>setTimeout(()=>{unlock();paint()},0));
+ // On narrow screens the horizontal sticky navigation can swallow vertical gestures.
+ // Route *only* vertical intent to the page, leaving horizontal tab swipes untouched.
+ let gesture=null;
+ nav?.addEventListener('touchstart',e=>{if(e.touches.length!==1){gesture=null;return}
+  gesture={x:e.touches[0].clientX,y:e.touches[0].clientY,axis:''};
+ },{passive:true});
+ nav?.addEventListener('touchmove',e=>{
+  if(!gesture||e.touches.length!==1||modal())return;
+  const touch=e.touches[0],dx=touch.clientX-gesture.x,dy=touch.clientY-gesture.y;
+  if(!gesture.axis&&Math.max(Math.abs(dx),Math.abs(dy))>9)gesture.axis=Math.abs(dy)>Math.abs(dx)*1.35?'vertical':'horizontal';
+  if(gesture.axis==='vertical'&&Math.abs(dy)>0){
+   e.preventDefault();unlock();window.scrollBy({top:-dy,behavior:'instant'});gesture.y=touch.clientY;gesture.x=touch.clientX;
+  }
+ },{passive:false});
+ nav?.addEventListener('touchend',()=>{gesture=null},{passive:true});
+ nav?.addEventListener('touchcancel',()=>{gesture=null},{passive:true});
+ nav?.addEventListener('wheel',e=>{
+  if(modal()||Math.abs(e.deltaX)>=Math.abs(e.deltaY)||!e.deltaY)return;
+  e.preventDefault();unlock();window.scrollBy({top:e.deltaY,behavior:'instant'});
+ },{passive:false});
  document.addEventListener('keydown',e=>{if(e.key!=='PageDown'||modal()||['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;
   const start=window.scrollY;setTimeout(()=>{if(window.scrollY===start)unlock()},100);
  });
