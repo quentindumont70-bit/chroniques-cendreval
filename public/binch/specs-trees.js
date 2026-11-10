@@ -43,7 +43,7 @@ const PRESETS={
  ['Feral Combat','Furor',3],['Restoration','Heart of the Wild',5],['Restoration','Naturalist',5]],
  cat:[
  ['Feral Combat','Ferocity',5],['Feral Combat','Furor',5],['Feral Combat','Savage Fury',2],
- ['Feral Combat','Sharpened Claws',2],['Feral Combat','Lacerating Attacks',3],['Feral Combat','Predatory Strikes',3],
+ ['Feral Combat','Sharpened Claws',2],['Feral Combat','Shredding Attacks',3],['Feral Combat','Predatory Strikes',3],
  ['Feral Combat','Blood Frenzy',2],['Feral Combat','Leader of the Pack',1],['Feral Combat','Predatory Discipline',1],
  ['Feral Combat','Natural Instinct',2],['Feral Combat','Rend and Tear',5],['Feral Combat','Shifting Power',1],
  ['Balance','Genesis',5],['Balance',"Nature's Majesty",2],['Balance',"Nature's Reach",2],
