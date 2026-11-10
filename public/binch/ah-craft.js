@@ -53,7 +53,7 @@ function mount(){
  const page=$('page-market');if(!page||$('binch-ah-craft'))return;
  const section=document.createElement('section');section.id='binch-ah-craft';section.className='binch-ah-craft';
  section.innerHTML='<header><div><div class="eyebrow">LA BINCH / ATELIER ÉCONOMIQUE</div><h2>Fabriquer ou revendre les composants ?</h2><p>Calcule le coût des matériaux et la revente potentielle d’une recette. Les prix sont ceux du carnet AH, avec alerte sur les données manquantes.</p></div></header><form id="binch-ah-craft-form"><div class="binch-ah-craft-header"><label>Objet fabriqué<input name="output" required maxlength="90" placeholder="Nom exact du produit"></label><label>Métier<input name="profession" maxlength="70" placeholder="Ex. Ingénierie"></label><label>Quantité produite<input name="yield" type="number" min="1" max="999" value="1" required></label></div><h3>Ingrédients nécessaires</h3><div id="binch-ah-craft-ingredients"></div><button type="submit">Enregistrer la recette et calculer</button></form><div id="binch-ah-craft-count"></div><div id="binch-ah-craft-list"></div><div id="binch-ah-craft-detail"></div>';
- const footer=page.querySelector('.binch-ah > footer');if(footer)footer.before(section);else page.querySelector('.binch-ah')?.append(section);
+ const footer=page.querySelector('.binch-ah > footer'),ledger=page.querySelector('.binch-ah');if(footer)footer.before(section);else if(ledger)ledger.append(section);else page.append(section);
  ingredientRows();
  $('binch-ah-craft-form').onsubmit=e=>{
   e.preventDefault();const f=e.target,fd=new FormData(f),output=clean(fd.get('output')),profession=clean(fd.get('profession')),yieldCount=Number(fd.get('yield'));
