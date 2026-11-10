@@ -64,3 +64,31 @@ Quand OpenCode publie un build, vérifier l'arbre de talents WoW Forever et les 
 ### Risques et limites
 
 Le chargement fonctionne via HTTPS sur GitHub Pages ; un `file://` direct ne permet pas nécessairement `fetch`. Les fiches sont embarquées dans le site, sans mise à jour automatique en cours de partie. Le score de recherche ne prouve pas la justesse d'un fait : seule la qualification préalable de la fiche le permet. Les modules ne connaissent pas les quotas OpenCode ni ceux de Work.
+
+## Implémentation réelle — 2026-11-10
+
+- `manifest.json` référence les jeux de données `data/*.json` (maximum 24 fichiers) ; chaque chemin est strictement relatif au corpus. Aucune URL distante arbitraire.
+- `schema-v1.json` documente le contrat des fiches ; `validator.js` rejette les IDs dupliqués, sources HTTPS absentes, dates invalides, listes excessives et périmètres incohérents.
+- `catalog.js` charge et valide le manifeste puis les fichiers. En cas d'erreur, le dialogue reste disponible avec ses réponses scriptées ; aucun fait non contrôlé n'est servi.
+- `search.js` filtre exclusivement les fiches `forever` + `verifie`, demande un recouvrement significatif des mots de la question et renvoie les sources de l'information.
+- Le dialogue `faith-dialogue.js` et le portail `index.html` chargent ce catalogue. Il s'agit d'un **moteur local déterministe**, pas d'un modèle d'IA entraîné.
+- Démarrage avec trois fiches factuelles sur les modules du projet, et **aucun build/quest/boss prétendu vérifié** avant collecte des références Forever.
+
+### Répéter les vérifications
+
+Avec Node.js installé, depuis la racine du dépôt :
+
+```sh
+node public/binch/faith-knowledge/tests/test-corpus.js
+node public/binch/faith-knowledge/tests/test-catalog.js
+```
+
+Le protocole a également été vérifié en exécution JS isolée : intégrité des trois fiches, recherche positive sourcée, refus des questions farouche/loot sans source, rejet de chemins extérieurs au catalogue. **Les scripts Node et le navigateur réel restent à exécuter sur l'environnement cible.**
+
+### Ajouter une connaissance après le travail d'OpenCode
+
+1. Résumer le fait avec ses propres mots ; indiquer `scope=forever`, `verification=verifie` seulement si confirmé par une source Forever pertinente.
+2. Enregistrer le lien réel, son intitulé et la date de consultation. Sinon conserver `a_confirmer` et ne pas le présenter comme validé.
+3. Ajouter la fiche à un nouveau fichier `data/builds.json` / `data/quests.json` ; enregistrer le chemin dans `manifest.json`.
+4. Exécuter les deux tests, poser des questions pertinentes et des contre-exemples inconnus.
+5. Ne pas reproduire intégralement les guides externes. La source demeure accessible via ses références.
