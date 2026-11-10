@@ -32,3 +32,15 @@
 #binch-zone-planner .binch-zone-roadmap-main small,#binch-zone-planner .binch-zone-roadmap-main em{color:#b5cbb9;font-size:.76rem}
 #binch-zone-planner .binch-zone-roadmap-status{font-size:.72rem;white-space:nowrap;color:#f2cc87}
 @media(max-width:500px){#binch-zone-planner .binch-zone-roadmap-card{flex-wrap:wrap}#binch-zone-planner .binch-zone-roadmap-status{margin-left:36px}}
+
+#binch-zone-planner .binch-zone-itinerary{margin:16px 0;padding:14px;border:1px solid #536e58;border-radius:10px;background:#0c1a15}
+#binch-zone-planner .binch-zone-itinerary h3{color:#f0d5a7;margin:0 0 5px}
+#binch-zone-planner .binch-zone-itinerary-item{display:flex;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid #3e5145}
+#binch-zone-planner .binch-zone-itinerary-number{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;background:#3a4e3c;color:#f7dca9;font-weight:800}
+#binch-zone-planner .binch-zone-itinerary-item>div:nth-child(2){flex:1;min-width:0}
+#binch-zone-planner .binch-zone-itinerary-item strong,#binch-zone-planner .binch-zone-itinerary-item small{display:block;overflow-wrap:anywhere}
+#binch-zone-planner .binch-zone-itinerary-item small{color:#afc8b7}
+#binch-zone-planner .binch-zone-itinerary-buttons{display:flex;gap:5px;flex-wrap:wrap}
+#binch-zone-planner .binch-zone-itinerary-buttons button{padding:6px 9px;min-width:31px}
+#binch-zone-planner button:disabled{opacity:.4;cursor:not-allowed}
+@media(max-width:600px){#binch-zone-planner .binch-zone-itinerary-item{flex-wrap:wrap}#binch-zone-planner .binch-zone-itinerary-buttons{width:100%;padding-left:42px}}
