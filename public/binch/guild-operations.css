@@ -45,3 +45,7 @@
 .binch-ops-promise small{color:#bac9b6;font-size:.76rem}
 .binch-ops-promise select{min-width:190px}
 @media(max-width:720px){.binch-ops{padding:14px}.binch-ops-columns{grid-template-columns:1fr}.binch-ops-promise select{flex:1}.binch-ops-lfg-post form>*{width:100%}}
+
+.binch-ops-head-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.binch-ops .binch-ops-import{display:inline-flex;align-items:center;justify-content:center;border:1px solid #a38b63;border-radius:7px;padding:8px 12px;min-height:36px;background:#29413a;color:#f9e0ae;cursor:pointer;font-size:.8rem}
+.binch-ops .binch-ops-import:focus-within{outline:2px solid #f0d69e}
