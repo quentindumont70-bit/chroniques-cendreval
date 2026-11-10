@@ -123,6 +123,36 @@ if(present('faith-strategist.js')){
   fail('Faith stratège : recommandations ou source de données manquantes.');
 }
 
+
+ // Phase 1 — tests statiques des limites de ressources et de l'éditeur V3.
+for(const file of ['companion-local.js','companion-local.css','Compagnon-La-Binch.ps1','Lancer-Compagnon-La-Binch.cmd']) {
+ if(!present(file))fail('Compagnon Windows : ressource absente : '+file);
+}
+if(present('companion-local.js')) {
+ const companion=read('companion-local.js');
+ for(const term of ['127.0.0.1:18764','X-Binch-Token','visibilitychange','If-None-Match','binch-companion-stop']) {
+  if(!companion.includes(term))fail('Compagnon : contrat absent '+term);
+ }
+ if(!portal.includes('companion-local.js?v='))fail('Compagnon : script non relié à la page.');
+}
+if(present('Compagnon-La-Binch.ps1')) {
+ const ps=read('Compagnon-La-Binch.ps1');
+ for(const term of ['IPAddress]::Loopback','RandomNumberGenerator','SavedVariables','If-None-Match','Access-Control-Allow-Origin']) {
+  if(!ps.includes(term)&&!ps.toLowerCase().includes(term.toLowerCase()))fail('Compagnon PowerShell : garde-fou manquant '+term);
+ }
+}
+if(present('ui-editor.js')){
+ const editor=read('ui-editor.js');
+ for(const term of ['undoStack','redoStack','exportLayout','importLayout','constrainMove','record.height','saveProfile']){
+  if(!editor.includes(term))fail('Editeur V3 : contrat absent '+term);
+ }
+}
+if(present('sync-easy.js')){
+ const sync=read('sync-easy.js');
+ if(sync.includes('setInterval('))fail('Performance Opera : synchronisation encore sur un intervalle permanent.');
+ if(!sync.includes('visibilitychange')||!sync.includes('30000'))fail('Performance Opera : pause ou cadence manquante.');
+}
+
 const index=read('index.html'),treasures=read('treasures.js');
 if(!index.includes('Bêta de guilde 0.21')||!index.includes('0.21-guild'))fail('Titre ou metadata de version non synchronisé avec 0.21');
 if(!index.includes('window.BinchRewards')||!index.includes('draw:(canvas,id)')||!treasures.includes('API.draw?.'))fail('Contrat sprite Trésors incomplet');
