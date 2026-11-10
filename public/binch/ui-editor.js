@@ -1,10 +1,11 @@
 /* La Binch — UI editor V1: local layouts, magnetic grid and alignment guides.
    Strictly visual HTML editor; no game interaction or backend. */
 (()=>{'use strict';
-const KEY='binch.ui.editor.v1',STEP=12,THRESHOLD=9;
+const KEY='binch.ui.editor.v1',PROFILES='binch.ui.profiles.v2',STEP=12,THRESHOLD=9,MIN_W=160,MIN_H=90;
 const saved=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return {}}};
 const db=saved(),$=id=>document.getElementById(id);
-let editing=false,handles=[],drag=null;
+let editing=false,handles=[],drag=null,frame=0,pending=null;
+const profileRead=()=>{try{const x=JSON.parse(localStorage.getItem(PROFILES));return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}catch{return {}}};
 const baseStyles=new WeakMap();
 let magnet=localStorage.getItem('binch.ui.magnet.v1')!=='0';
 function snap(n){return Math.round(n/STEP)*STEP}
@@ -13,6 +14,11 @@ function pageKey(){return scope()?.id||'page-hub'}
 function viewport(){return window.innerWidth<700?'mobile':window.innerWidth<1200?'tablet':'desktop'}
 function key(){return pageKey()+'|'+viewport()}
 function cfg(){return db[key()]||(db[key()]={})}
+function profileList(){const select=$('binch-edit-profiles');if(!select)return;const names=Object.keys(profileRead()[key()]||{}).sort();select.replaceChildren(new Option('Profils sauvegardés',''),...names.map(n=>new Option(n,n)))}
+function saveProfile(){const name=window.prompt('Nom du profil (max. 40 caractères) :')?.trim().slice(0,40);if(!name)return;const all=profileRead(),group=all[key()]||{};if(Object.keys(group).length>=12&&!group[name]){status('12 profils maximum pour cette page.');return}group[name]=JSON.parse(JSON.stringify(cfg()));all[key()]=group;try{localStorage.setItem(PROFILES,JSON.stringify(all));profileList();$('binch-edit-profiles').value=name;status('Profil « '+name+' » enregistré.')}catch{status('Stockage local indisponible.')}}
+function loadProfile(){const name=$('binch-edit-profiles').value,source=profileRead()[key()]?.[name];if(!name||!source)return;db[key()]=JSON.parse(JSON.stringify(source));store();setupTargets();status('Profil « '+name+' » chargé.')}
+function deleteProfile(){const name=$('binch-edit-profiles').value;if(!name||!window.confirm('Supprimer le profil « '+name+' » ?'))return;const all=profileRead();delete all[key()][name];localStorage.setItem(PROFILES,JSON.stringify(all));profileList();status('Profil supprimé.')}
+function status(msg){const node=$('binch-edit-message');if(node)node.textContent=msg}
 function targets(){
  const page=scope();if(!page)return [];
  const query=':scope > .panel,:scope > article,:scope > section,:scope > .binch-command,:scope > .binch-todo,:scope > .binch-play-today, #binch-command-deck > [data-command-widget], .binch-command-hero, .binch-command-layout, .binch-command-stats, .binch-command-pin-wrap, .binch-command-discoveries, .binch-command-questlog, .binch-command-progress, .binch-command-bottom, .binch-command-row, .binch-command-notes, .binch-command-row > .binch-command-card, .binch-command-bottom > .binch-command-card, .binch-command-stats > .binch-command-stat';
@@ -31,12 +37,13 @@ function targets(){
 function identity(el,i){return el.id?'#'+el.id:el.dataset.commandWidget?'widget:'+el.dataset.commandWidget:'block:'+i}
 function applyTo(el,id,i){
  const item=cfg()[id]||{};
- if(!baseStyles.has(el))baseStyles.set(el,{width:el.style.width,maxWidth:el.style.maxWidth,boxSizing:el.style.boxSizing});
+ if(!baseStyles.has(el))baseStyles.set(el,{width:el.style.width,maxWidth:el.style.maxWidth,boxSizing:el.style.boxSizing,height:el.style.height,minHeight:el.style.minHeight});
  el.dataset.binchEditorId=id;
  el.classList.add('binch-edit-target');
  el.style.setProperty('--binch-edit-x',(Number(item.x)||0)+'px');
  el.style.setProperty('--binch-edit-y',(Number(item.y)||0)+'px');
  if(Number(item.width)>0){el.style.width=Math.round(item.width)+'px';el.style.maxWidth='100%';el.style.boxSizing='border-box'}
+ if(Number(item.height)>0){el.style.height=Math.round(item.height)+'px';el.style.minHeight='0';el.style.boxSizing='border-box'}
  el.dataset.binchEditName=el.getAttribute('aria-label')||el.querySelector('h2,h3')?.textContent?.trim().slice(0,65)||el.id||'Panneau '+(i+1);
 }
 function clearTransient(){
@@ -44,7 +51,7 @@ function clearTransient(){
  for(const node of handles)node.remove();handles=[];
  ['binch-edit-guide-x','binch-edit-guide-y'].forEach(id=>{const e=$(id);if(e)e.hidden=true});
 }
-function clearTargets(){document.querySelectorAll('.binch-edit-target').forEach(el=>{el.classList.remove('binch-edit-target','binch-edit-selected');delete el.dataset.binchEditorId;delete el.dataset.binchEditName;el.style.removeProperty('--binch-edit-x');el.style.removeProperty('--binch-edit-y');const base=baseStyles.get(el);if(base){el.style.width=base.width;el.style.maxWidth=base.maxWidth;el.style.boxSizing=base.boxSizing}else{el.style.removeProperty('width');el.style.removeProperty('max-width');el.style.removeProperty('box-sizing')}})}
+function clearTargets(){document.querySelectorAll('.binch-edit-target').forEach(el=>{el.classList.remove('binch-edit-target','binch-edit-selected');delete el.dataset.binchEditorId;delete el.dataset.binchEditName;el.style.removeProperty('--binch-edit-x');el.style.removeProperty('--binch-edit-y');const base=baseStyles.get(el);if(base){el.style.width=base.width;el.style.maxWidth=base.maxWidth;el.style.boxSizing=base.boxSizing;el.style.height=base.height;el.style.minHeight=base.minHeight}else{el.style.removeProperty('width');el.style.removeProperty('max-width');el.style.removeProperty('box-sizing');el.style.removeProperty('height');el.style.removeProperty('min-height')}})}
 function setupTargets(){
  clearTransient();clearTargets();
  const els=targets();
@@ -87,33 +94,67 @@ function magnetic(el,newX,newY){
  }
  return {x:Math.round(x),y:Math.round(y),gx,gy};
 }
+function hasOverlap(el,left,top,width,height){
+ const siblings=Array.from(el.parentElement?.children||[]).filter(x=>x!==el&&x.matches?.('.binch-edit-target'));
+ return siblings.some(other=>{const r=other.getBoundingClientRect();return left<r.right-4&&left+width>r.left+4&&top<r.bottom-4&&top+height>r.top+4});
+}
+function constrainMove(d,x,y){
+ const rect=d.el.getBoundingClientRect(),oldX=parseFloat(d.el.style.getPropertyValue('--binch-edit-x'))||0,oldY=parseFloat(d.el.style.getPropertyValue('--binch-edit-y'))||0;
+ const baseLeft=rect.left-oldX,baseTop=rect.top-oldY;
+ x=Math.round(Math.min(Math.max(x,12-baseLeft),window.innerWidth-12-rect.width-baseLeft));
+ y=Math.round(Math.max(y,12-baseTop));
+ if(!hasOverlap(d.el,baseLeft+x,baseTop+y,rect.width,rect.height))return {x,y,blocked:false};
+ const axisX=!hasOverlap(d.el,baseLeft+x,baseTop+d.offsetY,rect.width,rect.height);
+ const axisY=!hasOverlap(d.el,baseLeft+d.offsetX,baseTop+y,rect.width,rect.height);
+ if(axisX&&!axisY)return {x,y:d.offsetY,blocked:true};
+ if(axisY&&!axisX)return {x:d.offsetX,y,blocked:true};
+ if(axisX&&axisY)return Math.abs(x-d.offsetX)>=Math.abs(y-d.offsetY)?{x,y:d.offsetY,blocked:true}:{x:d.offsetX,y,blocked:true};
+ return {x:d.offsetX,y:d.offsetY,blocked:true};
+}
 function begin(e,el,mode){
  if(!editing||e.button!==0||(e.target.closest('button,input,select,textarea,a')&&mode!=='resize'))return;
  e.preventDefault();e.stopPropagation();select(el);
  const r=el.getBoundingClientRect(),id=el.dataset.binchEditorId,c=cfg()[id]||{};
- drag={id,el,mode,startX:e.clientX,startY:e.clientY,offsetX:Number(c.x)||0,offsetY:Number(c.y)||0,width:r.width,changed:false};
+ drag={id,el,mode,startX:e.clientX,startY:e.clientY,offsetX:Number(c.x)||0,offsetY:Number(c.y)||0,width:r.width,height:r.height,changed:false};
  document.body.classList.add('binch-edit-dragging');
 }
 function onMove(e){
  if(!drag)return;
- const d=drag,dx=e.clientX-d.startX,dy=e.clientY-d.startY;
- if(d.mode==='resize'){
-  const width=Math.max(160,Math.min(window.innerWidth-24,d.width+dx));
-  const adjusted=magnet?snap(width):Math.round(width);
-  d.el.style.width=Math.max(160,adjusted)+'px';d.el.style.maxWidth='100%';guides(null,null);
- }else{
-  const result=magnetic(d.el,d.offsetX+dx,d.offsetY+dy);
-  d.el.style.setProperty('--binch-edit-x',result.x+'px');
-  d.el.style.setProperty('--binch-edit-y',result.y+'px');
-  guides(result.gx,result.gy);
- }
- d.changed=true;updateHandles();
+ pending={x:e.clientX,y:e.clientY};
+ if(frame)return;
+ frame=requestAnimationFrame(()=>{
+  frame=0;
+  if(!drag||!pending)return;
+  const d=drag,dx=pending.x-d.startX,dy=pending.y-d.startY;pending=null;
+  if(d.mode==='resize'){
+   const bounds=d.el.parentElement?.getBoundingClientRect();
+   const maxW=Math.max(MIN_W,Math.min(window.innerWidth-24, (bounds?.right||window.innerWidth)-d.el.getBoundingClientRect().left));
+   let width=Math.max(MIN_W,Math.min(maxW,d.width+dx));
+   let height=Math.max(MIN_H,Math.min(1400,d.height+dy));
+   if(magnet){width=snap(width);height=snap(height)}
+   // Recheck against siblings before committing either dimension.
+   const r=d.el.getBoundingClientRect();
+   if(!hasOverlap(d.el,r.left,r.top,width,height)){
+    d.el.style.width=Math.round(width)+'px';d.el.style.height=Math.round(height)+'px';
+    d.el.style.maxWidth='100%';d.el.style.minHeight='0';d.el.style.boxSizing='border-box';
+   }
+   guides(null,null);
+  }else{
+   const result=magnetic(d.el,d.offsetX+dx,d.offsetY+dy);
+   const allowed=constrainMove(d,result.x,result.y);
+   d.el.style.setProperty('--binch-edit-x',allowed.x+'px');
+   d.el.style.setProperty('--binch-edit-y',allowed.y+'px');
+   guides(allowed.blocked?null:result.gx,allowed.blocked?null:result.gy);
+  }
+  d.changed=true;updateHandles();
+ });
 }
 function end(){
  if(!drag)return;
+ if(frame){cancelAnimationFrame(frame);frame=0;pending=null}
  const d=drag,record=cfg()[d.id]||{};
  if(d.changed){
-  if(d.mode==='resize')record.width=Math.round(d.el.getBoundingClientRect().width);
+  if(d.mode==='resize'){record.width=Math.round(d.el.getBoundingClientRect().width);record.height=Math.round(d.el.getBoundingClientRect().height)}
   else{record.x=parseFloat(d.el.style.getPropertyValue('--binch-edit-x'))||0;record.y=parseFloat(d.el.style.getPropertyValue('--binch-edit-y'))||0}
   cfg()[d.id]=record;store();$('binch-edit-message').textContent='Disposition enregistrée sur cet appareil.';
  }
@@ -132,7 +173,7 @@ function toggle(force){
  $('binch-editor-toggle').textContent=editing?'✓ Terminer':'✥ Modifier l’interface';
  $('binch-editor-toggle').setAttribute('aria-pressed',String(editing));
  $('binch-edit-toolbar').hidden=!editing;
- if(editing)setupTargets();else{clearTransient();applySaved()}
+ if(editing){setupTargets();profileList()}else{clearTransient();applySaved()}
 }
 function reset(){
  if(!window.confirm('Réinitialiser la disposition de cette page sur cet appareil ?'))return;
@@ -141,7 +182,7 @@ function reset(){
 function mount(){
  if($('binch-editor-toggle'))return;
  const button=document.createElement('button');button.type='button';button.id='binch-editor-toggle';button.textContent='✥ Modifier l’interface';button.title='Mode édition WoW : déplacer et ajuster les panneaux';button.setAttribute('aria-pressed','false');document.body.append(button);
- const toolbar=document.createElement('div');toolbar.id='binch-edit-toolbar';toolbar.hidden=true;toolbar.innerHTML='<strong>✥ Mode édition</strong><span id="binch-edit-count"></span><label class="binch-edit-magnet"><input type="checkbox" id="binch-edit-magnet" checked> Aimantation grille + panneaux</label><button type="button" id="binch-edit-reset">Réinitialiser la page</button><span id="binch-edit-message">Glisse un panneau ou redimensionne-le par son coin inférieur droit.</span><button type="button" id="binch-edit-done">Terminer</button>';document.body.append(toolbar);
+ const toolbar=document.createElement('div');toolbar.id='binch-edit-toolbar';toolbar.hidden=true;toolbar.innerHTML='<strong>✥ Mode édition</strong><span id="binch-edit-count"></span><label class="binch-edit-magnet"><input type="checkbox" id="binch-edit-magnet" checked> Aimantation grille + panneaux</label><select id="binch-edit-profiles" aria-label="Profils de disposition"><option value="">Profils sauvegardés</option></select><button type="button" id="binch-edit-profile-save">Sauver profil</button><button type="button" id="binch-edit-profile-load">Charger</button><button type="button" id="binch-edit-profile-delete">Supprimer</button><button type="button" id="binch-edit-reset">Réinitialiser la page</button><span id="binch-edit-message">Glisse les panneaux et redimensionne largeur + hauteur par le coin. Les collisions entre panneaux voisins sont bloquées.</span><button type="button" id="binch-edit-done">Terminer</button>';document.body.append(toolbar);
  const x=document.createElement('div');x.id='binch-edit-guide-x';x.className='binch-edit-guide vertical';x.hidden=true;document.body.append(x);
  const y=document.createElement('div');y.id='binch-edit-guide-y';y.className='binch-edit-guide horizontal';y.hidden=true;document.body.append(y);
  $('binch-edit-magnet').checked=magnet;
@@ -149,6 +190,10 @@ function mount(){
  $('binch-edit-done').addEventListener('click',()=>toggle(false));
  $('binch-edit-magnet').addEventListener('change',e=>{magnet=e.target.checked;localStorage.setItem('binch.ui.magnet.v1',magnet?'1':'0')});
  $('binch-edit-reset').addEventListener('click',reset);
+ $('binch-edit-profile-save').addEventListener('click',saveProfile);
+ $('binch-edit-profile-load').addEventListener('click',loadProfile);
+ $('binch-edit-profile-delete').addEventListener('click',deleteProfile);
+ profileList();
  document.addEventListener('pointerdown',e=>{
   if(!editing||e.target.closest('#binch-edit-toolbar,#binch-editor-toggle,.binch-edit-resize'))return;
   const candidate=e.target.closest('.binch-edit-target');
