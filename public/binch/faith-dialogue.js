@@ -7,11 +7,7 @@ const read=(k,f)=>{try{return JSON.parse(localStorage.getItem(k))??f}catch{retur
 let knowledgeRows=[],knowledgeStatus='loading';
 async function loadKnowledge(){
  try{
-  const r=await fetch('./faith-knowledge/data/core.json',{cache:'no-store'});
-  if(!r.ok)throw new Error('HTTP '+r.status);
-  const data=await r.json(),v=window.BinchFaithKnowledgeValidator?.check(data);
-  if(!v?.ok)throw new Error('Corpus invalide');
-  knowledgeRows=data.filter(x=>x.verification==='verifie'&&x.scope==='forever');
+  knowledgeRows=await window.BinchFaithKnowledgeCatalog.load(fetch.bind(window),window.BinchFaithKnowledgeValidator);
   knowledgeStatus='ready';
  }catch{knowledgeRows=[];knowledgeStatus='unavailable'}
  const e=$('binch-faith-knowledge-state');
