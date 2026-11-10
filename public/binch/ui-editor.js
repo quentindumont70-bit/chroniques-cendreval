@@ -4,7 +4,8 @@
 const KEY='binch.ui.editor.v1',STEP=12,THRESHOLD=9;
 const saved=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return {}}};
 const db=saved(),$=id=>document.getElementById(id);
-let editing=false,active=null,handles=[],drag=null;
+let editing=false,handles=[],drag=null;
+const baseStyles=new WeakMap();
 let magnet=localStorage.getItem('binch.ui.magnet.v1')!=='0';
 function snap(n){return Math.round(n/STEP)*STEP}
 function scope(){const page=document.querySelector('#app main .page.active');return page||document.querySelector('#page-hub.active')||null}
@@ -30,6 +31,7 @@ function targets(){
 function identity(el,i){return el.id?'#'+el.id:el.dataset.commandWidget?'widget:'+el.dataset.commandWidget:'block:'+i}
 function applyTo(el,id,i){
  const item=cfg()[id]||{};
+ if(!baseStyles.has(el))baseStyles.set(el,{width:el.style.width,maxWidth:el.style.maxWidth,boxSizing:el.style.boxSizing});
  el.dataset.binchEditorId=id;
  el.classList.add('binch-edit-target');
  el.style.setProperty('--binch-edit-x',(Number(item.x)||0)+'px');
@@ -42,7 +44,7 @@ function clearTransient(){
  for(const node of handles)node.remove();handles=[];
  ['binch-edit-guide-x','binch-edit-guide-y'].forEach(id=>{const e=$(id);if(e)e.hidden=true});
 }
-function clearTargets(){document.querySelectorAll('.binch-edit-target').forEach(el=>{el.classList.remove('binch-edit-target','binch-edit-selected');delete el.dataset.binchEditorId;delete el.dataset.binchEditName;el.style.removeProperty('--binch-edit-x');el.style.removeProperty('--binch-edit-y');el.style.removeProperty('width');el.style.removeProperty('max-width');el.style.removeProperty('box-sizing')})}
+function clearTargets(){document.querySelectorAll('.binch-edit-target').forEach(el=>{el.classList.remove('binch-edit-target','binch-edit-selected');delete el.dataset.binchEditorId;delete el.dataset.binchEditName;el.style.removeProperty('--binch-edit-x');el.style.removeProperty('--binch-edit-y');const base=baseStyles.get(el);if(base){el.style.width=base.width;el.style.maxWidth=base.maxWidth;el.style.boxSizing=base.boxSizing}else{el.style.removeProperty('width');el.style.removeProperty('max-width');el.style.removeProperty('box-sizing')}})}
 function setupTargets(){
  clearTransient();clearTargets();
  const els=targets();
