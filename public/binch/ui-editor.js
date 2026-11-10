@@ -7,6 +7,7 @@ const db=saved(),$=id=>document.getElementById(id);
 function store(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch{status('Stockage local indisponible : disposition non sauvegardée.')}}
 let editing=false,handles=[],drag=null,frame=0,pending=null;
 const undoStack=[],redoStack=[],MAX_HISTORY=30;
+let historyKey='';
 const snapshot=()=>JSON.stringify(cfg());
 function commitHistory(before){if(!before||before===snapshot())return;undoStack.push(before);if(undoStack.length>MAX_HISTORY)undoStack.shift();redoStack.length=0;historyState()}
 function historyState(){if($('binch-edit-undo'))$('binch-edit-undo').disabled=!undoStack.length;if($('binch-edit-redo'))$('binch-edit-redo').disabled=!redoStack.length}
@@ -78,6 +79,7 @@ function clearTransient(){
 }
 function clearTargets(){document.querySelectorAll('.binch-edit-target').forEach(el=>{el.classList.remove('binch-edit-target','binch-edit-selected');delete el.dataset.binchEditorId;delete el.dataset.binchEditName;el.style.removeProperty('--binch-edit-x');el.style.removeProperty('--binch-edit-y');const base=baseStyles.get(el);if(base){el.style.width=base.width;el.style.maxWidth=base.maxWidth;el.style.boxSizing=base.boxSizing;el.style.height=base.height;el.style.minHeight=base.minHeight}else{el.style.removeProperty('width');el.style.removeProperty('max-width');el.style.removeProperty('box-sizing');el.style.removeProperty('height');el.style.removeProperty('min-height')}})}
 function setupTargets(){
+ if(historyKey!==key()){historyKey=key();undoStack.length=0;redoStack.length=0;historyState()}
  clearTransient();clearTargets();
  const els=targets();
  els.forEach((el,i)=>applyTo(el,identity(el,i),i));
