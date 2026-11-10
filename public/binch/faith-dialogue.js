@@ -4,6 +4,20 @@ const KEY='binch.faith.dialogue.v1',MAX=35,$=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clean=(s,n=350)=>String(s??'').trim().slice(0,n);
 const read=(k,f)=>{try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}};
+let knowledgeRows=[],knowledgeStatus='loading';
+async function loadKnowledge(){
+ try{
+  const r=await fetch('./faith-knowledge/data/core.json',{cache:'no-store'});
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  const data=await r.json(),v=window.BinchFaithKnowledgeValidator?.check(data);
+  if(!v?.ok)throw new Error('Corpus invalide');
+  knowledgeRows=data.filter(x=>x.verification==='verifie'&&x.scope==='forever');
+  knowledgeStatus='ready';
+ }catch{knowledgeRows=[];knowledgeStatus='unavailable'}
+ const e=$('binch-faith-knowledge-state');
+ if(e)e.textContent=knowledgeStatus==='ready'?'Savoir sourcé : '+knowledgeRows.length+' fiches locales vérifiées.':'Savoir sourcé indisponible. Faith reste en mode local.';
+}
+
 function context(){
  const p=read('grimoire.hub.v3',{}),last=read('grimoire.bridge.last',{}),d=p.data||{},name=clean(d.pseudo||'',40),same=!!name&&name.toLocaleLowerCase('fr')===String(last.name||'').trim().toLocaleLowerCase('fr');
  const level=Number(same?last.level:d.level);
@@ -15,6 +29,11 @@ function context(){
 }
 function reply(input,c){
  const q=input.toLocaleLowerCase('fr');
+ const knowledge=window.BinchFaithKnowledge?.answer(input,knowledgeRows);
+ if(knowledge?.found){
+  const citations=knowledge.citations.map(x=>x.label+' ('+x.url+', consulté le '+x.checkedAt+')').join(' ; ');
+  return 'Fiche Faith vérifiée '+knowledge.recordId+' : '+knowledge.text+' Sources : '+citations+'.';
+ }
  const prof=c.name+(c.level?' · niv. '+c.level:'')+(c.className?' · '+c.className:'');
  if(/bonjour|salut|yo|faith/.test(q))return 'Les esprits sont de bonne humeur, '+prof+'. Je peux t’aider avec tes quêtes, ton équipement, la Bourse ou les missions de guilde. Mes réponses viennent uniquement des données présentes ici.';
  if(/march|bourse|ah|prix|vente|or\b|artisan|commerce/.test(q)){
@@ -46,7 +65,7 @@ function persist(entries){const all=read(KEY,{}),id=identity();all[id]=entries.s
 function mount(){
  if($('binch-faith-dialogue'))return true;const host=$('binch-faith-advisor');if(!host)return false;
  const panel=document.createElement('section');panel.id='binch-faith-dialogue';panel.className='binch-faith-dialogue';
- panel.innerHTML='<details id="binch-faith-talk"><summary>Parler à Faith · conseiller local</summary><p>Faith, esprit d’un troll chaman. Les réponses suivent des règles locales et tes derniers imports. Aucune conversation n’est envoyée à une IA ou au Discord.</p><div id="binch-faith-dialogue-history" role="log" aria-live="polite" aria-label="Conversation avec Faith"></div><form id="binch-faith-dialogue-form"><label for="binch-faith-dialogue-input">Question</label><input id="binch-faith-dialogue-input" maxlength="350" required placeholder="Quelles missions de guilde sont urgentes ?"><button type="submit">Demander</button></form><div class="binch-faith-dialogue-actions"><button type="button" data-faith-suggest="Où en sont mes quêtes ?">Quêtes</button><button type="button" data-faith-suggest="Que sais-tu du marché AH ?">Commerce</button><button type="button" data-faith-suggest="Quelles missions de guilde sont urgentes ?">Guilde</button><button type="button" id="binch-faith-dialogue-clear">Effacer l’historique</button></div><small id="binch-faith-dialogue-state">Historique local du personnage.</small></details>';
+ panel.innerHTML='<details id="binch-faith-talk"><summary>Parler à Faith · conseiller local</summary><p>Faith, esprit d’un troll chaman. Les réponses suivent des règles locales et tes derniers imports. Aucune conversation n’est envoyée à une IA ou au Discord.</p><div id="binch-faith-dialogue-history" role="log" aria-live="polite" aria-label="Conversation avec Faith"></div><form id="binch-faith-dialogue-form"><label for="binch-faith-dialogue-input">Question</label><input id="binch-faith-dialogue-input" maxlength="350" required placeholder="Quelles missions de guilde sont urgentes ?"><button type="submit">Demander</button></form><div class="binch-faith-dialogue-actions"><button type="button" data-faith-suggest="Où en sont mes quêtes ?">Quêtes</button><button type="button" data-faith-suggest="Que sais-tu du marché AH ?">Commerce</button><button type="button" data-faith-suggest="Quelles missions de guilde sont urgentes ?">Guilde</button><button type="button" id="binch-faith-dialogue-clear">Effacer l’historique</button></div><small id="binch-faith-dialogue-state">Historique local du personnage. <span id="binch-faith-knowledge-state">Chargement des connaissances sourcées…</span></small></details>';
  document.body.append(panel);
  const launcher=document.createElement('button');launcher.type='button';launcher.id='binch-faith-dock';launcher.textContent='Faith · conseils';launcher.setAttribute('aria-controls','binch-faith-dialogue');launcher.setAttribute('aria-expanded','false');
  document.body.append(launcher);
@@ -72,6 +91,6 @@ function mount(){
  document.addEventListener('grimoire:sync',refresh);window.addEventListener('storage',e=>{if(e.key===KEY||e.key==='grimoire.hub.v3')draw()});
  draw();return true;
 }
-function start(){if(mount())return;const root=$('app');if(!root)return;const o=new MutationObserver(()=>{if(mount())o.disconnect()});o.observe(root,{childList:true,subtree:true});setTimeout(()=>o.disconnect(),15000)}
+function start(){loadKnowledge();if(mount())return;const root=$('app');if(!root)return;const o=new MutationObserver(()=>{if(mount())o.disconnect()});o.observe(root,{childList:true,subtree:true});setTimeout(()=>o.disconnect(),15000)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
