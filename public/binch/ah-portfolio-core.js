@@ -24,7 +24,8 @@ function ledger(trades,fee=5){
   if(kind==='buy'){
    bucket.lots.push({price,remaining:qty,at:trade.at||''});bucket.buyQty+=qty;invested+=price*qty;continue
   }
-  const net=Math.floor(price*qty*(1-rate));receipts+=net;bucket.sellQty+=qty;bucket.saleGross+=net;
+  const saleRate=Number.isFinite(Number(trade.fee))?Math.max(0,Math.min(20,Number(trade.fee)))/100:rate;
+  const net=Math.floor(price*qty*(1-saleRate));receipts+=net;bucket.sellQty+=qty;bucket.saleGross+=net;
   let rest=qty,matched=0,cost=0;
   for(const lot of bucket.lots){if(!rest)break;const taken=Math.min(rest,lot.remaining);rest-=taken;lot.remaining-=taken;matched+=taken;cost+=taken*lot.price}
   // Allocate proceeds by unit to avoid declaring profit for inventory that was not purchased in this ledger.
@@ -32,7 +33,7 @@ function ledger(trades,fee=5){
   const margin=proceedsMatched-cost;
   bucket.realized+=margin;bucket.unmatched+=rest;
   matchedUnits+=matched;unmatchedUnits+=rest;costRealized+=cost;realized+=margin;
-  sales.push({id:trade.id||'',item:trade.item,market,qty,matched,unmatched:rest,net,proceedsMatched,cost,margin,at:trade.at||''});
+  sales.push({id:trade.id||'',item:trade.item,market,qty,matched,unmatched:rest,net,proceedsMatched,cost,margin,fee:saleRate*100,at:trade.at||''});
  }
  let remainingCost=0,remainingUnits=0;
  for(const p of buckets.values()){
