@@ -9,7 +9,7 @@ const key=p=>KEY+encodeURIComponent(String(p.data?.pseudo||'').trim().toLocaleLo
 function character(){const p=read('grimoire.hub.v3',{}),last=read('grimoire.bridge.last',{});const name=String(p.data?.pseudo||'').trim(),same=!!name&&String(last.name||'').trim().toLocaleLowerCase('fr')===name.toLocaleLowerCase('fr');return {p,last,same,name,equip:same&&Array.isArray(last.equipment)?last.equipment:[]}}
 function sets(){return read(key(character().p),[])}
 function persist(list){try{localStorage.setItem(key(character().p),JSON.stringify(list.slice(0,12)))}catch{};render()}
-const get=()=>String($('#binch-gear-set-selected')?.value||'');
+const get=()=>String($('binch-gear-set-selected')?.value||'');
 function compare(saved,equip){
  const actual=new Map(equip.filter(x=>Number.isInteger(Number(x.slot))&&Number(x.id)>0).map(x=>[Number(x.slot),Number(x.id)]));
  const differences=saved.items.filter(x=>actual.has(x.slot)&&actual.get(x.slot)!==x.id);
@@ -25,9 +25,9 @@ function render(){
  select.replaceChildren(new Option('Choisir un ensemble',''),...entries.map(x=>new Option(x.name+' · '+(ROLES.find(r=>r[0]===x.role)?.[1]||x.role),x.id)));
  select.value=entries.some(x=>x.id===choice)?choice:'';
  const set=entries.find(x=>x.id===select.value);
- if(!set){$('#binch-gear-set-preview').innerHTML='<p>Crée un ensemble depuis ton équipement importé, ou sélectionne un ensemble existant.</p>';return}
+ if(!set){$('binch-gear-set-preview').innerHTML='<p>Crée un ensemble depuis ton équipement importé, ou sélectionne un ensemble existant.</p>';return}
  const diff=c.same?compare(set,c.equip):null;
- $('#binch-gear-set-preview').innerHTML='<h4>'+esc(set.name)+'</h4><p>'+esc(ROLES.find(r=>r[0]===set.role)?.[1]||'Rôle libre')+' · '+set.items.length+' emplacements sauvegardés · '+esc(set.createdAt?new Date(set.createdAt).toLocaleString('fr-FR'):'Date inconnue')+'</p>'+(diff?'<p>'+diff.matches.length+' identique(s) · '+diff.differences.length+' différent(s) · '+diff.notAvailable.length+' absent(s) de l’export · '+diff.extra.length+' slot(s) actuellement équipés mais non enregistrés. Les absences ne prouvent pas un objet perdu.</p>':'<p>Connecte le personnage correspondant pour comparer cet ensemble.</p>')+
+ $('binch-gear-set-preview').innerHTML='<h4>'+esc(set.name)+'</h4><p>'+esc(ROLES.find(r=>r[0]===set.role)?.[1]||'Rôle libre')+' · '+set.items.length+' emplacements sauvegardés · '+esc(set.createdAt?new Date(set.createdAt).toLocaleString('fr-FR'):'Date inconnue')+'</p>'+(diff?'<p>'+diff.matches.length+' identique(s) · '+diff.differences.length+' différent(s) · '+diff.notAvailable.length+' absent(s) de l’export · '+diff.extra.length+' slot(s) actuellement équipés mais non enregistrés. Les absences ne prouvent pas un objet perdu.</p>':'<p>Connecte le personnage correspondant pour comparer cet ensemble.</p>')+
  '<div class="binch-gear-set-list">'+set.items.map(x=>{
   const current=c.same?c.equip.find(v=>Number(v.slot)===x.slot):null,differs=current&&Number(current.id)!==x.id;
   return '<article><small>'+esc(SLOTS[x.slot]||('Emplacement '+x.slot))+'</small><strong>'+esc(x.name||('Objet #'+x.id))+'</strong><span>'+(differs?'Actuellement : '+esc(current.name||('Objet #'+current.id)):current?'Identique au dernier import':c.same?'Slot non fourni par l’import':'Import du personnage requis')+'</span></article>';
@@ -38,7 +38,7 @@ function mount(){
  const box=document.createElement('section');box.id='binch-gear-sets';box.className='binch-gear-sets';
  box.innerHTML='<header><div><div class="eyebrow">ARSENAL / SPÉCIALISATIONS</div><h3>Mes ensembles d’équipement</h3><p>Enregistre et compare des équipements de tank, félin ou soins. Ces ensembles sont des repères locaux : aucun changement d’armure dans WoW.</p></div></header><form id="binch-gear-set-form"><input name="name" maxlength="50" required placeholder="Nom du set" aria-label="Nom de l’ensemble"><select name="role" aria-label="Rôle de l’ensemble">'+ROLES.map(r=>'<option value="'+r[0]+'">'+r[1]+'</option>').join('')+'</select><button type="submit">Sauver l’équipement actuel</button></form><p id="binch-gear-set-status"></p><div class="binch-gear-set-controls"><select id="binch-gear-set-selected" aria-label="Ensemble sauvegardé"></select><button id="binch-gear-set-delete" type="button">Supprimer l’ensemble</button><button id="binch-gear-set-copy" type="button">Copier pour Discord</button></div><div id="binch-gear-set-preview"></div>';
  host.querySelector('.binch-equipment-layout')?.before(box);
- $('#binch-gear-set-form').onsubmit=e=>{
+ $('binch-gear-set-form').onsubmit=e=>{
   e.preventDefault();const f=e.target,c=character(),name=String(new FormData(f).get('name')||'').trim().slice(0,50),role=String(new FormData(f).get('role')||'custom');
   if(!c.same||!c.equip.length){alert('Importe d’abord un équipement réel pour ce personnage.');return}
   if(!name||!ROLES.some(r=>r[0]===role))return;
@@ -46,9 +46,9 @@ function mount(){
   current.push({id:crypto?.randomUUID?.()||Date.now().toString(36),name,role,createdAt:new Date().toISOString(),items:c.equip.filter(x=>Number.isInteger(Number(x.slot))&&Number(x.slot)>0&&Number(x.id)>0).map(x=>({slot:Number(x.slot),id:Number(x.id),name:String(x.name||'').slice(0,110)})).slice(0,25)});
   persist(current);f.reset();
  };
- $('#binch-gear-set-selected').onchange=render;
- $('#binch-gear-set-delete').onclick=()=>{const chosen=get();if(!chosen||!confirm('Supprimer cet ensemble enregistré ?'))return;persist(sets().filter(x=>x.id!==chosen))};
- $('#binch-gear-set-copy').onclick=()=>{const x=sets().find(x=>x.id===get());if(!x)return;const text=['LA BINCH · SET '+x.name,'Rôle : '+(ROLES.find(r=>r[0]===x.role)?.[1]||x.role),...x.items.map(i=>(SLOTS[i.slot]||i.slot)+' : '+i.name+' (#'+i.id+')')].join('\n');if(navigator.clipboard?.writeText){navigator.clipboard.writeText(text).catch(()=>prompt('Copier',text))}else prompt('Copier',text)};
+ $('binch-gear-set-selected').onchange=render;
+ $('binch-gear-set-delete').onclick=()=>{const chosen=get();if(!chosen||!confirm('Supprimer cet ensemble enregistré ?'))return;persist(sets().filter(x=>x.id!==chosen))};
+ $('binch-gear-set-copy').onclick=()=>{const x=sets().find(x=>x.id===get());if(!x)return;const text=['LA BINCH · SET '+x.name,'Rôle : '+(ROLES.find(r=>r[0]===x.role)?.[1]||x.role),...x.items.map(i=>(SLOTS[i.slot]||i.slot)+' : '+i.name+' (#'+i.id+')')].join('\n');if(navigator.clipboard?.writeText){navigator.clipboard.writeText(text).catch(()=>prompt('Copier',text))}else prompt('Copier',text)};
  page.addEventListener('click',e=>{if(e.target.closest('#binch-equipment-sync'))render()});
  document.querySelector('#app nav.nav [data-page="equipment"]')?.addEventListener('click',render);
  document.addEventListener('grimoire:sync',render);
