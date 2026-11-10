@@ -21,7 +21,8 @@ function context(){
  const scope=read('binch.ah.scope.v1',{});
  const market=read('binch.ah.market.v1',{}),realm=String(scope.realm||'').trim().toLocaleLowerCase('fr'),faction=['Horde','Alliance'].includes(scope.faction)?scope.faction:'';
  const scoped=Array.isArray(market.items)?market.items.filter(x=>(x.scope||'legacy')===(realm&&faction?realm+'|'+faction:'legacy')):[];
- return {name:name||'Aventurier',className:clean(p.classe||'',40),spec:clean(d.spec||d.specialization||p.specialization||'',55),level:Number.isInteger(level)&&level>0&&level<=60?level:null,same,zone:clean(same?last.zone:d.zone||'',75),date:same?last.updated:null,realm,faction,prices:scoped,quests:same&&Array.isArray(last.questLog)?last.questLog:[],tasks:Array.isArray(roster)?roster.filter(x=>x.status!=='done'):[],gear:same&&Array.isArray(last.equipment)?last.equipment:[]};
+ const manual=window.BinchMarketBridge?.snapshot(read('binch.market.v1',{}),market,{realm,faction});
+ return {name:name||'Aventurier',className:clean(p.classe||'',40),spec:clean(d.spec||d.specialization||p.specialization||'',55),level:Number.isInteger(level)&&level>0&&level<=60?level:null,same,zone:clean(same?last.zone:d.zone||'',75),date:same?last.updated:null,realm,faction,prices:scoped,manualMarket:manual,quests:same&&Array.isArray(last.questLog)?last.questLog:[],tasks:Array.isArray(roster)?roster.filter(x=>x.status!=='done'):[],gear:same&&Array.isArray(last.equipment)?last.equipment:[]};
 }
 function reply(input,c){
  const q=input.toLocaleLowerCase('fr');
@@ -35,7 +36,7 @@ function reply(input,c){
  if(/march|bourse|ah|prix|vente|or\b|artisan|commerce/.test(q)){
   if(!c.realm||!c.faction)return 'Le marché n’est pas identifié. Renseigne ton royaume et ta faction dans la Bourse avant d’utiliser ses relevés comme référence. Aucune enchère en direct n’est consultée.';
   const latest=c.prices.filter(x=>Number(x.last)>0&&Number.isFinite(Date.parse(x.observedAt))).sort((a,b)=>String(b.observedAt).localeCompare(String(a.observedAt)))[0];
-  if(!latest)return 'Aucun prix observé sur '+c.realm+' / '+c.faction+'. Ajoute un relevé réel ou un import compatible. Aucun cours ne sera inventé.';
+  if(!latest){const manual=c.manualMarket?.items?.[0];if(manual){const age=Math.max(0,Math.floor((Date.now()-Date.parse(manual.observedAt))/3600000));return 'Bourse '+c.realm+' / '+c.faction+' : '+c.manualMarket.items.length+' observation(s) locales, incluant le registre historique. Dernière observation '+clean(manual.name,75)+' : '+Number(manual.price).toLocaleString('fr-FR')+' cuivre il y a environ '+age+' h. Origine : '+manual.store+', '+clean(manual.source,50)+'. Ce n’est pas un prix live ni une transaction garantie.';}return 'Aucun prix observé sur '+c.realm+' / '+c.faction+'. Ajoute un relevé réel ou un import compatible. Aucun cours ne sera inventé.';}
   const age=Math.max(0,Math.floor((Date.now()-Date.parse(latest.observedAt))/3600000));
   return 'Marché '+c.realm+' / '+c.faction+' : '+c.prices.length+' objet(s) enregistrés. Dernier relevé : '+clean(latest.name,75)+' à '+Number(latest.last).toLocaleString('fr-FR')+' cuivre, il y a environ '+age+' h. Source déclarée : '+clean(latest.source||'inconnue',65)+'. Ne confonds pas observation et prix de vente garanti.';
  }
