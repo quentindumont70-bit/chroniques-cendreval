@@ -11,9 +11,10 @@ function snapshot(){
  const upcoming=(Array.isArray(events)?events:[]).filter(e=>e&&!e.done&&typeof e.date==='string'&&stamp(e)>=now-60000).sort((a,b)=>stamp(a)-stamp(b)).slice(0,8);
  const requests=(Array.isArray(planner.requests)?planner.requests:[]).filter(r=>r&&!r.closed&&text(r.title)).sort((a,b)=>Number(b.priority==='urgent')-Number(a.priority==='urgent')||Date.parse(a.deadline||'9999')-Date.parse(b.deadline||'9999')).slice(0,12);
  const resources=(Array.isArray(bank)?bank:[]).filter(r=>r&&text(r.item)&&num(r.count)>0);
+ const delegated=read('binch.guild.delegations.v1',[]),tasks=(Array.isArray(delegated)?delegated:[]).filter(x=>x&&x.status!=='done');
  const overdue=requests.filter(r=>r.deadline&&Number.isFinite(Date.parse(r.deadline))&&Date.parse(r.deadline)<now);
  const fulfillment=requests.map(r=>({id:r.id,title:r.title,needed:num(r.quantity),received:(Array.isArray(r.contributions)?r.contributions:[]).filter(c=>c.status==='confirmed').reduce((n,c)=>n+num(c.quantity),0)}));
- return {upcoming,requests,resources,overdue,fulfillment};
+ return {upcoming,requests,resources,overdue,fulfillment,tasks};
 }
 function roleCounts(e){
  const confirmed=(Array.isArray(e.attendees)?e.attendees:[]).filter(a=>a?.status==='Confirmé');
@@ -33,7 +34,7 @@ function summary(s){
  }
  lines.push('',s.requests.length?'Demandes ouvertes :':'Aucune demande ouverte dans le Planner local.');
  for(const r of s.requests.slice(0,7))lines.push('• '+text(r.title)+' · reçus '+(s.fulfillment.find(f=>f.id===r.id)?.received||0)+' / '+num(r.quantity)+(r.priority==='urgent'?' [URGENT]':'')+(r.deadline?' · échéance '+new Date(r.deadline).toLocaleDateString('fr-FR'):''));
- lines.push('','Coffre : '+s.resources.length+' ligne(s) déclarée(s), à confirmer avec les propriétaires.','Copie manuelle pour Discord ; aucun message publié automatiquement.');
+ lines.push('','Délégations ouvertes : '+s.tasks.length);for(const t of s.tasks.slice(0,5))lines.push('• '+text(t.title)+' — '+text(t.owner||'Non attribué')+' — '+text(t.due||'Sans échéance'));lines.push('','Coffre : '+s.resources.length+' ligne(s) déclarée(s), à confirmer avec les propriétaires.','Copie manuelle pour Discord ; aucun message publié automatiquement.');
  return lines.join('\n');
 }
 function render(){
@@ -50,20 +51,22 @@ function render(){
 function navigate(destination){
  if(destination==='calendar'){const element=document.getElementById('binch-guild-calendar');if(element){element.scrollIntoView({behavior:'smooth',block:'start'});return}}
  if(destination==='planner'){const element=document.getElementById('binch-guild-planner');if(element){element.open=true;element.scrollIntoView({behavior:'smooth',block:'start'});return}}
+ if(destination==='delegations'){const node=$('binch-gm-delegations');if(node){node.scrollIntoView({behavior:'smooth',block:'start'});return}}
  if(destination==='coffre'){document.querySelector('#app nav.nav [data-page="coffre"]')?.click();return}
  document.querySelector('#app nav.nav [data-page="gm"]')?.click();
 }
 function mount(){
  const home=$('binch-gm-hub');if(!home||$('binch-gm-watch'))return false;
  const box=document.createElement('section');box.id='binch-gm-watch';box.className='binch-gm-watch';
- box.innerHTML='<header><div><div class="eyebrow">BRIEFING EXPRESS · INFORMATIONS LOCALES</div><h2>Tableau de garde du maître de guilde</h2><p>Prochaines sorties, confirmations, demandes et ressources déclarées. Aucun statut en direct sans service partagé.</p></div><button type="button" id="binch-gm-watch-copy">Copier le briefing Discord</button></header><div id="binch-gm-watch-stats"></div><div class="binch-gm-watch-grid"><div><h3>Sorties à préparer</h3><div id="binch-gm-watch-list"></div></div><div><h3>Demandes ouvertes</h3><div id="binch-gm-watch-urgent"></div><button type="button" data-gm-watch-open="planner">Ouvrir le Planner</button><button type="button" data-gm-watch-open="coffre">Voir le coffre</button></div></div><p class="binch-gm-watch-status" id="binch-gm-watch-status" role="status" aria-live="polite"></p>';
+ box.innerHTML='<header><div><div class="eyebrow">BRIEFING EXPRESS · INFORMATIONS LOCALES</div><h2>Tableau de garde du maître de guilde</h2><p>Prochaines sorties, confirmations, demandes et ressources déclarées. Aucun statut en direct sans service partagé.</p></div><button type="button" id="binch-gm-watch-copy">Copier le briefing Discord</button></header><div id="binch-gm-watch-stats"></div><div class="binch-gm-watch-grid"><div><h3>Sorties à préparer</h3><div id="binch-gm-watch-list"></div></div><div><h3>Demandes ouvertes</h3><div id="binch-gm-watch-urgent"></div><button type="button" data-gm-watch-open="planner">Ouvrir le Planner</button><button type="button" data-gm-watch-open="coffre">Voir le coffre</button><button type="button" data-gm-watch-open="delegations">Gérer les délégations</button></div></div><p class="binch-gm-watch-status" id="binch-gm-watch-status" role="status" aria-live="polite"></p>';
  home.querySelector('.binch-gm-menu')?.before(box);
  box.addEventListener('click',e=>{const b=e.target.closest('[data-gm-watch-open]');if(b)navigate(b.dataset.gmWatchOpen)});
  $('binch-gm-watch-copy').onclick=async()=>{const value=summary(snapshot());try{if(!navigator.clipboard?.writeText)throw Error('Clipboard unavailable');await navigator.clipboard.writeText(value);$('binch-gm-watch-status').textContent='Briefing copié, à coller dans Discord.'}catch{window.prompt('Copier pour Discord',value)}};
  document.addEventListener('binch:calendar-change',render);
  document.addEventListener('binch:planner-change',render);
  document.addEventListener('binch:chest-change',render);
- window.addEventListener('storage',e=>{if(['binch.guild.events.v1','binch.guild.planner.v1','binch.guild.bank.v1'].includes(e.key))render()});
+ document.addEventListener('binch:delegations-change',render);
+ window.addEventListener('storage',e=>{if(['binch.guild.events.v1','binch.guild.planner.v1','binch.guild.bank.v1','binch.guild.delegations.v1'].includes(e.key))render()});
  const tab=document.querySelector('#app nav.nav [data-page="gm"]');tab?.addEventListener('click',render);
  render();return true;
 }
