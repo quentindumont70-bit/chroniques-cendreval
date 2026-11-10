@@ -1,0 +1,30 @@
+name: Vérification du compagnon Windows
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public/binch/Compagnon-La-Binch.ps1'
+      - 'public/binch/Lancer-Compagnon-La-Binch.cmd'
+      - '.github/workflows/companion-windows.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  powershell-parse:
+    name: Analyse de syntaxe PowerShell 5.1
+    runs-on: windows-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Analyser le script sans l'exécuter
+        shell: powershell
+        run: |
+          $tokens = $null
+          $errors = $null
+          $file = 'public/binch/Compagnon-La-Binch.ps1'
+          $ast = [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $file), [ref]$tokens, [ref]$errors)
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Host $_.ToString() }
+            throw "PowerShell syntax errors: $($errors.Count)"
+          }
+          Write-Host "Script valide sur Windows PowerShell 5.1 (analyse statique uniquement)."
