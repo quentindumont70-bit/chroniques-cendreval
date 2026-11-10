@@ -10,7 +10,8 @@ function read(){try{const v=JSON.parse(localStorage.getItem(STORE));return Array
 let assignments=read(),filter='open';
 function save(){try{localStorage.setItem(STORE,JSON.stringify(assignments));document.dispatchEvent(new Event('binch:delegations-change'));return true}catch{return false}}
 function validDate(str){if(!str)return true;if(!/^\d{4}-\d{2}-\d{2}$/.test(str))return false;const d=new Date(str+'T12:00:00');return Number.isFinite(+d)&&d.toISOString().slice(0,10)===str}
-const late=x=>!!x.due&&validDate(x.due)&&x.due<new Date().toLocaleDateString('en-CA')&&x.status!=='done';
+const today=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())};
+const late=x=>!!x.due&&validDate(x.due)&&x.due<today()&&x.status!=='done';
 function summary(){
  const active=assignments.filter(x=>x.status!=='done');
  return {active:active.length,urgent:active.filter(x=>x.priority==='urgent').length,overdue:active.filter(late).length,blocked:active.filter(x=>x.status==='blocked').length};
@@ -47,7 +48,7 @@ function mount(){
  const home=$('binch-gm-hub');if(!home||$('binch-gm-delegations'))return false;
  const section=document.createElement('section');section.id='binch-gm-delegations';section.className='binch-gm-delegations';
  section.innerHTML='<header><div><div class="eyebrow">ÉTAT-MAJOR / DÉLÉGATION</div><h2>Ordres de mission</h2><p>Qui fait quoi et pour quand ? Assigne des tâches, suis les blocages et prépare des messages Discord. Rien n’est transmis automatiquement.</p></div></header><form id="binch-delegation-form"><label>Mission<input name="title" maxlength="100" required placeholder="Ex. Préparer les consommables du raid"></label><label>Responsable<input name="owner" maxlength="50" placeholder="Personnage ou officier"></label><label>Échéance<input name="due" type="date"></label><label>Priorité<select name="priority"><option value="normal">Normale</option><option value="high">Importante</option><option value="urgent">Urgente</option></select></label><label class="binch-delegation-wide">Consignes<textarea name="note" rows="2" maxlength="350" placeholder="Préparation et contexte"></textarea></label><button type="submit">Créer une mission</button></form><p id="binch-gm-delegations-summary" role="status"></p><div class="binch-delegation-toolbar"><input type="search" id="binch-gm-delegations-query" placeholder="Rechercher une mission"><select id="binch-gm-delegations-filter" aria-label="Filtrer les missions"><option value="open">Ouvertes</option><option value="todo">À attribuer</option><option value="doing">En cours</option><option value="blocked">Bloquées</option><option value="done">Terminées</option><option value="all">Toutes</option></select><button type="button" id="binch-delegations-copy">Copier le briefing</button><button type="button" id="binch-delegations-export">Exporter JSON</button><label>Importer JSON<input id="binch-delegations-import" type="file" accept=".json,application/json"></label></div><div id="binch-gm-delegations-list"></div><p id="binch-gm-delegations-message" role="status" aria-live="polite"></p>';
- home.querySelector('#binch-gm-watch')?.after(section)||home.append(section);
+ const watch=home.querySelector('#binch-gm-watch');if(watch)watch.after(section);else home.append(section);
  section.querySelector('#binch-delegation-form').onsubmit=e=>{
   e.preventDefault();const f=new FormData(e.target),title=clean(f.get('title')),due=clean(f.get('due'),10);
   if(title.length<2||!validDate(due)||assignments.length>=MAX){$('binch-gm-delegations-message').textContent='Mission invalide ou plafond de 120 atteint.';return}
@@ -56,7 +57,7 @@ function mount(){
  };
  $('binch-gm-delegations-query').oninput=render;
  $('binch-gm-delegations-filter').onchange=e=>{filter=e.target.value;render()};
- section.addEventListener('change',e=>{const sel=e.target.closest('[data-delegation-status]');if(!sel)return;const x=assignments.find(a=>a.id===sel.dataset.delegationStatus);if(!x)return;x.status=statuses.includes(sel.value)?sel.value:'todo';save();render()});
+ section.addEventListener('change',e=>{const sel=e.target.closest('[data-delegation-status]');if(!sel)return;const x=assignments.find(a=>a.id===sel.dataset.delegationStatus);if(!x)return;const previous=x.status;x.status=statuses.includes(sel.value)?sel.value:'todo';if(!save()){x.status=previous;$('binch-gm-delegations-message').textContent='Modification non enregistrée.'}render()});
  section.addEventListener('click',e=>{const remove=e.target.closest('[data-delegation-remove]');if(remove){const x=assignments.find(a=>a.id===remove.dataset.delegationRemove);if(x&&confirm('Supprimer la mission '+x.title+' ?')){assignments=assignments.filter(a=>a.id!==x.id);save();render()}return}
  const button=e.target.closest('[data-delegation-copy]');if(button){const x=assignments.find(a=>a.id===button.dataset.delegationCopy);if(x)copy(description(x))}});
  $('binch-delegations-copy').onclick=()=>copy(['LA BINCH · BRIEFING DES DÉLÉGATIONS','Données locales, non partagées.',...assignments.filter(x=>x.status!=='done').map(description)].join('\n\n'));
