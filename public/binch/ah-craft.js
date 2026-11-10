@@ -6,7 +6,9 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const clean=s=>String(s??'').trim().slice(0,90),norm=s=>clean(s).toLocaleLowerCase('fr'),id=()=>crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(36).slice(2);
 const read=(key,f)=>{try{return JSON.parse(localStorage.getItem(key))??f}catch{return f}};
 let recipes=read(KEY,[]);if(!Array.isArray(recipes))recipes=[];
-const market=()=>read(MARKET,{}),priceOf=item=>market().items?.find(x=>x.key===norm(item));
+const market=()=>read(MARKET,{});
+const scope=()=>{const x=read('binch.ah.scope.v1',null);return x?.realm&&['Horde','Alliance'].includes(x.faction)?String(x.realm).trim().toLocaleLowerCase('fr')+'|'+x.faction:'legacy'};
+const priceOf=item=>market().items?.find(x=>(x.scope||'legacy')===scope()&&x.name&&norm(x.name)===norm(item));
 const money=n=>{n=Math.round(n);let sign=n<0?'-':'';n=Math.abs(n);return sign+Math.floor(n/10000)+'o '+Math.floor(n%10000/100)+'a '+n%100+'c'};
 const gold=n=>{const x=Number(String(n).replace(',','.'));return Number.isFinite(x)&&x>=0&&x<1e9?Math.round(x*10000):null};
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(recipes.slice(-100)))}catch{}};
@@ -66,7 +68,9 @@ function mount(){
   const del=e.target.closest('[data-craft-remove]');if(del&&confirm('Supprimer cette recette personnelle ?')){recipes=recipes.filter(x=>x.id!==del.dataset.craftRemove);persist();draw()}
  };
  document.querySelector('#app nav.nav [data-page="market"]')?.addEventListener('click',draw);
- window.addEventListener('storage',e=>{if(e.key===KEY){recipes=read(KEY,[]);draw()}else if(e.key===MARKET)draw()});
+ document.querySelector('#binch-ah-scope-form')?.addEventListener('submit',()=>setTimeout(draw,0));
+ document.querySelector('#binch-ah-scope-legacy')?.addEventListener('click',()=>setTimeout(draw,0));
+ window.addEventListener('storage',e=>{if(e.key===KEY){recipes=read(KEY,[]);draw()}else if(e.key===MARKET||e.key==='binch.ah.scope.v1')draw()});
  draw();
 }
 const start=()=>setTimeout(mount,0);
