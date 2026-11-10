@@ -1,0 +1,17 @@
+.binch-ah-craft{margin-top:18px;padding:18px;border:1px solid #71634c;border-radius:12px;background:linear-gradient(125deg,#15251f,#15241a)}
+.binch-ah-craft header h2{font:700 1.2rem Cinzel,Georgia,serif;color:#f2d19d}
+.binch-ah-craft p{font-size:.82rem;color:#b9cabb}
+.binch-ah-craft h3{font-size:.93rem;color:#e3c99b}
+.binch-ah-craft-header{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.binch-ah-craft label{display:grid;gap:6px;color:#dddfc7;font-size:.76rem}
+#binch-ah-craft-ingredients{display:grid;grid-template-columns:minmax(0,2fr) minmax(100px,.65fr);gap:9px;margin:12px 0}
+.binch-ah-craft input{padding:10px;min-width:0;width:100%;border:1px solid #637761;background:#10211a;color:#f1e1c6;border-radius:7px}
+.binch-ah-craft button{background:#334838;color:#f5db9f;border:1px solid #a28a5c;border-radius:7px;min-height:35px;padding:8px 12px;cursor:pointer}
+.binch-ah-craft #binch-ah-craft-count{color:#adc4b3;margin:15px 0}
+.binch-ah-craft-result{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid #4c604c}
+.binch-ah-craft-result>div{flex:1;min-width:180px}
+.binch-ah-craft-result strong{color:#e5cf99}
+.binch-ah-craft-result small{display:block;font-size:.74rem;color:#bdc9b5}
+#binch-ah-craft-detail{border-radius:9px;background:#0d1e18;border:1px solid #53694f;padding:12px;margin-top:14px}
+#binch-ah-craft-detail:empty{display:none}
+@media(max-width:650px){.binch-ah-craft-header{grid-template-columns:1fr}#binch-ah-craft-ingredients{grid-template-columns:minmax(0,1.8fr) minmax(70px,.7fr)}}
