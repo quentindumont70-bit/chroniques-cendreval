@@ -26,6 +26,8 @@ jobs:
       - run: npm ci
       - run: npm run typecheck:game
       - run: npm test
+      - name: Tests ciblés Bourse d'Azeroth (FIFO et marchés)
+        run: node --test tests/binch-ah-portfolio.test.mjs
       - name: Contrôles du portail La Binch
         run: node scripts/check-binch.mjs
       - name: Capturer les arbres Forever en lecture seule pour un affichage fiable
