@@ -15,3 +15,11 @@
 .binch-gear-set-list strong{color:#f1d9ac}
 .binch-gear-set-list span{color:#e1aa80;font-size:.72rem}
 @media(max-width:720px){#binch-gear-set-form{grid-template-columns:1fr}.binch-gear-set-controls>*{flex:1}}
+.binch-gear-portability{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 18px;align-items:center;margin-top:15px;padding:13px;border:1px solid #48665c;border-radius:9px;background:linear-gradient(115deg,#102b27,#172c29)}
+.binch-gear-portability strong{color:#f2d49f}
+.binch-gear-portability p{margin:4px 0}
+.binch-gear-portability-actions{display:flex;flex-wrap:wrap;gap:8px}
+#binch-gear-portability-status{grid-column:1/-1;min-height:1.3em;color:#afdbc8}
+#binch-gear-portability-status[role=alert]{color:#ffc9a1}
+.binch-gear-portability button:focus-visible{outline:2px solid #f5d38e;outline-offset:3px}
+@media(max-width:720px){.binch-gear-portability{grid-template-columns:1fr}.binch-gear-portability-actions button{flex:1}}
