@@ -122,14 +122,30 @@ function render(){
  }));
 }
 async function load(){
- try{const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),9000);
-  let result;try{result=await fetch(src,{signal:ctrl.signal,mode:'cors'})}finally{clearTimeout(timer)}
-  if(!result.ok)throw Error('HTTP '+result.status);
-  const data=await result.json();if(!data?.talents?.trees||!Array.isArray(data.talents.trees))throw Error('Format inattendu');
-  dataset=data.talents.trees.filter(x=>['Balance','Feral Combat','Restoration'].includes(x.name)&&Array.isArray(x.talents));
-  if(dataset.length!==3)throw Error('Arbres incomplets');
-  error='';render();
- }catch{error='Le navigateur ne peut pas accéder à la source distante. Le calculateur Forever officiel reste accessible ci-dessous.';render()}
+ const sources=[
+  {url:'./forever-talents-druid.json',kind:'snapshot local GitHub Pages'},
+  {url:src,kind:'export original talentsforever.com'}
+ ];
+ for(const candidate of sources){
+  try{
+   const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),8500);
+   let result;try{result=await fetch(candidate.url,{signal:ctrl.signal,mode:'cors'})}finally{clearTimeout(timer)}
+   if(!result.ok)throw Error('HTTP '+result.status);
+   const data=await result.json();
+   if(!Array.isArray(data?.talents?.trees)||data.talents.trees.length<3)throw Error('Format invalide');
+   const trees=data.talents.trees.filter(x=>['Balance','Feral Combat','Restoration'].includes(x.name)&&Array.isArray(x.talents));
+   if(trees.length!==3||trees.some(t=>t.talents.length<12||t.talents.some(x=>!Number.isInteger(Number(x.row))||!Number.isInteger(Number(x.col)))))throw Error('Arbres incomplets');
+   dataset=trees;
+   error='';
+   const from=candidate.kind+(data.generated?' · données datées du '+data.generated:'');
+   const oldNote=$('binch-specs-trees-source');
+   if(oldNote)oldNote.textContent=from;
+   render();
+   return;
+  }catch{}
+ }
+ error='Le snapshot local et l’export distant sont indisponibles. Ouvre le calculateur Forever pour visualiser les talents ; le guide textuel reste accessible.';
+ render();
 }
 function mount(){
  if($('binch-spec-tree-visual'))return;
