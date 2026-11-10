@@ -65,7 +65,7 @@ function render(){
  const treeHTML=dataset.map(t=>{
  const current=t.talents.reduce((n,x)=>n+(counts.get(t.name+'|'+x.name)||0),0);
  const cells=t.talents.map(x=>{
-  const owned=valid?counts.get(t.name+'|'+x.name)||0:0;
+  const owned=Math.min(Number(x.max)||0,counts.get(t.name+'|'+x.name)||0);
   const coming=next?.tree===t.name&&next?.name===x.name;
   const img=icon(x.icon),safe=esc(x.name),tip=esc((x.desc||[])[Math.max(0,Math.min(x.max-1,owned-1))]||x.desc?.[0]||'');
   return '<button type="button" class="binch-tree-node'+(owned?' has-points':'')+(coming?' is-next':'')+'" style="--tree-row:'+Number(x.row)+';--tree-col:'+Number(x.col)+'" aria-label="'+safe+' : '+owned+'/'+Number(x.max)+' rangs" data-tree-tooltip="'+safe+'" data-tree-description="'+tip+'"><img loading="lazy" alt="" src="'+img+'"><span>'+owned+'/'+Number(x.max)+'</span></button>';
