@@ -1,0 +1,26 @@
+#binch-gm-delegations{padding:clamp(15px,2.4vw,25px);margin:20px 0;background:linear-gradient(138deg,#242526,#1b2931 75%);border:1px solid #8d7151;border-radius:16px;color:#ece2d2;box-shadow:0 10px 22px #0004}
+#binch-gm-delegations>header{margin:0 0 14px}#binch-gm-delegations h2{font:700 1.35rem Cinzel,Georgia,serif;color:#f6d8a0;margin:5px 0}#binch-gm-delegations header p{color:#cbd1cd;max-width:67ch;font-size:.86rem}
+#binch-delegation-form{display:grid;grid-template-columns:2fr 1.1fr 1fr 1fr;gap:10px;padding:14px;background:#14272a;border-radius:12px;border:1px solid #54706d}
+#binch-delegation-form label,.binch-delegation-toolbar label{display:flex;flex-direction:column;gap:5px;font-size:.77rem;color:#ded1b8}
+#binch-delegation-form input,#binch-delegation-form select,#binch-delegation-form textarea,.binch-delegation-toolbar input,.binch-delegation-toolbar select,.binch-delegation-card select{width:100%;box-sizing:border-box;min-width:0;background:#102126;border:1px solid #64776e;border-radius:8px;color:#f4ead6;padding:10px;font:inherit}
+#binch-delegation-form .binch-delegation-wide{grid-column:1/-1}
+#binch-gm-delegations button{border-radius:8px;min-height:39px;border:1px solid #a48d68;background:#3c4e49;color:#f8e9cb;padding:8px 12px;cursor:pointer}
+#binch-delegation-form button{grid-column:1/-1;font-weight:700;background:#6c5337;color:#fff0d0}
+#binch-gm-delegations button:hover{background:#57675d}
+#binch-gm-delegations :is(button,input,select,textarea):focus-visible{outline:3px solid #f5db9b;outline-offset:2px}
+#binch-gm-delegations-summary{padding:10px 0;color:#f1d5a4;font-size:.85rem}
+.binch-delegation-toolbar{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:0 0 12px}
+.binch-delegation-toolbar>input{flex:2 1 165px}.binch-delegation-toolbar>select{flex:1 1 145px}.binch-delegation-toolbar label{flex:1 1 145px}
+#binch-gm-delegations-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:12px}
+.binch-delegation-card{background:#17272b;padding:14px;border:1px solid #52665c;border-radius:12px}
+.binch-delegation-card.is-overdue{border-color:#d8a05b;border-left:4px solid #e2a857}
+.binch-delegation-card header{display:flex;align-items:start;justify-content:space-between;gap:8px}
+.binch-delegation-card h3{font:700 1rem Georgia,serif;color:#f2dfa6;overflow-wrap:anywhere;margin:4px 0}
+.binch-delegation-card header small{color:#d8b990}
+.binch-delegation-card p{font-size:.8rem;color:#b5c8c5;overflow-wrap:anywhere}
+.binch-delegation-card header button{flex:none;min-width:38px}
+.binch-delegation-meta{display:flex;flex-direction:column;gap:6px;font-size:.79rem;color:#d1dfd5;margin:10px 0}
+.binch-delegation-card>label{display:flex;flex-direction:column;gap:5px;font-size:.78rem;margin:12px 0}
+#binch-gm-delegations-message{color:#b7e1ce;min-height:1.25em;font-size:.78rem}
+@media(max-width:900px){#binch-delegation-form{grid-template-columns:1fr 1fr}}
+@media(max-width:550px){#binch-delegation-form{grid-template-columns:1fr}.binch-delegation-toolbar>*{flex:1 1 100%}#binch-gm-delegations-list{grid-template-columns:1fr}}
