@@ -9,8 +9,10 @@ function snapshot(){
  const inv=same&&Array.isArray(last.inventory)?last.inventory:[],cnt=id=>inv.filter(x=>Number(x.id)===id).reduce((n,x)=>n+(Number(x.count)||1),0);
  const xp=same&&last.xp!=null&&last.xp!==''?Number(last.xp):null,xpMax=same&&last.xpMax!=null&&last.xpMax!==''?Number(last.xpMax):null;
  const jobsKey=name.trim().toLowerCase()+'-'+race+'-'+cls,skills=read('grimoire.craft.v1').imports?.[jobsKey]?.skills||{};
+ const market=read('binch.market.v1'),calendar=read('binch.guild.events.v1'),planner=read('binch.guild.planner.v1');
+ const spec=String(d.spec||d.specialization||p.specialization||'').slice(0,60);
  const pinKey='binch.route.pins.v1.'+(name+'-'+race+'-'+cls).toLowerCase().replace(/[^a-z0-9]+/g,'-');
- return {name,race,cls,level:Math.max(1,Math.min(60,Number(d.level)||Number(same?last.level:1)||1)),zone:(same?last.zone:null)||d.zone||'Zone non renseignée',same,updated:same?last.updated:null,xp,xpMax,copper:cnt(2770),stones:cnt(2835),jobs:Object.entries(skills).filter(([k,v])=>k&&Number.isFinite(Number(v))),pins:Object.values(read(pinKey)).filter(i=>i&&i.t).slice(0,5),questLog:same&&Array.isArray(last.questLog)?last.questLog.filter(q=>q&&Number(q.id)>0&&typeof q.title==='string'):[],questLogAPI:same?(last.questLogAPI||'unavailable'):'unavailable',faction:['Tauren','Orc','Troll','MortVivant'].includes(race)?'Horde':['Humain','Nain','Elfe','Gnome'].includes(race)?'Alliance':'Neutre'};
+ return {name,race,cls,spec,market:market?.version===1?market:null,calendar:Array.isArray(calendar)?calendar:[],guildRequests:Array.isArray(planner?.requests)?planner.requests:[],level:Math.max(1,Math.min(60,Number(d.level)||Number(same?last.level:1)||1)),zone:(same?last.zone:null)||d.zone||'Zone non renseignée',same,updated:same?last.updated:null,xp,xpMax,copper:cnt(2770),stones:cnt(2835),jobs:Object.entries(skills).filter(([k,v])=>k&&Number.isFinite(Number(v))),pins:Object.values(read(pinKey)).filter(i=>i&&i.t).slice(0,5),questLog:same&&Array.isArray(last.questLog)?last.questLog.filter(q=>q&&Number(q.id)>0&&typeof q.title==='string'):[],questLogAPI:same?(last.questLogAPI||'unavailable'):'unavailable',faction:['Tauren','Orc','Troll','MortVivant'].includes(race)?'Horde':['Humain','Nain','Elfe','Gnome'].includes(race)?'Alliance':'Neutre'};
 }
 const classMilestones={Druide:[[10,'Forme d’ours'],[16,'Forme aquatique'],[20,'Forme de félin']],Chaman:[[4,'Totem de terre'],[10,'Totem de feu'],[30,'Totem d’air']],Guerrier:[[10,'Posture défensive']],Chasseur:[[10,'Apprivoiser un familier']],Démoniste:[[10,'Marcheur du Vide']],Voleur:[[20,'Poisons']],Paladin:[[12,'Rédemption']]};
 function nearbyZones(p){
@@ -31,6 +33,16 @@ function recommendations(p,goal){
  const suggestions=[];
  function add(priority,title,reason,source,page){if(!suggestions.some(x=>x.title===title))suggestions.push({priority,title,reason,source,page})}
  if(!p.same)add(120,'Importer ton personnage','Sans import de ce personnage, Faith ne peut pas confirmer tes sacs, ton XP ni ta zone actuelle.','Synchronisation non confirmée','sync');
+ // The chosen druid role is manual context, never guessed from the class alone.
+ if(p.cls==='Druide'&&(goal==='class'||goal==='balanced')){
+  const role=p.spec.toLocaleLowerCase('fr');
+  if(/ours|tank|farouche|feral/.test(role))
+   add(113,'Préparer ton équipement tank','Le profil mentionne une orientation farouche/tank. Vérifie tes pièces défensives et ton rôle avant le prochain groupe. Aucun score d’armure n’est calculé sans statistiques fiables.','Spécialisation déclarée · profil manuel','equipment');
+  else if(/soin|restaur|heal/.test(role))
+   add(110,'Préparer tes soins de groupe','Ton profil mentionne une orientation soins. Contrôle sorts, composants et équipement, sans supposer tes talents.','Spécialisation déclarée · profil manuel','equipment');
+  else if(!role)
+   add(87,'Préciser ton rôle de druide','Pour distinguer tank ours, dégâts félin et soins, renseigne ta spécialisation dans le profil. Faith ne déduit pas tes talents.','Spécialisation non renseignée','hub');
+ }
  // Only confirmed quest entries for the same character. No invented NPC, coordinates or turn-in.
  if(p.questLogAPI!=='unavailable'&&p.questLog.length&&(goal==='balanced'||goal==='quick'||goal==='class')){
   const unique=new Map();
@@ -74,6 +86,26 @@ function recommendations(p,goal){
   const ds=nearbyDungeons(p);
   for(const d of ds)add(115,'Préparer '+d.name,'Donjon de niveau indicatif '+d.levels.join('–')+' ('+String(d.zone||'zone à confirmer')+'). Réunir groupe et quêtes préalables.','Atlas des donjons La Binch (indicatif)','progression');
  }
+ if(goal==='guild'||goal==='balanced'){
+  const today=new Date().toISOString().slice(0,10);
+  const upcoming=p.calendar.filter(e=>e&&!e.done&&String(e.date||'')>=today).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  if(upcoming.length){const e=upcoming[0];
+   add(goal==='guild'?119:74,'Sortie de guilde : '+String(e.title||'Rendez-vous').slice(0,70),'Programmée le '+String(e.date||'date à préciser')+(e.time?' à '+e.time:'')+'. Vérifie les inscriptions et le briefing GM : ce sont des déclarations locales.','Calendrier local de guilde','gm');
+  }
+  const urgent=p.guildRequests.filter(r=>r&&!r.closed&&r.priority==='urgent');
+  if(urgent.length)add(goal==='guild'?112:70,'Aider la guilde : '+String(urgent[0].title).slice(0,70),'Demande urgente enregistrée localement. Quantité souhaitée : '+Number(urgent[0].quantity||0)+'. Consulte les contributions avant de promettre du stock.','Guild Planner local','gm');
+  if(goal==='guild'&&!upcoming.length&&!urgent.length)add(50,'Préparer une sortie de guilde','Aucune sortie future ou demande urgente dans les registres locaux visibles. Consulte le calendrier GM.','Registres locaux, non partagés','gm');
+ }
+ if(goal==='market'||goal==='balanced'){
+  const market=p.market,items=market?.prices||[],watch=market?.watch||[];
+  const realm=String(market?.realm||''),faction=String(market?.faction||'');
+  const prices=items.filter(x=>x&&x.realm===realm&&x.faction===faction&&Number.isFinite(Number(x.unit)));
+  if(prices.length){const latest=prices.slice().sort((a,b)=>String(b.time).localeCompare(String(a.time)))[0];
+    add(goal==='market'?118:59,'Comparer le marché : '+String(latest.item||'Objet').slice(0,70),'Dernier prix saisi manuellement : '+Number(latest.unit||0).toLocaleString('fr-FR')+' cuivre par unité. Horodatage : '+String(latest.time||'non renseigné')+'. Ceci n’est pas un cours AH en direct.','Bourse locale · relevé déclaré','market');
+  }
+  if(watch.length)add(goal==='market'?109:55,'Surveiller '+watch.length+' objet(s) AH','Tes seuils sont stockés localement. Une alerte exige un nouveau relevé de prix ; aucune surveillance permanente n’est active.','Watchlist AH locale','market');
+  if(goal==='market'&&!prices.length)add(95,'Créer ton premier relevé AH','La Bourse ne dispose pas encore de cours confirmés pour ce royaume et cette faction. Ajoute une observation horodatée avant tout conseil de marge.','Absence de cours vérifiés','market');
+ }
  if(goal==='craft'||goal==='balanced'){
   if(p.jobs.length)add(goal==='craft'?112:70,'Faire progresser '+p.jobs[0][0],'Compétence '+p.jobs[0][1]+' au dernier import. Consulte les recettes compatibles et leurs matériaux.','Métiers du dernier import','metiers');
   if(p.copper>0||p.stones>0)add(goal==='craft'?100:65,'Exploiter tes ressources',fmt(p.copper)+' minerais de cuivre et '+fmt(p.stones)+' pierres brutes au dernier import : compare avec tes recettes avant de vendre.','Inventaire de la dernière sauvegarde','metiers');
@@ -106,13 +138,13 @@ function paint(){
  const status=$('binch-faith-integrity');if(status){
  const date=p.updated?new Date(p.updated):null,ok=date&&!isNaN(+date);
  const age=ok?Math.round((Date.now()-+date)/60000):null;
- status.textContent='Faith V5 · '+(ok?'Dernier import '+date.toLocaleString('fr-FR')+(age>30?' (données anciennes)':''):'Pas d’import confirmé')+(p.questLogAPI==='unavailable'?' · Journal inconnu':' · Journal exporté : '+p.questLog.length+' quête(s)')+' · Conseils locaux, aucune IA distante.';
+ status.textContent='Faith V6 · '+(ok?'Dernier import '+date.toLocaleString('fr-FR')+(age>30?' (données anciennes)':''):'Pas d’import confirmé')+(p.questLogAPI==='unavailable'?' · Journal inconnu':' · Journal exporté : '+p.questLog.length+' quête(s)')+' · Conseils locaux, aucune IA distante.';
  }
 }
 function mount(){
  const card=$('page-command')?.querySelector('.binch-command-brog');if(!card||$('binch-faith-advisor'))return;
  const box=document.createElement('div');box.id='binch-faith-advisor';
- box.innerHTML='<div class="binch-faith-advisor-head"><h4 id="binch-faith-title">Trois prochaines actions</h4><label>Priorité<select id="binch-faith-goal"><option value="balanced">Progression équilibrée</option><option value="quick">XP rapide</option><option value="craft">Métiers et ressources</option><option value="class">Classe et compétences</option><option value="dungeon">Préparation donjon</option></select></label></div><small id="binch-faith-catalog-count"></small><div id="binch-faith-advice"></div><p id="binch-faith-integrity"></p>';
+ box.innerHTML='<div class="binch-faith-advisor-head"><h4 id="binch-faith-title">Trois prochaines actions</h4><label>Priorité<select id="binch-faith-goal"><option value="balanced">Progression équilibrée</option><option value="quick">XP rapide</option><option value="craft">Métiers et ressources</option><option value="class">Classe et compétences</option><option value="dungeon">Préparation donjon</option><option value="guild">Vie de guilde</option><option value="market">Bourse d’Azeroth</option></select></label></div><small id="binch-faith-catalog-count"></small><div id="binch-faith-advice"></div><p id="binch-faith-integrity"></p>';
  card.append(box);
  const select=$('binch-faith-goal');select.value=localStorage.getItem(KEY)||'balanced';select.addEventListener('change',()=>{localStorage.setItem(KEY,select.value);paint()});
  $('binch-command-refresh')?.addEventListener('click',paint);
