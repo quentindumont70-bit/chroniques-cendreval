@@ -21,3 +21,12 @@
 .binch-gcloud #binch-gcloud-notice{overflow-wrap:anywhere}
 .binch-gcloud [hidden]{display:none!important}
 @media(max-width:750px){.binch-gcloud{padding:13px}.binch-gcloud-columns{grid-template-columns:1fr}.binch-gcloud-columns form{grid-template-columns:1fr}}
+
+.binch-gcloud-lfg{padding:14px;border:1px solid #526b57;border-radius:9px;background:#0f201c;margin:18px 0}
+.binch-gcloud-lfg form{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.binch-gcloud-lfg input,.binch-gcloud-lfg select{flex:1;min-width:120px}
+.binch-gcloud-activity{border-top:1px solid #50634f;padding:12px 0;display:grid;gap:5px}
+.binch-gcloud-activity b{color:#e9d19b}
+.binch-gcloud-activity small{display:block;color:#b6c7b9}
+.binch-gcloud-signup{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+@media(max-width:750px){.binch-gcloud-lfg form>*{width:100%}}
