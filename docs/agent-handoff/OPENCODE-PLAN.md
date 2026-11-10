@@ -95,16 +95,41 @@ de l'utilisateur. Avant chaque chantier : `git fetch origin` puis lire
     erreur, 0 avertissement console ; note ForeverSpec complète rendue avec son lien) ;
     bilan des limites dans MESSAGE-POUR-CHATGPT.md.
 
-12. **À FAIRE (proposition)** — Fiches corpus druide restauration/équilibre, mêmes règles de
-    preuve (sources Icy Veins/ForeverSpec vérifiées vivantes), après arbitrage ChatGPT sur
-    le fichier cible (`data/builds.json` ou nouveau `data/specs.json`) et l'entrée manifest.
+12. **TERMINÉ** — Fiches corpus druide restauration/équilibre (commit `e93eaf7`, poussé) :
+    `public/binch/faith-knowledge/data/druid-other.json`, nouveau fichier comme arbitré par
+    ChatGPT (`ea8dd0b`, sans écraser `data/builds.json`), 27 fiches conformes au
+    `schema-v1.json` — 3 builds (soigneur raid resto 11/0/40, équilibre leveling 41/0/10,
+    équilibre raid sélénien 41/0/10, ordres complets ForeverSpec du 6 nov 2026) + 24 talents
+    resto/équilibre (tooltips de l'export officiel `talentsforever.com/export/druid.json` du
+    4 nov, prérequis vérifiés contre l'export : Croissance sauvage←Esprit vif 3 + 30 pts,
+    Rapidité de la nature←Naturaliste 5, Vengeance←Eclat lunaire amélioré 2,
+    Splendeur←Majesté 2, Rétablissement amélioré←Récupération améliorée 3, Forme de
+    sélénien 30 pts Équilibre). Hotfixs 30 oct/2 nov documentés (Floraison remplace Don de
+    la Terre-mère, Cœur de fauve venu du farouche, Renvoi/Discrétion échangées, Naturaliste
+    accélère Croissance sauvage 3 s, Prompte guérison sur ses seuls HoT). Écarts entre
+    sources en `notes` (Croissance sauvage 280/7 s export vs 679/7 s grimoire client niveau 40 ;
+    Forme de sélénien jalon 40 Icy Veins vs prise au 42 ForeverSpec). Sources re-vérifiées
+    vivantes le 10 nov (Icy Veins Voulk 4 nov resto/balance leveling ; ForeverSpec 6 nov,
+    client 1.60.1.70790). Validation Node réelle : `validator.js` ok (27/27/3 sur
+    druid-other/builds/core), 57 ids uniques sur le corpus combiné, 14 requêtes positives
+    correctes via `search.js` (dont restauration/équilibre), 5 contre-exemples hors corpus
+    → `found:false`, citations HTTPS datées. Titre de la fiche Éclipse enrichi d'un fait
+    sourcé (« Colère accélère vos Feux stellaires ») pour la retrouver devant Feu stellaire
+    amélioré sur cette requête. Entrée `manifest.json` à ajouter par ChatGPT à la
+    réconciliation (documentée dans MESSAGE-POUR-CHATGPT.md).
 
 13. **À FAIRE (proposition)** — Itinéraires de leveling multi-classes sourcés (hub leveling
     Icy Veins Forever) pour les cartes non druides de l'onglet Specs, aujourd'hui sans ordre
     certifié.
 
-14. **À FAIRE (proposition)** — Exécuter l'option retenue par ChatGPT pour l'architecture
-    Bourse (chantier 9) si un arbitrage paraît dans CHATGPT-STATUS.md.
+14. **À FAIRE (redéfini)** — Bourse : ChatGPT a livré le pont de lecture `market-bridge.js`
+    sur `main` (statut du 10 nov : `e8034c72` pont en lecture seule, `6b35a28a` repli de
+    Faith vers `binch.market.v1`, `5ff58169` chargement dans `index.html`) — OpenCode ne le
+    réimplémente pas et ne touche ni `market-bridge.js`, ni `faith-dialogue.js`, ni les
+    fichiers modifiés par ChatGPT. Reste possible pour OpenCode si la session le permet :
+    cas de tests Node en lecture seule du pont (relevés exacts, filtrage faction, refus de
+    portée indéfinie, recherche par objet) et documentation des consommateurs restants
+    (craft, stratège).
 
 ## Notes de garde-fou
 

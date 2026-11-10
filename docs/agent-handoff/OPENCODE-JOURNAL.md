@@ -3,6 +3,80 @@
 Journal des réalisations d'OpenCode. Une entrée par lot de travail : contenu, commits, tests,
 difficultés, décisions.
 
+## 2026-11-10 — Lot 5 : corpus Faith `data/druid-other.json` (chantier 12)
+
+### Réalisé
+- `public/binch/faith-knowledge/data/druid-other.json` (commit `e93eaf7`) : 27 fiches dans
+  le nouveau fichier arbitré par ChatGPT (`ea8dd0b`), sans toucher `data/builds.json` ni
+  aucun fichier existant du corpus. `scope=forever`, `verification=verifie`, sources
+  limitées aux URLs re-vérifiées vivantes le 10 nov (Icy Veins resto/équilibre leveling,
+  Voulk 4 nov ; ForeverSpec resto/balance 6 nov, client 1.60.1.70790 ; export officiel
+  `talentsforever.com/export/druid.json` CC BY 4.0 du 4 nov).
+  - 3 fiches `build` : soigneur raid restauration 11/0/40 (ordre complet ForeverSpec du
+    6 nov, pilier Esprit : Renvoi/Esprit vif/Floraison) ; équilibre leveling 41/0/10
+    (Colère bon marché, DoT, Forme de sélénien au 42) ; équilibre raid 41/0/10 (aura
+    sélénien 3 % critique, Feu stellaire à 2,5 s avec Éclipse).
+  - 24 fiches `talent` resto/équilibre : tooltips officiels rang par rang (valeurs
+    exactes), prérequis vérifiés contre l'export (Croissance sauvage←Esprit vif 3 + 30 pts
+    resto, Rapidité de la nature←Naturaliste 5, Vengeance←Eclat lunaire amélioré 2,
+    Splendeur←Majesté 2, Rétablissement amélioré←Récupération améliorée 3, Forme de
+    sélénien 30 pts Équilibre), présence dans chaque build, hotfixs 30 oct/2 nov
+    documentés (Floraison remplace Don de la Terre-mère, Cœur de fauve venu du farouche,
+    Renvoi/Discrétion échangées, Naturaliste accélère Croissance sauvage 3 s, Prompte
+    guérison sur ses seuls HoT).
+- 3 corrections de rigueur avant validation (ne rien affirmer hors sources) : Fureur
+  lunaire, Feu stellaire amélioré et Essaim d'insectes ramenés aux comparaisons
+  documentées ForeverSpec/export plutôt qu'à mes inférences Classic.
+- Summaries des 3 fiches build raccourcies sous la limite de 1200 caractères du
+  validateur (1256/1244/1292 → sous limite après retraits chirurgicaux, faits sourcés
+  conservés).
+- Titre de la fiche Éclipse enrichi d'un fait sourcé (« Colère accélère vos Feux
+  stellaires ») : la requête « éclipse feu stellaire » renvoyait Feu stellaire amélioré
+  (titre = 5 points/terme dans le moteur) ; Éclipse retrouve la première place sans
+  toucher au moteur.
+- `test-builds-corpus.mjs` étendu au corpus 3 fichiers (validateur ×3, 57 ids uniques,
+  14 requêtes positives dont 9 nouvelles resto/équilibre, 5 contre-exemples, contrôle
+  citations).
+
+### Commits
+- `e93eaf7` feat(binch): add sourced druid resto and balance corpus (data/druid-other.json)
+  (poussé sur `origin/opencode-golipette`).
+- To Do officielle : entrée « Livraison OpenCode — corpus druid-other.json » ajoutée au
+  dépôt `quentindumont70-bit/WoW-Forever-Grimoire` (clone local `grimoire-todo`).
+
+### Tests
+- Node réel (v24.18.1), validateur/moteur extraits d'`origin/main` :
+  `validator.check()` → druid-other `{"ok":true,"errors":[],"count":27}` ; builds `27` ;
+  core `3` non régressé ; 57 ids uniques sur corpus combiné ; 14 requêtes positives
+  correctes (dont « build soigneur restauration raid », « croissance sauvage »,
+  « floraison esprit », « build druide équilibre leveling », « forme de sélénien »,
+  « éclipse feu stellaire », « prompte guérison », « colère améliorée mana ») ;
+  5 contre-exemples hors corpus (« ragnaros », « épée du berserker », « quête du val des
+  tempêtes », « recette alchimie flask », « chaman élémentaire ») → `found:false` (refus
+  d'invention) ; citations HTTPS datées renvoyées.
+- `node scripts/check-binch.mjs` : 67 scripts, 0 erreur, 1 avertissement (LFG Supabase —
+  préexistant). Aucun `.js` modifié ce lot.
+
+### Difficultés
+- Premier passage : les summaries des 3 fiches build dépassaient la limite de 1200
+  caractères du validateur (détecté par le test étendu) — retraits chirurgicaux, faits
+  sourcés conservés.
+- Requête « éclipse feu stellaire » : le moteur score le titre (5 pts/terme) et « Feu
+  stellaire amélioré » battait « Éclipse » d'un point. Corrigé côté corpus (titre Éclipse
+  enrichi d'un fait sourcé), pas côté moteur (domaine ChatGPT).
+
+### Décisions
+- Contribution limitée au seul nouveau fichier `data/druid-other.json` (arbitrage
+  `ea8dd0b`) ; entrée `manifest.json` laissée à ChatGPT à la réconciliation.
+- Export officiel talentsforever préféré en cas d'écart ; écart Croissance sauvage
+  (280/7 s dans l'infobulle export vs 679/7 s dans le grimoire client niveau 40 relevé
+  par ForeverSpec) documenté en `notes` sans trancher.
+- Lecture du CHATGPT-STATUS `8052937` avant livraison : mes 27 fiches `builds.json` ont
+  été copiées sur `main` par ChatGPT (catalogue 30 fiches) — rien à refaire ; le pont
+  Bourse `market-bridge.js` est livré par ChatGPT — OpenCode ne le touche pas et ne
+  réimplémente pas les correctifs adoptés (gear-sets, ah-craft) ; consignes `index.html`
+  (versions de cache et scripts ChatGPT à préserver) notées pour la réconciliation.
+
 ## 2026-11-10 — Lot 4 : corpus Faith `data/builds.json` (chantier 7) + revue finale (chantier 11)
 
 ### Réalisé
