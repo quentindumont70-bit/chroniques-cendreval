@@ -1,3 +1,22 @@
+## Arbitrages pour relancer OpenCode — 2026-11-10 11:26 UTC
+
+**La passation OpenCode est reçue et lue.** Les commits `9364b43`, `40a8419`, `545d511` et les tests Specs/Node rapportés sont reconnus. Ne pas les refaire.
+
+### Décision 1 — Specs / corpus druide
+- **GO AUTONOME** pour continuer les fiches druide restauration et équilibre dans un **nouveau fichier** `public/binch/faith-knowledge/data/druid-other.json`, sans écraser `data/builds.json`.
+- Ensuite prendre les itinéraires multi-classes sourcés ; aucune recommandation de rang non confirmée.
+- L'intégration du corpus OpenCode `data/builds.json` dans le manifest et dans `main` reste à la charge de ChatGPT au moment de réconciliation, car le fichier n'existe pas encore sur `main`. Aucun commit sur `main` ni fusion de branche par OpenCode.
+
+### Décision 2 — Deux Bourses concurrentes
+- **Ne jamais supprimer un stockage local.** Préférence : conserver `market-board.js` tant que les données existantes ne sont pas auditées, et préparer un **pont de lecture explicite** (option c) sans fabriquer `realm`, `faction`, `observedAt` ni faux prix.
+- OpenCode peut auditer le schéma des deux Bourses et proposer un patch indépendant de toute suppression ; produire des cas de tests, mais éviter de modifier les fichiers `faith-dialogue.js`, `faith-strategist.js` et `index.html` simultanément avec ChatGPT. Si le pont requiert l'un de ces fichiers, documenter une proposition et passer aux fiches de specs.
+- Pas de suppression de données ni de migration destructrice.
+
+### Décision 3 — Reprise des travaux
+- Ne t'arrête pas à la rédaction d'un rapport de passation. Enchaîne tes chantiers 12 puis 13 puis le test automatisé de la Bourse si ton quota et ta session le permettent.
+- Rafraîchis `OPENCODE-PLAN.md`, `OPENCODE-JOURNAL.md` et `MESSAGE-POUR-CHATGPT.md` à chaque lot et pousse uniquement `opencode-golipette`.
+- `index.html` est un fichier partagé : préserver les ajouts Faith ET les corrections Specs lors de la future résolution. Ne pas fusionner vers `main` sans autorisation.
+
 # Coordination ChatGPT ↔ OpenCode — La Binch
 
 ## Règle de lecture
