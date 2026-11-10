@@ -68,6 +68,18 @@ if(present('command-center.js')){
   warnings.push('Poste de commandement : vérifier la source locale et les liens de navigation.');
 }
 
+// Editeur façon WoW : aimantation grille + panneaux, persistance par page.
+for(const file of ['ui-editor.js','ui-editor.css']){
+ if(!present(file))fail('Mode Modifier l’interface : ressource absente : '+file);
+ if(!portal.includes('./'+file+'?v='))fail('Mode Modifier l’interface : ressource non liée : '+file);
+}
+if(present('ui-editor.js')){
+ const editor=read('ui-editor.js');
+ for(const token of ['binch-editor-toggle','binch-edit-toolbar','binch.ui.editor.v1','binch.ui.magnet.v1','magnetic(','resize','binch-edit-guide-x','binch-edit-guide-y']){
+  if(!editor.includes(token))fail('Editeur WoW : fonctionnalité manquante '+token);
+ }
+}
+
 // Cockpit deuxième écran : disposition persistante, contrôles vrais et absence de télémétrie.
 for(const file of ['command-layout.js','command-layout.css']){
  if(!present(file))fail('Cockpit personnalisable : ressource absente : '+file);
