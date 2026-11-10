@@ -1,0 +1,18 @@
+#binch-faith-dialogue{margin:15px 0;border:1px solid #866ca0;border-radius:13px;padding:12px;background:radial-gradient(circle at 100% 0,#593c7752,transparent 60%),linear-gradient(125deg,#222639,#18252d);color:#ece4f5}
+#binch-faith-dialogue summary{font:700 1.02rem Cinzel,Georgia,serif;color:#f0d6ff;cursor:pointer;padding:9px;list-style:disclosure-closed}
+#binch-faith-talk[open] summary{list-style:disclosure-open}
+#binch-faith-talk>p{font-size:.82rem;color:#bec8d4;margin:8px 4px 12px}
+#binch-faith-dialogue-history{max-height:330px;min-height:80px;overflow-y:auto;overscroll-behavior:contain;padding:10px;border-radius:10px;background:#101a28;border:1px solid #4c506e;display:flex;flex-direction:column;gap:9px}
+#binch-faith-dialogue-history .faith-line{max-width:90%;padding:11px 13px;border-radius:10px;font-size:.84rem;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+#binch-faith-dialogue-history .faith-user{align-self:flex-end;background:#354458;border:1px solid #768ba1;color:#e0effa}
+#binch-faith-dialogue-history .faith-faith{align-self:flex-start;background:#382d48;border:1px solid #917ca3;color:#f5e6fc}
+#binch-faith-dialogue-form{display:grid;grid-template-columns:1fr auto;align-items:end;gap:9px;margin:12px 0}
+#binch-faith-dialogue-form label{grid-column:1/-1;color:#d8c8ef;font-size:.78rem}
+#binch-faith-dialogue-form input{min-width:0;border:1px solid #9278ae;border-radius:8px;background:#101e2b;color:#f0ebff;padding:11px}
+#binch-faith-dialogue button{border:1px solid #a18bb7;border-radius:8px;background:#403b56;color:#f1defb;padding:9px 12px;min-height:40px;cursor:pointer}
+#binch-faith-dialogue button:hover{background:#574d71}
+#binch-faith-dialogue :is(input,button,summary):focus-visible{outline:3px solid #ebd1fe;outline-offset:3px}
+.binch-faith-dialogue-actions{display:flex;flex-wrap:wrap;gap:7px}
+#binch-faith-dialogue-state{display:block;margin-top:9px;color:#b2bdd0}
+@media(max-width:520px){#binch-faith-dialogue-form{grid-template-columns:1fr}#binch-faith-dialogue-history .faith-line{max-width:100%}}
+@media(prefers-reduced-motion:reduce){#binch-faith-dialogue *{scroll-behavior:auto!important;animation:none!important}}
