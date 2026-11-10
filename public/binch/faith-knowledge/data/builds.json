@@ -1,0 +1,480 @@
+[
+  {
+    "id": "build:druid-feral-leveling-icy-veins",
+    "topic": "build",
+    "title": "Druide farouche — itinéraire de leveling 51 points du niveau 10 au 60 (final 9/32/10)",
+    "summary": "Itinéraire de leveling druide farouche publié par le guide Icy Veins Forever (Meyra, 4 nov 2026) et décodé point par point depuis le lien du calculateur officiel du guide. Niveaux 10 à 19 en ours : Férocité, Instinct farouche, Célérité farouche. Niveau 20 : Charge farouche, puis passage au félin avec Furie sauvage, Griffes aiguisées, Lacérer, Frénésie sanglante et Predatory Discipline. Frappes de prédateur est prise au niveau 29 puis complétée aux niveaux 33 et 34 : l’ordre officiel n’est pas contigu, Chef de la meute (30) et Instinct naturel (31–32) s’intercalent. Suivent Pourfendre et déchirer (35–39), Morsure primordiale (40) puis Puissance fluctuante (41). Niveaux 42 à 51 en Restauration : Cœur de fauve puis Naturaliste. Niveaux 52 à 60 en Équilibre : Genèse, Allonge de la Nature, Majesté de la nature. Distribution finale au niveau 60 : 9 Équilibre / 32 Combat farouche / 10 Restauration, soit 51 points. Sur Talents Forever, 58 % des itinéraires druides d’au moins 41 points mènent en Combat farouche.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "levelMin": 10,
+    "levelMax": 60,
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://talentsforever.com/druid/builds", "label": "Talents Forever — builds druides les plus planifiés", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "leveling", "build", "itinéraire", "pex", "talents", "9-32-10", "icy-veins", "guide"],
+    "notes": "Frappes de prédateur aux niveaux 29 puis 33–34 : fidèle à l’ordre du build officiel, sans interpolation. Noms français relevés dans le client Forever 1.60.1.70790 (via ForeverSpec). La variante de leveling ForeverSpec (6 nov 2026) aboutit en 9/37/5 avec les mêmes jalons (félin au 20, Chef de la meute au 30, Pourfendre et déchirer 35–39, Puissance fluctuante au 40) mais un ordre différent : Peau épaisse, Célérité farouche, Fureur, Attaques lacérantes, Frappes de prédateur contiguës, Charge farouche au 33, et sans Instinct farouche, Lacérer, Morsure primordiale ni Naturaliste.",
+    "author": "OpenCode"
+  },
+  {
+    "id": "build:druid-feral-raid-cat-60",
+    "topic": "build",
+    "title": "Druide farouche — build DPS félin de raid au niveau 60 (9/32/10)",
+    "summary": "Build de raid DPS félin au niveau 60 publié par ForeverSpec (6 nov 2026) : 9 Équilibre / 32 Combat farouche / 10 Restauration. Ordre proposé : Férocité (10–14), Fureur (15–19), Furie sauvage (20–21), Griffes aiguisées (22–23), Attaques lacérantes (24–26), Frappes de prédateur (27–29), Frénésie sanglante (30–31), Chef de la meute (32), Predatory Discipline (33), Instinct naturel (34–35), Pourfendre et déchirer (36–40), Puissance fluctuante (41), Genèse (42–46), Majesté de la nature (47–48), Allonge de la Nature (49–50), Cœur de fauve (51–55), Naturaliste (56–60). Il abandonne les talents de confort du leveling (Peau épaisse, Célérité farouche, Charge farouche, Lacérer, Morsure primordiale) pour le critique et le toucher d’Équilibre. Le toucher compte contre les boss de raid ; le mana borne les combats longs car chaque Puissance fluctuante convertit 55 % du mana de base. Même distribution finale que l’itinéraire de leveling Icy Veins, avec un ordre différent. Théorique jusqu’à l’ouverture des raids le 9 décembre 2026 : aucun build n’y a encore été testé.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "levelMin": 60,
+    "levelMax": 60,
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://talentsforever.com/druid/builds", "label": "Talents Forever — builds druides les plus planifiés", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "build", "raid", "dps", "félin", "niveau 60", "9-32-10", "foreverspec"],
+    "notes": "Source de l’ordre : ForeverSpec (onglet « Raid (DPS félin) », 6 nov 2026), fondé sur les fichiers du client 1.60.1.70790 et l’export talentsforever du 4 nov. Alternative documentée : Changeforme naturel 3 (coût des métamorphoses −30 %, donc Puissance fluctuante moins chère) à la place de 3 points de Naturaliste si le mana manque. ForeverSpec vise environ 9 % de toucher contre les boss.",
+    "author": "OpenCode"
+  },
+  {
+    "id": "build:druid-feral-bear-tank-60",
+    "topic": "build",
+    "title": "Druide farouche — build tank ours au niveau 60 (0/41/10)",
+    "summary": "Build tank ours au niveau 60 publié par ForeverSpec (6 nov 2026) : 0 Équilibre / 41 Combat farouche / 10 Restauration. Ordre proposé : Férocité, Peau épaisse, Instinct farouche, Célérité farouche, Furie sauvage, Griffes aiguisées, Charge farouche (27), Frappes de prédateur (28–30), Lacérer (31), Frénésie sanglante, Chef de la meute (34), Instinct naturel (35–36), Réaction naturelle (37–41), Pourfendre et déchirer (42–46), Morsure primordiale (47), Fureur (48–50), Cœur de fauve (51–55), Naturaliste (56–60). Réaction naturelle au rang 5 : +5 % d’esquive et 100 % de chances de gagner 5 Rage par esquive. Lacérer et Morsure primordiale portent la menace, le saignement de Lacérer active Pourfendre et déchirer, et Cœur de fauve ajoute 20 % d’Endurance en ours. Depuis les notes de développement du 2 novembre, la menace en ours passe de 50 % à 115 % (Bénédiction de Salut supprimée) : le druide tank vise les donjons et l’off-tank. Théorique jusqu’à l’ouverture des raids le 9 décembre 2026.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "levelMin": 60,
+    "levelMax": 60,
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://talentsforever.com/druid/builds", "label": "Talents Forever — builds druides les plus planifiés", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "ours", "tank", "build", "raid", "0-41-10", "menace", "foreverspec"],
+    "notes": "Alternatives ForeverSpec : Impact brutal 2 (recharge de Sonner réduite de 30 s) au lieu de 2 points de Fureur ; Attaques lacérantes 3 au lieu de Célérité farouche et d’un point de Fureur si la Rage manque. Le build tank le plus planifié sur Talents Forever est 9/36/5 (Genèse, Majesté et Allonge en Équilibre, Cœur de fauve en Restauration), qui sacrifie Naturaliste pour 4 % de critique et 4 % de toucher. Une attaque de menace qui rate ne génère aucune menace : le toucher compte.",
+    "author": "OpenCode"
+  },
+  {
+    "id": "talent:druid-ferocity",
+    "topic": "talent",
+    "title": "Férocité (Ferocity) — talent druide Combat farouche",
+    "summary": "Cinq rangs en première rangée de Combat farouche. Chaque rang réduit de 1 le coût en Rage ou en Énergie de Mutiler, Morsure primordiale, Balayage, Griffe et Griffure (réduction de 5 au rang 5). Différence Forever par rapport au Classic : la liste inclut Morsure primordiale, capacité propre au serveur. Premier talent de tous les builds farouches documentés : itinéraire de leveling Icy Veins (10–14), variante ForeverSpec (10–14), build DPS raid (10–14), build tank ours (10–14).",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "férocité", "ferocity", "coût", "rage", "énergie", "leveling"]
+  },
+  {
+    "id": "talent:druid-furor",
+    "topic": "talent",
+    "title": "Fureur (Furor) — talent druide Combat farouche",
+    "summary": "Cinq rangs en Combat farouche ; Classic plaçait ce talent en Restauration. Au rang 5 : 100 % de chances de gagner 10 Rage en prenant une forme d’ours ou d’ours redoutable, et le passage en félin restaure 100 % de l’Énergie conservée à la dernière sortie de félin, plus 10 Énergie par seconde passée hors des formes d’ours (jusqu’à 100). Il rend les allers-retours de forme peu coûteux. Pris au niveau 19 puis aux niveaux 43–46 de la variante ForeverSpec, en ouverture du build DPS raid (15–19) et aux niveaux 48–50 du build tank ; absent de l’itinéraire Icy Veins.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "fureur", "furor", "énergie", "rage", "métamorphose", "changeforme"]
+  },
+  {
+    "id": "talent:druid-feral-instinct",
+    "topic": "talent",
+    "title": "Instinct farouche (Feral Instinct) — talent druide Combat farouche",
+    "summary": "Trois rangs en Combat farouche (2e rangée). Au rang 3 : +30 % aux dégâts de Balayage, et en Rôder le druide est plus difficile à repérer, comme s’il avait 3 niveaux de plus. En Classic ce talent générait de la menace d’ours : Forever le transforme en gain de dégâts sur Balayage. Pris aux niveaux 15–17 de l’itinéraire Icy Veins et aux niveaux 18–20 du build tank ours ; ForeverSpec propose de l’échanger contre Peau épaisse en leveling.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "instinct farouche", "feral instinct", "balayage", "rôder", "discrétion"],
+    "notes": "Écart entre sources : le tableau « Changements vs Classic » de ForeverSpec (6 nov 2026) affiche +3 % et 0,6 niveau par rang, tandis que l’export officiel talentsforever (4 nov, avec les hotfixes du 3 nov) donne 10/20/30 % et 1 à 3 niveaux. Fiche établie sur l’export officiel.",
+    "author": "OpenCode"
+  },
+  {
+    "id": "talent:druid-feral-swiftness",
+    "topic": "talent",
+    "title": "Célérité farouche (Feral Swiftness) — talent druide Combat farouche",
+    "summary": "Deux rangs en Combat farouche (2e rangée). Au rang 2 : +30 % de vitesse de déplacement en Forme de félin et +4 % de chances d’esquive. En Classic ce talent (nommé Feline Swiftness) ne donnait la vitesse qu’en extérieur : Forever retire cette restriction. Pris aux niveaux 18–19 de l’itinéraire Icy Veins, juste avant l’arrivée du félin au niveau 20, et aux niveaux 21–22 du build tank ours ; absent du build DPS raid.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "célérité farouche", "feral swiftness", "vitesse", "esquive"]
+  },
+  {
+    "id": "talent:druid-thick-hide",
+    "topic": "talent",
+    "title": "Peau épaisse (Thick Hide) — talent druide Combat farouche",
+    "summary": "Trois rangs en Combat farouche (2e rangée), remanié par rapport au Classic (qui augmentait simplement l’armure des objets). Version Forever : en forme d’ours, d’ours redoutable, de félin ou de sélénien, +3 points d’armure de base par niveau au rang 3, plus 2 points d’armure de base par point de compétence de défense au-delà de cinq fois le niveau ; ce montant est encore amplifié par les multiplicateurs d’armure des formes. Pris aux niveaux 15–16 de la variante ForeverSpec et 15–17 du build tank ours ; absent de l’itinéraire Icy Veins.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "peau épaisse", "thick hide", "armure", "défense", "ours", "tank"]
+  },
+  {
+    "id": "talent:druid-shredding-attacks",
+    "topic": "talent",
+    "title": "Attaques lacérantes (Shredding Attacks) — talent druide Combat farouche",
+    "summary": "Trois rangs en Combat farouche (3e rangée) ; en Classic ce talent s’appelait Lambeau amélioré et n’avait que deux rangs. Au rang 3 : coût en Énergie de Lambeau réduit de 18, et coût en Rage de Lacérer réduit de 3. Présent dans la variante de leveling ForeverSpec et le build DPS raid (24–26 dans les deux) ; l’itinéraire Icy Veins lui préfère Griffes aiguisées puis Lacérer.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "attaques lacérantes", "shredding attacks", "lambeau", "shred", "énergie", "rage"]
+  },
+  {
+    "id": "talent:druid-savage-fury",
+    "topic": "talent",
+    "title": "Furie sauvage (Savage Fury) — talent druide Combat farouche",
+    "summary": "Deux rangs en Combat farouche (3e rangée). Au rang 2 : +10 % aux dégâts de Griffe, Griffure, Lambeau, Mutiler et Balayage selon l’export officiel du 4 novembre 2026 — Lambeau (Shred) entre dans la liste par rapport au Classic. Prérequis de Lacérer. Pris aux niveaux 21–22 de l’itinéraire Icy Veins, 20–21 chez ForeverSpec et 23–24 dans le build tank ours.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "furie sauvage", "savage fury", "dégâts", "griffe", "lambeau"],
+    "notes": "Écart entre sources : le tableau « Changements vs Classic » de ForeverSpec (6 nov 2026) indique +20 % au rang maximum ; l’export officiel talentsforever (4 nov, hotfixes du 3 nov) indique +10 %. Fiche établie sur l’export officiel.",
+    "author": "OpenCode"
+  },
+  {
+    "id": "talent:druid-feral-charge",
+    "topic": "talent",
+    "title": "Charge farouche (Feral Charge) — talent druide Combat farouche",
+    "summary": "Talent à 1 point (3e rangée). Version ours : pour 5 Rage, charge un ennemi à 8–25 mètres, l’immobilise et interrompt son incantation pendant 4 secondes (recharge 15 s). Version félin : bondit derrière l’ennemi (recharge 30 s). Pris au niveau 20 de l’itinéraire Icy Veins, au 33 de la variante ForeverSpec et au 27 du build tank ours ; le build DPS raid s’en passe (talent de confort).",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "charge farouche", "feral charge", "interrompre", "immobiliser", "bond"]
+  },
+  {
+    "id": "talent:druid-sharpened-claws",
+    "topic": "talent",
+    "title": "Griffes aiguisées (Sharpened Claws) — talent druide Combat farouche",
+    "summary": "Deux rangs en Combat farouche (3e rangée) : +3 % de chances de coup critique en formes d’ours et de félin au rang 1, +6 % au rang 2 (Classic montait à trois rangs de 2 %). Le critique paie deux fois chez le farouche : Frénésie sanglante ajoute un point de combo sur les critiques, et Instinct naturel augmente le bonus de dégâts critiques. Pris aux niveaux 23–24 de l’itinéraire Icy Veins, 22–23 chez ForeverSpec et 25–26 dans le build tank ours.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "griffes aiguisées", "sharpened claws", "critique"]
+  },
+  {
+    "id": "talent:druid-lacerate",
+    "topic": "talent",
+    "title": "Lacérer (Lacerate) — talent druide Combat farouche",
+    "summary": "Talent à 1 point (4e rangée), exige Furie sauvage ; capacité absente de Classic Era, ajoutée par Forever comme talent. Attaque d’ours pour 15 Rage (mêlée, instantanée) : saignement de 20 dégâts sur 15 secondes, augmenté de 10 % des dégâts d’arme par application de Lacérer déjà présente sur la cible, cumulable 5 fois, avec une forte menace. Socle de la menace d’ours du build tank 0/41/10 (pris au niveau 31) ; le saignement obtenu active Pourfendre et déchirer. L’itinéraire Icy Veins le prend au niveau 25.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "lacérer", "lacerate", "saignement", "ours", "menace", "tank"]
+  },
+  {
+    "id": "talent:druid-blood-frenzy",
+    "topic": "talent",
+    "title": "Frénésie sanglante (Blood Frenzy) — talent druide Combat farouche",
+    "summary": "Deux rangs en Combat farouche (4e rangée), exige Griffes aiguisées. Au rang 2 : 100 % de chances de gagner 5 Rage supplémentaires sur chaque coup critique en forme d’ours, et les coups critiques non périodiques des capacités félines qui génèrent des points de combo ont 100 % de chances d’ajouter un point de combo supplémentaire. Forever fusionne ici la Frénésie sanglante de Classic et sa Fureur primordiale (Rage sur critique d’ours). Pris aux niveaux 26–27 de l’itinéraire Icy Veins et dans tous les builds farouches documentés.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "frénésie sanglante", "blood frenzy", "point de combo", "rage", "critique"]
+  },
+  {
+    "id": "talent:druid-predatory-discipline",
+    "topic": "talent",
+    "title": "Predatory Discipline — talent druide Combat farouche",
+    "summary": "Talent à 1 point (4e rangée), propre à WoW Forever. Modifie Morsure féroce : elle ne convertit plus l’Énergie excédentaire en dégâts, mais en tire toujours des dégâts supplémentaires. C’est le prérequis de Puissance fluctuante. Le nom n’est pas traduit dans le client français 1.60.1.70790. Pris au niveau 28 de l’itinéraire Icy Veins, au 33 du build DPS raid ForeverSpec et au 34 de sa variante de leveling.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "predatory discipline", "morsure féroce", "ferocious bite", "prérequis"],
+    "notes": "Une révision antérieure des données d’arbre l’affichait « Requires Mage » (coquille corrigée en « Requires Druid » dans la révision suivante) ; l’export du 4 nov 2026 est propre.",
+    "author": "OpenCode"
+  },
+  {
+    "id": "talent:druid-predatory-strikes",
+    "topic": "talent",
+    "title": "Frappes de prédateur (Predatory Strikes) — talent druide Combat farouche",
+    "summary": "Trois rangs en Combat farouche (4e rangée). Chaque rang ajoute 50 % du niveau du personnage en puissance d’attaque de mêlée en formes de félin, d’ours et d’ours redoutable : +150 % du niveau au rang 3, soit +90 puissance d’attaque au niveau 60 et +45 au niveau 30. Dans l’itinéraire Icy Veins, le rang 1 est pris au niveau 29 et les rangs 2 et 3 aux niveaux 33–34 (ordre officiel non contigu : Chef de la meute au 30 et Instinct naturel au 31–32 s’intercalent) ; la variante ForeverSpec la prend en bloc aux niveaux 27–29. Prérequis de Pourfendre et déchirer.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "frappes de prédateur", "predatory strikes", "puissance d’attaque", "félin"]
+  },
+  {
+    "id": "talent:druid-leader-of-the-pack",
+    "topic": "talent",
+    "title": "Chef de la meute (Leader of the Pack) — talent druide Combat farouche",
+    "summary": "Talent à 1 point (5e rangée). En forme de félin, d’ours ou d’ours redoutable, le Chef de la meute augmente de 3 % les chances de coup critique de tous les membres du groupe ou du raid dans un rayon de 45 mètres. Différence Forever notable : le texte Classic ne parlait que du groupe ; l’aura couvre ici le raid entier. Pris au niveau 30 de l’itinéraire Icy Veins (ForeverSpec : 30 en leveling, 32 en raid, 34 en tank) ; présent dans tous les builds farouches documentés. Prérequis de Morsure primordiale.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "chef de la meute", "leader of the pack", "critique", "aura", "raid", "buff"]
+  },
+  {
+    "id": "talent:druid-natural-instinct",
+    "topic": "talent",
+    "title": "Instinct naturel (Natural Instinct) — talent druide Combat farouche",
+    "summary": "Deux rangs en Combat farouche (5e rangée), propre à Forever. Au rang 2 : +20 % au bonus de dégâts des coups critiques des capacités de mêlée, et les soins augmentés de 25 % de l’Intelligence. Pris aux niveaux 31–32 de l’itinéraire Icy Veins, 41–42 de la variante ForeverSpec, 34–35 du build DPS raid et 35–36 du build tank ours.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "instinct naturel", "natural instinct", "coups critiques", "soins"]
+  },
+  {
+    "id": "talent:druid-rend-and-tear",
+    "topic": "talent",
+    "title": "Pourfendre et déchirer (Rend and Tear) — talent druide Combat farouche",
+    "summary": "Cinq rangs en Combat farouche (6e rangée), exige Frappes de prédateur. Au rang 5 : +15 % aux dégâts des capacités de mêlée sur les cibles qui saignent. Pilier du farouche Forever : synergie avec les saignements de Griffure et Déchirure (félin) et de Lacérer (ours). Pris aux niveaux 35–39 de l’itinéraire Icy Veins, 36–40 du build DPS raid et 42–46 du build tank ; ForeverSpec le qualifie de gros saut du leveling. L’export officiel signale une passe de hotfix du 3 novembre 2026 sur ce talent.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "pourfendre et déchirer", "rend and tear", "saignement", "dégâts"]
+  },
+  {
+    "id": "talent:druid-natural-reaction",
+    "topic": "talent",
+    "title": "Réaction naturelle (Natural Reaction) — talent druide Combat farouche",
+    "summary": "Cinq rangs en Combat farouche (6e rangée), propre à Forever. Au rang 5 : +5 % de chances d’esquive et 100 % de chances de gagner 5 Rage à chaque esquive. Pilier défensif du build tank ours 0/41/10 (pris aux niveaux 37–41) : la Rage des esquives alimente Lacérer et Morsure primordiale. Absent des builds félin.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "réaction naturelle", "natural reaction", "esquive", "rage", "ours", "tank"]
+  },
+  {
+    "id": "talent:druid-primal-bite",
+    "topic": "talent",
+    "title": "Morsure primordiale (Primal Bite) — talent druide Combat farouche",
+    "summary": "Talent à 1 point (7e rangée), exige Chef de la meute ; capacité propre à WoW Forever. Attaque d’ours : 20 Rage, mêlée, instantanée, recharge de 6 secondes, inflige 100 % des dégâts normaux plus 42 et génère une grande quantité de menace. Férocité réduit son coût en Rage. Pièce de la menace d’ours du build tank 0/41/10 (pris au niveau 47) ; le guide de leveling Icy Veins la prend au niveau 40, juste avant Puissance fluctuante.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "morsure primordiale", "primal bite", "ours", "menace", "tank"],
+    "notes": "Le grimoire du client (données 1.60.1.70790, via ForeverSpec) liste aussi un sort appris « Morsure primordiale » au niveau 40 infligeant 100 % des dégâts plus 77 : la relation exacte entre le sort appris et le talent (rangs distincts ou version améliorée) n’est pas tranchée par les données consultées.",
+    "author": "OpenCode"
+  },
+  {
+    "id": "talent:druid-shifting-power",
+    "topic": "talent",
+    "title": "Puissance fluctuante (Shifting Power) — talent druide Combat farouche",
+    "summary": "Talent à 1 point (7e rangée), exige Predatory Discipline ; propre à WoW Forever. En Forme de félin, convertit instantanément 55 % du mana de base en 40 points d’Énergie ; recharge de 8 secondes. Le coût profite des effets qui réduisent le coût des métamorphoses (Changeforme naturel 3 : −30 %). C’est le rechargeur d’Énergie du félin : l’itinéraire Icy Veins le prend au niveau 41, ForeverSpec en fait le jalon du niveau 40 et l’inclut dans son build DPS raid. Le mana devient la limite sur les combats longs.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "puissance fluctuante", "shifting power", "énergie", "mana", "félin"],
+    "notes": "L’export officiel du 4 nov 2026 (hotfixes du 3 nov) donne « convertit 55 % du mana de base en 40 Énergie » ; une révision antérieure des données affichait « 0 Mana » (valeur non résolue). ForeverSpec le compare à une potion d’Énergie réutilisable tant que le mana tient.",
+    "author": "OpenCode"
+  },
+  {
+    "id": "talent:druid-heart-of-the-wild",
+    "topic": "talent",
+    "title": "Cœur de fauve (Heart of the Wild) — talent druide Restauration pris par les farouches",
+    "summary": "Cinq rangs en Restauration (1re rangée) ; en Classic ce talent vivait dans l’arbre Combat farouche et exigeait Frappes de prédateur. Au rang 5 : +10 % d’Intelligence ; +20 % d’Endurance en formes d’ours et d’ours redoutable ; +10 % de Force en forme de félin. Les builds farouches y viennent chercher la Force du félin et l’Endurance de l’ours : itinéraire Icy Veins (42–46), build DPS raid (51–55), build tank (51–55), variante ForeverSpec (56–60).",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "cœur de fauve", "heart of the wild", "force", "endurance", "restauration"]
+  },
+  {
+    "id": "talent:druid-naturalist",
+    "topic": "talent",
+    "title": "Naturaliste (Naturalist) — talent druide Restauration pris par les farouches",
+    "summary": "Cinq rangs en Restauration (2e rangée) ; s’appelait Toucher guérisseur amélioré en Classic. Au rang 5 : incantation de Toucher guérisseur et Croissance sauvage réduite de 0,5 s, et tous les dégâts infligés augmentés de 10 %. Pour un farouche, c’est un gain de dégâts direct : les builds DPS raid et tank de ForeverSpec le prennent (56–60), de même que l’itinéraire Icy Veins (47–51). Croissance sauvage est une capacité Forever absente de Classic Era.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "naturaliste", "naturalist", "dégâts", "toucher guérisseur", "croissance sauvage", "restauration"]
+  },
+  {
+    "id": "talent:druid-genesis",
+    "topic": "talent",
+    "title": "Genèse (Genesis) — talent druide Équilibre pris par les farouches",
+    "summary": "Cinq rangs en Équilibre (1re rangée), absent de Classic Era. Au rang 5 : +10 % aux dégâts et soins périodiques des sorts et capacités. Pour le farouche, cela renforce les saignements de Griffure et Déchirure. Pris aux niveaux 52–56 de l’itinéraire Icy Veins, 42–46 du build DPS raid ForeverSpec et 47–51 de sa variante de leveling.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "genèse", "genesis", "périodique", "équilibre", "dot"]
+  },
+  {
+    "id": "talent:druid-natures-reach",
+    "topic": "talent",
+    "title": "Allonge de la Nature (Nature’s Reach) — talent druide Équilibre pris par les farouches",
+    "summary": "Deux rangs en Équilibre (2e rangée). Au rang 2 : +20 % à la portée des sorts offensifs d’équilibre et +4 % de chances de toucher. ForeverSpec note que l’infobulle ne limite pas le bonus de toucher aux sorts, ce qui compte contre les boss de raid (environ 9 % de toucher visés selon leur guide) ; le toucher rend aussi fiables les attaques de menace d’ours. Pris aux niveaux 57–58 de l’itinéraire Icy Veins et 49–50 du build DPS raid.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "allonge de la nature", "nature’s reach", "toucher", "portée", "équilibre"]
+  },
+  {
+    "id": "talent:druid-natures-majesty",
+    "topic": "talent",
+    "title": "Majesté de la nature (Nature’s Majesty) — talent druide Équilibre pris par les farouches",
+    "summary": "Deux rangs en Équilibre (2e rangée), absent de Classic Era. Au rang 2 : +4 % de chances de coup critique pour les sorts et les attaques de mêlée. Le critique paie deux fois chez le farouche : point de combo supplémentaire de Frénésie sanglante, bonus de dégâts critiques d’Instinct naturel. Pris aux niveaux 59–60 de l’itinéraire Icy Veins et 47–48 du build DPS raid ForeverSpec.",
+    "class": "Druide",
+    "spec": "Farouche",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/feral/", "label": "ForeverSpec — Build Druide Farouche (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/feral-druid-leveling", "label": "Icy Veins — Feral Druid Leveling (Meyra, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "farouche", "talent", "majesté de la nature", "nature’s majesty", "critique", "équilibre"]
+  }
+]
