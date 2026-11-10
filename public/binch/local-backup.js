@@ -16,7 +16,7 @@ function init(){
  const page=$('page-hub');if(!page||$('binch-local-backup'))return;
  const details=document.createElement('details');details.id='binch-local-backup';details.className='panel section';
  details.innerHTML='<summary>Mes sauvegardes locales <small>Exporter ou restaurer les données locales de La Binch</small></summary>'+
- '<p>Conserve une copie des objectifs, plans de zones, préparations de guilde, LFG, Bourse d'Azeroth et ensembles d'équipement enregistrés localement. Les données restent sur cet appareil sauf si tu choisis toi-même un fichier à conserver ou transférer.</p>'+
+ '<p>Conserve une copie des objectifs, plans de zones, préparations de guilde, LFG, Bourse d’Azeroth et ensembles d’équipement enregistrés localement. Les données restent sur cet appareil sauf si tu choisis toi-même un fichier à conserver ou transférer.</p>'+
  '<p class="muted"><strong>Important :</strong> cette sauvegarde n’inclut pas les fichiers WoW SavedVariables, ni les permissions de synchronisation, ni une sauvegarde cloud. Le fichier exporté peut contenir ton nom de personnage.</p>'+
  '<div class="binch-backup-actions"><button type="button" id="binch-backup-export">Exporter mes données locales</button><label class="binch-backup-upload">Restaurer depuis JSON<input id="binch-backup-import" type="file" accept=".json,application/json" hidden></label></div>'+
  '<p id="binch-backup-status" role="status" aria-live="polite">Aucun transfert effectué.</p>';
