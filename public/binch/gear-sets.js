@@ -46,10 +46,11 @@ function mount(){
  };
  $('#binch-gear-set-selected').onchange=render;
  $('#binch-gear-set-delete').onclick=()=>{const chosen=get();if(!chosen||!confirm('Supprimer cet ensemble enregistré ?'))return;persist(sets().filter(x=>x.id!==chosen))};
- $('#binch-gear-set-copy').onclick=()=>{const x=sets().find(x=>x.id===get());if(!x)return;const text=['LA BINCH · SET '+x.name,'Rôle : '+(ROLES.find(r=>r[0]===x.role)?.[1]||x.role),...x.items.map(i=>(SLOTS[i.slot]||i.slot)+' : '+i.name+' (#'+i.id+')')].join('\n');navigator.clipboard?.writeText(text).catch(()=>prompt('Copier',text))||prompt('Copier',text)};
+ $('#binch-gear-set-copy').onclick=()=>{const x=sets().find(x=>x.id===get());if(!x)return;const text=['LA BINCH · SET '+x.name,'Rôle : '+(ROLES.find(r=>r[0]===x.role)?.[1]||x.role),...x.items.map(i=>(SLOTS[i.slot]||i.slot)+' : '+i.name+' (#'+i.id+')')].join('\n');if(navigator.clipboard?.writeText){navigator.clipboard.writeText(text).catch(()=>prompt('Copier',text))}else prompt('Copier',text)};
  page.addEventListener('click',e=>{if(e.target.closest('#binch-equipment-sync'))render()});
  document.querySelector('#app nav.nav [data-page="equipment"]')?.addEventListener('click',render);
  document.addEventListener('grimoire:sync',render);
+ document.addEventListener('binch:gear-sets-updated',render);
  window.addEventListener('storage',e=>{if(e.key?.startsWith(KEY)||e.key==='grimoire.bridge.last')render()});
  render();
 }
