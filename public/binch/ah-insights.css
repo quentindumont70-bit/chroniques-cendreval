@@ -1,0 +1,21 @@
+.binch-ah-insights{margin-top:20px;padding:clamp(14px,2.5vw,24px);border:1px solid #967c54;background:linear-gradient(145deg,#182b22,#0d1b1a);border-radius:13px}
+.binch-ah-insights>header{display:flex;justify-content:space-between;align-items:start;gap:14px;flex-wrap:wrap}
+.binch-ah-insights h2{font:700 1.25rem Cinzel,Georgia,serif;color:#f4d19e;margin:4px 0}
+.binch-ah-insights h3{color:#f4d19e;margin:10px 0}
+.binch-ah-insights p{font-size:.81rem;color:#bccbb9}
+.binch-ah-insights-controls{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.binch-ah-insights-controls label{flex:1;min-width:160px;display:grid;gap:6px;font-size:.75rem;color:#dddbc3}
+.binch-ah-insights-controls input,.binch-ah-insights-controls select{background:#0d1e17;border:1px solid #71816a;border-radius:7px;color:#e6dac0;padding:9px;max-width:100%}
+.binch-ah-insight-card{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid #48634d}
+.binch-ah-insight-card>div:first-child{flex:2;min-width:175px}
+.binch-ah-insight-card strong,.binch-ah-insight-card small{display:block}
+.binch-ah-insight-card strong{color:#efd5a4}
+.binch-ah-insight-card small{font-size:.72rem;color:#b4c7af}
+.binch-ah-insight-number{flex:1;min-width:135px}
+.binch-ah-insight-number strong{color:#eec984}
+.binch-ah-insights button{border:1px solid #b49a69;background:#2e4839;color:#f8dcad;padding:9px 13px;border-radius:8px;min-height:38px;cursor:pointer}
+#binch-ah-insights-detail:not(:empty){margin-top:15px;border:1px solid #50684c;background:#101f1b;border-radius:9px;padding:14px}
+.binch-ah-trend-chart svg{display:block;width:100%;height:160px;background:#152c22;border:1px solid #50634e;border-radius:7px}
+.binch-ah-trend-axis{display:flex;justify-content:space-between;gap:10px;color:#adc9ab;font-size:.7rem;margin:5px 0}
+.binch-ah-insights-foot{font-size:.72rem!important;color:#afc1ae!important}
+@media(max-width:600px){.binch-ah-insight-card{gap:7px}.binch-ah-insight-card button{width:100%}.binch-ah-trend-chart svg{height:130px}}
