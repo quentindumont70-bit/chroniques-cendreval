@@ -21,18 +21,27 @@ function nearbyDungeons(p){
  const ds=Array.isArray(window.GRIMOIRE_DUNGEONS)?window.GRIMOIRE_DUNGEONS:[];
  return ds.filter(d=>d&&Array.isArray(d.levels)&&d.name&&Number(d.levels[0])<=p.level+7&&Number(d.levels[1])>=p.level-2).sort((a,b)=>Math.abs(Number(a.levels[0])-p.level)-Math.abs(Number(b.levels[0])-p.level)).slice(0,2);
 }
+function questPriority(quest,goal,p){
+ const complete=quest.complete===true;
+ const level=Number(quest.level);
+ const close=Number.isFinite(level)&&level>0?Math.max(0,16-Math.abs(level-p.level)*3):0;
+ return (complete?115:goal==='quick'?100:94)+close;
+}
 function recommendations(p,goal){
  const suggestions=[];
  function add(priority,title,reason,source,page){if(!suggestions.some(x=>x.title===title))suggestions.push({priority,title,reason,source,page})}
  if(!p.same)add(120,'Importer ton personnage','Sans import de ce personnage, Faith ne peut pas confirmer tes sacs, ton XP ni ta zone actuelle.','Synchronisation non confirmée','sync');
+ // Only confirmed quest entries for the same character. No invented NPC, coordinates or turn-in.
  if(p.questLogAPI!=='unavailable'&&p.questLog.length&&(goal==='balanced'||goal==='quick'||goal==='class')){
-  const completed=p.questLog.filter(q=>q.complete===true);
-  for(const quest of completed.slice(0,2)){
-   add(117,'Rendre : '+quest.title.slice(0,85),'Cette quête figure comme terminée dans le dernier journal sauvegardé. Vérifie le PNJ de remise dans WoW.','Journal GrimoireSync · statut exporté','command');
-  }
-  const pending=p.questLog.filter(q=>q.complete!==true);
-  for(const quest of pending.slice(0,2)){
-   add(goal==='quick'?107:102,'Poursuivre : '+quest.title.slice(0,85),'Quête présente dans le journal exporté. Les objectifs et la position exacte ne sont pas disponibles.','Journal GrimoireSync · présence confirmée','command');
+  const unique=new Map();
+  for(const q of p.questLog){const id=Number(q.id);if(!Number.isInteger(id)||id<=0||!q.title||unique.has(id))continue;unique.set(id,q)}
+  const chosen=Array.from(unique.values()).sort((a,b)=>questPriority(b,goal,p)-questPriority(a,goal,p)).slice(0,3);
+  for(const quest of chosen){
+   const complete=quest.complete===true,lv=Number(quest.level);
+   const levelNote=Number.isFinite(lv)&&lv>0?' · niveau de quête '+lv:'';
+   add(questPriority(quest,goal,p),(complete?'Rendre : ':'Poursuivre : ')+String(quest.title).slice(0,85),
+    (complete?'Statut prêt à rendre indiqué par la sauvegarde. Le PNJ de remise n’est pas fourni.':'Quête identifiée dans ton journal sauvegardé. Les objectifs détaillés et le trajet ne sont pas disponibles.')+levelNote+'.',
+    'GrimoireSync · journal réel · #'+quest.id,'command');
   }
  }
  const next=(classMilestones[p.cls]||[]).find(([lv])=>lv>=p.level);
@@ -97,7 +106,7 @@ function paint(){
  const status=$('binch-faith-integrity');if(status){
  const date=p.updated?new Date(p.updated):null,ok=date&&!isNaN(+date);
  const age=ok?Math.round((Date.now()-+date)/60000):null;
- status.textContent='Faith V4 · '+(ok?'Dernier import '+date.toLocaleString('fr-FR')+(age>30?' (données anciennes)':''):'Pas d’import confirmé')+(p.questLogAPI==='unavailable'?' · Journal inconnu':' · Journal exporté : '+p.questLog.length+' quête(s)')+' · Conseils locaux, aucune IA distante.';
+ status.textContent='Faith V5 · '+(ok?'Dernier import '+date.toLocaleString('fr-FR')+(age>30?' (données anciennes)':''):'Pas d’import confirmé')+(p.questLogAPI==='unavailable'?' · Journal inconnu':' · Journal exporté : '+p.questLog.length+' quête(s)')+' · Conseils locaux, aucune IA distante.';
  }
 }
 function mount(){
