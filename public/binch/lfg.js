@@ -18,6 +18,27 @@ function calendar(e){
  const blob=new Blob([parts.join('\r\n')+'\r\n'],{type:'text/calendar;charset=utf-8'});
  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='binch-rdv-'+e.id+'.ics';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)
 }
+function addToLocalCalendar(e){
+ if(!e.when)return {ok:false,message:'Une date et une heure sont nécessaires.'};
+ const d=new Date(e.when);
+ if(!Number.isFinite(+d)||d.getTime()<Date.now()-60000)return {ok:false,message:'Date du rendez-vous invalide ou déjà passée.'};
+ const key='binch.guild.events.v1';
+ let list;try{list=JSON.parse(localStorage.getItem(key))}catch{}
+ if(!Array.isArray(list))list=[];
+ const id='lfg-'+String(e.id||'').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,90);
+ if(!id||id==='lfg-')return {ok:false,message:'Identifiant de l’annonce absent.'};
+ if(list.some(x=>x.id===id))return {ok:false,message:'Cette annonce figure déjà dans le calendrier local.'};
+ if(list.length>=100)return {ok:false,message:'Calendrier plein (100 sorties).'};
+ const pad=n=>String(n).padStart(2,'0');
+ const date=[d.getFullYear(),pad(d.getMonth()+1),pad(d.getDate())].join('-');
+ const time=pad(d.getHours())+':'+pad(d.getMinutes());
+ const event={id,title:String(e.dungeon||'Sortie LFG').trim().slice(0,100),kind:'Donjon',date,time,size:Math.min(40,Math.max(2,Number(e.places)||5)),note:('Annonce LFG locale · Organisateur : '+String(e.author||'')+' · '+String(e.note||'')).slice(0,280),done:false,attendees:[]};
+ if(!event.title)return {ok:false,message:'Activité absente.'};
+ list.push(event);
+ try{localStorage.setItem(key,JSON.stringify(list))}catch{return {ok:false,message:'Impossible d’enregistrer dans le stockage local.'}}
+ document.dispatchEvent(new Event('binch:calendar-change'));
+ return {ok:true,message:'Sortie ajoutée au calendrier local du GM. Elle n’est pas partagée.'};
+}
 function mount(){
  const nav=$('#app nav.nav'),app=$('#app'),main=$('#app main');if(!nav||!app||!main||$('#page-lfg'))return;
  const button=document.createElement('button');button.type='button';button.textContent='LFG & Rendez-vous';button.dataset.page='lfg';nav.insertBefore(button,nav.querySelector('[data-page="gm"]')||null);
@@ -75,12 +96,13 @@ function mount(){
   if(!rows.length){const empty=document.createElement('div');empty.className='binch-lfg-empty';empty.textContent=all.length?'Aucune annonce dans ce filtre.':'Ton panneau est encore vide. Prépare la première expédition !';c.append(empty);return}
   rows.slice().reverse().forEach(e=>{
    const card=document.createElement('article');card.className='binch-lfg-card';
-   card.innerHTML='<div class="binch-lfg-card-top"><span>'+(e.when?'Rendez-vous':'Dès maintenant')+'</span><small>'+escapeHTML(dateLabel(e.when))+'</small></div><h3>'+escapeHTML(e.dungeon)+'</h3><div class="binch-lfg-person"><b>'+escapeHTML(e.author)+'</b> · '+escapeHTML(e.role)+' · '+Number(e.places)+' place(s)</div><p>'+escapeHTML(e.note||'Aucune consigne particulière.')+'</p><p class="binch-lfg-local-note">Brouillon personnel : les réponses des joueurs ne sont pas synchronisées. Partage dans Discord pour les recevoir.</p><div class="binch-lfg-card-actions"><button data-action="copy">Copier pour Discord</button><button data-action="discord">Ouvrir Discord</button>'+(e.when?'<button data-action="ics">Ajouter au calendrier</button>':'')+'<button data-action="remove" aria-label="Supprimer ce brouillon">Supprimer</button></div>';
+   card.innerHTML='<div class="binch-lfg-card-top"><span>'+(e.when?'Rendez-vous':'Dès maintenant')+'</span><small>'+escapeHTML(dateLabel(e.when))+'</small></div><h3>'+escapeHTML(e.dungeon)+'</h3><div class="binch-lfg-person"><b>'+escapeHTML(e.author)+'</b> · '+escapeHTML(e.role)+' · '+Number(e.places)+' place(s)</div><p>'+escapeHTML(e.note||'Aucune consigne particulière.')+'</p><p class="binch-lfg-local-note">Brouillon personnel : les réponses des joueurs ne sont pas synchronisées. Partage dans Discord pour les recevoir.</p><div class="binch-lfg-card-actions"><button data-action="copy">Copier pour Discord</button><button data-action="discord">Ouvrir Discord</button>'+(e.when?'<button data-action="ics">Exporter .ics</button><button data-action="guild-calendar">Inscrire au calendrier GM</button>':'')+'<button data-action="remove" aria-label="Supprimer ce brouillon">Supprimer</button></div>';
    card.querySelectorAll('[data-action]').forEach(b=>b.onclick=async()=>{
     const action=b.dataset.action;
         if(action==='copy'){await clipboard(announce(e));return}
     if(action==='discord'){const url=safeUrl(localStorage.getItem(DISCORD_KEY)||'');if(!url){alert('Ajoute d’abord un lien Discord dans la colonne de gauche.');return}window.open(url,'_blank','noopener,noreferrer');return}
     if(action==='ics'){calendar(e);return}
+    if(action==='guild-calendar'){const res=addToLocalCalendar(e);alert(res.message);return}
     if(action==='remove'&&confirm('Supprimer ce brouillon local ?')){persist(load().filter(x=>x.id!==e.id));paint()}
    });
    c.append(card)
