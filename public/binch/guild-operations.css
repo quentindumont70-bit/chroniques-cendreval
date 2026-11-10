@@ -1,0 +1,47 @@
+/* Phase 3 - Guild operations; lightweight panels without perpetual animation. */
+.binch-ops{margin:18px 0;padding:20px;border:1px solid #7d7757;border-radius:13px;background:linear-gradient(155deg,#192a26,#101d20);color:#e9dfc7;box-shadow:0 10px 26px #0004}
+.binch-ops>header{display:flex;justify-content:space-between;align-items:start;gap:15px;flex-wrap:wrap;margin-bottom:16px}
+.binch-ops h2{font:700 clamp(1.15rem,2.5vw,1.7rem) Cinzel,Georgia,serif;color:#efcf90;margin:4px 0}
+.binch-ops h3{font:700 1rem Cinzel,Georgia,serif;color:#eed5ac;margin:0 0 10px}
+.binch-ops h4{color:#f2ddb9;margin:0 0 5px}
+.binch-ops p{color:#b9c9bd;line-height:1.5;margin:7px 0;font-size:.84rem}
+.binch-ops button{min-height:36px;padding:8px 12px;border-radius:7px;border:1px solid #a38b63;background:#29413a;color:#f9e0ae;cursor:pointer}
+.binch-ops button:hover,.binch-ops button:focus-visible{border-color:#ecd29a}
+.binch-ops input,.binch-ops select,.binch-ops textarea{min-width:0;background:#10221f;border:1px solid #71816b;border-radius:6px;padding:9px;color:#f6edd9;font:inherit;max-width:100%}
+.binch-ops textarea{width:100%;resize:vertical;min-height:125px}
+.binch-ops label{display:grid;gap:6px;font-size:.78rem;color:#d7dfc9}
+.binch-ops-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin:12px 0 22px}
+.binch-ops-stat{padding:14px;background:#101d1c;border:1px solid #485c4b;border-radius:9px;display:grid;gap:8px}
+.binch-ops-stat small{color:#b8ccba;font-size:.7rem}
+.binch-ops-stat strong{color:#f0d29c;font:700 1.65rem Cinzel,Georgia,serif}
+.binch-ops-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:14px 0}
+.binch-ops-columns>section{border:1px solid #4c6352;background:#10201d;border-radius:9px;padding:16px;min-width:0}
+.binch-ops-columns>section>button{margin-top:12px}
+.binch-ops-list-row{padding:10px 0;border-bottom:1px solid #354b3d;display:grid;gap:4px}
+.binch-ops-list-row strong{color:#f1d6a3}
+.binch-ops-list-row span,.binch-ops-list-row small{font-size:.75rem;color:#b7c8b9}
+.binch-ops-checks{display:grid;gap:9px}
+.binch-ops-checks label{display:flex;align-items:center;gap:9px;cursor:pointer}
+.binch-ops-checks input{accent-color:#d9b87e;width:17px;height:17px}
+#binch-ops-lfg-search{width:min(100%,400px)}
+.binch-ops-lfg-post{margin:14px 0;padding:13px;border:1px solid #516c54;border-radius:10px;background:#132421}
+.binch-ops-lfg-post header{display:flex;align-items:start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.binch-ops-lfg-post header small{display:block;color:#bdd0bd;font-size:.76rem}
+.binch-ops-lfg-post header>span{font-size:.78rem;color:#e8cf9b}
+.binch-ops-lfg-post form{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.binch-ops-lfg-post form input{flex:2;min-width:130px}
+.binch-ops-lfg-post form select{flex:1}
+.binch-ops-people>div{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:5px 0;border-top:1px solid #384b3b;font-size:.8rem}
+.binch-ops-people>div button{min-height:26px}
+#binch-ops-promise-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;align-items:end;margin:15px 0}
+#binch-ops-promise-form label{display:grid}
+#binch-ops-promise-form button{min-height:41px}
+.binch-ops-promise-controls{display:flex;flex-wrap:wrap;gap:9px;margin:14px 0}
+.binch-ops-promise-controls input{flex:2;min-width:160px}
+.binch-ops-promise{display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:13px 0;border-bottom:1px solid #485f50}
+.binch-ops-promise>div{flex:1;min-width:180px}
+.binch-ops-promise strong,.binch-ops-promise small{display:block}
+.binch-ops-promise strong{color:#eace96}
+.binch-ops-promise small{color:#bac9b6;font-size:.76rem}
+.binch-ops-promise select{min-width:190px}
+@media(max-width:720px){.binch-ops{padding:14px}.binch-ops-columns{grid-template-columns:1fr}.binch-ops-promise select{flex:1}.binch-ops-lfg-post form>*{width:100%}}
