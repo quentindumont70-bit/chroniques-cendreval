@@ -110,7 +110,7 @@ function tradesRender(){
  const lines=store.trades,results=lines.map(x=>({x,margin:x.kind==='sell'?Math.floor(x.price*x.qty*(1-Number(store.fee)/100)):-(x.price*x.qty)}));
  const sum=results.reduce((acc,r)=>acc+r.margin,0);
  $('binch-ah-trades-total').textContent=lines.length+' opération(s) déclarée(s) · solde de trésorerie net : '+coin(sum)+' (ceci n’est pas un bénéfice réalisé calculé par lots)';
- target.innerHTML=lines.length?lines.slice().reverse().slice(0,40).map(x=>'<article><div><strong>'+esc(x.item)+'</strong><small>'+esc(x.kind==='buy'?'Achat':'Vente')+' · '+x.qty+' × '+coin(x.price)+' · '+esc(date(x.at)?.toLocaleString('fr-FR')||'date inconnue')+'</small></div><button type="button" data-ah-trade-delete="'+esc(x.id)+'">×</button></article>').join(''):'<p>Aucune transaction déclarée.</p>';
+ target.innerHTML=lines.length?lines.slice().reverse().slice(0,40).map(x=>'<article><div><strong>'+esc(x.item)+'</strong><small>'+esc(x.kind==='buy'?'Achat':'Vente')+' · '+x.qty+' × '+coin(x.price)+' · '+esc(x.scope&&x.scope!=='legacy'?x.scope:'Marché ancien non attribué')+' · '+esc(date(x.at)?.toLocaleString('fr-FR')||'date inconnue')+'</small></div><button type="button" data-ah-trade-delete="'+esc(x.id)+'">×</button></article>').join(''):'<p>Aucune transaction déclarée.</p>';
 }
 function alertsRender(){
  const target=$('binch-ah-alerts-list');if(!target)return;
@@ -148,7 +148,7 @@ function mount(){
  $('binch-ah-export').onclick=exportData;
  $('binch-ah-alert-form').onsubmit=e=>{e.preventDefault();const name=clean($('binch-ah-alert-name').value),ceiling=fromGold($('binch-ah-alert-price').value);if(!name||ceiling==null||ceiling<=0||store.alerts.length>=100)return;store.alerts.push({id:id(),name,key:norm(name),ceiling});save();e.target.reset();alertsRender()};
  $('binch-ah-alerts-list').onclick=e=>{const b=e.target.closest('[data-ah-alert-delete]');if(!b)return;store.alerts=store.alerts.filter(x=>x.id!==b.dataset.ahAlertDelete);save();alertsRender()};
- $('binch-ah-trade-form').onsubmit=e=>{e.preventDefault();const f=e.target,d=new FormData(f),price=fromGold(d.get('priceGold')),qty=Number(d.get('qty'));if(!clean(d.get('item'))||price==null||price<1||!Number.isInteger(qty)||qty<1||qty>100000||store.trades.length>=400)return;store.trades.push({id:id(),kind:d.get('kind'),item:clean(d.get('item')),qty,price,at:new Date().toISOString()});save();f.reset();tradesRender()};
+ $('binch-ah-trade-form').onsubmit=e=>{e.preventDefault();const f=e.target,d=new FormData(f),price=fromGold(d.get('priceGold')),qty=Number(d.get('qty'));if(!clean(d.get('item'))||price==null||price<1||!Number.isInteger(qty)||qty<1||qty>100000||store.trades.length>=400)return;store.trades.push({id:id(),kind:d.get('kind'),item:clean(d.get('item')),qty,price,scope:scopeId(currentScope()),fee:Number(store.fee??5),at:new Date().toISOString()});save();f.reset();tradesRender()};
  $('binch-ah-trades-list').onclick=e=>{const b=e.target.closest('[data-ah-trade-delete]');if(!b)return;store.trades=store.trades.filter(x=>x.id!==b.dataset.ahTradeDelete);save();tradesRender()};
  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&page.classList.contains('active'))alertsRender()});
  window.addEventListener('storage',e=>{if(e.key===KEY){store=read();if(page.classList.contains('active'))render()}});
