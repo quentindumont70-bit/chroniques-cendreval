@@ -14,24 +14,38 @@ function ingredientRows(){const list=$('binch-ah-craft-ingredients');if(!list)re
 function estimate(recipe){
  const m=market(),fee=Math.max(0,Math.min(20,Number(m.fee??5))),rows=recipe.ingredients.map(x=>{
   const v=priceOf(x.name),age=v?.observedAt?Date.now()-new Date(v.observedAt):Infinity;
-  return {...x,price:Number(v?.last)||null,old:age>24*60*60*1000,source:v?.source||''};
+  const price=Number(v?.last);
+  return {...x,price:Number.isSafeInteger(price)&&price>0?price:null,old:!Number.isFinite(age)||age<0||age>24*60*60*1000,source:v?.source||'',at:v?.observedAt||''};
  });
- const known=rows.every(x=>x.price!=null&&x.price>0),cost=rows.reduce((n,x)=>n+(x.price||0)*x.qty,0);
- const output=priceOf(recipe.output),sale=Number(output?.last)||null,yieldCount=recipe.yield||1,net=sale==null?null:Math.floor(sale*yieldCount*(1-fee/100)),margin=net!=null&&known?net-cost:null;
- return {rows,known,cost,sale,net,margin,fee,stale:rows.some(x=>x.old)||!output?.observedAt||Date.now()-new Date(output.observedAt)>24*60*60*1000};
+ const known=rows.every(x=>x.price!=null),cost=known?rows.reduce((n,x)=>n+x.price*x.qty,0):null;
+ const output=priceOf(recipe.output),raw=Number(output?.last),sale=Number.isSafeInteger(raw)&&raw>0?raw:null,yieldCount=recipe.yield||1;
+ const net=sale==null?null:Math.floor(sale*yieldCount*(1-fee/100));
+ const margin=net!=null&&cost!=null?net-cost:null;
+ const componentsNet=cost==null?null:Math.floor(cost*(1-fee/100));
+ const advantage=net==null||componentsNet==null?null:net-componentsNet;
+ const stale=rows.some(x=>x.old)||!output?.observedAt||!Number.isFinite(Date.parse(output.observedAt))||Date.now()-Date.parse(output.observedAt)>86400000||Date.now()<Date.parse(output.observedAt);
+ return {rows,known,cost,sale,net,margin,componentsNet,advantage,fee,stale};
 }
 function draw(){
  if(!$('binch-ah-craft-list'))return;
  $('binch-ah-craft-count').textContent=recipes.length+' recette(s) personnelles · calcul à partir du carnet de prix de La Binch';
  const rows=recipes.slice().reverse();
  $('binch-ah-craft-list').innerHTML=rows.length?rows.map(r=>{
-  const x=estimate(r),sign=x.margin==null?'Calcul incomplet':x.margin>0?'Marge théorique positive':x.margin<0?'Marge théorique négative':'Équilibre théorique';
+  const x=estimate(r),sign=x.advantage==null?'Comparaison incomplète':x.advantage>0?'Fabriquer : revente théorique supérieure aux composants':x.advantage<0?'Revendre les composants : valeur nette théorique supérieure':'Deux voies équivalentes hors coûts supplémentaires';
   return '<article class="binch-ah-craft-result"><div><strong>'+esc(r.output)+'</strong><small>'+esc(r.profession||'Métier non précisé')+' · production × '+r.yield+' · '+r.ingredients.length+' composant(s)</small><small>Prix de vente observé : '+(x.sale?money(x.sale):'non renseigné')+' · coût matières : '+(x.known?money(x.cost):'incomplet')+'</small><small>'+esc(sign)+(x.stale?' · données anciennes ou non datées':'')+'</small></div><strong>'+(x.margin==null?'—':money(x.margin))+'</strong><button type="button" data-craft-detail="'+esc(r.id)+'">Détails</button><button type="button" data-craft-remove="'+esc(r.id)+'" aria-label="Supprimer la recette">×</button></article>';
  }).join(''):'<p>Ajoute une recette personnelle pour calculer la rentabilité à partir des prix observés.</p>';
 }
 function detail(recipe){
- const d=estimate(recipe);
- $('binch-ah-craft-detail').innerHTML='<h3>'+esc(recipe.output)+'</h3>'+d.rows.map(x=>'<p>'+esc(x.name)+' × '+x.qty+' · '+(x.price!=null?money(x.price)+' / unité':'Prix inconnu')+(x.old?' · relevé ancien':'')+'</p>').join('')+'<p>Coût total des matières : '+(d.known?money(d.cost):'indisponible')+'</p><p>Revente après '+d.fee+' % de commission : '+(d.net!=null?money(d.net):'prix de l’objet fabriqué manquant')+'</p><strong>Résultat brut théorique : '+(d.margin!=null?money(d.margin):'impossible à calculer')+'</strong><p>Coût de mise en vente, variations de prix, taux de vente et temps de farm exclus. Un prix inconnu ne vaut jamais zéro.</p>';
+ const d=estimate(recipe),fmt=n=>n==null?'inconnu':money(n);
+ $('binch-ah-craft-detail').innerHTML='<h3>'+esc(recipe.output)+'</h3>'+
+ d.rows.map(x=>'<p>'+esc(x.name)+' × '+x.qty+' · '+(x.price!=null?money(x.price)+' / unité':'Prix inconnu')+(x.old?' · relevé ancien ou non daté':'')+' · '+esc(x.source||'source inconnue')+'</p>').join('')+
+ '<p>Coût d’achat des matières : '+fmt(d.cost)+'</p>'+
+ '<p>Produit fini × '+recipe.yield+' après commission ('+d.fee+' %) : '+fmt(d.net)+'</p>'+
+ '<p>Composants revendus séparément après commission ('+d.fee+' %) : '+fmt(d.componentsNet)+'</p>'+
+ '<strong>Avantage théorique de la fabrication : '+fmt(d.advantage)+'</strong>'+
+ '<p>Marge brute de fabrication vs achat des matières : '+fmt(d.margin)+'</p>'+
+ (d.stale?'<p><strong>Attention :</strong> au moins un relevé manque de fraîcheur (24 h), de date valide ou se situe dans le futur.</p>':'')+
+ '<p>Comparaison à quantités de composants identiques ; suppose ventes intégrales au dernier prix saisi, commission identique et coût nul de fabrication. Dépôts, temps de farm, liquidité et pertes exclus. Aucune recommandation automatique d’achat.</p>';
 }
 function mount(){
  const page=$('page-market');if(!page||$('binch-ah-craft'))return;
