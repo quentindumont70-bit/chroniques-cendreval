@@ -1,7 +1,8 @@
 {
   "schemaVersion": 1,
   "datasets": [
-    "data/core.json"
+    "data/core.json",
+    "data/builds.json"
   ],
   "maxRecords": 5000,
   "notes": "Ajouter un fichier data/<theme>.json vérifié et son chemin dans datasets. Aucun contenu téléchargé hors du site."
