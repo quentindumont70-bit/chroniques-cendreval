@@ -86,7 +86,7 @@ function magnetic(el,newX,newY){
  return {x:Math.round(x),y:Math.round(y),gx,gy};
 }
 function begin(e,el,mode){
- if(!editing||e.button!==0||e.target.closest('button,input,select,textarea,a')&&mode!=='resize')return;
+ if(!editing||e.button!==0||(e.target.closest('button,input,select,textarea,a')&&mode!=='resize'))return;
  e.preventDefault();e.stopPropagation();select(el);
  const r=el.getBoundingClientRect(),id=el.dataset.binchEditorId,c=cfg()[id]||{};
  drag={id,el,mode,startX:e.clientX,startY:e.clientY,offsetX:Number(c.x)||0,offsetY:Number(c.y)||0,width:r.width,changed:false};
@@ -97,8 +97,7 @@ function onMove(e){
  const d=drag,dx=e.clientX-d.startX,dy=e.clientY-d.startY;
  if(d.mode==='resize'){
   const width=Math.max(160,Math.min(window.innerWidth-24,d.width+dx));
-  const result=magnet(d.el,width,0);
-  const adjusted=magnet?Math.round(result.x/STEP)*STEP:Math.round(width);
+  const adjusted=magnet?snap(width):Math.round(width);
   d.el.style.width=Math.max(160,adjusted)+'px';d.el.style.maxWidth='100%';guides(null,null);
  }else{
   const result=magnetic(d.el,d.offsetX+dx,d.offsetY+dy);
