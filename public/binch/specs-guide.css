@@ -1,0 +1,48 @@
+/* Specs / WoW Forever — readable leveling itinerary, on-screen reference */
+#page-specs{--page-accent:#eda76c;--page-border:#6c604e}
+#binch-specs{background:radial-gradient(circle at 100% 0,#71472a33,transparent 58%),linear-gradient(155deg,#182722,#17212a 70%);color:#f0e7d6;border:1px solid #78674d;border-radius:18px;max-width:1300px;margin:auto;padding:clamp(15px,3vw,32px)}
+.binch-specs-head{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+#binch-specs h2{font:700 clamp(1.4rem,2.7vw,2rem) Cinzel,Georgia,serif;color:#f2d5a2;margin:5px 0 9px}
+#binch-specs h3{color:#f2d5a2;font:700 1.16rem Cinzel,Georgia,serif;margin:0 0 8px}
+#binch-specs p{max-width:75ch;color:#c5d1cb}
+#binch-specs button{background:linear-gradient(140deg,#354a45,#243b44);color:#f5e9ce;border:1px solid #897859;min-height:42px;padding:9px 14px;border-radius:10px;cursor:pointer}
+#binch-specs button:hover{background:#496255}
+#binch-specs :is(button,select,input,a):focus-visible{outline:3px solid #f4d9a5;outline-offset:3px}
+.binch-specs-toolbar{display:flex;flex-wrap:wrap;align-items:end;gap:12px;margin:18px 0;padding:14px;background:#101f24;border:1px solid #456052;border-radius:12px}
+.binch-specs-toolbar label{display:flex;flex-direction:column;gap:4px;font-size:.78rem;color:#d6ccbd;min-width:120px}
+.binch-specs-toolbar select,.binch-specs-toolbar input{background:#1c3333;border:1px solid #698578;color:#f9ebd3;border-radius:8px;padding:9px;min-height:42px;max-width:200px}
+#binch-specs-level{width:95px}
+#binch-specs-level-mode{font-size:.75rem;color:#a3c6b5;align-self:center}
+.binch-specs-selected{font-weight:700;color:#f0c994!important}
+#binch-specs-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,196px),1fr));gap:10px;margin:14px 0 20px}
+#binch-specs .binch-spec-card{display:flex;flex-direction:column;align-items:start;text-align:left;gap:5px;background:#1a2d32;border:1px solid #5d6963;padding:13px}
+#binch-specs .binch-spec-card.active{border-color:#f0ba73;box-shadow:inset 0 0 0 1px #b38b53;background:linear-gradient(135deg,#3b4032,#2e3540)}
+.binch-spec-card span{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:#a9c4b6}
+.binch-spec-card strong{font-size:.9rem;color:#f4d9a7}
+.binch-spec-card small{font-size:.74rem;color:#c7d2ca}
+#binch-specs-summary{padding:18px;background:#192c2e;border:1px solid #58726b;border-radius:13px}
+#binch-specs .binch-specs-sources{font-size:.78rem;color:#b6c6c3;line-height:1.55}
+.binch-specs-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.binch-specs-links a{display:inline-flex;align-items:center;color:#f1d8a4;background:#263b41;border:1px solid #6b7e78;border-radius:8px;padding:8px 10px;text-decoration:none;font-size:.8rem}
+.binch-specs-links a:hover{background:#3b5654}
+#binch-specs-route{margin-top:14px}
+.binch-specs-progress{padding:13px 16px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;border-radius:10px;background:#413825;border:1px solid #aa915c;color:#f5e0a6}
+.binch-specs-progress span{font-size:.82rem;overflow-wrap:anywhere}
+.binch-specs-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,285px),1fr));gap:8px;margin-top:12px}
+.binch-specs-step{display:flex;gap:12px;align-items:center;padding:11px 12px;border:1px solid #637064;border-radius:9px;background:#1b2d31;min-height:68px}
+.binch-specs-step.is-done{border-color:#649782;background:#1c3932}
+.binch-specs-step.is-current{border-color:#e5ac69;background:#53412d;box-shadow:inset 0 0 0 1px #a27e53}
+.binch-specs-step.is-future{opacity:.76}
+.binch-specs-range{font-size:.7rem;color:#d7bf90;border:1px solid #837253;border-radius:6px;min-width:49px;text-align:center;padding:5px}
+.binch-specs-step>div{min-width:0;flex:1}
+.binch-specs-step strong,.binch-specs-step small{display:block;overflow-wrap:anywhere}
+.binch-specs-step strong{font-size:.81rem;color:#f7e6cd}
+.binch-specs-step small{font-size:.7rem;color:#b9cbbf;margin-top:3px}
+.binch-specs-step>b{font-size:.8rem;color:#eecb8c}
+#binch-specs-pinned{position:fixed;z-index:8888;left:max(12px,env(safe-area-inset-left));bottom:calc(12px + env(safe-area-inset-bottom));max-width:min(640px,calc(100vw - 125px));display:flex;align-items:center;gap:9px;padding:9px 10px;background:#182827f5;color:#f2dcad;border:1px solid #c09961;border-radius:12px;box-shadow:0 8px 30px #000a;backdrop-filter:blur(7px)}
+#binch-specs-pinned[hidden]{display:none!important}
+#binch-specs-pinned strong{font-size:.77rem;overflow-wrap:anywhere}
+#binch-specs-pinned button{padding:5px 9px;min-height:32px;border:1px solid #847b63;border-radius:7px;color:#f8e5c0;background:#384640;cursor:pointer}
+#binch-specs-pinned button:focus-visible{outline:3px solid #fff1ba;outline-offset:2px}
+@media(max-width:680px){.binch-specs-head>button{width:100%}.binch-specs-toolbar>*{flex:1 1 130px}#binch-specs-pinned{left:8px;right:8px;bottom:calc(68px + env(safe-area-inset-bottom));max-width:none}#binch-specs-pinned strong{font-size:.7rem}}
+@media(prefers-reduced-motion:reduce){#binch-specs *,#binch-specs-pinned *{transition:none!important;animation:none!important}}
