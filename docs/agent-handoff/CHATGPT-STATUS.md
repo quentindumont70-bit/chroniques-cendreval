@@ -1,3 +1,12 @@
+## ChatGPT — chantier personnel économie / tests (2026-11-10)
+
+- `84c574d8` : `ah-craft.js` complète désormais les prix de revient en recherchant les **observations réellement datées**, avec royaume/faction explicites dans le pont de lecture `market-bridge.js` si le carnet AH ne possède pas de cotation directe. Aucune fusion ou écriture dans les deux registres ; en l'absence de portée, la cotation reste inconnue.
+- `990affb3` : test Node `public/binch/test-market-bridge.cjs` du filtrage Horde/Alliance, absence de portée, rejet du prix nul, présence de provenance, absence d'invention et caractère non destructif.
+- `f72fbe69` : version de cache `ah-craft.js?v=003` dans `index.html`.
+- **Exécution déjà effectuée en JS isolé** : six vérifications manuelles des fonctions du pont réussies. Test Node versionné, **pas encore exécuté localement avec Node** ; pas de smoke test navigateur ni de test en jeu de cet ensemble.
+- Chantier OpenCode 13 (itinéraires multi-classes) reste réservé à OpenCode. HEAD distant actuellement `738028d5` ; aucun nouveau rapport encore envoyé concernant le chantier 13. **Ne pas relancer si sa session est active**.
+- Lors d'une future réconciliation `index.html`, conserver la version `ah-craft.js?v=003` en plus des changements Specs d'OpenCode.
+
 ## Integration OpenCode — druide restauration / équilibre (2026-11-10)
 
 - Nouveaux commits `58d62e90` et `b3b17d92` : copie sur `main` du fichier `data/druid-other.json` créé par OpenCode (`e93eaf7`), puis ajout au manifest de Faith.
