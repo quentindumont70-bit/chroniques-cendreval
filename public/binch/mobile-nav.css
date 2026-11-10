@@ -14,3 +14,14 @@
  #app main{scroll-margin-top:8px}
 }
 @media(prefers-reduced-motion:reduce){#binch-mobile-navigation *,#app nav.nav{scroll-behavior:auto!important;animation:none!important}}
+
+#binch-mobile-shortcuts{display:none}
+@media(max-width:750px){
+ #binch-mobile-shortcuts:not([hidden]){position:fixed;z-index:71;left:9px;right:9px;bottom:calc(79px + env(safe-area-inset-bottom,0px));display:grid;gap:11px;padding:15px;border:1px solid #c7a46d;border-radius:13px;background:#10241fec;box-shadow:0 0 40px #000b;color:#f4e1b7;max-height:65vh;overflow-y:auto}
+ #binch-mobile-shortcuts>strong{font:700 1rem Cinzel,serif}
+ #binch-mobile-shortcuts>p{font-size:.78rem;margin:0;color:#b9c7b9}
+ #binch-mobile-shortcuts-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ #binch-mobile-shortcuts-fields label{display:grid;gap:5px;font-size:.76rem}
+ #binch-mobile-shortcuts-fields select{min-width:0;width:100%;padding:9px;border-radius:6px;border:1px solid #8c875f;background:#142821;color:#f0dfc7}
+ #binch-mobile-shortcuts button{min-height:40px;background:#3b4a31;color:#f4dcaf;border:1px solid #a88856;border-radius:7px}
+}
