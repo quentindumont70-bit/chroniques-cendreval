@@ -5,12 +5,12 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const PREFIX='binch.zone.plan.v1.',MAX_TASKS=100;
 const allies=['Humain','Nain','Elfe','Gnome'],hordes=['Orc','Tauren','Troll','MortVivant'];
 const read=(k,f)=>{try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}};
-let storageKey='',state={zone:'',done:{},tasks:[]},filter='recommended';
+let storageKey='',state={zone:'',done:{},tasks:[],route:[]},filter='recommended';
 function profile(){const p=read('grimoire.hub.v3',{});return {name:String(p.data?.pseudo||'Aventurier').trim(),race:String(p.race||''),cls:String(p.classe||''),level:Math.max(1,Math.min(60,Number(p.data?.level)||1))}}
 function faction(p){return allies.includes(p.race)?'Alliance':hordes.includes(p.race)?'Horde':'Neutre'}
 function key(p){return PREFIX+[p.name,p.race,p.cls].map(x=>encodeURIComponent(x.toLocaleLowerCase('fr'))).join('.')}
 function zones(){return Array.isArray(window.GRIMOIRE_ZONES)?window.GRIMOIRE_ZONES.filter(z=>z&&typeof z.id==='string'&&typeof z.name==='string'&&Array.isArray(z.levels)&&Number.isFinite(Number(z.levels[0]))&&Number.isFinite(Number(z.levels[1]))):[]}
-function load(p){const k=key(p);if(storageKey===k)return;storageKey=k;const d=read(k,{});state={zone:typeof d.zone==='string'?d.zone:'',done:d.done&&typeof d.done==='object'&&!Array.isArray(d.done)?d.done:{},tasks:Array.isArray(d.tasks)?d.tasks.slice(0,MAX_TASKS).filter(t=>t&&typeof t.id==='string'&&typeof t.zone==='string'&&typeof t.title==='string'&&t.title.trim()&&t.title.length<=120&&typeof t.done==='boolean').map(t=>({id:t.id.slice(0,50),zone:t.zone.slice(0,100),title:t.title.trim(),done:t.done})):[]}}
+function load(p){const k=key(p);if(storageKey===k)return;storageKey=k;const d=read(k,{});state={zone:typeof d.zone==='string'?d.zone:'',route:Array.isArray(d.route)?d.route.filter(x=>typeof x==='string').slice(0,12):[],done:d.done&&typeof d.done==='object'&&!Array.isArray(d.done)?d.done:{},tasks:Array.isArray(d.tasks)?d.tasks.slice(0,MAX_TASKS).filter(t=>t&&typeof t.id==='string'&&typeof t.zone==='string'&&typeof t.title==='string'&&t.title.trim()&&t.title.length<=120&&typeof t.done==='boolean').map(t=>({id:t.id.slice(0,50),zone:t.zone.slice(0,100),title:t.title.trim(),done:t.done})):[]}}
 function save(){localStorage.setItem(storageKey,JSON.stringify(state));document.dispatchEvent(new CustomEvent('binch:zone-change',{detail:{zone:state.zone}}))}
 function suit(z,p){
  const own=faction(p);
@@ -23,6 +23,9 @@ function suit(z,p){
  return score;
 }
 function options(p){return zones().map(z=>({...z,score:suit(z,p)})).filter(z=>filter!=='recommended'||z.score>=60).sort((a,b)=>b.score-a.score||a.levels[0]-b.levels[0]||a.name.localeCompare(b.name,'fr'))}
+function routeZones(){const catalog=zones();return [...new Set(state.route)].map(id=>catalog.find(z=>z.id===id)).filter(Boolean)}
+function modifyRoute(id,action){const ids=state.route.filter(x=>zones().some(z=>z.id===x));const at=ids.indexOf(id);if(action==='add'&&at<0&&ids.length<12)ids.push(id);if(action==='remove'&&at>=0)ids.splice(at,1);if(action==='up'&&at>0)[ids[at-1],ids[at]]=[ids[at],ids[at-1]];if(action==='down'&&at>=0&&at<ids.length-1)[ids[at+1],ids[at]]=[ids[at],ids[at+1]];state.route=ids;save();render()}
+
 function init(){
  const page=$('page-progression');if(!page||$('binch-zone-planner'))return;
  const box=document.createElement('section');box.id='binch-zone-planner';box.className='panel section';
@@ -30,12 +33,14 @@ function init(){
  '<p class="muted">Le classement est indicatif : niveau et faction du profil manuel. Il ne prétend pas connaître les quêtes actives ou les parcours exacts sur Forever.</p>'+
  '<div class="binch-zone-planner-head"><label>Liste des zones<select id="binch-zone-filter"><option value="recommended">Adaptées au personnage</option><option value="all">Toutes les zones</option></select></label><label>Zone à préparer<select id="binch-zone-choice"></select></label></div>'+
  '<div id="binch-zone-summary" role="status" aria-live="polite"></div><div class="binch-zone-roadmap"><h3>Parcours conseillé</h3><p class="muted">Suggestions indicatives selon ton niveau et ta faction. Choisir une zone ne valide aucune quête.</p><div id="binch-zone-recommendations"></div></div>'+
- '<div class="binch-zone-planner-actions"><button type="button" id="binch-zone-open-map">Ouvrir dans l’Atlas</button><button type="button" id="binch-zone-copy">Copier mon itinéraire</button></div>'+
+ '<div class="binch-zone-planner-actions"><button type="button" id="binch-zone-open-map">Ouvrir dans l’Atlas</button><button type="button" id="binch-zone-queue">+ Ajouter à mon trajet</button><button type="button" id="binch-zone-copy">Copier mon itinéraire</button></div><section class="binch-zone-itinerary"><h3>Mon itinéraire de zones</h3><p class="muted">Organise jusqu’à 12 zones et leurs étapes personnelles. Ordre manuel, sans inventer les temps de trajet.</p><div id="binch-zone-itinerary-list"></div></section>'+
  '<form id="binch-zone-task-form"><label>Ajouter une étape manuelle dans cette zone<input name="title" required maxlength="120" placeholder="Ex. : Rendre les quêtes au camp"></label><button type="submit">Ajouter l’étape</button></form>'+
  '<div id="binch-zone-tasks"></div><div id="binch-zone-progress"></div>'+
  '<small class="muted">Les objectifs ajoutés ici sont stockés uniquement dans ton navigateur, séparément pour chaque personnage.</small>';
  const atlas=$('zone-browser');if(atlas)page.insertBefore(box,atlas);else page.append(box);
  $('binch-zone-filter').onchange=e=>{filter=e.target.value;render()};
+ $('binch-zone-queue').onclick=()=>modifyRoute(state.zone,'add');
+ $('binch-zone-itinerary-list').addEventListener('click',e=>{const btn=e.target.closest('[data-zone-route]');if(!btn)return;const id=btn.dataset.zoneRoute,action=btn.dataset.action;if(action==='select'){state.zone=id;save();render()}else modifyRoute(id,action)});
  $('binch-zone-recommendations').addEventListener('click',e=>{
   const button=e.target.closest('[data-zone-recommend]');if(!button)return;
   const id=button.dataset.zoneRecommend;
@@ -63,8 +68,9 @@ function init(){
  $('binch-zone-copy').onclick=async()=>{
   const p=profile();load(p);
   const z=zones().find(z=>z.id===state.zone);if(!z)return;
-  const steps=state.tasks.filter(t=>t.zone===z.id);
-  const lines=['LA BINCH — ITINÉRAIRE PERSONNEL',p.name+' · niveau '+p.level,z.name+' ('+z.levels.join('–')+')',z.continent||'',...steps.map(t=>(t.done?'[x] ':'[ ] ')+t.title)];
+  const selected=routeZones();if(!selected.length)selected.push(z);
+  const lines=['LA BINCH — ITINÉRAIRE PERSONNEL',p.name+' · niveau '+p.level,'Zones planifiées : '+selected.length];
+  selected.forEach((zone,i)=>{lines.push((i+1)+'. '+zone.name+' (niveaux indicatifs '+zone.levels.join('–')+') · '+(zone.continent||'continent non renseigné'));for(const t of state.tasks.filter(t=>t.zone===zone.id))lines.push('   '+(t.done?'[x] ':'[ ] ')+t.title)});
   const text=lines.join('\n');
   try{await navigator.clipboard.writeText(text);$('binch-zone-copy').textContent='Itinéraire copié ✓'}catch{window.prompt('Copier l’itinéraire',text)}
  };
@@ -100,6 +106,8 @@ function render(){
  $('binch-zone-summary').innerHTML='<strong>'+esc(chosen.name)+'</strong><p>'+esc(chosen.continent||'')+' · Niveaux '+chosen.levels.join('–')+' · '+esc(chosen.faction||'Neutre')+'</p><p>'+(score>=95?'Niveaux cohérents avec ton profil.':score>=60?'Zone proche de ton niveau, préparation conseillée.':'Zone moins adaptée au profil actuel — décision manuelle.')+'</p>';
  const tasks=state.tasks.filter(t=>t.zone===state.zone),done=tasks.filter(t=>t.done).length;
  $('binch-zone-progress').textContent=done+' / '+tasks.length+' étapes terminées dans cette zone.';
+ const ordered=routeZones();$('binch-zone-queue').disabled=ordered.length>=12||ordered.some(z=>z.id===state.zone);
+ $('binch-zone-itinerary-list').innerHTML=ordered.length?ordered.map((z,i)=>{const items=state.tasks.filter(t=>t.zone===z.id),complete=items.filter(t=>t.done).length;return '<article class="binch-zone-itinerary-item"><span class="binch-zone-itinerary-number">'+(i+1)+'</span><div><strong>'+esc(z.name)+'</strong><small>Niveaux '+z.levels.join('–')+' · '+complete+' / '+items.length+' étapes terminées</small></div><div class="binch-zone-itinerary-buttons"><button data-zone-route="'+esc(z.id)+'" data-action="select" type="button">Ouvrir</button><button data-zone-route="'+esc(z.id)+'" data-action="up" type="button"'+(i===0?' disabled':'')+' aria-label="Monter '+esc(z.name)+'">↑</button><button data-zone-route="'+esc(z.id)+'" data-action="down" type="button"'+(i===ordered.length-1?' disabled':'')+' aria-label="Descendre '+esc(z.name)+'">↓</button><button data-zone-route="'+esc(z.id)+'" data-action="remove" type="button" aria-label="Retirer '+esc(z.name)+'">×</button></div></article>'}).join(''):'<p class="muted">Ton trajet est vide. Sélectionne une zone et ajoute-la au parcours.</p>';
  $('binch-zone-tasks').innerHTML=tasks.length?tasks.map(t=>'<div class="binch-zone-task'+(t.done?' done':'')+'"><button type="button" data-zone-task="'+esc(t.id)+'" data-action="toggle" aria-pressed="'+t.done+'">'+(t.done?'✓':'○')+'</button><span>'+esc(t.title)+'</span><button type="button" data-zone-task="'+esc(t.id)+'" data-action="remove" aria-label="Supprimer '+esc(t.title)+'">×</button></div>').join(''):'<p class="muted">Aucune étape personnelle enregistrée pour cette zone.</p>';
  if(previously!==state.zone)document.dispatchEvent(new CustomEvent('binch:zone-change',{detail:{zone:state.zone}}));
 }
