@@ -1,0 +1,46 @@
+/* La Binch — Bourse d'Azeroth : tableau économique local, UI non bloquante */
+.binch-ah{--ah-border:#75684b;--ah-paper:#14231c;max-width:1450px;margin:16px auto 80px;padding:clamp(14px,2.6vw,30px);border:1px solid var(--ah-border);border-radius:16px;background:linear-gradient(145deg,#17251e,#0b1514);color:#f1e5cb;box-shadow:0 16px 40px #0006}
+.binch-ah>header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.binch-ah h1{font:700 clamp(1.7rem,4vw,2.6rem) Cinzel,Georgia,serif;color:#f4d497;margin:.15em 0}
+.binch-ah h2{font:700 1.15rem Cinzel,Georgia,serif;color:#f2d7a4;margin:0 0 14px}
+.binch-ah h3{font:700 .97rem Cinzel,Georgia,serif;color:#e9d0a5;margin:18px 0 10px}
+.binch-ah p{line-height:1.5;color:#b9cebc;font-size:.83rem}
+.binch-ah .binch-ah-warning{padding:13px 16px;border-left:3px solid #d9ac6d;background:#2b281b;color:#f0d8aa;border-radius:6px}
+.binch-ah-status{padding:7px 13px;border:1px solid #a58a5a;background:#2b3428;color:#f4d29c;border-radius:20px;font-size:.78rem}
+.binch-ah-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:16px;margin:20px 0}
+.binch-ah-grid>section,.binch-ah>section{min-width:0;padding:18px;border:1px solid #536b55;border-radius:12px;background:var(--ah-paper)}
+.binch-ah button{min-height:36px;padding:8px 12px;border:1px solid #a38a5f;border-radius:7px;background:#2b4738;color:#f6dfa9;cursor:pointer;font:600 .79rem Inter,system-ui,sans-serif}
+.binch-ah button:focus-visible{outline:2px solid #ffe0a0;outline-offset:2px}
+.binch-ah button:hover{border-color:#ead59e;background:#3c5844}
+.binch-ah input,.binch-ah select{min-width:0;max-width:100%;width:100%;padding:9px 10px;background:#0d1c17;border:1px solid #657764;border-radius:7px;color:#f4e8cd;font:inherit}
+.binch-ah label{font-size:.74rem;color:#d8e2d2;display:grid;gap:5px}
+.binch-ah input[readonly]{opacity:.75}
+#binch-ah-add,#binch-ah-trade-form,#binch-ah-alert-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr));gap:9px;align-items:end}
+#binch-ah-add>button,#binch-ah-trade-form>button{min-height:41px}
+.binch-ah-toolbar,.binch-ah-calc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:17px 0 9px}
+.binch-ah-item{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) auto;gap:10px;align-items:center;border-bottom:1px solid #3b5444;padding:11px 4px}
+.binch-ah-item strong,.binch-ah-item small{display:block;overflow-wrap:anywhere}
+.binch-ah-item>div>strong{color:#eddaa9}
+.binch-ah-item small{color:#adc4ad;font-size:.72rem}
+.binch-ah-price{text-align:right}.binch-ah-price strong{color:#f0ca7d}
+#binch-ah-list{max-height:520px;overflow-y:auto;scrollbar-width:thin}
+#binch-ah-advice{border:1px solid #486453;border-radius:8px;background:#102019;padding:13px}
+#binch-ah-advice strong{color:#ebd19d}
+#binch-ah-advice dl{display:grid;gap:6px;margin:10px 0}
+#binch-ah-advice dl>div{display:flex;justify-content:space-between;gap:10px;font-size:.79rem}
+#binch-ah-advice dt{color:#abc8b2}#binch-ah-advice dd{margin:0;text-align:right;color:#f3dca8}
+#binch-ah-advice>small{color:#a3bda9;font-size:.7rem}
+#binch-ah-math{display:grid;gap:8px;padding:12px;border:1px solid #766b4d;border-radius:8px;background:#14241b}
+#binch-ah-math>span{display:flex;justify-content:space-between;gap:12px}
+#binch-ah-math b{color:#efcf8e}#binch-ah-math small{font-size:.7rem}
+#binch-ah-alerts-list article,#binch-ah-trades-list article{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid #3b5243;padding:9px 0}
+#binch-ah-alerts-list strong,#binch-ah-alerts-list small,#binch-ah-trades-list strong,#binch-ah-trades-list small{display:block}
+#binch-ah-alerts-list small,#binch-ah-trades-list small{font-size:.72rem;color:#b4c7b5}
+.binch-ah details{margin-top:15px;padding:10px;border:1px solid #465a49;border-radius:8px}
+.binch-ah details summary{cursor:pointer;font-weight:700;color:#e4ca99}
+.binch-ah details input[type=file]{margin:10px 0}
+.binch-ah details a{color:#f3d692}
+.binch-ah footer{font-size:.75rem;color:#aabfab;text-align:right;margin-top:14px}
+@media(max-width:900px){.binch-ah-grid{grid-template-columns:1fr}}
+@media(max-width:610px){.binch-ah-item{grid-template-columns:1fr auto}.binch-ah-item .binch-ah-price{text-align:left}.binch-ah-item>button{grid-column:2;grid-row:1/3}.binch-ah-toolbar,.binch-ah-calc{grid-template-columns:1fr 1fr}.binch-ah-grid>section,.binch-ah>section{padding:12px}}
+@media(prefers-reduced-motion:reduce){.binch-ah *{transition:none!important;animation:none!important}}
