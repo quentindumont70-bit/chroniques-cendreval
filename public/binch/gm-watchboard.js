@@ -12,7 +12,8 @@ function snapshot(){
  const requests=(Array.isArray(planner.requests)?planner.requests:[]).filter(r=>r&&!r.closed&&text(r.title)).sort((a,b)=>Number(b.priority==='urgent')-Number(a.priority==='urgent')||Date.parse(a.deadline||'9999')-Date.parse(b.deadline||'9999')).slice(0,12);
  const resources=(Array.isArray(bank)?bank:[]).filter(r=>r&&text(r.item)&&num(r.count)>0);
  const overdue=requests.filter(r=>r.deadline&&Number.isFinite(Date.parse(r.deadline))&&Date.parse(r.deadline)<now);
- return {upcoming,requests,resources,overdue};
+ const fulfillment=requests.map(r=>({id:r.id,title:r.title,needed:num(r.quantity),received:(Array.isArray(r.contributions)?r.contributions:[]).filter(c=>c.status==='confirmed').reduce((n,c)=>n+num(c.quantity),0)}));
+ return {upcoming,requests,resources,overdue,fulfillment};
 }
 function roleCounts(e){
  const confirmed=(Array.isArray(e.attendees)?e.attendees:[]).filter(a=>a?.status==='Confirmé');
@@ -31,7 +32,7 @@ function summary(s){
   lines.push('• '+text(e.title)+' — '+e.date+' '+text(e.time,5)+' | '+m.c.total+'/'+m.size+' confirmés | '+m.slots+' places non confirmées | tanks '+m.c.tank+', soins '+m.c.heal+', DPS '+m.c.dps+', flex '+m.c.flex);
  }
  lines.push('',s.requests.length?'Demandes ouvertes :':'Aucune demande ouverte dans le Planner local.');
- for(const r of s.requests.slice(0,7))lines.push('• '+text(r.title)+' × '+num(r.quantity)+(r.priority==='urgent'?' [URGENT]':'')+(r.deadline?' · échéance '+new Date(r.deadline).toLocaleDateString('fr-FR'):''));
+ for(const r of s.requests.slice(0,7))lines.push('• '+text(r.title)+' · reçus '+(s.fulfillment.find(f=>f.id===r.id)?.received||0)+' / '+num(r.quantity)+(r.priority==='urgent'?' [URGENT]':'')+(r.deadline?' · échéance '+new Date(r.deadline).toLocaleDateString('fr-FR'):''));
  lines.push('','Coffre : '+s.resources.length+' ligne(s) déclarée(s), à confirmer avec les propriétaires.','Copie manuelle pour Discord ; aucun message publié automatiquement.');
  return lines.join('\n');
 }
@@ -44,7 +45,7 @@ function render(){
   const m=missing(e),hours=new Date(stamp(e)).toLocaleString('fr-FR',{dateStyle:'medium',timeStyle:'short'});
   return '<article class="binch-gm-watch-event"><div><strong>'+esc(text(e.title))+'</strong><small>'+esc(hours)+' · '+m.c.total+'/'+m.size+' confirmés localement · '+m.slots+' place(s) non confirmée(s)</small><small>Tank '+m.c.tank+' · Soins '+m.c.heal+' · DPS '+m.c.dps+' · Flex '+m.c.flex+'</small></div><button type="button" data-gm-watch-open="calendar">Gérer</button></article>';
  }).join(''):'<p>Aucune sortie à venir dans le calendrier local. Ajoute un rendez-vous avant de convoquer les joueurs.</p>';
- $('binch-gm-watch-urgent').innerHTML=s.requests.length?s.requests.slice(0,5).map(r=>'<article><strong>'+esc(text(r.title))+'</strong><span>'+num(r.quantity)+' demandé(s)'+(r.priority==='urgent'?' · Urgent':'')+(r.deadline&&Number.isFinite(Date.parse(r.deadline))?' · échéance '+esc(new Date(r.deadline).toLocaleDateString('fr-FR'))+(Date.parse(r.deadline)<Date.now()?' (dépassée)':''):'')+'</span></article>').join(''):'<p>Aucune demande ouverte dans le Planner local.</p>';
+ $('binch-gm-watch-urgent').innerHTML=s.requests.length?s.requests.slice(0,5).map(r=>'<article><strong>'+esc(text(r.title))+'</strong><span>'+Math.min(num(r.quantity),s.fulfillment.find(f=>f.id===r.id)?.received||0)+' / '+num(r.quantity)+' réception(s) confirmée(s) manuellement'+(r.priority==='urgent'?' · Urgent':'')+(r.deadline&&Number.isFinite(Date.parse(r.deadline))?' · échéance '+esc(new Date(r.deadline).toLocaleDateString('fr-FR'))+(Date.parse(r.deadline)<Date.now()?' (dépassée)':''):'')+'</span></article>').join(''):'<p>Aucune demande ouverte dans le Planner local.</p>';
 }
 function navigate(destination){
  if(destination==='calendar'){const element=document.getElementById('binch-guild-calendar');if(element){element.scrollIntoView({behavior:'smooth',block:'start'});return}}
@@ -60,6 +61,8 @@ function mount(){
  box.addEventListener('click',e=>{const b=e.target.closest('[data-gm-watch-open]');if(b)navigate(b.dataset.gmWatchOpen)});
  $('binch-gm-watch-copy').onclick=async()=>{const value=summary(snapshot());try{if(!navigator.clipboard?.writeText)throw Error('Clipboard unavailable');await navigator.clipboard.writeText(value);$('binch-gm-watch-status').textContent='Briefing copié, à coller dans Discord.'}catch{window.prompt('Copier pour Discord',value)}};
  document.addEventListener('binch:calendar-change',render);
+ document.addEventListener('binch:planner-change',render);
+ document.addEventListener('binch:chest-change',render);
  window.addEventListener('storage',e=>{if(['binch.guild.events.v1','binch.guild.planner.v1','binch.guild.bank.v1'].includes(e.key))render()});
  const tab=document.querySelector('#app nav.nav [data-page="gm"]');tab?.addEventListener('click',render);
  render();return true;
