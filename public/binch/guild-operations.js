@@ -127,5 +127,6 @@ function promiseMount(){
  promiseRender();
 }
 function mount(){gmMount();lfgMount();promiseMount()}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
+const start=()=>setTimeout(mount,0); // Other deferred modules finish mounting first.
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
