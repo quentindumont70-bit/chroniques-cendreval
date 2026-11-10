@@ -59,7 +59,7 @@ function validateRoute(){
 function render(){
  const host=$('binch-spec-tree-visual');if(!host)return;
  const select=$('binch-specs-level'),level=Number(select?.value)||10,g=$('binch-specs-selection')?.textContent||'';
- if(!g.includes('Druide')){host.hidden=true;return}host.hidden=false;
+ if(!g.includes('Druide')){host.hidden=true;const old=$('binch-specs-route');if(old)old.hidden=false;return}host.hidden=false;const old=$('binch-specs-route');if(old)old.hidden=Boolean(dataset);
  if(!dataset){host.innerHTML='<div class="binch-tree-info"><strong>Arbres du druide Forever</strong><p>'+esc(error||'Chargement des arbres de talents sourcés…')+'</p><a href="'+calc+'" target="_blank" rel="noopener noreferrer">Voir le calculateur Forever</a></div>';return}
  const counts=points(level),next=routes.find(x=>x.level===level+1),valid=validateRoute();
  const treeHTML=dataset.map(t=>{
