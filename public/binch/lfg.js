@@ -4,7 +4,7 @@ const KEY='binch.lfg.local.v1',DISCORD_KEY='binch.discord.url.v1';
 const $=s=>document.querySelector(s);
 const escapeHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const load=()=>{try{let x=JSON.parse(localStorage.getItem(KEY));return Array.isArray(x)?x:[]}catch{return []}};
-const persist=x=>{try{localStorage.setItem(KEY,JSON.stringify(x))}catch{}};
+const persist=x=>{try{localStorage.setItem(KEY,JSON.stringify(x));document.dispatchEvent(new Event('binch:lfg-local-change'))}catch{}};
 const dateLabel=x=>x&&Number.isFinite(+new Date(x))?new Date(x).toLocaleString('fr-FR',{dateStyle:'full',timeStyle:'short'}):'Dès que possible';
 const safeUrl=value=>{try{const u=new URL(value);return u.protocol==='https:' && ['discord.com','discord.gg','www.discord.com','www.discord.gg'].includes(u.hostname)?u.href:''}catch{return ''}};
 const escapeICS=s=>String(s??'').replace(/[\r\n]+/g,' ').replace(/([,;\\])/g,'\\$1');
