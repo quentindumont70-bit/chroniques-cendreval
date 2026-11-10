@@ -125,7 +125,7 @@ function toggle(force){
  $('binch-editor-toggle').textContent=editing?'✓ Terminer':'✥ Modifier l’interface';
  $('binch-editor-toggle').setAttribute('aria-pressed',String(editing));
  $('binch-edit-toolbar').hidden=!editing;
- if(editing)setupTargets();else{clearTransient();clearTargets()}
+ if(editing)setupTargets();else{clearTransient();applySaved()}
 }
 function reset(){
  if(!window.confirm('Réinitialiser la disposition de cette page sur cet appareil ?'))return;
