@@ -53,12 +53,20 @@ de l'utilisateur. Avant chaque chantier : `git fetch origin` puis lire
    fr), pages ForeverSpec resto/balance vérifiées vivantes et sourcées (resto : monter en
    farouche puis respé 11/0/40 au 60 ; équilibre : 41/0/10, Forme de sélénien au 42).
 
-7. **À FAIRE (prochain)** — Fiches de connaissances Faith dérivées du build farouche vérifié :
-   `public/binch/faith-knowledge/data/builds.json`, fiches conformes au `schema-v1.json` de
-   ChatGPT (README `ded7732` : c'est le chemin prévu pour la contribution OpenCode).
-   Validation par le `validator.js` et les tests de ChatGPT extraits de `origin/main`,
-   exécutés en Node réel. Sans toucher aux autres fichiers du corpus (moteur/manifest =
-   ChatGPT) ; entrée `manifest.json` à ajouter à la réconciliation (documentée dans
+7. **TERMINÉ** — Fiches de connaissances Faith dérivées du build farouche vérifié (commit
+   `545d511`, poussé) : `public/binch/faith-knowledge/data/builds.json`, 27 fiches conformes
+   au `schema-v1.json` de ChatGPT (README `ded7732` : c'est le chemin prévu pour la
+   contribution OpenCode) — 3 builds (itinéraire Icy Veins 51 points 10→60, final 9/32/10 ;
+   DPS félin raid ForeverSpec 9/32/10 ; tank ours ForeverSpec 0/41/10) + 24 talents
+   (tooltips de l'export officiel talentsforever du 4 nov, prérequis, présence dans chaque
+   build, écarts entre sources documentés en `notes`). Sources vérifiées vivantes le 10 nov
+   (Icy Veins Meyra 4 nov ; export `talentsforever.com/export/druid.json` CC BY 4.0 + page
+   `/druid/builds` ; ForeverSpec 6 nov, client 1.60.1.70790). Validation en Node réel par le
+   `validator.js` de ChatGPT : `ok:true, count:27` ; moteur `search.js` : 6 requêtes
+   positives correctes sur corpus combiné core+builds (30 ids uniques) et 4 contre-exemples
+   hors corpus → `found:false`. Note « variante ForeverSpec » de `specs-guide.js` affinée
+   (ordre complet 9/37/5 du 6 nov) + bump `?v=003`. Aucun autre fichier du corpus touché ;
+   entrée `manifest.json` à ajouter par ChatGPT à la réconciliation (documentée dans
    MESSAGE-POUR-CHATGPT.md).
 
 8. **TERMINÉ** — Audit console des autres pages (QA associée) : parcours des 18 onglets de la
@@ -78,8 +86,25 @@ de l'utilisateur. Avant chaque chantier : `git fetch origin` puis lire
     local `grimoire-todo`), statuts honnêtes ([CODE COMMITÉ SUR BRANCHE][TEST NAVIGATEUR],
     limites explicites, non-fusion dans `main` rappelée). Commit du dépôt Grimoire à pousser.
 
-11. **À FAIRE** — Revue finale avant passation : `node scripts/check-binch.mjs`, diff complet,
-    bilan des limites (ce qui n'est PAS testé : jeu réel, WoW client, installateur).
+11. **TERMINÉ** — Revue finale avant passation : `node scripts/check-binch.mjs` (67 scripts,
+    0 erreur, 1 avertissement LFG Supabase préexistant) ; diff complet de la branche depuis
+    le merge-base `0311770` (5 commits, 9 fichiers, +866/−40) ; zone de conflit `index.html`
+    cartographiée (mes 4 bumps de cache + suppression des 3 liens CSS morts, contre le
+    chargeur Faith `faith-knowledge/*` ajouté par `main` sur la même ligne de scripts) ;
+    smoke test navigateur de l'onglet Specs après `v003` (chargement + rechargement : 0
+    erreur, 0 avertissement console ; note ForeverSpec complète rendue avec son lien) ;
+    bilan des limites dans MESSAGE-POUR-CHATGPT.md.
+
+12. **À FAIRE (proposition)** — Fiches corpus druide restauration/équilibre, mêmes règles de
+    preuve (sources Icy Veins/ForeverSpec vérifiées vivantes), après arbitrage ChatGPT sur
+    le fichier cible (`data/builds.json` ou nouveau `data/specs.json`) et l'entrée manifest.
+
+13. **À FAIRE (proposition)** — Itinéraires de leveling multi-classes sourcés (hub leveling
+    Icy Veins Forever) pour les cartes non druides de l'onglet Specs, aujourd'hui sans ordre
+    certifié.
+
+14. **À FAIRE (proposition)** — Exécuter l'option retenue par ChatGPT pour l'architecture
+    Bourse (chantier 9) si un arbitrage paraît dans CHATGPT-STATUS.md.
 
 ## Notes de garde-fou
 

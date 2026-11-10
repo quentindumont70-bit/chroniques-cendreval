@@ -3,6 +3,78 @@
 Journal des réalisations d'OpenCode. Une entrée par lot de travail : contenu, commits, tests,
 difficultés, décisions.
 
+## 2026-11-10 — Lot 4 : corpus Faith `data/builds.json` (chantier 7) + revue finale (chantier 11)
+
+### Réalisé
+- `public/binch/faith-knowledge/data/builds.json` (commit `545d511`, poussé) : 27 fiches
+  conformes au `schema-v1.json` et au README corpus de ChatGPT (`ded7732`) — résumés rédigés
+  originaux, `scope=forever`, `verification=verifie`, sources limitées aux 4 URLs vérifiées
+  vivantes le 10 nov (Icy Veins « Feral Druid Leveling » Meyra 4 nov ; export officiel
+  `talentsforever.com/export/druid.json` CC BY 4.0 généré le 4 nov avec hotfixes serveur du
+  3 nov ; ForeverSpec « Build Druide Farouche » 6 nov, client 1.60.1.70790 ;
+  `talentsforever.com/druid/builds`).
+  - 3 fiches `build` : itinéraire de leveling Icy Veins (51 points 10→60, ordre exact,
+    final 9/32/10, Frappes de prédateur 29 puis 33–34) ; DPS félin raid ForeverSpec
+    (9/32/10, ordre complet, alternative Changeforme naturel) ; tank ours ForeverSpec
+    (0/41/10, menace 115 % depuis les notes du 2 nov).
+  - 24 fiches `talent` : tooltips de l'export officiel (valeurs rang par rang), prérequis
+    (Lacérer←Furie sauvage, Pourfendre et déchirer←Frappes de prédateur, Morsure
+    primordiale←Chef de la meute, Puissance fluctuante←Predatory Discipline), présence dans
+    chaque build, différences Forever vs Classic.
+- Écarts entre sources documentés en `notes` des fiches, export officiel préféré :
+  Instinct farouche (ForeverSpec « Changements vs Classic » : 3 %/0,6 niv vs export
+  10/20/30 %/1–3 niv) ; Furie sauvage (+20 % ForeverSpec vs +10 % export) ; Puissance
+  fluctuante (révision antérieure « 0 Mana » non résolue, corrigée en « 55 % du mana de
+  base → 40 Énergie ») ; Morsure primordiale (le grimoire client liste aussi un sort appris
+  niveau 40 à 100 %+77 distinct du talent 100 %+42 — relation non tranchée, aucune
+  assertion).
+- Note « variante ForeverSpec » de `specs-guide.js` affinée avec l'ordre intégral 9/37/5 de
+  la page du 6 nov (plus de différences que l'ancienne note) + bump `specs-guide.js?v=003`
+  dans `index.html`.
+- Revue finale (chantier 11) : `check-binch.mjs`, diff complet depuis le merge-base
+  `0311770` (5 commits, 9 fichiers, +866/−40), cartographie de la zone de conflit
+  `index.html`, smoke test navigateur de l'onglet Specs.
+
+### Commits
+- `545d511` feat(binch): add sourced druid builds corpus for Faith (data/builds.json)
+  (poussé sur `origin/opencode-golipette`).
+- To Do officielle : entrée « Livraison OpenCode — corpus builds.json » ajoutée au dépôt
+  `quentindumont70-bit/WoW-Forever-Grimoire` (clone local `grimoire-todo`).
+
+### Tests
+- Validateurs de ChatGPT extraits d'`origin/main`, exécutés en Node réel (v24.18.1) :
+  `validator.check()` sur `builds.json` → `{"ok":true,"errors":[],"count":27}` ;
+  `core.json` non régressé (3 fiches) ; 30 ids uniques sur corpus combiné.
+- Moteur `search.js` sur corpus combiné core+builds : « build farouche leveling » →
+  fiche itinéraire ; « puissance fluctuante » → fiche talent ; « chef de la meute »,
+  « build tank ours », « lacérer menace ours » → bonnes fiches ; « faith local » → fiche
+  système de ChatGPT ; contre-exemples hors corpus (« ragnaros », « épée du berserker »,
+  « quête du val des tempêtes », « recette alchimie flask ») → `found:false` (refus
+  d'invention). Citations renvoyées avec URLs HTTPS et dates.
+- `node scripts/check-binch.mjs` : 67 scripts, 0 erreur, 1 avertissement (LFG Supabase
+  non configuré — préexistant).
+- Smoke test navigateur (serveur statique local port 8971) : page chargée, onglet Specs
+  actif, note ForeverSpec complète rendue avec lien externe correct ; 0 erreur, 0
+  avertissement console au chargement et au rechargement.
+
+### Difficultés
+- ChatGPT n'a pas exécuté ses propres tests en Node réel : ses fichiers n'existent que sur
+  `origin/main`. Extraction des UMD (`validator.js`, `search.js`) vers un répertoire temp
+  local pour les exécuter sur mon fichier neuf avant tout commit.
+- `data/builds.json` n'est pas encore chargé par la page : `manifest.json` de ChatGPT ne
+  liste que `data/core.json` (contrainte volontaire, domaine corpus = ChatGPT). Les tests
+  Node prouvent la conformité ; l'intégration navigateur réelle attend l'entrée manifest.
+
+### Décisions
+- Contribution strictement limitée au nouveau fichier `data/builds.json` (périmètre prévu
+  par le README `ded7732` et CHATGPT-STATUS « il pourra alimenter le futur
+  data/builds.json ») ; aucun fichier existant du corpus modifié ; entrée `manifest.json`
+  laissée à ChatGPT (documentée dans MESSAGE-POUR-CHATGPT.md).
+- Export officiel talentsforever préféré au tableau « Changements vs Classic » de
+  ForeverSpec en cas d'écart ; l'écart reste documenté dans la fiche.
+- Builds 60 qualifiés de théoriques dans les fiches (raids Forever ouvrent le 9 déc 2026,
+  aucun test de raid réel).
+
 ## 2026-11-10 — Lot 3 : Specs farouche officiel (réécriture + QA + audit console)
 
 ### Réalisé
