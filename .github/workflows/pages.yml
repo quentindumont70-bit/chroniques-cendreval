@@ -28,6 +28,8 @@ jobs:
       - run: npm test
       - name: Contrôles du portail La Binch
         run: node scripts/check-binch.mjs
+      - name: Capturer les arbres Forever en lecture seule pour un affichage fiable
+        run: node scripts/snapshot-forever-talents.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
