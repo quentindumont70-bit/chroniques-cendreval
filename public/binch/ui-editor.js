@@ -119,6 +119,13 @@ function end(){
  }
  drag=null;guides(null,null);document.body.classList.remove('binch-edit-dragging');
 }
+ function applySaved(){
+  if(editing)return;
+  clearTargets();
+  targets().forEach((el,i)=>applyTo(el,identity(el,i),i));
+  document.querySelectorAll('.binch-edit-target').forEach(el=>el.classList.remove('binch-edit-target'));
+ }
+
 function toggle(force){
  editing=typeof force==='boolean'?force:!editing;
  document.body.classList.toggle('binch-editing',editing);
@@ -155,12 +162,6 @@ function mount(){
   if(e.target.closest('#app nav.nav [data-page]'))setTimeout(setupTargets,0)
  },false);
  window.addEventListener('resize',()=>{if(editing){clearTransient();setupTargets()}else applySaved()});
- function applySaved(){
-  if(editing)return;
-  clearTargets();
-  targets().forEach((el,i)=>applyTo(el,identity(el,i),i));
-  document.querySelectorAll('.binch-edit-target').forEach(el=>el.classList.remove('binch-edit-target'));
- }
  // Apply persistent offsets when pages change via navigation; no permanent polling.
  document.addEventListener('click',e=>{
   if(!e.target.closest('#app nav.nav [data-page]'))return;
