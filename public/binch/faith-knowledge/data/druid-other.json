@@ -1,0 +1,462 @@
+[
+  {
+    "id": "build:druid-restoration-heal-60",
+    "topic": "build",
+    "title": "Druide restauration — build soigneur de raid au niveau 60 (11/0/40)",
+    "summary": "Build de soigneur de raid au niveau 60 de ForeverSpec (6 nov 2026) : 11 Équilibre / 0 Combat farouche / 40 Restauration. Ordre proposé : Cœur de fauve (10–14), Naturaliste (15–19), Renvoi (20–22), Don de la Nature (23–27), Floraison (28), Tranquillité de l’esprit (29–33), Récupération améliorée (34–36), Prompte guérison (37), Rapidité de la nature (38), Esprit vif (39–41), Tranquillité améliorée (42–43), Rétablissement amélioré (44–48), Croissance sauvage (49), puis en Équilibre Genèse (50–54), Lueur de la lune (55–57), Majesté de la nature (58–59) et Splendeur de la nature (60). L’Esprit porte le build : Renvoi laisse 50 % de la régénération de mana pendant les incantations, Esprit vif ajoute 15 % d’Esprit et Floraison soigne pour 100 % de l’Esprit à l’expiration de Récupération ou Rétablissement. En raid : Récupération sur les tanks, Croissance sauvage sur le groupe qui prend des dégâts (3 s d’incantation, −0,5 s avec Naturaliste), Prompte guérison sur les chutes rapides, Rapidité de la nature + Toucher guérisseur pour les urgences. Caractéristiques : puissance des soins, Esprit, Intelligence, puis critique et hâte. Théorique jusqu’à l’ouverture des raids le 9 décembre 2026.",
+    "class": "Druide",
+    "spec": "Restauration",
+    "levelMin": 60,
+    "levelMax": 60,
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://foreverspec.com/fr/classes/druid/restoration/", "label": "ForeverSpec — Build Druide Restauration (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/restoration-druid-leveling", "label": "Icy Veins — Restoration Druid Leveling (Voulk, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "restauration", "build", "raid", "soigneur", "niveau 60", "11-0-40", "esprit", "foreverspec"],
+    "notes": "Alternatives ForeverSpec : Discrétion 3 (menace des sorts de Nature et des Arcanes −30 %) à la place de Rétablissement amélioré 3 si vous prenez l’aggro — Bénédiction de Salut n’existe plus dans WoW Forever ; ou Focalisation de la nature 5 + Discrétion 3 + Tranquillité de l’esprit 2 au lieu de Cœur de fauve 5 + Tranquillité de l’esprit 5 (moins de recul et de menace, mana plus cher). Hotfix du 30 oct et notes du 2 nov : Floraison a remplacé Don de la Terre-mère, Cœur de fauve est passé du Combat farouche à la Restauration, Renvoi et Discrétion ont échangé leurs rangées, Naturaliste accélère aussi Croissance sauvage, Croissance sauvage incante en 3 s (les anciens guides la décrivaient instantanée) et Prompte guérison ne consomme que les HoT que vous avez lancés vous-mêmes. Pour le leveling, ForeverSpec et Icy Veins recommandent de monter en Farouche (ou Équilibre) et de respécialiser au 60.",
+    "author": "OpenCode"
+  },
+  {
+    "id": "build:druid-balance-leveling",
+    "topic": "build",
+    "title": "Druide équilibre — itinéraire de leveling 51 points du niveau 10 au 60 (final 41/0/10)",
+    "summary": "Itinéraire de leveling druide équilibre de ForeverSpec (6 nov 2026) : 41 Équilibre / 0 Combat farouche / 10 Restauration. Ordre proposé : Colère améliorée (10–14), Lueur de la lune (15–17), Eclat lunaire amélioré (18–19), Majesté de la nature (20–21), Splendeur de la nature (22), Allonge de la Nature (23–24), Essaim d’insectes (25), Vengeance (26–30), Grâce de la nature (31), Genèse (32–36), Fureur lunaire (37–41), Forme de sélénien (42), Focalisation de la nature (43–47), Naturaliste (48–52), Feu stellaire amélioré (53–57), Éclipse (58–60). Colère devient un remplissage bon marché : Colère améliorée retire 0,5 s d’incantation et divise son coût de mana par deux au rang 5, Lueur de la lune réduit de 25 % le coût des sorts de dégâts. Rotation : Epines et Marque du fauve actifs, pull à la Colère, Eclat lunaire et Essaim d’insectes sur les monstres coriaces, puis rester en Forme de sélénien à partir du niveau 42 (armure des objets ×4,6). Le mana est la limite : buvez souvent ou finissez les monstres en forme d’ours. Le guide Icy Veins (Voulk, 4 nov 2026) confirme la logique : Colère améliorée d’emblée, Vengeance plus tard (peu de critique en leveling), Éclipse en fin de parcours.",
+    "class": "Druide",
+    "spec": "Équilibre",
+    "levelMin": 10,
+    "levelMax": 60,
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://foreverspec.com/fr/classes/druid/balance/", "label": "ForeverSpec — Build Druide Équilibre (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/balance-druid-leveling", "label": "Icy Veins — Balance Druid Leveling (Voulk, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "équilibre", "leveling", "build", "itinéraire", "pex", "talents", "41-0-10", "sélénien"],
+    "notes": "Alternatives ForeverSpec : variante multi-DoT avec Sarments améliorés 3 et Lacis 2 au lieu de Feu stellaire amélioré (immobilisez jusqu’à trois monstres, posez les DoT sur tous, achevez à la Colère — plus rapide, plus risqué) ; Cœur de fauve 5 au lieu de Focalisation de la nature 5 si vous êtes rarement interrompu. Écart documenté entre sources : Icy Veins place « Forme de sélénien possible » au jalon du niveau 40 alors que l’ordre ForeverSpec la prend au 42 ; les deux s’accordent sur Essaim d’insectes au 25 et Innervation au 40. ForeverSpec note que beaucoup de joueurs montent en Farouche et passent Équilibre au 60 (plus rapide).",
+    "author": "OpenCode"
+  },
+  {
+    "id": "build:druid-balance-raid-moonkin-60",
+    "topic": "build",
+    "title": "Druide équilibre — build DPS sélénien de raid au niveau 60 (41/0/10)",
+    "summary": "Build de raid DPS distance au niveau 60 de ForeverSpec (6 nov 2026) : 41 Équilibre / 0 Combat farouche / 10 Restauration. Ordre : Colère améliorée (10–14), Genèse (15–19), Lueur de la lune (20–22), Eclat lunaire amélioré (23–24), Majesté de la nature (25–26), Allonge de la Nature (27–28), Splendeur de la nature (29), Essaim d’insectes (30), Vengeance (31–35), Feu stellaire amélioré (36–40), Grâce de la nature (41), Éclipse (42–44), Fureur lunaire (45–49), Forme de sélénien (50), puis Cœur de fauve (51–55) et Naturaliste (56–60). En raid, restez en Forme de sélénien : l’aura donne 3 % de coup critique au groupe ou raid à 45 mètres et double le déclenchement d’Augure de clarté. Rotation : Eclat lunaire et Essaim d’insectes si le combat dure, deux Colère chargent Éclipse, puis Feu stellaire à 2,5 s (3,5 s de base −0,5 s de Feu stellaire amélioré, −0,5 s d’Éclipse) ; dépensez Augure de clarté sur Feu stellaire ; Grâce de la nature accélère l’incantation après chaque critique. Toucher des sorts en priorité (Allonge de la Nature en couvre 4 %), puis puissance des sorts et critique (Vengeance double le bonus de dégâts critiques). Théorique jusqu’aux raids du 9 décembre 2026.",
+    "class": "Druide",
+    "spec": "Équilibre",
+    "levelMin": 60,
+    "levelMax": 60,
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://foreverspec.com/fr/classes/druid/balance/", "label": "ForeverSpec — Build Druide Équilibre (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "équilibre", "build", "raid", "dps", "distance", "niveau 60", "41-0-10", "sélénien", "éclipse"],
+    "notes": "Alternatives ForeverSpec : 36/0/15 avec Focalisation de la nature 5 à la place de Genèse (populaire dans les simulateurs de talents, mais Genèse ajoute 10 % aux dégâts périodiques d’Eclat lunaire et d’Essaim d’insectes) ; 38/0/13 en remplaçant Genèse 3 par Renvoi 3 si le mana manque ; Focalisation de la nature au lieu de Cœur de fauve sur les combats à forts dégâts de zone. Les ratios exacts entre Colère et Feu stellaire restent à tester au niveau 60 — ForeverSpec publie ce build comme point de départ avant les premiers logs de raid.",
+    "author": "OpenCode"
+  },
+  {
+    "id": "talent:druid-reflection",
+    "topic": "talent",
+    "title": "Renvoi (Reflection) — talent druide Restauration",
+    "summary": "Trois rangs en Restauration (2e rangée). Chaque rang permet à une part de votre régénération de mana de continuer pendant les incantations : 17 % au rang 1, 33 % au rang 2, 50 % au rang 3. Avec l’Esprit du build soigneur (Esprit vif, Floraison), c’est le pilier de la tenue de mana en combat. Pris aux niveaux 20–22 du build raid restauration ForeverSpec ; le guide Icy Veins de leveling restauration le signale comme une grosse réduction des pauses pour boire.",
+    "class": "Druide",
+    "spec": "Restauration",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/restoration/", "label": "ForeverSpec — Build Druide Restauration (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/restoration-druid-leveling", "label": "Icy Veins — Restoration Druid Leveling (Voulk, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "restauration", "talent", "renvoi", "reflection", "mana", "régénération", "esprit"]
+  },
+  {
+    "id": "talent:druid-gift-of-nature",
+    "topic": "talent",
+    "title": "Don de la Nature (Gift of Nature) — talent druide Restauration",
+    "summary": "Cinq rangs en Restauration (3e rangée). Chaque rang augmente l’effet de tous vos sorts de soins de 2 %, jusqu’à +10 % au rang 5. Selon le tableau « Changements vs Classic » de ForeverSpec, la formulation Forever précise « tous vos sorts de soins » là où Classic parlait de « tous les sorts de soins ». Pris aux niveaux 23–27 du build raid restauration ForeverSpec, avant Floraison.",
+    "class": "Druide",
+    "spec": "Restauration",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/restoration/", "label": "ForeverSpec — Build Druide Restauration (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "restauration", "talent", "don de la nature", "gift of nature", "soins"]
+  },
+  {
+    "id": "talent:druid-bloom",
+    "topic": "talent",
+    "title": "Floraison (Bloom) — talent druide Restauration",
+    "summary": "Talent à 1 point en Restauration (3e rangée), propre à WoW Forever depuis les notes du 2 novembre : il a remplacé Don de la Terre-mère. Quand votre Récupération ou votre Rétablissement expire naturellement, la cible est instantanément soignée d’un montant égal à 100 % de votre Esprit ; si le HoT expire parce qu’il est dissipé, le soin n’est que de 50 % de votre Esprit. Avec Renvoi et Esprit vif, il transforme l’Esprit en soins gratuits pour un druide qui maintient ses HoT sur plusieurs cibles. Pris au niveau 28 du build raid restauration ForeverSpec.",
+    "class": "Druide",
+    "spec": "Restauration",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/restoration/", "label": "ForeverSpec — Build Druide Restauration (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "restauration", "talent", "floraison", "bloom", "esprit", "hot", "soins"],
+    "notes": "L’export officiel du 4 nov (arbre du client avec hotfixes serveur du 3 nov) et ForeverSpec (données client 1.60.1.70790) donnent la même description. Le remplacement de Don de la Terre-mère date du remaniement de l’arbre (hotfix 30 oct, notes 2 nov) documenté par ForeverSpec.",
+    "author": "OpenCode"
+  },
+  {
+    "id": "talent:druid-tranquil-spirit",
+    "topic": "talent",
+    "title": "Tranquillité de l’esprit (Tranquil Spirit) — talent druide Restauration",
+    "summary": "Cinq rangs en Restauration (4e rangée). Chaque rang réduit de 2 % le coût en mana de Toucher guérisseur et Tranquillité, jusqu’à −10 % au rang 5. Réduction de coût simple sur les deux sorts les plus chers du soigneur druide. Pris aux niveaux 29–33 du build raid restauration ForeverSpec ; la variante alternative de ForeverSpec n’en garde que 2 rangs.",
+    "class": "Druide",
+    "spec": "Restauration",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/restoration/", "label": "ForeverSpec — Build Druide Restauration (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "restauration", "talent", "tranquillité de l’esprit", "tranquil spirit", "mana", "coût"]
+  },
+  {
+    "id": "talent:druid-improved-rejuvenation",
+    "topic": "talent",
+    "title": "Récupération améliorée (Improved Rejuvenation) — talent druide Restauration",
+    "summary": "Trois rangs en Restauration (4e rangée). Chaque rang augmente de 5 % l’effet de Récupération, jusqu’à +15 % au rang 3. C’est le prérequis de Rétablissement amélioré (rang 3 exigé). Récupération étant le HoT posé en permanence sur les tanks en raid, le talent renforce le socle des soins dans le temps. Pris aux niveaux 34–36 du build raid restauration ForeverSpec.",
+    "class": "Druide",
+    "spec": "Restauration",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/restoration/", "label": "ForeverSpec — Build Druide Restauration (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "restauration", "talent", "récupération améliorée", "improved rejuvenation", "hot", "prérequis"]
+  },
+  {
+    "id": "talent:druid-swiftmend",
+    "topic": "talent",
+    "title": "Prompte guérison (Swiftmend) — talent druide Restauration",
+    "summary": "Talent à 1 point en Restauration (4e rangée) : 20 % du mana de base, 40 mètres, instantané, recharge de 15 secondes. Il consomme le Récupération ou le Rétablissement actif sur la cible et la soigne instantanément d’un montant égal à la durée totale du soin périodique restant. C’est le sort de réaction des chutes rapides de vie : le guide Icy Veins de leveling restauration le décrit comme trop efficace pour être gardé uniquement pour les urgences. Depuis les notes du 2 novembre, il ne fonctionne plus que sur les HoT que vous avez lancés vous-mêmes. Pris au niveau 37 du build raid restauration ForeverSpec.",
+    "class": "Druide",
+    "spec": "Restauration",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/restoration/", "label": "ForeverSpec — Build Druide Restauration (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/restoration-druid-leveling", "label": "Icy Veins — Restoration Druid Leveling (Voulk, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "restauration", "talent", "prompte guérison", "swiftmend", "soins", "instantané", "hot"]
+  },
+  {
+    "id": "talent:druid-natures-swiftness",
+    "topic": "talent",
+    "title": "Rapidité de la nature (Nature’s Swiftness) — talent druide Restauration",
+    "summary": "Talent à 1 point en Restauration (5e rangée), exige Naturaliste rang 5. Quand il est activé (recharge de 3 minutes), votre prochain sort de Nature devient un sort instantané. Pour un soigneur, c’est l’urgence : Rapidité de la nature suivi de Toucher guérisseur sauve un tank en chute libre. Pris au niveau 38 du build raid restauration ForeverSpec ; présent aussi dans les builds de sauvetage de toutes les spécialités soignantes du druide.",
+    "class": "Druide",
+    "spec": "Restauration",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/restoration/", "label": "ForeverSpec — Build Druide Restauration (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "restauration", "talent", "rapidité de la nature", "nature’s swiftness", "instantané", "urgence", "prérequis"]
+  },
+  {
+    "id": "talent:druid-living-spirit",
+    "topic": "talent",
+    "title": "Esprit vif (Living Spirit) — talent druide Restauration",
+    "summary": "Trois rangs en Restauration (5e rangée), propre à WoW Forever. Chaque rang augmente votre Esprit de 5 %, jusqu’à +15 % au rang 3. Double intérêt dans le build soigneur : plus de régénération de mana (synergie Renvoi) et des soins de Floraison plus élevés (100 % de l’Esprit à l’expiration des HoT). C’est le prérequis de Croissance sauvage (rang 3 exigé). Pris aux niveaux 39–41 du build raid restauration ForeverSpec.",
+    "class": "Druide",
+    "spec": "Restauration",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/restoration/", "label": "ForeverSpec — Build Druide Restauration (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "restauration", "talent", "esprit vif", "living spirit", "esprit", "mana", "prérequis"]
+  },
+  {
+    "id": "talent:druid-improved-tranquility",
+    "topic": "talent",
+    "title": "Tranquillité améliorée (Improved Tranquility) — talent druide Restauration",
+    "summary": "Deux rangs en Restauration (5e rangée). Au rang 2 : Tranquillité ne génère plus aucune menace (réduction de 100 %) et sa recharge est réduite de 60 % ; au rang 1 les valeurs sont de moitié (50 % et 30 %). En Classic le talent ne réduisait que la menace de moitié : Forever le renforce nettement, utile pour poser le soin de zone du groupe sans reprendre l’aggro — Bénédiction de Salut n’existe plus. Pris aux niveaux 42–43 du build raid restauration ForeverSpec.",
+    "class": "Druide",
+    "spec": "Restauration",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/restoration/", "label": "ForeverSpec — Build Druide Restauration (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "restauration", "talent", "tranquillité améliorée", "improved tranquility", "menace", "soins de zone"]
+  },
+  {
+    "id": "talent:druid-improved-regrowth",
+    "topic": "talent",
+    "title": "Rétablissement amélioré (Improved Regrowth) — talent druide Restauration",
+    "summary": "Cinq rangs en Restauration (6e rangée), exige Récupération améliorée rang 3. Chaque rang ajoute 10 % de chances de coup critique à Rétablissement, jusqu’à +50 % au rang 5. Rétablissement est le soin direct et son HoT alimente Floraison et Prompte guérison : le talent rend ses critiques fréquents. Pris aux niveaux 44–48 du build raid restauration ForeverSpec ; l’alternative Discrétion sacrifie ces 3 points pour de la menace en moins.",
+    "class": "Druide",
+    "spec": "Restauration",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/restoration/", "label": "ForeverSpec — Build Druide Restauration (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "restauration", "talent", "rétablissement amélioré", "improved regrowth", "critique", "soins", "prérequis"]
+  },
+  {
+    "id": "talent:druid-wild-growth",
+    "topic": "talent",
+    "title": "Croissance sauvage (Wild Growth) — talent druide Restauration",
+    "summary": "Talent à 1 point en Restauration (7e rangée), exige Esprit vif rang 3 et 30 points en Restauration : le sort ultime de l’arbre. Coût de 550 mana, portée 40 mètres, incantation de 3 secondes, recharge de 6 secondes. Il soigne la cible et son groupe pendant 7 secondes, l’essentiel du soin étant appliqué au début, puis en ralentissant jusqu’à la fin ; les membres du groupe doivent être à moins de 43,5 mètres de la cible. Naturaliste réduit l’incantation de 0,5 s. Depuis les notes du 2 novembre, Croissance sauvage incante en 3 s — les anciens guides la décrivaient comme instantanée. Prise au niveau 49 du build raid restauration ForeverSpec ; le guide Icy Veins la signale comme possible dès le niveau 40 en leveling restauration.",
+    "class": "Druide",
+    "spec": "Restauration",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/restoration/", "label": "ForeverSpec — Build Druide Restauration (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/restoration-druid-leveling", "label": "Icy Veins — Restoration Druid Leveling (Voulk, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "restauration", "talent", "croissance sauvage", "wild growth", "soins de groupe", "hot", "ultime"],
+    "notes": "Écart entre sources documenté : l’infobulle du talent dans l’export officiel du 4 nov indique 280 points de vie sur 7 s, tandis que le grimoire du client relevé par ForeverSpec (données 1.60.1.70790) liste le sort appris au niveau 40 à 679 points de vie sur 7 s — valeurs de rang ou de niveau différentes, relation non tranchée par les données consultées. Le mécanisme (soin du groupe de la cible sur 7 s, lourd au début) est identique dans les deux sources.",
+    "author": "OpenCode"
+  },
+  {
+    "id": "talent:druid-subtlety",
+    "topic": "talent",
+    "title": "Discrétion (Subtlety) — talent druide Restauration",
+    "summary": "Trois rangs en Restauration (3e rangée). Chaque rang réduit de 10 % la menace générée par vos sorts de Nature et des Arcanes, jusqu’à −30 % au rang 3. En Classic le talent ne visait que les sorts de soins ; Forever l’élargit à tous les sorts de Nature et des Arcanes. Avec la disparition de la Bénédiction de Salut et la menace des soigneurs relevée par les notes du 2 novembre, c’est l’outil anti-aggro du druide. Absent du build raid standard ForeverSpec (prise au niveau 34–36 à la place de Rétablissement amélioré uniquement si vous reprenez l’aggro).",
+    "class": "Druide",
+    "spec": "Restauration",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/restoration/", "label": "ForeverSpec — Build Druide Restauration (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "restauration", "talent", "discrétion", "subtlety", "menace", "aggro"]
+  },
+  {
+    "id": "talent:druid-improved-wrath",
+    "topic": "talent",
+    "title": "Colère améliorée (Improved Wrath) — talent druide Équilibre",
+    "summary": "Cinq rangs en Équilibre (1re rangée). Chaque rang réduit de 0,1 s l’incantation de Colère et de 10 % son coût en mana, jusqu’à −0,5 s et −50 % au rang 5. En Classic le talent ne touchait que l’incantation : la réduction de coût de moitié est propre à Forever. C’est la fondation du leveling équilibre — Colère devient un remplissage que vous pouvez lancer longtemps entre deux pauses pour boire — et le premier talent des deux builds équilibre ForeverSpec (10–14). Le guide Icy Veins balance (Voulk, 4 nov) le prend « immédiatement ».",
+    "class": "Druide",
+    "spec": "Équilibre",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/balance/", "label": "ForeverSpec — Build Druide Équilibre (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/balance-druid-leveling", "label": "Icy Veins — Balance Druid Leveling (Voulk, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "équilibre", "talent", "colère améliorée", "improved wrath", "mana", "incantation", "leveling"]
+  },
+  {
+    "id": "talent:druid-moonglow",
+    "topic": "talent",
+    "title": "Lueur de la lune (Moonglow) — talent druide Équilibre",
+    "summary": "Trois rangs en Équilibre (2e rangée). Chaque rang réduit le coût en mana de vos sorts de dégâts de 8 %, puis 17 %, puis 25 % au rang 3. En Classic la réduction visait une liste précise de sorts (Colère, Eclat lunaire, Feu stellaire, Toucher guérisseur, Rétablissement, Récupération) pour 3 % par rang ; Forever l’applique à tous les sorts de dégâts. Avec Colère améliorée, c’est ce qui rend le leveling équilibre soutenable en mana. Pris aux niveaux 15–17 du build leveling et 20–22 du build raid équilibre ForeverSpec, et 55–57 du build restauration (pour le coût des sorts de dégâts du druide soigneur).",
+    "class": "Druide",
+    "spec": "Équilibre",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/balance/", "label": "ForeverSpec — Build Druide Équilibre (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "équilibre", "talent", "lueur de la lune", "moonglow", "mana", "coût"]
+  },
+  {
+    "id": "talent:druid-improved-moonfire",
+    "topic": "talent",
+    "title": "Eclat lunaire amélioré (Improved Moonfire) — talent druide Équilibre",
+    "summary": "Deux rangs en Équilibre (2e rangée). Chaque rang augmente de 5 % les dégâts et les chances de coup critique d’Eclat lunaire, jusqu’à +10 % au rang 2. C’est le prérequis de Vengeance (rang 2 exigé) : les critiques d’Eclat lunaire et de Colère nourrissent Grâce de la nature et Vengeance. Pris aux niveaux 18–19 du build leveling et 23–24 du build raid équilibre ForeverSpec.",
+    "class": "Druide",
+    "spec": "Équilibre",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/balance/", "label": "ForeverSpec — Build Druide Équilibre (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "équilibre", "talent", "eclat lunaire amélioré", "improved moonfire", "dégâts", "critique", "prérequis"]
+  },
+  {
+    "id": "talent:druid-natures-splendor",
+    "topic": "talent",
+    "title": "Splendeur de la Nature (Nature’s Splendor) — talent druide Équilibre",
+    "summary": "Talent à 1 point en Équilibre (3e rangée), propre à WoW Forever, exige Majesté de la nature rang 2 et 10 points en Équilibre. Il prolonge Eclat lunaire et Récupération de 3 secondes, Rétablissement de 6 secondes et Essaim d’insectes de 2 secondes. Pour le druide équilibre, les DoT durent plus longtemps ; pour le soigneur restauration qui vient le chercher en fin d’arbre, ce sont les HoT qui s’allongent. Pris au niveau 22 du build leveling équilibre, 29 du build raid équilibre et 60 du build raid restauration ForeverSpec.",
+    "class": "Druide",
+    "spec": "Équilibre",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/balance/", "label": "ForeverSpec — Build Druide Équilibre (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "équilibre", "talent", "splendeur de la nature", "nature’s splendor", "durée", "dot", "hot", "prérequis"]
+  },
+  {
+    "id": "talent:druid-insect-swarm",
+    "topic": "talent",
+    "title": "Essaim d’insectes (Insect Swarm) — talent druide Équilibre",
+    "summary": "Talent à 1 point en Équilibre (3e rangée), exige 15 points en Équilibre. Le tableau « Changements vs Classic » de ForeverSpec le compare au sort Classic (chances de toucher réduites de 2 %, 11 dégâts de Nature) ; dans WoW Forever il est un talent de l’arbre Équilibre — le guide Icy Veins balance ne le lance que « quand il est pris en talent ». Coût de 45 mana, portée 30 mètres, instantané : la cible adverse est assaillie d’insectes, ses chances de toucher avec ses attaques diminuent de 2 % et elle subit 48 points de dégâts de Nature sur 12 secondes. Deuxième DoT du druide équilibre avec Eclat lunaire, renforcé par Splendeur de la Nature (+2 s) et Genèse (+10 % périodique). Pris au niveau 25 des builds équilibre ForeverSpec ; jalon « Insect Swarm Possible » du niveau 25 chez Icy Veins.",
+    "class": "Druide",
+    "spec": "Équilibre",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/balance/", "label": "ForeverSpec — Build Druide Équilibre (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/balance-druid-leveling", "label": "Icy Veins — Balance Druid Leveling (Voulk, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "équilibre", "talent", "essaim d’insectes", "insect swarm", "dot", "chance de toucher"]
+  },
+  {
+    "id": "talent:druid-vengeance",
+    "topic": "talent",
+    "title": "Vengeance — talent druide Équilibre",
+    "summary": "Cinq rangs en Équilibre (4e rangée), exige Eclat lunaire amélioré rang 2. Chaque rang augmente de 20 % le bonus de dégâts des coups critiques de vos sorts d’Arcane et de Nature, jusqu’à +100 % au rang 5. En Classic le talent ne couvrait que Feu stellaire, Eclat lunaire et Colère ; Forever l’étend à tous les sorts d’Arcane et de Nature. Chaque critique de Colère frappe donc deux fois plus fort. Pris aux niveaux 26–30 du build leveling et 31–35 du build raid équilibre ForeverSpec ; le guide Icy Veins balance conseille de le remplir plus tard en leveling (le critique manque au début).",
+    "class": "Druide",
+    "spec": "Équilibre",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/balance/", "label": "ForeverSpec — Build Druide Équilibre (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/balance-druid-leveling", "label": "Icy Veins — Balance Druid Leveling (Voulk, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "équilibre", "talent", "vengeance", "critique", "dégâts", "prérequis"]
+  },
+  {
+    "id": "talent:druid-natures-grace",
+    "topic": "talent",
+    "title": "Grâce de la nature (Nature’s Grace) — talent druide Équilibre",
+    "summary": "Talent à 1 point en Équilibre (5e rangée), exige 20 points en Équilibre. Chaque coup critique de sort non périodique vous accorde une bénédiction de la nature : vitesse d’incantation augmentée et temps de recharge global réduit de 10 % pendant 3 secondes. En Classic l’effet réduisait l’incantation du prochain sort de 0,5 s ; Forever le transforme en accélération temporaire. En raid, faites tomber la Grâce sur un Feu stellaire pour l’accélérer. Prise au niveau 31 du build leveling et 41 du build raid équilibre ForeverSpec.",
+    "class": "Druide",
+    "spec": "Équilibre",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/balance/", "label": "ForeverSpec — Build Druide Équilibre (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "équilibre", "talent", "grâce de la nature", "nature’s grace", "hâte", "critique"]
+  },
+  {
+    "id": "talent:druid-eclipse",
+    "topic": "talent",
+    "title": "Éclipse (Eclipse) — Colère accélère vos Feux stellaires (talent druide Équilibre)",
+    "summary": "Trois rangs en Équilibre (5e rangée), propre à WoW Forever, exige 20 points en Équilibre. Chaque Colère lancée réduit l’incantation de vos 2 prochains Feux stellaires : de 0,17 s au rang 1, 0,33 s au rang 2 et 0,5 s au rang 3 ; jusqu’à 4 charges se stockent et durent 15 secondes. Avec Feu stellaire amélioré rang 5, Feu stellaire passe de 3,5 s à 2,5 s : c’est ce qui rend le sort rotationnel en fin de parcours. Prise aux niveaux 58–60 du build leveling et 42–44 du build raid équilibre ForeverSpec ; le guide Icy Veins balance la décrit comme le moment où Feu stellaire entre en rotation, « très tardivement » en leveling.",
+    "class": "Druide",
+    "spec": "Équilibre",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/balance/", "label": "ForeverSpec — Build Druide Équilibre (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/balance-druid-leveling", "label": "Icy Veins — Balance Druid Leveling (Voulk, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "équilibre", "talent", "éclipse", "eclipse", "feu stellaire", "hâte", "rotation"]
+  },
+  {
+    "id": "talent:druid-moonfury",
+    "topic": "talent",
+    "title": "Fureur lunaire (Moonfury) — talent druide Équilibre",
+    "summary": "Cinq rangs en Équilibre (6e rangée). Chaque rang augmente de 2 % les dégâts de vos sorts d’Arcane et de Nature, jusqu’à +10 % au rang 5. Selon le tableau « Changements vs Classic » de ForeverSpec, le texte Classic ne visait que Feu stellaire, Eclat lunaire et Colère, quand Forever applique le bonus à tous les sorts d’Arcane et de Nature. Multiplicateur de dégâts global du druide équilibre. Pris aux niveaux 37–41 du build leveling et 45–49 du build raid équilibre ForeverSpec.",
+    "class": "Druide",
+    "spec": "Équilibre",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/balance/", "label": "ForeverSpec — Build Druide Équilibre (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "équilibre", "talent", "fureur lunaire", "moonfury", "dégâts"]
+  },
+  {
+    "id": "talent:druid-moonkin-form",
+    "topic": "talent",
+    "title": "Forme de sélénien (Moonkin Form) — talent druide Équilibre",
+    "summary": "Talent à 1 point en Équilibre (7e rangée), exige 30 points en Équilibre : le fond de l’arbre. Métamorphose instantanée pour 35 % du mana de base : les chances de déclenchement d’Augure de clarté augmentent de 100 %, la contribution des objets à l’armure de 360 % (soit ×4,6 sur l’armure des pièces), et tous les membres du groupe ou du raid à moins de 45 mètres gagnent 3 % de chances de coup critique — effet qui, depuis les notes du 2 novembre, couvre tous les critiques, y compris les attaques de mêlée. Protège du Polymorphe, libère des effets de métamorphose et d’entrave, mais interdit les sorts de soins. Le jalon du leveling équilibre : ForeverSpec la prend au niveau 42, Icy Veins la signale possible dès le 40 ; prise au niveau 50 du build raid équilibre ForeverSpec.",
+    "class": "Druide",
+    "spec": "Équilibre",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/balance/", "label": "ForeverSpec — Build Druide Équilibre (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" },
+      { "url": "https://www.icy-veins.com/wow-forever/balance-druid-leveling", "label": "Icy Veins — Balance Druid Leveling (Voulk, 4 nov 2026)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "équilibre", "talent", "forme de sélénien", "moonkin form", "métamorphose", "aura", "critique", "armure"],
+    "notes": "Écart mineur entre sources : Icy Veins place « Moonkin Form Possible » au jalon du niveau 40, l’ordre de leveling ForeverSpec la prend au 42 ; les deux décrivent la même capacité. Le gain d’armure ×4,6 (contribution des objets +360 %) est la lecture cohérente des deux sources (ForeverSpec : « multiplie l’armure de votre équipement par 4,6 »).",
+    "author": "OpenCode"
+  },
+  {
+    "id": "talent:druid-improved-starfire",
+    "topic": "talent",
+    "title": "Feu stellaire amélioré (Improved Starfire) — talent druide Équilibre",
+    "summary": "Cinq rangs en Équilibre (4e rangée). Chaque rang réduit de 0,1 s l’incantation de Feu stellaire et lui donne 3 % de chances d’étourdir sa cible pendant 3 s, jusqu’à −0,5 s et 15 % au rang 5. Le tableau « Changements vs Classic » de ForeverSpec compare le texte Classic (« −0,1 s et 3 % d’étourdissement ») au texte Forever (« −0,5 s et 15 % ») sans préciser les rangs ; les valeurs par rang de l’export officiel couvrent exactement cet intervalle (0,1 s/3 % au rang 1, 0,5 s/15 % au rang 5). Avec Éclipse rang 3, Feu stellaire descend à 2,5 s. Pris aux niveaux 53–57 du build leveling et 36–40 du build raid équilibre ForeverSpec — en toute fin de leveling car le sort reste lent pour les pulls ordinaires.",
+    "class": "Druide",
+    "spec": "Équilibre",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/balance/", "label": "ForeverSpec — Build Druide Équilibre (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "équilibre", "talent", "feu stellaire amélioré", "improved starfire", "incantation", "étourdissement"]
+  },
+  {
+    "id": "talent:druid-natures-focus",
+    "topic": "talent",
+    "title": "Focalisation de la nature (Nature’s Focus) — talent druide Restauration pris par les druides équilibre",
+    "summary": "Cinq rangs en Restauration (1re rangée). Chaque rang donne à vos sorts d’Arcane et de Nature 14 % de chances de ne pas perdre de temps d’incantation quand vous subissez des dégâts, jusqu’à 70 % au rang 5. En Classic le talent ne couvrait que les sorts de soin ; Forever l’applique à tous les sorts d’Arcane et de Nature. C’est l’anti-recul du druide équilibre en leveling : pris aux niveaux 43–47 du build leveling ForeverSpec, remplacé par Cœur de fauve en raid (vous n’êtes presque jamais frappé), et présent dans la variante 36/0/15 populaire des simulateurs.",
+    "class": "Druide",
+    "spec": "Équilibre",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      { "url": "https://talentsforever.com/export/druid.json", "label": "Talents Forever — export officiel des arbres druide (CC BY 4.0, généré le 4 nov 2026)", "checkedAt": "2026-11-10" },
+      { "url": "https://foreverspec.com/fr/classes/druid/balance/", "label": "ForeverSpec — Build Druide Équilibre (6 nov 2026, client 1.60.1.70790)", "checkedAt": "2026-11-10" }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": ["druide", "équilibre", "talent", "focalisation de la nature", "nature’s focus", "recul", "incantation", "restauration"]
+  }
+]
