@@ -26,12 +26,13 @@ $token = [Convert]::ToBase64String($randomBytes).TrimEnd('=').Replace('+','-').R
 $origin = 'https://quentindumont70-bit.github.io'
 $port = 18764
 $listener = New-Object System.Net.Sockets.TcpListener([System.Net.IPAddress]::Loopback,$port)
-function Reply($stream,[int]$status,[string]$reason,[string]$body,[bool]$cors) {
+function Reply($stream,[int]$status,[string]$reason,[string]$body,[bool]$cors,[string]$etag='') {
  $bytes = [System.Text.Encoding]::UTF8.GetBytes($body)
  $header = "HTTP/1.1 $status $reason`r`nContent-Type: text/plain; charset=utf-8`r`nContent-Length: $($bytes.Length)`r`nCache-Control: no-store`r`nX-Content-Type-Options: nosniff`r`nConnection: close`r`n"
  if ($cors) {
-  $header += "Access-Control-Allow-Origin: $origin`r`nAccess-Control-Allow-Methods: GET, OPTIONS`r`nAccess-Control-Allow-Headers: X-Binch-Token`r`nVary: Origin`r`n"
+  $header += "Access-Control-Allow-Origin: $origin`r`nAccess-Control-Allow-Methods: GET, OPTIONS`r`nAccess-Control-Allow-Headers: X-Binch-Token, If-None-Match`r`nAccess-Control-Expose-Headers: ETag`r`nVary: Origin`r`n"
  }
+ if ($etag) { $header += "ETag: $etag`r`n" }
  $header += "`r`n"
  $headBytes = [System.Text.Encoding]::ASCII.GetBytes($header)
  $stream.Write($headBytes,0,$headBytes.Length)
@@ -91,8 +92,13 @@ try {
     Reply $stream 413 'Payload Too Large' 'SavedVariables file exceeds 10 MB' $true
     continue
    }
+   $etag = '"' + $info.Length + '-' + $info.LastWriteTimeUtc.Ticks + '"'
+   if ($headers['if-none-match'] -ceq $etag) {
+    Reply $stream 304 'Not Modified' '' $true $etag
+    continue
+   }
    $lua = [System.IO.File]::ReadAllText($file,[System.Text.Encoding]::UTF8)
-   Reply $stream 200 'OK' $lua $true
+   Reply $stream 200 'OK' $lua $true $etag
   } catch {
    Write-Warning ('Lecture locale indisponible : '+$_.Exception.Message)
   } finally {
