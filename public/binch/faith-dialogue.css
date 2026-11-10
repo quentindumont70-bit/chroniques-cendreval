@@ -16,3 +16,12 @@
 #binch-faith-dialogue-state{display:block;margin-top:9px;color:#b2bdd0}
 @media(max-width:520px){#binch-faith-dialogue-form{grid-template-columns:1fr}#binch-faith-dialogue-history .faith-line{max-width:100%}}
 @media(prefers-reduced-motion:reduce){#binch-faith-dialogue *{scroll-behavior:auto!important;animation:none!important}}
+
+/* Persistent Faith dock. No interval, no animated idle effects. */
+#binch-faith-dock{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom));z-index:8900;background:linear-gradient(130deg,#55406c,#2c3e49);color:#f6e4ff;border:1px solid #c49ee2;border-radius:99px;min-height:46px;padding:10px 17px;font:700 .89rem Cinzel,Georgia,serif;box-shadow:0 8px 24px #0009;cursor:pointer}
+#binch-faith-dock:hover{background:#685382}
+#binch-faith-dock:focus-visible{outline:3px solid #f5d7ff;outline-offset:3px}
+#binch-faith-dialogue{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:calc(76px + env(safe-area-inset-bottom));width:min(440px,calc(100vw - 28px));max-height:min(72vh,670px);overflow:auto;overscroll-behavior:contain;z-index:8901;box-shadow:0 22px 70px #000c}
+#binch-faith-dialogue[hidden]{display:none!important}
+#binch-faith-dock-close{float:right;font-size:.78rem;padding:5px 10px!important;min-height:32px!important}
+@media(max-width:520px){#binch-faith-dialogue{max-height:65dvh;bottom:calc(72px + env(safe-area-inset-bottom))}#binch-faith-dock{bottom:calc(12px + env(safe-area-inset-bottom))}}
