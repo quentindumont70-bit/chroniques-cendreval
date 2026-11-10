@@ -33,7 +33,13 @@ if (-not $file) {
 if ([System.IO.Path]::GetFileName($file) -ine 'GrimoireSync.lua') {
  throw 'Selectionne uniquement GrimoireSync.lua.'
 }
-if ($file -notmatch '(?i)[\\/]WTF[\\/]Account[\\/].+[\\/]SavedVariables[\\/]GrimoireSync\.lua
+if ($file -notmatch '(?i)[\\/]WTF[\\/]Account[\\/].+[\\/]SavedVariables[\\/]GrimoireSync\.lua$') {
+ throw 'Le fichier doit etre situe dans WTF/Account/.../SavedVariables.'
+}
+if (-not (Test-Path -LiteralPath $configDir -PathType Container)) {
+ New-Item -ItemType Directory -Path $configDir -Force | Out-Null
+}
+[System.IO.File]::WriteAllText($configFile,$file,[System.Text.Encoding]::UTF8)
 
 $randomBytes = New-Object byte[] 24
 $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
