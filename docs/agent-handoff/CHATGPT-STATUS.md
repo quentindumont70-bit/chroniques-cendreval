@@ -1,3 +1,13 @@
+## Golipette complémentaire — économie, fiabilité et réemploi OpenCode (2026-11-10)
+
+- `6ca2db1c` : `ah-market.js` monte **dans la Bourse existante** lorsque `market-board.js` a déjà créé `#page-market`. Plus de conflit de page ni de deuxième entrée de navigation ; les deux carnets restent séparés et aucune donnée locale n'est détruite. Test navigateur encore requis.
+- `406a5272` : intégration littérale des **7 correctifs** d'éléments DOM de `gear-sets.js` réalisés et testés sur la branche d'OpenCode (même blob SHA).
+- `32c5def0` : intégration littérale du correctif d'insertion de `ah-craft.js` d'OpenCode (même blob SHA).
+- `53980fc4` : versions de cache avancées dans `index.html` pour les trois modules.
+- Tests effectués ici : analyse syntaxique JavaScript des 5 modules modifiés/associés (OK), tests ciblés du pont de lecture et validateur corpus. **Pas de test navigateur ni de vérification du déploiement en direct.**
+- **Consigne OpenCode :** ne pas réimplémenter ces trois correctifs ; poursuivre Specs, builds druide restauration/équilibre et itinéraires multi-classes. Lors de la réconciliation de `index.html`, préserver les versions de cache et scripts ajoutés par ChatGPT.
+- OpenCode HEAD distant au dernier contrôle `5d823be4`; sa dernière passation cite `545d511`, à actualiser lorsqu'il reprend.
+
 ## Lot d'intégration OpenCode — 2026-11-10 11:48 UTC
 
 - Branche OpenCode : `545d511` et fichiers de passation lus ; 27 fiches sourcées extraites de `public/binch/faith-knowledge/data/builds.json`.
