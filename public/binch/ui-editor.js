@@ -14,7 +14,7 @@ function key(){return pageKey()+'|'+viewport()}
 function cfg(){return db[key()]||(db[key()]={})}
 function targets(){
  const page=scope();if(!page)return [];
- const query=':scope > .panel,:scope > article,:scope > section,:scope > .binch-command,:scope > .binch-todo,:scope > .binch-play-today, .binch-command-deck > [data-command-widget], .binch-command-hero, .binch-command-layout, .binch-command-stats, .binch-command-pin-wrap, .binch-command-discoveries, .binch-command-questlog, .binch-command-progress, .binch-command-bottom, .binch-command-row, .binch-command-notes';
+ const query=':scope > .panel,:scope > article,:scope > section,:scope > .binch-command,:scope > .binch-todo,:scope > .binch-play-today, #binch-command-deck > [data-command-widget], .binch-command-hero, .binch-command-layout, .binch-command-stats, .binch-command-pin-wrap, .binch-command-discoveries, .binch-command-questlog, .binch-command-progress, .binch-command-bottom, .binch-command-row, .binch-command-notes';
  let elements=[];
  try{elements=Array.from(page.querySelectorAll(query))}catch{}
  if(page.id==='page-command')elements=elements.filter(x=>x.closest('#binch-command-deck')||x.classList.contains('binch-command-hero')||x.classList.contains('binch-command-layout'));
