@@ -1,4 +1,4 @@
-# La Binch - installation locale GrimoireSync v0.8.4
+# La Binch - installation locale GrimoireSync v0.9.0
 # Source publique : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/
 # Aucune permission administrateur, aucune lecture des identifiants/du dossier WTF, aucune telemetrie.
 $ErrorActionPreference = 'Stop'
@@ -132,7 +132,7 @@ try {
  }
  $backup = Join-Path (Split-Path $addons -Parent) ('LaBinch-Sauvegarde-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
  $base = 'https://raw.githubusercontent.com/quentindumont70-bit/chroniques-cendreval/main/public/binch/addon/GrimoireSync/'
- $filenames = @('GrimoireSync.toc','Core.lua','Minimap.lua')
+ $filenames = @('GrimoireSync.toc','Core.lua','Minimap.lua','Faith.lua')
  # Recuperation dans un dossier temporaire AVANT toute modification de l'ancien addon.
  $staging = Join-Path ([System.IO.Path]::GetTempPath()) ('binch-'+[guid]::NewGuid().ToString('N'))
  New-Item -ItemType Directory -Path $staging -Force | Out-Null
@@ -144,7 +144,7 @@ try {
    if ((Get-Item -LiteralPath $out).Length -lt 40) { throw "Le fichier $filename est vide ou invalide." }
   }
   $toc = Get-Content -LiteralPath (Join-Path $staging 'GrimoireSync.toc') -Raw
-  if ($toc -notmatch '(?m)^## SavedVariables: GrimoireSyncDB' -or $toc -notmatch '(?m)^## Version: 0\.8\.4' -or $toc -notmatch '(?m)^Minimap.lua\s*$') {throw 'Le manifeste GrimoireSync ne correspond pas a la version attendue.'}
+  if ($toc -notmatch '(?m)^## SavedVariables: GrimoireSyncDB' -or $toc -notmatch '(?m)^## Version: 0\.9\.0' -or $toc -notmatch '(?m)^Minimap.lua\s*) {throw 'Le manifeste GrimoireSync ne correspond pas a la version attendue.'}
   # Idempotent upgrade: do not make a new backup if files are already current.
   $sameFiles = Test-Path -LiteralPath $installed -PathType Container
   if ($sameFiles) {
@@ -156,7 +156,7 @@ try {
   }
   if ($sameFiles) {
    Save-LastFolder $addons
-   Show-InstallResult 'Deja a jour !' '0.8.4' $installed $previousVersion ''
+   Show-InstallResult 'Deja a jour !' '0.9.0' $installed $previousVersion ''
    exit 0
   }
   $minimapCode = Get-Content -LiteralPath (Join-Path $staging 'Minimap.lua') -Raw
@@ -182,9 +182,101 @@ try {
   Remove-Item -LiteralPath $staging -Recurse -Force -ErrorAction SilentlyContinue
  }
  $installedToc = Get-Content -LiteralPath (Join-Path $installed 'GrimoireSync.toc') -Raw
- if ($installedToc -notmatch '(?m)^## Version: 0\.8\.4\s*$') { throw 'Version installee incorrecte.' }
+ if ($installedToc -notmatch '(?m)^## Version: 0\.9\.0\s*$') { throw 'Version installee incorrecte.' }
  Save-LastFolder $addons
- Show-InstallResult 'Mise a jour reussie !' '0.8.4' $installed $previousVersion $(if (Test-Path -LiteralPath $backup) {$backup} else {''})
+ Show-InstallResult 'Mise a jour reussie !' '0.9.0' $installed $previousVersion $(if (Test-Path -LiteralPath $backup) {$backup} else {''})
+
+} catch {
+ Tell ("Installation interrompue : " + $_.Exception.Message + [Environment]::NewLine + "Aucun dossier WTF/SavedVariables n'a ete modifie.") 'La Binch - Erreur'
+ exit 1
+}
+ -or $toc -notmatch '(?m)^Faith.lua\s*) {throw 'Le manifeste GrimoireSync ne correspond pas a la version attendue.'}
+  # Idempotent upgrade: do not make a new backup if files are already current.
+  $sameFiles = Test-Path -LiteralPath $installed -PathType Container
+  if ($sameFiles) {
+   foreach ($filename in $filenames) {
+    $oldFile = Join-Path $installed $filename
+    if (-not (Test-Path -LiteralPath $oldFile -PathType Leaf)) { $sameFiles = $false; break }
+    if ((Get-FileHash -LiteralPath $oldFile -Algorithm SHA256).Hash -ne (Get-FileHash -LiteralPath (Join-Path $staging $filename) -Algorithm SHA256).Hash) { $sameFiles = $false; break }
+   }
+  }
+  if ($sameFiles) {
+   Save-LastFolder $addons
+   Show-InstallResult 'Deja a jour !' '0.9.0' $installed $previousVersion ''
+   exit 0
+  }
+  $minimapCode = Get-Content -LiteralPath (Join-Path $staging 'Minimap.lua') -Raw
+  if ($minimapCode -match 'dialog:SetBackdrop\(' -or $minimapCode -match 'button:SetBackdrop\(') { throw 'Minimap.lua non compatible avec WoW Forever.' }
+  if (Test-Path -LiteralPath $installed) {
+   # IMPORTANT : Les anciennes interfaces Lua sont retirees du dossier actif.
+   Move-Item -LiteralPath $installed -Destination $backup -ErrorAction Stop
+  }
+  New-Item -ItemType Directory -Path $installed -Force | Out-Null
+  try {
+   foreach ($filename in $filenames) {
+    Copy-Item -LiteralPath (Join-Path $staging $filename) -Destination (Join-Path $installed $filename) -Force -ErrorAction Stop
+    $expected = (Get-FileHash -LiteralPath (Join-Path $staging $filename) -Algorithm SHA256).Hash
+    $actual = (Get-FileHash -LiteralPath (Join-Path $installed $filename) -Algorithm SHA256).Hash
+    if ($expected -ne $actual) { throw "Copie incorrecte : $filename." }
+   }
+  } catch {
+   if (Test-Path -LiteralPath $installed) { Remove-Item -LiteralPath $installed -Recurse -Force -ErrorAction SilentlyContinue }
+   if (Test-Path -LiteralPath $backup) { Move-Item -LiteralPath $backup -Destination $installed -ErrorAction SilentlyContinue }
+   throw
+  }
+ } finally {
+  Remove-Item -LiteralPath $staging -Recurse -Force -ErrorAction SilentlyContinue
+ }
+ $installedToc = Get-Content -LiteralPath (Join-Path $installed 'GrimoireSync.toc') -Raw
+ if ($installedToc -notmatch '(?m)^## Version: 0\.9\.0\s*$') { throw 'Version installee incorrecte.' }
+ Save-LastFolder $addons
+ Show-InstallResult 'Mise a jour reussie !' '0.9.0' $installed $previousVersion $(if (Test-Path -LiteralPath $backup) {$backup} else {''})
+
+} catch {
+ Tell ("Installation interrompue : " + $_.Exception.Message + [Environment]::NewLine + "Aucun dossier WTF/SavedVariables n'a ete modifie.") 'La Binch - Erreur'
+ exit 1
+}
+) {throw 'Le manifeste GrimoireSync ne correspond pas a la version attendue.'}
+  # Idempotent upgrade: do not make a new backup if files are already current.
+  $sameFiles = Test-Path -LiteralPath $installed -PathType Container
+  if ($sameFiles) {
+   foreach ($filename in $filenames) {
+    $oldFile = Join-Path $installed $filename
+    if (-not (Test-Path -LiteralPath $oldFile -PathType Leaf)) { $sameFiles = $false; break }
+    if ((Get-FileHash -LiteralPath $oldFile -Algorithm SHA256).Hash -ne (Get-FileHash -LiteralPath (Join-Path $staging $filename) -Algorithm SHA256).Hash) { $sameFiles = $false; break }
+   }
+  }
+  if ($sameFiles) {
+   Save-LastFolder $addons
+   Show-InstallResult 'Deja a jour !' '0.9.0' $installed $previousVersion ''
+   exit 0
+  }
+  $minimapCode = Get-Content -LiteralPath (Join-Path $staging 'Minimap.lua') -Raw
+  if ($minimapCode -match 'dialog:SetBackdrop\(' -or $minimapCode -match 'button:SetBackdrop\(') { throw 'Minimap.lua non compatible avec WoW Forever.' }
+  if (Test-Path -LiteralPath $installed) {
+   # IMPORTANT : Les anciennes interfaces Lua sont retirees du dossier actif.
+   Move-Item -LiteralPath $installed -Destination $backup -ErrorAction Stop
+  }
+  New-Item -ItemType Directory -Path $installed -Force | Out-Null
+  try {
+   foreach ($filename in $filenames) {
+    Copy-Item -LiteralPath (Join-Path $staging $filename) -Destination (Join-Path $installed $filename) -Force -ErrorAction Stop
+    $expected = (Get-FileHash -LiteralPath (Join-Path $staging $filename) -Algorithm SHA256).Hash
+    $actual = (Get-FileHash -LiteralPath (Join-Path $installed $filename) -Algorithm SHA256).Hash
+    if ($expected -ne $actual) { throw "Copie incorrecte : $filename." }
+   }
+  } catch {
+   if (Test-Path -LiteralPath $installed) { Remove-Item -LiteralPath $installed -Recurse -Force -ErrorAction SilentlyContinue }
+   if (Test-Path -LiteralPath $backup) { Move-Item -LiteralPath $backup -Destination $installed -ErrorAction SilentlyContinue }
+   throw
+  }
+ } finally {
+  Remove-Item -LiteralPath $staging -Recurse -Force -ErrorAction SilentlyContinue
+ }
+ $installedToc = Get-Content -LiteralPath (Join-Path $installed 'GrimoireSync.toc') -Raw
+ if ($installedToc -notmatch '(?m)^## Version: 0\.9\.0\s*$') { throw 'Version installee incorrecte.' }
+ Save-LastFolder $addons
+ Show-InstallResult 'Mise a jour reussie !' '0.9.0' $installed $previousVersion $(if (Test-Path -LiteralPath $backup) {$backup} else {''})
 
 } catch {
  Tell ("Installation interrompue : " + $_.Exception.Message + [Environment]::NewLine + "Aucun dossier WTF/SavedVariables n'a ete modifie.") 'La Binch - Erreur'
