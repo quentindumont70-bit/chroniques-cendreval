@@ -105,7 +105,7 @@ function magnetic(el,newX,newY){
  x=snap(x);y=snap(y);
  const current=el.getBoundingClientRect(),baseX=current.left-(parseFloat(el.style.getPropertyValue('--binch-edit-x'))||0),baseY=current.top-(parseFloat(el.style.getPropertyValue('--binch-edit-y'))||0);
  const w=current.width,h=current.height;
- const others=Array.from(document.querySelectorAll('.binch-edit-target')).filter(t=>t!==el);
+ const others=Array.from(document.querySelectorAll('.binch-edit-target')).filter(t=>t!==el&&!t.contains(el)&&!el.contains(t));
  let bestX=THRESHOLD+1,bestY=THRESHOLD+1;
  for(const other of others){
   const r=other.getBoundingClientRect();
@@ -120,8 +120,15 @@ function magnetic(el,newX,newY){
  return {x:Math.round(x),y:Math.round(y),gx,gy};
 }
 function hasOverlap(el,left,top,width,height){
- const siblings=Array.from(el.parentElement?.children||[]).filter(x=>x!==el&&x.matches?.('.binch-edit-target'));
- return siblings.some(other=>{const r=other.getBoundingClientRect();return left<r.right-4&&left+width>r.left+4&&top<r.bottom-4&&top+height>r.top+4});
+ // Avoid intersecting panels anywhere in the active page, except descendants/ancestors
+ // whose rectangles naturally contain each other.
+ const others=Array.from(scope()?.querySelectorAll('.binch-edit-target')||[])
+  .filter(x=>x!==el&&!x.contains(el)&&!el.contains(x));
+ return others.some(other=>{
+  const r=other.getBoundingClientRect();
+  return left<r.right-4&&left+width>r.left+4&&top<r.bottom-4&&top+height>r.top+4
+ });
+
 }
 function constrainMove(d,x,y){
  const rect=d.el.getBoundingClientRect(),oldX=parseFloat(d.el.style.getPropertyValue('--binch-edit-x'))||0,oldY=parseFloat(d.el.style.getPropertyValue('--binch-edit-y'))||0;
@@ -235,6 +242,17 @@ function mount(){
  if(e.target.closest('input,textarea,select,[contenteditable="true"]'))return;
  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();restoreHistory(e.shiftKey?redoStack:undoStack,e.shiftKey?undoStack:redoStack)}
  else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();restoreHistory(redoStack,undoStack)}
+ else if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){
+  const el=document.querySelector('.binch-edit-selected');if(!el||drag)return;
+  e.preventDefault();
+  const id=el.dataset.binchEditorId,before=snapshot(),record=cfg()[id]||{};
+  const dx=e.key==='ArrowLeft'?-1:e.key==='ArrowRight'?1:0;
+  const dy=e.key==='ArrowUp'?-1:e.key==='ArrowDown'?1:0;
+  const step=e.shiftKey?1:STEP,oldX=Number(record.x)||0,oldY=Number(record.y)||0;
+  const pos=constrainMove({el,offsetX:oldX,offsetY:oldY},oldX+dx*step,oldY+dy*step);
+  el.style.setProperty('--binch-edit-x',pos.x+'px');el.style.setProperty('--binch-edit-y',pos.y+'px');
+  cfg()[id]={...record,x:pos.x,y:pos.y};store();commitHistory(before);updateHandles();
+ }
 });
  // Navigation of La Binch is dynamic and does not reload the document.
  document.addEventListener('click',e=>{
