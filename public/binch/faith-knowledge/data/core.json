@@ -1,0 +1,71 @@
+[
+  {
+    "id": "system:faith_local",
+    "topic": "system",
+    "title": "Faith dans La Binch : limites de la version locale",
+    "summary": "Faith répond depuis des règles locales et les données explicitement importées dans le navigateur. Le dialogue actuel ne contacte aucune IA distante et n'est pas une encyclopédie autonome.",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      {
+        "url": "https://github.com/quentindumont70-bit/chroniques-cendreval/blob/main/public/binch/faith-dialogue.js",
+        "label": "Code de Faith, version web",
+        "checkedAt": "2026-11-10"
+      }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": [
+      "faith",
+      "local",
+      "conseiller",
+      "ia",
+      "confidentialite"
+    ]
+  },
+  {
+    "id": "system:grimoire_reload",
+    "topic": "system",
+    "title": "GrimoireSync : sauvegarde du personnage",
+    "summary": "La commande /reload enregistre les SavedVariables du client. Le transfert vers le site exige ensuite un import volontaire ou le compagnon local ; ce n'est pas une synchronisation réseau temps réel.",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      {
+        "url": "https://github.com/quentindumont70-bit/chroniques-cendreval/blob/main/public/binch/addon/GrimoireSync/Core.lua",
+        "label": "Code addon GrimoireSync",
+        "checkedAt": "2026-11-10"
+      }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": [
+      "grimoire",
+      "reload",
+      "sync",
+      "sauvegarde",
+      "import"
+    ]
+  },
+  {
+    "id": "system:faith_ingame",
+    "topic": "system",
+    "title": "Faith en jeu : prototype opt-in",
+    "summary": "L'addon contient une fenêtre Faith, un dialogue local limité et des réactions aux morts et aux niveaux gagnés. Activation via /faith on. Le module n'a pas encore été validé par un test dans le client.",
+    "scope": "forever",
+    "verification": "verifie",
+    "sources": [
+      {
+        "url": "https://github.com/quentindumont70-bit/chroniques-cendreval/blob/main/public/binch/addon/GrimoireSync/Faith.lua",
+        "label": "Code du prototype Faith Lua",
+        "checkedAt": "2026-11-10"
+      }
+    ],
+    "updatedAt": "2026-11-10",
+    "tags": [
+      "faith",
+      "addon",
+      "mort",
+      "niveau",
+      "interface"
+    ]
+  }
+]
