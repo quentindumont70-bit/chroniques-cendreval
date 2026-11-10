@@ -11,10 +11,12 @@ function sets(){return read(key(character().p),[])}
 function persist(list){try{localStorage.setItem(key(character().p),JSON.stringify(list.slice(0,12)))}catch{};render()}
 const get=()=>String($('#binch-gear-set-selected')?.value||'');
 function compare(saved,equip){
- const actual=new Map(equip.map(x=>[Number(x.slot),Number(x.id)]));
+ const actual=new Map(equip.filter(x=>Number.isInteger(Number(x.slot))&&Number(x.id)>0).map(x=>[Number(x.slot),Number(x.id)]));
  const differences=saved.items.filter(x=>actual.has(x.slot)&&actual.get(x.slot)!==x.id);
  const notAvailable=saved.items.filter(x=>!actual.has(x.slot));
- return {differences,notAvailable,total:saved.items.length};
+ const matches=saved.items.filter(x=>actual.has(x.slot)&&actual.get(x.slot)===x.id);
+ const extra=Array.from(actual.keys()).filter(slot=>!saved.items.some(x=>x.slot===slot));
+ return {differences,notAvailable,matches,extra,total:saved.items.length};
 }
 function render(){
  const host=$('binch-gear-sets');if(!host||!host.isConnected)return;
@@ -25,10 +27,10 @@ function render(){
  const set=entries.find(x=>x.id===select.value);
  if(!set){$('#binch-gear-set-preview').innerHTML='<p>Crée un ensemble depuis ton équipement importé, ou sélectionne un ensemble existant.</p>';return}
  const diff=c.same?compare(set,c.equip):null;
- $('#binch-gear-set-preview').innerHTML='<h4>'+esc(set.name)+'</h4><p>'+esc(ROLES.find(r=>r[0]===set.role)?.[1]||'Rôle libre')+' · '+set.items.length+' emplacements sauvegardés · '+esc(set.createdAt?new Date(set.createdAt).toLocaleString('fr-FR'):'Date inconnue')+'</p>'+(diff?'<p>'+diff.differences.length+' équipement(s) différent(s) du dernier import · '+diff.notAvailable.length+' emplacement(s) non remonté(s) : comparaison impossible.</p>':'<p>Connecte le personnage correspondant pour comparer cet ensemble.</p>')+
+ $('#binch-gear-set-preview').innerHTML='<h4>'+esc(set.name)+'</h4><p>'+esc(ROLES.find(r=>r[0]===set.role)?.[1]||'Rôle libre')+' · '+set.items.length+' emplacements sauvegardés · '+esc(set.createdAt?new Date(set.createdAt).toLocaleString('fr-FR'):'Date inconnue')+'</p>'+(diff?'<p>'+diff.matches.length+' identique(s) · '+diff.differences.length+' différent(s) · '+diff.notAvailable.length+' absent(s) de l’export · '+diff.extra.length+' slot(s) actuellement équipés mais non enregistrés. Les absences ne prouvent pas un objet perdu.</p>':'<p>Connecte le personnage correspondant pour comparer cet ensemble.</p>')+
  '<div class="binch-gear-set-list">'+set.items.map(x=>{
-  const current=c.equip.find(v=>Number(v.slot)===x.slot),differs=current&&Number(current.id)!==x.id;
-  return '<article><small>'+esc(SLOTS[x.slot]||('Emplacement '+x.slot))+'</small><strong>'+esc(x.name||('Objet #'+x.id))+'</strong><span>'+(differs?'Actuellement : '+esc(current.name||('Objet #'+current.id)):'')+'</span></article>';
+  const current=c.same?c.equip.find(v=>Number(v.slot)===x.slot):null,differs=current&&Number(current.id)!==x.id;
+  return '<article><small>'+esc(SLOTS[x.slot]||('Emplacement '+x.slot))+'</small><strong>'+esc(x.name||('Objet #'+x.id))+'</strong><span>'+(differs?'Actuellement : '+esc(current.name||('Objet #'+current.id)):current?'Identique au dernier import':c.same?'Slot non fourni par l’import':'Import du personnage requis')+'</span></article>';
  }).join('')+'</div>';
 }
 function mount(){
