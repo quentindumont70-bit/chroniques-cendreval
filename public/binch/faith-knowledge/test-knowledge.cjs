@@ -1,0 +1,20 @@
+'use strict';
+/* Run: node public/binch/faith-knowledge/test-knowledge.cjs */
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),path=require('node:path');
+const root=__dirname;
+const validator=require('./validator.js'),knowledge=require('./search.js');
+const records=JSON.parse(fs.readFileSync(path.join(root,'data','core.json'),'utf8'));
+assert.equal(validator.check(records).ok,true,'starter corpus validates');
+assert.ok(validator.check(records.concat(records[0])).errors.some(x=>x.includes('duplique')),'duplicate ids rejected');
+assert.equal(validator.check([{...records[0],scope:'classic'}]).ok,false,'Classic cannot be certified Forever');
+assert.equal(validator.check([{...records[0],sources:[{url:'http://unsafe.invalid',label:'bad URL',checkedAt:'2026-11-10'}]}]).ok,false,'plain HTTP rejected');
+assert.equal(validator.check([{...records[0],updatedAt:'2026-02-31'}]).ok,false,'invalid date rejected');
+const valid=knowledge.answer('comment grimoire reload import',records);
+assert.equal(valid.found,true,'a real sourced fact found');
+assert.ok(valid.citations[0].url.startsWith('https://'),'a trusted reference preserved');
+assert.equal(knowledge.answer('talents farouche niveau 14',records).found,false,'unsupported spec not invented');
+assert.equal(knowledge.answer('addon',records.map(r=>({...r,verification:'obsolete'}))).found,false,'obsolete information not served');
+assert.equal(knowledge.answer('addon',records.map(r=>({...r,verification:'a_confirmer'}))).found,false,'unverified claims not served');
+assert.equal(knowledge.answer('addon',records.map(r=>({...r,scope:'classic'}))).found,false,'Classic not silently promoted to Forever');
+console.log('Faith knowledge: 10 checks passed; '+records.length+' certified technical records.');
