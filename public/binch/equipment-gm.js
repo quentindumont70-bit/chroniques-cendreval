@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const css=document.createElement('link');css.rel='stylesheet';css.href='./equipment-paperdoll.css?v=002';document.head.append(css);
+const css=document.createElement('link');css.rel='stylesheet';css.href='./equipment-paperdoll.css?v=003';document.head.append(css);
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const slots={1:'Tête',2:'Cou',3:'Épaules',4:'Chemise',5:'Torse',6:'Taille',7:'Jambes',8:'Pieds',9:'Poignets',10:'Mains',11:'Anneau I',12:'Anneau II',13:'Bijou I',14:'Bijou II',15:'Dos',16:'Main droite',17:'Main gauche',18:'Distance',19:'Tabard'};
 const quality=['Médiocre','Commun','Inhabituel','Rare','Épique','Légendaire'];
