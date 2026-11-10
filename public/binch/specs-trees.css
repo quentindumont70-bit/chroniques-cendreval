@@ -1,0 +1,26 @@
+/* WoW Forever talent trees — native client topology + sourced spell icon artwork */
+.binch-spec-tree-visual{margin:16px 0 22px;color:#f5e7c9}
+.binch-tree-info{border:1px solid #867757;background:linear-gradient(135deg,#162824,#293327);border-radius:12px;padding:17px;margin-bottom:13px}
+.binch-tree-info h3{margin:0 0 8px;color:#f4dcab;font:700 1.2rem Cinzel,Georgia,serif}
+.binch-tree-info p{margin:8px 0;color:#cbd6c9;line-height:1.5}
+.binch-tree-info a,.binch-tree-license a{color:#f5d895}
+.binch-tree-badges{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.binch-tree-badges>*{display:inline-flex;border:1px solid #8f815b;border-radius:8px;padding:6px 10px;background:#2b372d;font-size:.76rem;color:#f0dfb5}
+.binch-tree-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.binch-tree-panel{background:linear-gradient(140deg,#263a2f,#0d1c1b);border:1px solid #716b54;border-radius:12px;min-width:0;padding:10px 10px 18px}
+.binch-tree-panel>header{display:flex;justify-content:space-between;align-items:center;gap:5px;margin-bottom:12px;min-height:38px}
+.binch-tree-panel h4{font:700 .85rem Cinzel,Georgia,serif;color:#f1d09c;margin:0}
+.binch-tree-panel>header strong{font-size:.78rem;color:#cfdabc;white-space:nowrap}
+.binch-tree-cells{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(7,60px);gap:6px;position:relative;background:radial-gradient(ellipse at 50% 30%,#916c3e27,transparent 72%);border:1px solid #3e4e40;padding:8px 3px;border-radius:9px}
+#binch-specs .binch-tree-node{grid-row:var(--tree-row);grid-column:var(--tree-col);place-self:center;position:relative;display:block;width:clamp(36px,4vw,53px);height:clamp(36px,4vw,53px);padding:0;border:2px solid #515751;border-radius:7px;background:#111e1a;box-shadow:0 0 0 1px #090e0d;filter:grayscale(.8);opacity:.67;min-height:0;cursor:pointer;overflow:visible}
+#binch-specs .binch-tree-node img{display:block;width:100%;height:100%;border-radius:4px;object-fit:cover}
+#binch-specs .binch-tree-node span{position:absolute;right:-4px;bottom:-7px;background:#0a1210;color:#d4c6ab;font-size:.67rem;font-weight:800;padding:1px 4px;border-radius:5px;border:1px solid #647364;white-space:nowrap}
+#binch-specs .binch-tree-node.has-points{filter:none;opacity:1;border-color:#c8a15c;box-shadow:0 0 8px #bc995870}
+#binch-specs .binch-tree-node.has-points span{color:#ffecb3;border-color:#d2ab5f}
+#binch-specs .binch-tree-node.is-next{opacity:1;filter:none;border-color:#e8c67a;box-shadow:0 0 0 2px #ffd68373,0 0 16px #ffd17b4b}
+#binch-specs .binch-tree-node:focus-visible{outline:3px solid #fff6cd;outline-offset:3px}
+.binch-tree-description{padding:13px;margin-top:12px;border-radius:10px;background:#222e28;border:1px solid #74664b;color:#e5d8b7;font-size:.83rem;min-height:55px}
+.binch-tree-license{font-size:.73rem;color:#b3c4b7;margin-top:12px}
+@media(max-width:960px){.binch-tree-grid{grid-template-columns:1fr}.binch-tree-cells{grid-template-rows:repeat(7,64px);gap:8px;padding:12px;max-width:430px;margin:auto}.binch-tree-panel{padding:14px}.binch-tree-panel h4{font-size:1.02rem}#binch-specs .binch-tree-node{width:52px;height:52px}}
+@media(max-width:420px){.binch-tree-cells{grid-template-rows:repeat(7,58px)}#binch-specs .binch-tree-node{width:44px;height:44px}}
+@media(prefers-reduced-motion:reduce){.binch-tree-node{animation:none!important;transition:none!important}}
