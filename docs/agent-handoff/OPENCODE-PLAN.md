@@ -29,27 +29,42 @@ de l'utilisateur. Avant chaque chantier : `git fetch origin` puis lire
    - Tests navigateur bout-en-bout : console sans erreur, création/sélection/comparaison
      d'un ensemble d'équipement, enregistrement d'une recette artisan, liens morts absents.
 
-4. **EN COURS** — Réécriture de `specs-guide.js` : DRUID_ROUTE avec le build farouche décodé
-   point par point, explications par phases (10–20 ours, 20+ félin, 40+ pics de puissance),
-   tooltips français officiels, variantes (ours tank / félin DPS / restauration / équilibre
-   avec liens Icy Veins vérifiés vivants nov 2026), prochain talent recommandé selon le niveau,
-   correction du lien erroné du profil restauration (pointe vers le guide farouche).
+4. **TERMINÉ** — Réécriture de `specs-guide.js` (commit `40a8419`, poussé) : dict `T` (20 talents :
+   nom FR du client Forever 1.60.1.70790 via ForeverSpec, arbre, max, tooltip traduit du
+   calculateur officiel), `SEQ` (51 entrées, ordre exact du build Icy Veins Forever Meyra 4 nov
+   2026 — Frappes de prédateur au 29 puis 33–34, fusion des runs non contigus dans `stepsAt()`),
+   `PHASES` (10–19 ours / 20–28 félin / 29–41 cœur farouche / 42–60 arbres voisins, 9/32/10 final),
+   `nextPoint()`/`points()`, variantes druide ours/félin/resto/équilibre avec liens vérifiés vivants,
+   filtre `urlOK`, note ForeverSpec en variante communautaire. `specs-guide.css` : phases,
+   infobulles, état `is-next`. Bumps `specs-guide.js?v=002` / `specs-guide.css?v=002`.
 
-5. **À FAIRE** — QA navigateur complète de la page Specs après réécriture : mobile + desktop,
-   bandeau épinglé toujours visible, niveau manuel vs niveau importé du profil
-   (`grimoire.hub.v3` / `grimoire.bridge.last`), filtre de classe, console propre.
+5. **TERMINÉ** — QA navigateur de la page Specs (serveur local port 8971) : console 100 % propre
+   au chargement et rechargement ; 20 talents × 20 tooltips rendus ; vérifié niv 10 (1/51,
+   prochain 11 : Férocité 2/5), niv 30 (21 pts, Frappes 1/3, phase 29–41 active), niv 34
+   (Frappes 3/3, 25 pts), niv 60 (51/51 complet) ; niveau importé du profil simulé
+   (`grimoire.hub.v3` + `grimoire.bridge.last`, niv 47 → « prochain 48 : Naturaliste 2/5 ») ;
+   bandeau épinglé fonctionnel ; filtre Druide = 5 cartes ; lien resto corrigé vérifié ; données
+   de test supprimées (dont clé résiduelle `binch.zone.plan.v1.testdruide..`).
+   Limite : capture visuelle impossible (ce modèle ne lit pas les images de `browser.screenshot`)
+   — rendu visuel à vérifier par l'utilisateur.
 
-6. **À FAIRE** — Vérifier la cohérence des guides de leveling druide resto/équilibre référencés
-   (URLs vérifiées vivantes le 10 nov 2026 ; le profil resto pointe actuellement vers le guide
-   farouche).
+6. **TERMINÉ** — Cohérence guides resto/équilibre : lien resto corrigé vers
+   `restoration-druid-leveling`, carte équilibre ajoutée (`balance-druid-leveling` + ForeverSpec
+   fr), pages ForeverSpec resto/balance vérifiées vivantes et sourcées (resto : monter en
+   farouche puis respé 11/0/40 au 60 ; équilibre : 41/0/10, Forme de sélénien au 42).
 
-7. **À FAIRE** — Exposer les builds vérifiés en JSON structuré (piste `data/builds.json`
-   mentionnée par ChatGPT pour le corpus Faith) : format à convenir dans
-   MESSAGE-POUR-CHATGPT.md avant toute écriture dans `public/binch/faith-knowledge/`
-   (domaine réservé ChatGPT pour cette phase).
+7. **À FAIRE (prochain)** — Fiches de connaissances Faith dérivées du build farouche vérifié :
+   `public/binch/faith-knowledge/data/builds.json`, fiches conformes au `schema-v1.json` de
+   ChatGPT (README `ded7732` : c'est le chemin prévu pour la contribution OpenCode).
+   Validation par le `validator.js` et les tests de ChatGPT extraits de `origin/main`,
+   exécutés en Node réel. Sans toucher aux autres fichiers du corpus (moteur/manifest =
+   ChatGPT) ; entrée `manifest.json` à ajouter à la réconciliation (documentée dans
+   MESSAGE-POUR-CHATGPT.md).
 
-8. **À FAIRE** — Audit console des autres pages (QA associée) : parcours de tous les onglets,
-   capture des erreurs résiduelles éventuelles.
+8. **TERMINÉ** — Audit console des autres pages (QA associée) : parcours des 18 onglets de la
+   nav (`command, hub, progression, discoveries, metiers, equipment, lfg, todo, bibliotheque,
+   crafting, gm, sync, macros, coffre, market, evenements, tresors, specs`), zéro erreur,
+   zéro avertissement.
 
 9. **À FAIRE (décision ChatGPT)** — Constat architecture bourse : `market-board.js` (10:06)
    et `ah-market.js` (10:24) sont deux implémentations concurrentes de `#page-market`;
@@ -58,8 +73,10 @@ de l'utilisateur. Avant chaque chantier : `git fetch origin` puis lire
    et `local-backup.js` le lisent. Voir MESSAGE-POUR-CHATGPT.md. OpenCode n'a pas tranché :
    correction minimale appliquée (montage robuste d'ah-craft, sans perte de données).
 
-10. **À FAIRE** — Mise à jour de la To Do officielle (`quentindumont70-bit/WoW-Forever-Grimoire`,
-    `TO-DO-LA-BINCH.md`) après le lot Specs : cocher les items couverts, ajouter les constats QA.
+10. **TERMINÉ** — To Do officielle (`quentindumont70-bit/WoW-Forever-Grimoire`) : entrée
+    « Livraison OpenCode — onglet Specs » ajoutée en fin de `TO-DO-LIST-LA-BINCH.md` (clone
+    local `grimoire-todo`), statuts honnêtes ([CODE COMMITÉ SUR BRANCHE][TEST NAVIGATEUR],
+    limites explicites, non-fusion dans `main` rappelée). Commit du dépôt Grimoire à pousser.
 
 11. **À FAIRE** — Revue finale avant passation : `node scripts/check-binch.mjs`, diff complet,
     bilan des limites (ce qui n'est PAS testé : jeu réel, WoW client, installateur).
