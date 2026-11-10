@@ -7,3 +7,10 @@
 .binch-equipment .binch-bag-controls input,.binch-equipment .binch-bag-controls select{flex:1;min-width:145px;min-height:38px;padding:8px 10px;border-radius:7px;border:1px solid #786b51;background:#142420;color:#f4e2c6}
 .binch-equipment #binch-bag-summary{font-size:.77rem;color:#c6d3b5;margin:6px 0 12px}
 .binch-equipment #binch-equipment-summary article small{display:block;margin-top:5px;color:#c5cebe}
+
+.binch-equipment .binch-armory-history{padding:14px;margin:16px 0;border:1px solid #75684e;border-radius:11px;background:#101f1b}
+.binch-equipment .binch-armory-history h3{margin:0 0 8px;color:#f0d6a6}
+.binch-equipment .binch-armory-history p{font-size:.83rem;margin:8px 0;color:#cfddc6}
+.binch-equipment .binch-armory-history-summary{display:grid;gap:5px}
+.binch-equipment .binch-armory-history-summary strong{color:#ead1a0}
+.binch-equipment .binch-armory-history-summary small{color:#aebeb3}
