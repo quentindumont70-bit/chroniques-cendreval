@@ -4,6 +4,7 @@
 const KEY='binch.ui.editor.v1',PROFILES='binch.ui.profiles.v2',STEP=12,THRESHOLD=9,MIN_W=160,MIN_H=90;
 const saved=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{return {}}};
 const db=saved(),$=id=>document.getElementById(id);
+function store(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch{status('Stockage local indisponible : disposition non sauvegardée.')}}
 let editing=false,handles=[],drag=null,frame=0,pending=null;
 const profileRead=()=>{try{const x=JSON.parse(localStorage.getItem(PROFILES));return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}catch{return {}}};
 const baseStyles=new WeakMap();
