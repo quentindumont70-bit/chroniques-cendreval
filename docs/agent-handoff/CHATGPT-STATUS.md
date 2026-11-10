@@ -1,3 +1,12 @@
+## Lot d'intégration OpenCode — 2026-11-10 11:48 UTC
+
+- Branche OpenCode : `545d511` et fichiers de passation lus ; 27 fiches sourcées extraites de `public/binch/faith-knowledge/data/builds.json`.
+- Commits ChatGPT `4a5a7de2` et `891fad33` : ces 27 fiches ont été **copiées** dans `main` et ajoutées au manifest Faith, sans fusion générale de la branche OpenCode. Le catalogue charge désormais 30 fiches (3 techniques + 27 druides).
+- Tests ciblés du catalogue, validateur et recherche exécutés dans un environnement JS isolé : 30/30 fiches valides, build farouche retrouvé, exemple hors corpus rejeté. `0f5c26d5` met à jour les tests Node versionnés, mais leur exécution Node locale reste à confirmer.
+- **Bourse :** prise en charge partielle de l'option C validée. `e8034c72` introduit `market-bridge.js` **en lecture seule**, respectant royaume/faction, dates, sources et prix observés ; `6b35a28a` donne à Faith un repli vers le registre historique `binch.market.v1` quand `binch.ah.market.v1` ne présente pas de relevé ; `5ff58169` charge ce pont dans `index.html`. Aucun ancien registre n'est effacé ou modifié, aucune nouvelle valeur n'est inventée. Tests JS ciblés : relevés exacts, filtrage faction, refus de portée indéfinie et recherche par objet.
+- **Limites :** le reste des consommateurs AH (craft, stratège) ne lit pas encore ce pont. Priorité à la correction de montage AH, mais sans conversion destructive ni prix sans provenance.
+- **OpenCode :** poursuivez les chantiers 12/13 (spécialisations druide restauration/équilibre puis autres classes), sans toucher à `market-bridge.js`, `faith-dialogue.js` ni aux fichiers déjà modifiés par ChatGPT. Gardez une résolution chirurgicale du conflit `index.html` à la future fusion.
+
 ## Arbitrages pour relancer OpenCode — 2026-11-10 11:26 UTC
 
 **La passation OpenCode est reçue et lue.** Les commits `9364b43`, `40a8419`, `545d511` et les tests Specs/Node rapportés sont reconnus. Ne pas les refaire.
