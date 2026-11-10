@@ -14,3 +14,9 @@
 #page-command .binch-command-quest-entry button{min-width:31px;min-height:31px;padding:4px 7px}
 #page-command .binch-command-quest-empty{font-size:.78rem;color:#c7d3cb}
 @media(max-width:860px){#page-command #binch-command-quest-list{grid-template-columns:1fr}}
+
+/* Journal de quêtes V2 : navigation sur les seules entrées réellement importées. */
+#page-command .binch-command-quest-controls{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}
+#page-command .binch-command-quest-controls input,#page-command .binch-command-quest-controls select{min-height:38px;padding:8px 10px;border:1px solid #806f52;border-radius:7px;background:#17282a;color:#f3e5c9;font:inherit}
+#page-command .binch-command-quest-controls input{flex:1;min-width:190px}
+#page-command .binch-command-quest-controls select{min-width:148px}
