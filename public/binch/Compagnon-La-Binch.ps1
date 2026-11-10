@@ -25,12 +25,12 @@ try { $rng.GetBytes($randomBytes) } finally { $rng.Dispose() }
 $token = [Convert]::ToBase64String($randomBytes).TrimEnd('=').Replace('+','-').Replace('/','_')
 $origin = 'https://quentindumont70-bit.github.io'
 $port = 18764
-$listener = New-Object System.Net.Sockets.TcpListener([System.Net.IPAddress]::Loopback,$port)
+$listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback,$port)
 function Reply($stream,[int]$status,[string]$reason,[string]$body,[bool]$cors,[string]$etag='') {
  $bytes = [System.Text.Encoding]::UTF8.GetBytes($body)
  $header = "HTTP/1.1 $status $reason`r`nContent-Type: text/plain; charset=utf-8`r`nContent-Length: $($bytes.Length)`r`nCache-Control: no-store`r`nX-Content-Type-Options: nosniff`r`nConnection: close`r`n"
  if ($cors) {
-  $header += "Access-Control-Allow-Origin: $origin`r`nAccess-Control-Allow-Methods: GET, OPTIONS`r`nAccess-Control-Allow-Headers: X-Binch-Token, If-None-Match`r`nAccess-Control-Expose-Headers: ETag`r`nVary: Origin`r`n"
+  $header += "Access-Control-Allow-Origin: $origin`r`nAccess-Control-Allow-Methods: GET, OPTIONS`r`nAccess-Control-Allow-Headers: X-Binch-Token, If-None-Match`r`nAccess-Control-Allow-Private-Network: true`r`nAccess-Control-Expose-Headers: ETag`r`nVary: Origin`r`n"
  }
  if ($etag) { $header += "ETag: $etag`r`n" }
  $header += "`r`n"
