@@ -1,0 +1,11 @@
+/* Compagnon Windows opt-in, no animation or background rendering. */
+.binch-companion{margin:14px 0;padding:17px;border:1px solid #9f8857;border-radius:12px;background:linear-gradient(125deg,#172b2b,#202b34);color:#f1e4ce}
+.binch-companion h3{margin:0 0 8px;font:700 1.2rem Cinzel,Georgia,serif;color:#efd29e}
+.binch-companion h3 small{font:500 .72rem system-ui;color:#b4cbc8}
+.binch-companion p{font-size:.82rem;line-height:1.55}
+.binch-companion-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin:12px 0}
+.binch-companion-actions label{display:grid;gap:4px;font-size:.76rem;min-width:190px;flex:1}
+.binch-companion-actions input{min-height:38px;border:1px solid #9f8857;background:#101e23;color:#fff2d8;padding:8px;border-radius:6px}
+.binch-companion-actions button,.binch-companion-actions a{border:1px solid #b79761;background:#253d3d;color:#ffdfad;border-radius:7px;padding:10px 12px;min-height:38px;text-decoration:none;font-size:.8rem;cursor:pointer}
+.binch-companion #binch-companion-status[data-state=error]{color:#f5a6a1}
+.binch-companion summary{cursor:pointer;color:#f1d09d}
