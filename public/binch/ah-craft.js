@@ -8,7 +8,19 @@ const read=(key,f)=>{try{return JSON.parse(localStorage.getItem(key))??f}catch{r
 let recipes=read(KEY,[]);if(!Array.isArray(recipes))recipes=[];
 const market=()=>read(MARKET,{});
 const scope=()=>{const x=read('binch.ah.scope.v1',null);return x?.realm&&['Horde','Alliance'].includes(x.faction)?String(x.realm).trim().toLocaleLowerCase('fr')+'|'+x.faction:'legacy'};
-const priceOf=item=>market().items?.find(x=>(x.scope||'legacy')===scope()&&x.name&&norm(x.name)===norm(item));
+// Real, scoped observations only. Preserve the two ledgers without rewriting either one.
+const priceOf=item=>{
+ const target=norm(item),marketData=market(),marketScope=scope();
+ if(marketScope==='legacy')return null; // unknown realm or faction must never become a quote
+ const matches=Array.isArray(marketData.items)?marketData.items.filter(x=>x.scope===marketScope&&x.name&&norm(x.name)===target&&Number.isSafeInteger(Number(x.last))&&Number(x.last)>0&&Number.isFinite(Date.parse(x.observedAt))):[];
+ matches.sort((a,b)=>Date.parse(b.observedAt)-Date.parse(a.observedAt));
+ if(matches.length)return matches[0];
+ const x=read('binch.ah.scope.v1',null),legacy=read('binch.market.v1',{});
+ const bridge=window.BinchMarketBridge?.snapshot(legacy,marketData,x);
+ const observed=window.BinchMarketBridge?.latestFor(bridge,item);
+ if(!observed)return null;
+ return {name:observed.name,last:observed.price,observedAt:observed.observedAt,source:observed.source+' · '+observed.store,scope:marketScope};
+};
 const money=n=>{n=Math.round(n);let sign=n<0?'-':'';n=Math.abs(n);return sign+Math.floor(n/10000)+'o '+Math.floor(n%10000/100)+'a '+n%100+'c'};
 const gold=n=>{const x=Number(String(n).replace(',','.'));return Number.isFinite(x)&&x>=0&&x<1e9?Math.round(x*10000):null};
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(recipes.slice(-100)))}catch{}};
