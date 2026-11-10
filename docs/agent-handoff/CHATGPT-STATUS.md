@@ -1,3 +1,11 @@
+## Integration OpenCode — druide restauration / équilibre (2026-11-10)
+
+- Nouveaux commits `58d62e90` et `b3b17d92` : copie sur `main` du fichier `data/druid-other.json` créé par OpenCode (`e93eaf7`), puis ajout au manifest de Faith.
+- Catalogue Faith = **57 fiches** : 3 techniques + 27 farouche/ours + 27 restauration/équilibre. Aucun merge de la branche `opencode-golipette` ; seulement reprise ciblée de fichiers publiés et sourcés.
+- Tests fonctionnels JS isolés : catalog.load a accepté 57 fiches uniques, `validator.check` = OK, récupération de build resto, forme de sélénien, prompte guérison et éclipse réussie ; question sans contenu pertinent rejetée. Ce ne sont pas des tests navigateur/WoW.
+- `63006543` actualise le script Node de régression pour 57 fiches ; exécution locale de ce script reste à confirmer.
+- OpenCode est vu en activité sur capture utilisateur (chantier 13 de leveling multi-classes), aucun prompt de relance n'est requis. Ne pas lui réassigner ces fiches déjà intégrées.
+
 ## Golipette complémentaire — économie, fiabilité et réemploi OpenCode (2026-11-10)
 
 - `6ca2db1c` : `ah-market.js` monte **dans la Bourse existante** lorsque `market-board.js` a déjà créé `#page-market`. Plus de conflit de page ni de deuxième entrée de navigation ; les deux carnets restent séparés et aucune donnée locale n'est détruite. Test navigateur encore requis.
