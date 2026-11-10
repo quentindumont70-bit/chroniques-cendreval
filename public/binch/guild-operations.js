@@ -94,7 +94,9 @@ function lfgMount(){
  const rows=data.responses.filter(x=>x.postId===post.id);
  copy(['LA BINCH · RÉPONSES LOCALES',post.dungeon||'Activité',post.when||'Horaire à convenir',...rows.map(x=>x.name+' — '+x.role+' — '+({yes:'Partant',maybe:'Peut-être',no:'Absent'}[x.status])),'Réponses consignées manuellement, pas de synchronisation Discord.'].join('\n'));
  });
- window.addEventListener('storage',e=>{if(e.key==='binch.lfg.local.v1'){data.responses=data.responses.filter(x=>drafts().some(p=>p.id===x.postId));save();lfgRender()}});
+ const refreshLocal=()=>{const ids=new Set(drafts().map(p=>p.id));const retained=data.responses.filter(x=>ids.has(x.postId));if(retained.length!==data.responses.length){data.responses=retained;save()}lfgRender()};
+ document.addEventListener('binch:lfg-local-change',refreshLocal);
+ window.addEventListener('storage',e=>{if(e.key==='binch.lfg.local.v1')refreshLocal()});
  lfgRender();
 }
 function promiseRender(){
