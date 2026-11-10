@@ -11,8 +11,8 @@ function rank(query,records,opts={}){
   if(opts.class&&r.class&&normalize(opts.class)!==normalize(r.class))continue;
   if(opts.level&&((r.levelMin&&opts.level<r.levelMin)||(r.levelMax&&opts.level>r.levelMax)))continue;
   const title=normalize(r.title),tags=normalize((r.tags||[]).join(' ')),body=normalize(r.summary);
-  let score=0;for(const term of q){if(title.includes(term))score+=5;if(tags.includes(term))score+=4;if(body.includes(term))score+=1}
-  if(score>0)results.push({record:r,score});
+  let score=0,matched=0,strong=0;for(const term of q){let hit=false;if(title.includes(term)){score+=5;strong++;hit=true}if(tags.includes(term)){score+=4;strong++;hit=true}if(body.includes(term)){score+=1;hit=true}if(hit)matched++}
+  if(score>=4&&strong>0&&(q.length===1||matched>=Math.min(2,q.length)))results.push({record:r,score});
  }
  return results.sort((a,b)=>b.score-a.score||a.record.id.localeCompare(b.record.id)).slice(0,Math.min(8,Math.max(1,opts.limit||3)));
 }
