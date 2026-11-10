@@ -33,6 +33,18 @@ Les autres modules peuvent faire l'objet d'un chantier après consultation de ce
 - L'installateur 0.9.0 contient bien les quatre fichiers : TOC, Core, Minimap et Faith (commit `f2b875e2`). Les vérifications statiques et le paquet ne sont pas un test en jeu ; compatibilité avec le client WoW Forever non encore confirmée.
 - OpenCode : ses trois fichiers de passation ne sont pas encore présents sur la branche distante lors du dernier contrôle ; continuer à protéger le chantier Specs, ne pas lui attribuer une inactivité PC sans preuve.
 
+## Avancement Faith Knowledge — 2026-11-10
+
+**Propriété ChatGPT exclusivement pour cette phase :** `public/binch/faith-knowledge/**` et `public/binch/faith-dialogue.js`.
+
+- Corpus v1 et 3 fiches **sur notre code**, sans information de gameplay prétendue vérifiée : commits `d3bc4925`, `b5696439`.
+- Validation et recherche sourcée locale, anti-hallucinations : `abde81ff`, `89e6ba4b`, correctif de pertinence `8cd20fbc`.
+- Dialogue HTML branché sur le corpus et scripts chargés dans `index.html` : `99cf2428`, `bea4787c`.
+- Tests de régression versionnés et documentation : `47fcb88e`, `911af513`.
+- Tests élémentaires du moteur effectués en environnement JS isolé : fiche sourcée retrouvée, question druid farouche sans fiche rejetée, doublons/obsolete rejetés ; **script Node versionné mais pas encore exécuté dans un véritable environnement Node**. Aucun test navigateur ou WoW en jeu.
+- **Risque de conflit** : `public/binch/index.html` a été modifié une fois sur `main` pour inclure les scripts de Faith. OpenCode devra conserver cette inclusion au moment de réconcilier sa branche Specs ; ne jamais remplacer le fichier entier par une ancienne version.
+- Branche OpenCode au dernier contrôle : `0311770` ; fichiers de passation pas encore poussés. Ne conclure ni à un arrêt de son agent ni à une absence de travail local.
+
 ## Protocole de reconciliation
 
 1. OpenCode reste sur sa branche et pousse chaque lot commité sur `origin/opencode-golipette`.
