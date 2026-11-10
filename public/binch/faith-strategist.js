@@ -107,24 +107,41 @@ function recommendations(p,goal){
   if(goal==='market'&&!prices.length)add(95,'Créer ton premier relevé AH','La Bourse ne dispose pas encore de cours confirmés pour ce royaume et cette faction. Ajoute une observation horodatée avant tout conseil de marge.','Absence de cours vérifiés','market');
  }
  if(goal==='market'||goal==='balanced'){
-  const ledger=read('binch.ah.market.v1'),items=Array.isArray(ledger.items)?ledger.items:[];
+  const ledger=read('binch.ah.market.v1'),scope=read('binch.ah.scope.v1');
+  const selected=scope?.realm&&['Horde','Alliance'].includes(scope.faction)?String(scope.realm).trim().toLocaleLowerCase('fr')+'|'+scope.faction:'legacy';
+  const items=Array.isArray(ledger.items)?ledger.items.filter(x=>x&&(x.scope||'legacy')===selected):[];
   const fee=Number.isFinite(Number(ledger.fee))?Math.max(0,Math.min(20,Number(ledger.fee))):5;
-  const opportunities=items.filter(x=>Array.isArray(x.history)&&x.history.length>=3&&Number(x.last)>0&&Date.now()-new Date(x.observedAt)<86400000).map(x=>{
-   const prices=x.history.map(h=>Number(h.price)).filter(v=>Number.isFinite(v)&&v>0).sort((a,b)=>a-b);
+  const opportunities=items.filter(x=>{
+   const t=Date.parse(x.observedAt||'');
+   return Array.isArray(x.history)&&x.history.length>=3&&Number(x.last)>0&&Number.isFinite(t)&&t<=Date.now()&&Date.now()-t<86400000;
+  }).map(x=>{
+   const prices=x.history.filter(h=>Number(h.price)>0&&Number.isFinite(Date.parse(h.at))&&Date.parse(h.at)<=Date.now()).map(h=>Number(h.price)).sort((a,b)=>a-b);
    if(prices.length<3)return null;
    const i=prices.length>>1,med=prices.length%2?prices[i]:(prices[i-1]+prices[i])/2;
    return {name:x.name,last:Number(x.last),med,discount:med?100*(med-Number(x.last))/med:0,source:x.source,observedAt:x.observedAt,fee};
   }).filter(x=>x&&x.discount>20).sort((a,b)=>b.discount-a.discount).slice(0,2);
+  if(goal==='market'&&selected==='legacy'){
+   add(122,'Identifier ton royaume et ta faction','Les anciens relevés AH sont non attribués. Sélectionne ton royaume et ta faction pour empêcher toute confusion entre marchés.','Bourse d’Azeroth · marché non identifié','market');
+  }
   for(const candidate of opportunities){
-   add(goal==='market'?118:62,'AH : étudier '+candidate.name.slice(0,75),
-    'Dernier prix observé '+Math.round(candidate.last)+' cuivre contre médiane locale '+Math.round(candidate.med)+' cuivre (écart '+Math.round(candidate.discount)+' %). Commission indicative '+fee+' %. Attention à la liquidité et à la fraîcheur des cours.',
+   add(goal==='market'?118:62,'AH : étudier '+String(candidate.name).slice(0,75),
+    'Marché '+selected+'. Dernier prix observé '+Math.round(candidate.last)+' cuivre contre médiane locale '+Math.round(candidate.med)+' cuivre (écart '+Math.round(candidate.discount)+' %). Commission indicative '+fee+' %. Échantillon non représentatif : aucune liquidité garantie.',
     'Bourse d’Azeroth · '+String(candidate.source||'observation manuelle')+' · '+String(candidate.observedAt||'non daté'),'market');
   }
   if(goal==='market'&&!opportunities.length)add(80,'Constituer un historique AH',
-    'Au moins trois relevés datés d’un même objet sont nécessaires à la détection d’écarts. Aucun achat conseillé sans données suffisantes.',
-    'Bourse d’Azeroth · carnet local','market');
+    'Au moins trois relevés datés, sur le même marché, sont nécessaires à une comparaison. Aucun achat conseillé sans données suffisantes.',
+    'Bourse d’Azeroth · carnet local '+selected,'market');
  }
- if(goal==='craft'||goal==='balanced'){
+ const tasks=read('binch.guild.delegations.v1');
+ const openTasks=Array.isArray(tasks)?tasks.filter(x=>x&&x.status!=='done'&&String(x.title||'').trim()):[];
+ if((goal==='guild'||goal==='balanced')&&openTasks.length){
+  const urgent=openTasks.filter(x=>x.priority==='urgent'||x.status==='blocked');
+  const chosen=urgent[0]||openTasks[0];
+  add(goal==='guild'?116:73,'Guilde · '+String(chosen.title).slice(0,75),
+   'Mission locale '+(chosen.status==='blocked'?'bloquée':chosen.priority==='urgent'?'urgente':'ouverte')+' attribuée à '+String(chosen.owner||'personne pour le moment').slice(0,40)+'. Échéance : '+String(chosen.due||'non précisée')+'. Confirmer le suivi avec le GM.',
+   'Délégations locales · aucune donnée partagée','gm');
+ }
+  if(goal==='craft'||goal==='balanced'){
   if(p.jobs.length)add(goal==='craft'?112:70,'Faire progresser '+p.jobs[0][0],'Compétence '+p.jobs[0][1]+' au dernier import. Consulte les recettes compatibles et leurs matériaux.','Métiers du dernier import','metiers');
   if(p.copper>0||p.stones>0)add(goal==='craft'?100:65,'Exploiter tes ressources',fmt(p.copper)+' minerais de cuivre et '+fmt(p.stones)+' pierres brutes au dernier import : compare avec tes recettes avant de vendre.','Inventaire de la dernière sauvegarde','metiers');
   if(goal==='craft'&&!p.jobs.length)add(90,'Choisir un métier à développer','Aucun niveau de métier confirmé : consulte les maîtres et recettes sans supposer ta compétence.','Compétences non renseignées','metiers');
@@ -166,7 +183,8 @@ function mount(){
  card.append(box);
  const select=$('binch-faith-goal');select.value=localStorage.getItem(KEY)||'balanced';select.addEventListener('change',()=>{localStorage.setItem(KEY,select.value);paint()});
  $('binch-command-refresh')?.addEventListener('click',paint);
- document.addEventListener('grimoire:sync',paint);window.addEventListener('storage',e=>{if(e.key==='grimoire.bridge.last'||e.key==='grimoire.hub.v3'||e.key===KEY)paint()});paint();
+ document.addEventListener('grimoire:sync',paint);document.addEventListener('binch:delegations-change',paint);document.addEventListener('binch:planner-change',paint);
+ window.addEventListener('storage',e=>{if(['grimoire.bridge.last','grimoire.hub.v3',KEY,'binch.ah.market.v1','binch.ah.scope.v1','binch.guild.delegations.v1'].includes(e.key))paint()});paint();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
 })();
