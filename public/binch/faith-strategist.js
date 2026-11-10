@@ -106,6 +106,24 @@ function recommendations(p,goal){
   if(watch.length)add(goal==='market'?109:55,'Surveiller '+watch.length+' objet(s) AH','Tes seuils sont stockés localement. Une alerte exige un nouveau relevé de prix ; aucune surveillance permanente n’est active.','Watchlist AH locale','market');
   if(goal==='market'&&!prices.length)add(95,'Créer ton premier relevé AH','La Bourse ne dispose pas encore de cours confirmés pour ce royaume et cette faction. Ajoute une observation horodatée avant tout conseil de marge.','Absence de cours vérifiés','market');
  }
+ if(goal==='market'||goal==='balanced'){
+  const ledger=read('binch.ah.market.v1'),items=Array.isArray(ledger.items)?ledger.items:[];
+  const fee=Number.isFinite(Number(ledger.fee))?Math.max(0,Math.min(20,Number(ledger.fee))):5;
+  const opportunities=items.filter(x=>Array.isArray(x.history)&&x.history.length>=3&&Number(x.last)>0&&Date.now()-new Date(x.observedAt)<86400000).map(x=>{
+   const prices=x.history.map(h=>Number(h.price)).filter(v=>Number.isFinite(v)&&v>0).sort((a,b)=>a-b);
+   if(prices.length<3)return null;
+   const i=prices.length>>1,med=prices.length%2?prices[i]:(prices[i-1]+prices[i])/2;
+   return {name:x.name,last:Number(x.last),med,discount:med?100*(med-Number(x.last))/med:0,source:x.source,observedAt:x.observedAt,fee};
+  }).filter(x=>x&&x.discount>20).sort((a,b)=>b.discount-a.discount).slice(0,2);
+  for(const candidate of opportunities){
+   add(goal==='market'?118:62,'AH : étudier '+candidate.name.slice(0,75),
+    'Dernier prix observé '+Math.round(candidate.last)+' cuivre contre médiane locale '+Math.round(candidate.med)+' cuivre (écart '+Math.round(candidate.discount)+' %). Commission indicative '+fee+' %. Attention à la liquidité et à la fraîcheur des cours.',
+    'Bourse d’Azeroth · '+String(candidate.source||'observation manuelle')+' · '+String(candidate.observedAt||'non daté'),'market');
+  }
+  if(goal==='market'&&!opportunities.length)add(80,'Constituer un historique AH',
+    'Au moins trois relevés datés d’un même objet sont nécessaires à la détection d’écarts. Aucun achat conseillé sans données suffisantes.',
+    'Bourse d’Azeroth · carnet local','market');
+ }
  if(goal==='craft'||goal==='balanced'){
   if(p.jobs.length)add(goal==='craft'?112:70,'Faire progresser '+p.jobs[0][0],'Compétence '+p.jobs[0][1]+' au dernier import. Consulte les recettes compatibles et leurs matériaux.','Métiers du dernier import','metiers');
   if(p.copper>0||p.stones>0)add(goal==='craft'?100:65,'Exploiter tes ressources',fmt(p.copper)+' minerais de cuivre et '+fmt(p.stones)+' pierres brutes au dernier import : compare avec tes recettes avant de vendre.','Inventaire de la dernière sauvegarde','metiers');
@@ -144,7 +162,7 @@ function paint(){
 function mount(){
  const card=$('page-command')?.querySelector('.binch-command-brog');if(!card||$('binch-faith-advisor'))return;
  const box=document.createElement('div');box.id='binch-faith-advisor';
- box.innerHTML='<div class="binch-faith-advisor-head"><h4 id="binch-faith-title">Trois prochaines actions</h4><label>Priorité<select id="binch-faith-goal"><option value="balanced">Progression équilibrée</option><option value="quick">XP rapide</option><option value="craft">Métiers et ressources</option><option value="class">Classe et compétences</option><option value="dungeon">Préparation donjon</option><option value="guild">Vie de guilde</option><option value="market">Bourse d’Azeroth</option></select></label></div><small id="binch-faith-catalog-count"></small><div id="binch-faith-advice"></div><p id="binch-faith-integrity"></p>';
+ box.innerHTML='<div class="binch-faith-advisor-head"><h4 id="binch-faith-title">Trois prochaines actions</h4><label>Priorité<select id="binch-faith-goal"><option value="balanced">Progression équilibrée</option><option value="quick">XP rapide</option><option value="craft">Métiers et ressources</option><option value="class">Classe et compétences</option><option value="dungeon">Préparation donjon</option><option value="market">Commerce / AH</option><option value="guild">Vie de guilde</option><option value="market">Bourse d’Azeroth</option></select></label></div><small id="binch-faith-catalog-count"></small><div id="binch-faith-advice"></div><p id="binch-faith-integrity"></p>';
  card.append(box);
  const select=$('binch-faith-goal');select.value=localStorage.getItem(KEY)||'balanced';select.addEventListener('change',()=>{localStorage.setItem(KEY,select.value);paint()});
  $('binch-command-refresh')?.addEventListener('click',paint);
