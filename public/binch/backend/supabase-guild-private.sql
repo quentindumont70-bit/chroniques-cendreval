@@ -157,3 +157,58 @@ grant execute on function public.binch_create_guild(text,text),public.binch_issu
 -- RLS protège les données même si le client JavaScript est modifié.
 -- Ne PAS utiliser service_role dans le navigateur.
 -- Ce script ne crée pas de serveur ni de compte. Aucune synchronisation réelle avant configuration.
+
+
+-- Phase 4 / chantier 12 : LFG privé de la guilde, distinct du LFG public historique.
+create table if not exists public.binch_guild_activities(
+ id uuid primary key default gen_random_uuid(),
+ guild_id uuid not null references public.binch_guilds(id) on delete cascade,
+ owner_id uuid not null references auth.users(id),
+ title text not null check(char_length(title) between 2 and 90),
+ slots integer not null check(slots between 1 and 40),
+ starts_at timestamptz,
+ note text not null default '' check(char_length(note)<=350),
+ closed boolean not null default false,
+ created_at timestamptz not null default now(),
+ unique(id,guild_id)
+);
+create table if not exists public.binch_guild_signups(
+ activity_id uuid not null,
+ guild_id uuid not null,
+ user_id uuid not null references auth.users(id),
+ character_name text not null check(char_length(character_name) between 2 and 40),
+ role text not null check(role in ('Tank','Soigneur','DPS','Flexible')),
+ status text not null check(status in ('yes','maybe','no')),
+ updated_at timestamptz not null default now(),
+ primary key(activity_id,user_id),
+ foreign key(activity_id,guild_id) references public.binch_guild_activities(id,guild_id) on delete cascade
+);
+create index if not exists binch_guild_activities_group on public.binch_guild_activities(guild_id,created_at desc);
+create index if not exists binch_guild_signups_group on public.binch_guild_signups(guild_id,activity_id);
+alter table public.binch_guild_activities enable row level security;
+alter table public.binch_guild_signups enable row level security;
+revoke all on public.binch_guild_activities,public.binch_guild_signups from public,anon,authenticated;
+grant select,insert,update,delete on public.binch_guild_activities,public.binch_guild_signups to authenticated;
+drop policy if exists binch_activities_read on public.binch_guild_activities;
+create policy binch_activities_read on public.binch_guild_activities for select to authenticated using(public.binch_is_member(guild_id));
+drop policy if exists binch_activities_insert on public.binch_guild_activities;
+create policy binch_activities_insert on public.binch_guild_activities for insert to authenticated with check(public.binch_is_member(guild_id) and owner_id=(select auth.uid()));
+drop policy if exists binch_activities_update on public.binch_guild_activities;
+create policy binch_activities_update on public.binch_guild_activities for update to authenticated
+using(public.binch_is_officer(guild_id) or owner_id=(select auth.uid()))
+with check(public.binch_is_officer(guild_id) or owner_id=(select auth.uid()));
+drop policy if exists binch_activities_delete on public.binch_guild_activities;
+create policy binch_activities_delete on public.binch_guild_activities for delete to authenticated using(public.binch_is_officer(guild_id) or owner_id=(select auth.uid()));
+drop policy if exists binch_signups_read on public.binch_guild_signups;
+create policy binch_signups_read on public.binch_guild_signups for select to authenticated using(public.binch_is_member(guild_id));
+drop policy if exists binch_signups_insert on public.binch_guild_signups;
+create policy binch_signups_insert on public.binch_guild_signups for insert to authenticated
+with check(public.binch_is_member(guild_id) and user_id=(select auth.uid()));
+drop policy if exists binch_signups_update on public.binch_guild_signups;
+create policy binch_signups_update on public.binch_guild_signups for update to authenticated
+using(public.binch_is_member(guild_id) and user_id=(select auth.uid()))
+with check(public.binch_is_member(guild_id) and user_id=(select auth.uid()));
+drop policy if exists binch_signups_delete on public.binch_guild_signups;
+create policy binch_signups_delete on public.binch_guild_signups for delete to authenticated
+using(public.binch_is_member(guild_id) and user_id=(select auth.uid()));
+-- Pair FK prevents cross-guild signups even if browser payload is modified.
