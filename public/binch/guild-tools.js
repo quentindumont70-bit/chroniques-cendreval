@@ -5,7 +5,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const get=(k,fallback)=>{try{return JSON.parse(localStorage.getItem(k))??fallback}catch{return fallback}};
 const BANK='binch.guild.bank.v1';
 const bank=()=>get(BANK,[]);
-const save=rows=>localStorage.setItem(BANK,JSON.stringify(rows));
+const save=rows=>{localStorage.setItem(BANK,JSON.stringify(rows));document.dispatchEvent(new Event('binch:chest-change'))};
 function go(slug){
  const page=$('#page-'+slug);if(!page)return;
  document.querySelectorAll('#app .page').forEach(x=>x.classList.toggle('active',x===page));
@@ -120,6 +120,16 @@ function chest(){
   const blob=new Blob([JSON.stringify(json,null,2)],{type:'application/json'}),link=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=link;a.download='la-binch-coffre.json';a.click();setTimeout(()=>URL.revokeObjectURL(link),1500);
  };
+ // A confirmed Planner contribution becomes a LOCAL declaration, never a WoW inventory reading.
+ document.addEventListener('binch:planner-deposit',event=>{
+  const d=event.detail||{},quantity=Number(d.quantity),id=String(d.id||''),item=String(d.item||'').trim(),owner=String(d.owner||'').trim();
+  if(d.verified!=='manually-confirmed'||!/^guild-plan-[a-zA-Z0-9-]{3,180}$/.test(id)||!item||item.length>90||!owner||owner.length>50||!Number.isInteger(quantity)||quantity<1||quantity>99999)return;
+  const rows=bank();if(rows.some(x=>x.id===id))return;
+  if(rows.length>=1000){alert('Coffre local plein : exporte tes données avant d’ajouter un dépôt.');return}
+  rows.push({id,item,count:quantity,reserved:0,owner,place:'Coffre physique de guilde',status:'available',source:'Réception manuellement confirmée dans le Guild Planner',requestId:String(d.requestId||'').slice(0,100)});
+  try{save(rows);render()}catch{alert('Impossible de sauvegarder le dépôt confirmé dans le registre local.')}
+ });
+ document.addEventListener('binch:chest-change',render);
  $('#binch-chest-import').onchange=async e=>{
   const file=e.target.files?.[0];e.target.value='';if(!file||file.size>250000)return alert('Fichier absent ou trop volumineux.');
   try{
