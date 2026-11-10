@@ -11,7 +11,8 @@ function snapshot(){
  const upcoming=(Array.isArray(events)?events:[]).filter(e=>e&&!e.done&&typeof e.date==='string'&&stamp(e)>=now-60000).sort((a,b)=>stamp(a)-stamp(b)).slice(0,8);
  const requests=(Array.isArray(planner.requests)?planner.requests:[]).filter(r=>r&&!r.closed&&text(r.title)).sort((a,b)=>Number(b.priority==='urgent')-Number(a.priority==='urgent')||Date.parse(a.deadline||'9999')-Date.parse(b.deadline||'9999')).slice(0,12);
  const resources=(Array.isArray(bank)?bank:[]).filter(r=>r&&text(r.item)&&num(r.count)>0);
- return {upcoming,requests,resources};
+ const overdue=requests.filter(r=>r.deadline&&Number.isFinite(Date.parse(r.deadline))&&Date.parse(r.deadline)<now);
+ return {upcoming,requests,resources,overdue};
 }
 function roleCounts(e){
  const confirmed=(Array.isArray(e.attendees)?e.attendees:[]).filter(a=>a?.status==='Confirmé');
@@ -43,7 +44,7 @@ function render(){
   const m=missing(e),hours=new Date(stamp(e)).toLocaleString('fr-FR',{dateStyle:'medium',timeStyle:'short'});
   return '<article class="binch-gm-watch-event"><div><strong>'+esc(text(e.title))+'</strong><small>'+esc(hours)+' · '+m.c.total+'/'+m.size+' confirmés localement · '+m.slots+' place(s) non confirmée(s)</small><small>Tank '+m.c.tank+' · Soins '+m.c.heal+' · DPS '+m.c.dps+' · Flex '+m.c.flex+'</small></div><button type="button" data-gm-watch-open="calendar">Gérer</button></article>';
  }).join(''):'<p>Aucune sortie à venir dans le calendrier local. Ajoute un rendez-vous avant de convoquer les joueurs.</p>';
- $('binch-gm-watch-urgent').innerHTML=s.requests.length?s.requests.slice(0,5).map(r=>'<article><strong>'+esc(text(r.title))+'</strong><span>'+num(r.quantity)+' demandé(s)'+(r.priority==='urgent'?' · Urgent':'')+(r.deadline?' · échéance '+esc(new Date(r.deadline).toLocaleDateString('fr-FR')):'')+'</span></article>').join(''):'<p>Aucune demande ouverte dans le Planner local.</p>';
+ $('binch-gm-watch-urgent').innerHTML=s.requests.length?s.requests.slice(0,5).map(r=>'<article><strong>'+esc(text(r.title))+'</strong><span>'+num(r.quantity)+' demandé(s)'+(r.priority==='urgent'?' · Urgent':'')+(r.deadline&&Number.isFinite(Date.parse(r.deadline))?' · échéance '+esc(new Date(r.deadline).toLocaleDateString('fr-FR'))+(Date.parse(r.deadline)<Date.now()?' (dépassée)':''):'')+'</span></article>').join(''):'<p>Aucune demande ouverte dans le Planner local.</p>';
 }
 function navigate(destination){
  if(destination==='calendar'){const element=document.getElementById('binch-guild-calendar');if(element){element.scrollIntoView({behavior:'smooth',block:'start'});return}}
