@@ -11,8 +11,8 @@ end
 local function setting()
   GrimoireSyncDB=type(GrimoireSyncDB)=="table" and GrimoireSyncDB or {}
   local p=GrimoireSyncDB.faithPrefs
-  if type(p)~="table" then p={enabled=true,mood="taquin",quietInInstance=true};GrimoireSyncDB.faithPrefs=p end
-  if p.enabled==nil then p.enabled=true end
+  if type(p)~="table" then p={enabled=false,mood="taquin",quietInInstance=true};GrimoireSyncDB.faithPrefs=p end
+  if p.enabled==nil then p.enabled=false end
   if p.mood~="taquin" and p.mood~="sobre" and p.mood~="silence" then p.mood="taquin" end
   if p.quietInInstance==nil then p.quietInInstance=true end
   return p
@@ -44,6 +44,14 @@ local function response(query)
   if string.find(q,"classe",1,true) then
     local name=type(UnitClass)=="function" and UnitClass("player") or "inconnue"
     return "Tu joues "..tostring(name)..". Les talents et rotations precises doivent venir d'une source validee sur Forever."
+  end
+  if string.find(q,"xp",1,true) then
+    local xp=type(UnitXP)=="function" and UnitXP("player") or nil
+    local max=type(UnitXPMax)=="function" and UnitXPMax("player") or nil
+    if type(xp)=="number" and type(max)=="number" and max>0 then
+      return "Experience "..tostring(xp).."/"..tostring(max).." ("..tostring(math.floor(100*xp/max)).."%). Continue ta route, patron."
+    end
+    return "L'XP actuelle n'est pas disponible sur ce client."
   end
   if string.find(q,"mort",1,true) or string.find(q,"rez",1,true) then
     return "J'ai compte "..tostring(state.deaths).." mort(s) durant cette session. Ce compteur n'est pas un historique officiel."
@@ -143,12 +151,11 @@ for _,event in ipairs({"PLAYER_LOGIN","PLAYER_DEAD","PLAYER_LEVEL_UP","PLAYER_AL
 frame:SetScript("OnEvent",function(_,event,...)
   if event=="PLAYER_LOGIN" then
     controls()
-    if setting().enabled then launcher:Show()end
-    speak("Je suis la, patron. /faith pour me parler, /faith aide pour mes limites.",false)
+    if setting().enabled then launcher:Show();speak("Je suis la, patron. /faith pour me parler.",false)end
   elseif event=="PLAYER_DEAD" then
-    if state.seenDeath or clock()-state.lastDeath<25 then return end
+    if state.seenDeath or (state.lastDeath>=0 and clock()-state.lastDeath<25) then return end
     state.seenDeath=true;state.lastDeath=clock();state.deaths=state.deaths+1
-    speak(chatter(deaths,1),true)
+    speak(chatter(deaths,state.deaths),true)
   elseif event=="PLAYER_ALIVE" or event=="PLAYER_UNGHOST" then
     if type(UnitIsDeadOrGhost)=="function" and not UnitIsDeadOrGhost("player") then state.seenDeath=false end
   elseif event=="PLAYER_LEVEL_UP" then
