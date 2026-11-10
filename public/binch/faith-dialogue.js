@@ -47,7 +47,16 @@ function mount(){
  if($('binch-faith-dialogue'))return true;const host=$('binch-faith-advisor');if(!host)return false;
  const panel=document.createElement('section');panel.id='binch-faith-dialogue';panel.className='binch-faith-dialogue';
  panel.innerHTML='<details id="binch-faith-talk"><summary>Parler à Faith · conseiller local</summary><p>Faith, esprit d’un troll chaman. Les réponses suivent des règles locales et tes derniers imports. Aucune conversation n’est envoyée à une IA ou au Discord.</p><div id="binch-faith-dialogue-history" role="log" aria-live="polite" aria-label="Conversation avec Faith"></div><form id="binch-faith-dialogue-form"><label for="binch-faith-dialogue-input">Question</label><input id="binch-faith-dialogue-input" maxlength="350" required placeholder="Quelles missions de guilde sont urgentes ?"><button type="submit">Demander</button></form><div class="binch-faith-dialogue-actions"><button type="button" data-faith-suggest="Où en sont mes quêtes ?">Quêtes</button><button type="button" data-faith-suggest="Que sais-tu du marché AH ?">Commerce</button><button type="button" data-faith-suggest="Quelles missions de guilde sont urgentes ?">Guilde</button><button type="button" id="binch-faith-dialogue-clear">Effacer l’historique</button></div><small id="binch-faith-dialogue-state">Historique local du personnage.</small></details>';
- host.append(panel);
+ document.body.append(panel);
+ const launcher=document.createElement('button');launcher.type='button';launcher.id='binch-faith-dock';launcher.textContent='Faith · conseils';launcher.setAttribute('aria-controls','binch-faith-dialogue');launcher.setAttribute('aria-expanded','false');
+ document.body.append(launcher);
+ panel.hidden=true;
+ const close=document.createElement('button');close.type='button';close.id='binch-faith-dock-close';close.textContent='Fermer';close.setAttribute('aria-label','Fermer Faith');panel.querySelector('summary')?.after(close);
+ const toggle=show=>{panel.hidden=!show;launcher.setAttribute('aria-expanded',String(show));if(show){$('binch-faith-talk').open=true;$('binch-faith-dialogue-input')?.focus({preventScroll:true})}else launcher.focus({preventScroll:true})};
+ launcher.onclick=()=>toggle(panel.hidden);
+ close.onclick=()=>toggle(false);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden){e.stopPropagation();toggle(false)}});
+
  let lastIdentity=identity();
  function draw(){
   const rows=history(),log=$('binch-faith-dialogue-history');log.replaceChildren();
