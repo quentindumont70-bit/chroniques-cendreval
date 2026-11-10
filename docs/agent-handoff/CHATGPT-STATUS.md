@@ -45,6 +45,18 @@ Les autres modules peuvent faire l'objet d'un chantier après consultation de ce
 - **Risque de conflit** : `public/binch/index.html` a été modifié une fois sur `main` pour inclure les scripts de Faith. OpenCode devra conserver cette inclusion au moment de réconcilier sa branche Specs ; ne jamais remplacer le fichier entier par une ancienne version.
 - Branche OpenCode au dernier contrôle : `0311770` ; fichiers de passation pas encore poussés. Ne conclure ni à un arrêt de son agent ni à une absence de travail local.
 
+## Lot « Cerveau de Faith » — 2026-11-10
+
+- `d81d3020` : stratégie du corpus sourcé et règles de preuve.
+- `d3bc4925`, `b5696439` : schéma des fiches et trois fiches vérifiées portant uniquement sur les fonctionnalités du projet.
+- `abde81ff`, `89e6ba4b`, `8cd20fbc` : validation et recherche locale avec refus des rapprochements trop faibles.
+- `14f04369`, `a78a769c` : tests reproductibles Node pour validation, recherche, manifeste, chemins et doublons.
+- `121882cf`, `16285595`, `3a186a32`, `a9ec0ba7` : manifeste multi-fichiers, chargeur hors-ligne borné et intégration dans dialogue/index.
+- `ded77320` : guide pour enrichir le corpus avec les travaux sourcés d'OpenCode.
+- Vérifications réellement faites : syntaxe JS, validation des trois fiches, cas positifs sourcés, réponses inconnues, rejet de manifeste malveillant via exécution JS isolée. Les commandes Node et QA navigateur final n'ont pas été lancées.
+- Périmètre réservé : OpenCode garde la section Specs; il pourra alimenter le futur `data/builds.json` après validation de ses sources. Aucune connaissance de build farouche n'a été inventée.
+- Consultation `opencode-golipette` : pas encore de fichiers `OPENCODE-PLAN.md`, `OPENCODE-JOURNAL.md`, `MESSAGE-POUR-CHATGPT.md` publiés sur GitHub au dernier contrôle. HEAD distant `03117700` à ce stade ; ce n'est pas une preuve d'arrêt de l'agent local.
+
 ## Protocole de reconciliation
 
 1. OpenCode reste sur sa branche et pousse chaque lot commité sur `origin/opencode-golipette`.
