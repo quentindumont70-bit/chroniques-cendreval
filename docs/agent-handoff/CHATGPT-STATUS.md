@@ -27,6 +27,12 @@ Les autres modules peuvent faire l'objet d'un chantier après consultation de ce
 - Faith V7, dialogue HTML, overlay et scène Choc Nébulaire : commits antérieurs sur `main`, contrôle syntaxique JS partiel.
 - Contrôler le script actuel du dépôt avant toute affirmation de publication ou compatibilité WoW.
 
+### Actualisation 2026-11-10, Faith (nouveau lot)
+
+- Commit `720f7c53` : Faith démarre désactivé par défaut (activation volontaire par `/faith on`), réponses XP temps réel via API du jeu, rotation des remarques après mort.
+- L'installateur 0.9.0 contient bien les quatre fichiers : TOC, Core, Minimap et Faith (commit `f2b875e2`). Les vérifications statiques et le paquet ne sont pas un test en jeu ; compatibilité avec le client WoW Forever non encore confirmée.
+- OpenCode : ses trois fichiers de passation ne sont pas encore présents sur la branche distante lors du dernier contrôle ; continuer à protéger le chantier Specs, ne pas lui attribuer une inactivité PC sans preuve.
+
 ## Protocole de reconciliation
 
 1. OpenCode reste sur sa branche et pousse chaque lot commité sur `origin/opencode-golipette`.
