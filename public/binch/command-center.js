@@ -2,24 +2,28 @@
 (()=>{'use strict';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),read=(k)=>{try{return JSON.parse(localStorage.getItem(k))||{}}catch{return {}}};
 const settings=read('binch.command.settings.v1'),milestones={Druide:[[10,'Forme d’ours'],[16,'Forme aquatique'],[20,'Forme de félin']],Guerrier:[[10,'Posture défensive']],Chasseur:[[10,'Apprivoiser un familier']],Démoniste:[[10,'Marcheur du Vide']],Voleur:[[20,'Poisons']],Mage:[[30,'Quête de Tabetha']]};
-function data(){const p=read('grimoire.hub.v3'),d=p.data||{},last=read('grimoire.bridge.last'),name=d.pseudo||last.name||'Aventurier',match=String(last.name||'').toLowerCase()===String(name).toLowerCase(),inv=match&&Array.isArray(last.inventory)?last.inventory:[],equip=match&&Array.isArray(last.equipment)?last.equipment:[],jobs=read('grimoire.craft.v1').imports||{},jobkey=String(name).toLowerCase()+'-'+(p.race||'')+'-'+(p.classe||'');return {name,level:Number(d.level)||Number(last.level)||1,race:p.race||'—',cls:p.classe||'—',zone:(match?last.zone:null)||d.zone||'Zone inconnue',xp:match?Number(last.xp):NaN,xpMax:match?Number(last.xpMax):NaN,date:match&&last.updated?new Date(last.updated):null,match,inv,equip,jobs:jobs[jobkey]?.skills||{},quests:match?Number(last.questIds)||0:null};}
+function data(){const p=read('grimoire.hub.v3'),d=p.data||{},last=read('grimoire.bridge.last'),name=d.pseudo||last.name||'Aventurier',match=!!last.name&&String(last.name).toLowerCase()===String(name).toLowerCase(),inv=match&&Array.isArray(last.inventory)?last.inventory:[],equip=match&&Array.isArray(last.equipment)?last.equipment:[],jobs=read('grimoire.craft.v1').imports||{},jobkey=String(name).toLowerCase()+'-'+(p.race||'')+'-'+(p.classe||'');return {name,level:Number(d.level)||Number(last.level)||1,race:p.race||'—',cls:p.classe||'—',zone:(match?last.zone:null)||d.zone||'Zone inconnue',xp:match&&last.xp!=null&&last.xp!==''?Number(last.xp):NaN,xpMax:match&&last.xpMax!=null&&last.xpMax!==''?Number(last.xpMax):NaN,date:match&&last.updated?new Date(last.updated):null,match,inv,equip,jobs:jobs[jobkey]?.skills||{},quests:match&&last.questIds!=null&&Number.isFinite(Number(last.questIds))?Number(last.questIds):null};}
 function format(n){return Number.isFinite(n)?n.toLocaleString('fr-FR'):'—'}
+function setText(id,value){const el=$(id),str=String(value);if(el&&el.textContent!==str)el.textContent=str}
+function setHtml(id,value){const el=$(id);if(el&&el.innerHTML!==value)el.innerHTML=value}
+let queued=false;
+function requestRender(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;render()})}
 function navigate(page){document.body.classList.remove('binch-command-focus');settings.focus=false;const b=document.querySelector('#app nav.nav [data-page="'+page+'"]');if(b){b.click();window.scrollTo({top:0,behavior:'auto'});}}
 function focus(){document.body.classList.toggle('binch-command-focus',!!settings.focus&&$('page-command')?.classList.contains('active'));$('binch-command-focus').textContent=settings.focus?'Quitter le plein écran':'Plein écran';try{localStorage.setItem('binch.command.settings.v1',JSON.stringify(settings))}catch{}}
 function tile(label,value,subtitle,mark){return '<div class="binch-command-stat"><span>'+mark+' '+esc(label)+'</span><b>'+esc(value)+'</b><small>'+esc(subtitle)+'</small></div>'}
 function render(){
- if(!$('page-command'))return;const d=data(),pct=Number.isFinite(d.xp)&&d.xpMax>0?Math.min(100,Math.max(0,Math.round(d.xp/d.xpMax*100))):null,valid=d.date&&!isNaN(+d.date),age=valid?Math.floor((Date.now()-d.date.getTime())/60000):null;
- $('binch-command-name').textContent=String(d.name).toUpperCase();$('binch-command-identity').textContent=d.race+' · '+d.cls+' · '+d.zone;$('binch-command-level').textContent=d.level;
- $('binch-command-xp').textContent=pct===null?'Expérience non disponible':format(d.xp)+' / '+format(d.xpMax)+' XP · '+pct+' %';$('binch-command-xp-fill').style.width=(pct||0)+'%';
- $('binch-command-sync').textContent=valid?'Dernier import : '+d.date.toLocaleString('fr-FR')+(age>20?' · anciennes données':''):'Aucun import confirmé';
- $('binch-command-sync').dataset.fresh=valid&&age>=0&&age<20?'yes':'no';$('binch-command-zone').textContent=d.zone;
- const next=(milestones[d.cls]||[]).find(x=>x[0]>=d.level);$('binch-command-class').textContent=next?next[1]:'Étapes de classe';$('binch-command-class-level').textContent=next?'Niveau '+next[0]:'À préparer';
- $('binch-command-guidance').textContent=next?'« '+d.name+', prépare '+next[1]+' pour le niveau '+next[0]+'. Regroupe tes quêtes autour de '+d.zone+'. »':'« '+d.name+', explore '+d.zone+' et prépare ta prochaine étape. »';
+ if(document.visibilityState==='hidden'||!$('page-command')?.classList.contains('active'))return;const d=data(),pct=Number.isFinite(d.xp)&&d.xpMax>0?Math.min(100,Math.max(0,Math.round(d.xp/d.xpMax*100))):null,valid=d.date&&!isNaN(+d.date),age=valid?Math.floor((Date.now()-d.date.getTime())/60000):null;
+ setText('binch-command-name',String(d.name).toUpperCase());setText('binch-command-identity',d.race+' · '+d.cls+' · '+d.zone);setText('binch-command-level',d.level);
+ setText('binch-command-xp',pct===null?'Expérience non disponible':format(d.xp)+' / '+format(d.xpMax)+' XP · '+pct+' %');$('binch-command-xp-fill').style.width=(pct||0)+'%';
+ setText('binch-command-sync',valid?'Dernier import : '+d.date.toLocaleString('fr-FR')+(age>20?' · anciennes données':''):'Aucun import confirmé');
+ $('binch-command-sync').dataset.fresh=valid&&age>=0&&age<20?'yes':'no';setText('binch-command-zone',d.zone);
+ const next=(milestones[d.cls]||[]).find(x=>x[0]>=d.level);setText('binch-command-class',next?next[1]:'Étapes de classe');setText('binch-command-class-level',next?'Niveau '+next[0]:'À préparer');
+ setText('binch-command-guidance',next?'« '+d.name+', prépare '+next[1]+' pour le niveau '+next[0]+'. Regroupe tes quêtes autour de '+d.zone+'. »':'« '+d.name+', explore '+d.zone+' et prépare ta prochaine étape. »');
  const copper=d.inv.filter(i=>Number(i.id)===2770).reduce((a,i)=>a+(Number(i.count)||1),0),stone=d.inv.filter(i=>Number(i.id)===2835).reduce((a,i)=>a+(Number(i.count)||1),0),jobCount=Object.keys(d.jobs).length;
- $('binch-command-resources').textContent=d.match?copper+' minerais de cuivre · '+stone+' pierres brutes':'Importer GrimoireSync.lua pour connaître les ressources';
- $('binch-command-stats').innerHTML=tile('Sacs',d.match?d.inv.length+' piles':'—','Dernière sauvegarde','▣')+tile('Équipement',d.match?d.equip.length+' pièces':'—','Emplacements reconnus','◇')+tile('Métiers',jobCount?jobCount+' suivis':'Non renseignés',jobCount?Object.entries(d.jobs).slice(0,2).map(([n,v])=>n+' '+v).join(' · '):'Valeurs absentes','⚒')+tile('Quêtes',d.match?String(d.quests):'—','API de quêtes non fiable','✧');
+ setText('binch-command-resources',d.match?copper+' minerais de cuivre · '+stone+' pierres brutes':'Importer GrimoireSync.lua pour connaître les ressources');
+ setHtml('binch-command-stats',tile('Sacs',d.match?d.inv.length+' piles':'—','Dernière sauvegarde','▣')+tile('Équipement',d.match?d.equip.length+' pièces':'—','Emplacements reconnus','◇')+tile('Métiers',jobCount?jobCount+' suivis':'Non renseignés',jobCount?Object.entries(d.jobs).slice(0,2).map(([n,v])=>n+' '+v).join(' · '):'Valeurs absentes','⚒')+tile('Quêtes',d.quests===null?'—':String(d.quests),'API de quêtes non fiable','✧'));
  const pinKey='binch.route.pins.v1.'+(d.name+'-'+d.race+'-'+d.cls).toLowerCase().replace(/[^a-z0-9]+/g,'-'),pins=Object.values(read(pinKey)).filter(x=>x?.t).slice(0,3);
- $('binch-command-pins').innerHTML=pins.length?pins.map(x=>'<p class="binch-command-pin">✦ '+esc(x.t)+'</p>').join(''):'<p class="binch-command-muted">Épingle tes priorités dans le carnet de route pour les retrouver ici.</p>';
+ setHtml('binch-command-pins',pins.length?pins.map(x=>'<p class="binch-command-pin">✦ '+esc(x.t)+'</p>').join(''):'<p class="binch-command-muted">Épingle tes priorités dans le carnet de route pour les retrouver ici.</p>');
 }
 function mount(){
  const app=$('app'),nav=app?.querySelector('nav.nav'),main=app?.querySelector('main');if(!app||!nav||!main||$('page-command'))return;
@@ -35,16 +39,22 @@ function mount(){
  copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(direct.toString());msg.textContent='Lien copié';}catch{msg.textContent='Copie refusée par le navigateur';}});
  links.append(open,copy,msg);page.querySelector('.binch-command-controls')?.append(links);
  const roadmap=document.createElement('button');roadmap.type='button';roadmap.textContent='☷ To Do & Idées';roadmap.title='Feuille de route et suggestions de la guilde';roadmap.addEventListener('click',()=>navigate('todo'));links.append(roadmap);
- function activate(){nav.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b===tab));main.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x===page));window.scrollTo({top:0,behavior:'auto'});focus();render()}
+ function activate(){nav.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b===tab));main.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x===page));window.scrollTo({top:0,behavior:'auto'});focus();render();scheduleFreshness()}
  tab.addEventListener('click',activate);
  page.querySelectorAll('[data-command-link]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.commandLink)));
  $('binch-command-refresh').addEventListener('click',render);
  $('binch-command-focus').addEventListener('click',()=>{settings.focus=!settings.focus;focus()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&settings.focus){settings.focus=false;focus()}});
- document.addEventListener('grimoire:sync',render);document.addEventListener('binch:pins-changed',render);
- window.addEventListener('storage',e=>{if(e.key?.startsWith('grimoire.')||e.key?.startsWith('binch.route.'))render()});
- setInterval(()=>{if(document.visibilityState==='visible'&&page.classList.contains('active'))render()},30000);
- if(new URLSearchParams(location.search).get('command')==='1')activate();render();
+ document.addEventListener('grimoire:sync',requestRender);document.addEventListener('binch:pins-changed',requestRender);
+ window.addEventListener('storage',e=>{if(e.key?.startsWith('grimoire.')||e.key?.startsWith('binch.route.'))requestRender()});
+ // Only one timer, and only when the cockpit is actually visible.
+ let freshnessTimer=0;
+ function stopFreshness(){if(freshnessTimer){clearTimeout(freshnessTimer);freshnessTimer=0}}
+ function scheduleFreshness(){stopFreshness();if(document.visibilityState==='hidden'||!page.classList.contains('active'))return;freshnessTimer=setTimeout(()=>{freshnessTimer=0;requestRender();scheduleFreshness()},60000)}
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){requestRender();scheduleFreshness()}else stopFreshness()});
+ tab.addEventListener('click',scheduleFreshness);
+ nav.addEventListener('click',e=>{if(e.target.closest('[data-page]')!==tab)stopFreshness()});
+ if(new URLSearchParams(location.search).get('command')==='1')activate();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
 })();
