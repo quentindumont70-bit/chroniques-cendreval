@@ -5,7 +5,7 @@
 const $=id=>document.getElementById(id),STORE='binch.guild.cloud.session.v1';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clean=(s,n=120)=>String(s??'').trim().slice(0,n);
-let cfg=null,session=null,guildId='',guilds=[],requests=[],promises=[],members=[],loading=false;
+let cfg=null,session=null,guildId='',guilds=[],requests=[],promises=[],members=[],activities=[],signups=[],loading=false;
 const status=(s)=>{if($('binch-gcloud-status'))$('binch-gcloud-status').textContent=s};
 function username(){try{return clean(JSON.parse(localStorage.getItem('grimoire.hub.v3'))?.data?.pseudo,40)}catch{return ''}}
 function saveSession(){try{if(session)sessionStorage.setItem(STORE,JSON.stringify(session));else sessionStorage.removeItem(STORE)}catch{}}
@@ -65,16 +65,18 @@ async function loadGuilds(){
  if(!guilds.some(x=>x.id===guildId))guildId=guilds[0]?.id||'';
  $('binch-gcloud-guild-select').innerHTML=guilds.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.name)+'</option>').join('');
  $('binch-gcloud-guild-select').value=guildId;
- if(guildId)await loadData();else{members=[];requests=[];promises=[]}
+ if(guildId)await loadData();else{members=[];requests=[];promises=[];activities=[];signups=[]}
  paint();
 }
 async function loadData(){
  if(!guildId)return;
  const suffix='?guild_id=eq.'+jurl(guildId);
- [members,requests,promises]=await Promise.all([
+ [members,requests,promises,activities,signups]=await Promise.all([
   request('/rest/v1/binch_guild_members'+suffix+'&select=user_id,character_name,role,joined_at&limit=100'),
   request('/rest/v1/binch_guild_requests'+suffix+'&select=id,title,quantity,deadline,priority,note,state,created_at,created_by&order=created_at.desc&limit=200'),
-  request('/rest/v1/binch_guild_promises'+suffix+'&select=id,request_id,owner_id,item,quantity,status,note,created_at&order=created_at.desc&limit=250')
+  request('/rest/v1/binch_guild_promises'+suffix+'&select=id,request_id,owner_id,item,quantity,status,note,created_at&order=created_at.desc&limit=250'),
+  request('/rest/v1/binch_guild_activities'+suffix+'&select=id,owner_id,title,slots,starts_at,note,closed,created_at&order=created_at.desc&limit=100'),
+  request('/rest/v1/binch_guild_signups'+suffix+'&select=activity_id,user_id,character_name,role,status&limit=500')
  ]);
 }
 async function rpc(name,body){return request('/rest/v1/rpc/'+name,{method:'POST',body})}
@@ -111,6 +113,35 @@ async function postPromise(form){
  await request('/rest/v1/binch_guild_promises',{method:'POST',body:{guild_id:guildId,owner_id:user.id,item,quantity:qty,note:clean(fd.get('note'),240),request_id:requestId||null}});
  form.reset();await loadData();paint();notice('Promesse publiée (ce n’est pas un dépôt vérifié dans WoW).');
 }
+async function postActivity(form){
+ const fd=new FormData(form),title=clean(fd.get('title'),90),slots=Number(fd.get('slots')),date=String(fd.get('when')||''),note=clean(fd.get('note'),350);
+ if(!guildId||title.length<2||!Number.isInteger(slots)||slots<1||slots>40)throw Error('Activité ou capacité invalide');
+ const when=date?new Date(date):null;if(when&&!Number.isFinite(+when))throw Error('Date invalide');
+ const user=await request('/auth/v1/user');
+ await request('/rest/v1/binch_guild_activities',{method:'POST',body:{guild_id:guildId,owner_id:user.id,title,slots,starts_at:when?when.toISOString():null,note}});
+ form.reset();await loadData();paint();notice('Rendez-vous publié pour les membres de la guilde.');
+}
+async function signupActivity(id,role,status){
+ const activity=activities.find(x=>x.id===id);if(!activity)throw Error('Sortie introuvable');
+ if(!['Tank','Soigneur','DPS','Flexible'].includes(role)||!['yes','maybe','no'].includes(status))throw Error('Réponse invalide');
+ const character=clean($('binch-gcloud-character')?.value,40);if(character.length<2)throw Error('Indique ton personnage');
+ const user=await request('/auth/v1/user');
+ const current=signups.find(x=>x.activity_id===id&&x.user_id===user.id);
+ if(current){
+  await request('/rest/v1/binch_guild_signups?activity_id=eq.'+encodeURIComponent(id)+'&user_id=eq.'+encodeURIComponent(user.id),{method:'PATCH',body:{role,status,character_name:character}});
+ }else{
+  await request('/rest/v1/binch_guild_signups',{method:'POST',body:{activity_id:id,guild_id:guildId,user_id:user.id,character_name:character,role,status}});
+ }
+ await loadData();paint();notice('Inscription enregistrée pour la guilde privée.');
+}
+function paintActivities(){
+ const host=$('binch-gcloud-activities');if(!host)return;
+ host.innerHTML=activities.length?activities.filter(x=>!x.closed).map(x=>{
+  const people=signups.filter(y=>y.activity_id===x.id),yes=people.filter(y=>y.status==='yes'),maybe=people.filter(y=>y.status==='maybe');
+  const when=x.starts_at?new Date(x.starts_at).toLocaleString('fr-FR'):'Date à convenir';
+  return '<article class="binch-gcloud-activity"><b>'+esc(x.title)+'</b><small>'+esc(when)+' · '+yes.length+' partant(s) / '+x.slots+' places · '+maybe.length+' incertain(s)</small><p>'+esc(x.note||'')+'</p><div>'+people.map(y=>'<small>'+esc(y.character_name)+' · '+esc(y.role)+' · '+esc(y.status)+'</small>').join('')+'</div><div class="binch-gcloud-signup" data-gcloud-id="'+esc(x.id)+'"><select data-gcloud-role aria-label="Rôle"><option>Tank</option><option>Soigneur</option><option>DPS</option><option>Flexible</option></select><select data-gcloud-status aria-label="Disponibilité"><option value="yes">Partant</option><option value="maybe">Peut-être</option><option value="no">Absent</option></select><button type="button" data-gcloud-signup>Répondre</button></div></article>';
+ }).join(''):'<p>Aucun rendez-vous privé prévu pour cette guilde.</p>';
+}
 async function setPromise(id,value){
  await rpc('binch_set_promise_status',{p_id:id,p_status:value});
  await loadData();paint();notice('Statut modifié via les permissions du serveur.');
@@ -124,12 +155,13 @@ function paint(){
  $('binch-gcloud-requests').innerHTML=requests.length?requests.map(x=>'<article><b>'+esc(x.title)+'</b><small>× '+x.quantity+' · '+esc(x.priority)+' · '+esc(x.state)+'</small><p>'+esc(x.note||'')+'</p></article>').join(''):'<p>Pas de demande partagée confirmée.</p>';
  $('binch-gcloud-promises').innerHTML=promises.length?promises.map(x=>'<article><b>'+esc(x.item)+'</b><small>× '+x.quantity+' · '+esc(x.status)+'</small><select data-gcloud-promise="'+esc(x.id)+'" aria-label="Modifier le statut"><option value="promised"'+(x.status==='promised'?' selected':'')+'>Promis</option><option value="ready"'+(x.status==='ready'?' selected':'')+'>Disponible</option><option value="deposited"'+(x.status==='deposited'?' selected':'')+'>Dépôt annoncé</option><option value="received"'+(x.status==='received'?' selected':'')+'>Réception officier</option></select></article>').join(''):'<p>Aucune promesse partagée.</p>';
  $('binch-gcloud-request-choose').innerHTML='<option value="">Aucune demande associée</option>'+requests.filter(x=>x.state==='open').map(x=>'<option value="'+esc(x.id)+'">'+esc(x.title)+'</option>').join('');
+ paintActivities();
 }
 async function run(fn){if(loading)return;loading=true;try{await fn()}catch(e){notice(String(e.message||e),true)}finally{loading=false}}
 function mount(){
  const page=$('page-gm'),anchor=$('binch-gm-hub');if(!page||!anchor||$('binch-gcloud'))return;
  const el=document.createElement('section');el.id='binch-gcloud';el.className='binch-gcloud';
- el.innerHTML='<header><span class="eyebrow">LA BINCH · GUILDE CONNECTÉE</span><h2>Quartier général privé</h2><p>Ce module utilise des comptes email et des permissions contrôlées par la base de données. Il ne partage pas tes sauvegardes WoW. Les outils locaux restent séparés.</p><p id="binch-gcloud-status"></p><p id="binch-gcloud-notice" role="status"></p></header><div id="binch-gcloud-auth"><label>Email de connexion<input type="email" id="binch-gcloud-email" autocomplete="email" placeholder="Ton email"></label><button type="button" id="binch-gcloud-login">Recevoir un lien sécurisé</button></div><div id="binch-gcloud-private" hidden><button type="button" id="binch-gcloud-logout">Fermer la session</button><label>Personnage de guilde<input id="binch-gcloud-character" maxlength="40" placeholder="Nom en jeu"></label><div class="binch-gcloud-actions"><label>Créer ma guilde<input id="binch-gcloud-new-name" maxlength="80" placeholder="Nom de guilde"></label><button id="binch-gcloud-create" type="button">Créer</button><label>Rejoindre par invitation<input id="binch-gcloud-invite" maxlength="100" placeholder="Code remis par le GM"></label><button id="binch-gcloud-join" type="button">Rejoindre</button></div><div class="binch-gcloud-actions"><label>Guilde<select id="binch-gcloud-guild-select"></select></label><button type="button" id="binch-gcloud-refresh">Actualiser</button><button type="button" id="binch-gcloud-invite-btn">Créer une invitation</button></div><p id="binch-gcloud-members"></p><div class="binch-gcloud-columns"><section><h3>Demandes partagées</h3><form id="binch-gcloud-request-form"><input name="title" required maxlength="90" placeholder="Objet ou tâche"><input name="quantity" type="number" min="1" max="99999" value="1" required><select name="priority"><option value="normal">Normale</option><option value="high">Importante</option><option value="urgent">Urgente</option></select><input name="note" maxlength="350" placeholder="Précisions"><button type="submit">Publier la demande</button></form><div id="binch-gcloud-requests"></div></section><section><h3>Engagements partagés</h3><form id="binch-gcloud-promise-form"><input name="item" required maxlength="90" placeholder="Ressource promise"><input name="quantity" type="number" min="1" max="99999" value="1" required><select name="request" id="binch-gcloud-request-choose"></select><input name="note" maxlength="240" placeholder="Notes"><button type="submit">Publier l’engagement</button></form><div id="binch-gcloud-promises"></div></section></div></div>';
+ el.innerHTML='<header><span class="eyebrow">LA BINCH · GUILDE CONNECTÉE</span><h2>Quartier général privé</h2><p>Ce module utilise des comptes email et des permissions contrôlées par la base de données. Il ne partage pas tes sauvegardes WoW. Les outils locaux restent séparés.</p><p id="binch-gcloud-status"></p><p id="binch-gcloud-notice" role="status"></p></header><div id="binch-gcloud-auth"><label>Email de connexion<input type="email" id="binch-gcloud-email" autocomplete="email" placeholder="Ton email"></label><button type="button" id="binch-gcloud-login">Recevoir un lien sécurisé</button></div><div id="binch-gcloud-private" hidden><button type="button" id="binch-gcloud-logout">Fermer la session</button><label>Personnage de guilde<input id="binch-gcloud-character" maxlength="40" placeholder="Nom en jeu"></label><div class="binch-gcloud-actions"><label>Créer ma guilde<input id="binch-gcloud-new-name" maxlength="80" placeholder="Nom de guilde"></label><button id="binch-gcloud-create" type="button">Créer</button><label>Rejoindre par invitation<input id="binch-gcloud-invite" maxlength="100" placeholder="Code remis par le GM"></label><button id="binch-gcloud-join" type="button">Rejoindre</button></div><div class="binch-gcloud-actions"><label>Guilde<select id="binch-gcloud-guild-select"></select></label><button type="button" id="binch-gcloud-refresh">Actualiser</button><button type="button" id="binch-gcloud-invite-btn">Créer une invitation</button></div><p id="binch-gcloud-members"></p><div class="binch-gcloud-columns"><section><h3>Demandes partagées</h3><form id="binch-gcloud-request-form"><input name="title" required maxlength="90" placeholder="Objet ou tâche"><input name="quantity" type="number" min="1" max="99999" value="1" required><select name="priority"><option value="normal">Normale</option><option value="high">Importante</option><option value="urgent">Urgente</option></select><input name="note" maxlength="350" placeholder="Précisions"><button type="submit">Publier la demande</button></form><div id="binch-gcloud-requests"></div></section><section><h3>Engagements partagés</h3><form id="binch-gcloud-promise-form"><input name="item" required maxlength="90" placeholder="Ressource promise"><input name="quantity" type="number" min="1" max="99999" value="1" required><select name="request" id="binch-gcloud-request-choose"></select><input name="note" maxlength="240" placeholder="Notes"><button type="submit">Publier l’engagement</button></form><div id="binch-gcloud-promises"></div></section></div><section class="binch-gcloud-lfg"><h3>Rendez-vous et LFG privés</h3><p>Seuls les membres authentifiés de cette guilde peuvent voir les sorties et déclarer leurs disponibilités.</p><form id="binch-gcloud-activity-form"><input name="title" required maxlength="90" placeholder="Donjon / raid / activité"><input name="slots" type="number" min="1" max="40" value="5" required><input name="when" type="datetime-local" aria-label="Date et heure"><input name="note" maxlength="350" placeholder="Notes de sortie"><button type="submit">Publier dans la guilde</button></form><div id="binch-gcloud-activities"></div></section></div>';
  anchor.insertAdjacentElement('afterend',el);
  $('binch-gcloud-login').onclick=()=>run(sendLogin);
  $('binch-gcloud-create').onclick=()=>run(createGuild);
@@ -137,9 +169,11 @@ function mount(){
  $('binch-gcloud-refresh').onclick=()=>run(loadGuilds);
  $('binch-gcloud-invite-btn').onclick=()=>run(invite);
  $('binch-gcloud-guild-select').onchange=e=>run(async()=>{guildId=e.target.value;await loadData();paint()});
- $('binch-gcloud-logout').onclick=()=>{session=null;guilds=[];guildId='';members=[];requests=[];promises=[];saveSession();paint();notice('Session de cet onglet fermée.')};
+ $('binch-gcloud-logout').onclick=()=>{session=null;guilds=[];guildId='';members=[];requests=[];promises=[];activities=[];signups=[];saveSession();paint();notice('Session de cet onglet fermée.')};
  $('binch-gcloud-request-form').onsubmit=e=>{e.preventDefault();run(()=>postRequest(e.target))};
  $('binch-gcloud-promise-form').onsubmit=e=>{e.preventDefault();run(()=>postPromise(e.target))};
+ $('binch-gcloud-activity-form').onsubmit=e=>{e.preventDefault();run(()=>postActivity(e.target))};
+ el.addEventListener('click',e=>{const btn=e.target.closest('[data-gcloud-signup]');if(!btn)return;const wrapper=btn.closest('[data-gcloud-id]');if(wrapper)run(()=>signupActivity(wrapper.dataset.gcloudId,wrapper.querySelector('[data-gcloud-role]')?.value,wrapper.querySelector('[data-gcloud-status]')?.value))});
  el.addEventListener('change',e=>{const target=e.target.closest('[data-gcloud-promise]');if(target)run(()=>setPromise(target.dataset.gcloudPromise,target.value))});
  $('binch-gcloud-character').value=username();
  parseTokens();
