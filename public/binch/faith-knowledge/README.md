@@ -47,3 +47,20 @@ Champs recommandés : `class`, `spec`, `levelMin`, `levelMax`, `notes`, `superse
 ## État initial
 
 Architecture et méthode définies ; **aucun corpus encyclopédique validé** ni apprentissage de modèle ne sont à déclarer comme achevés. Cette base n'entraîne pas une IA en continu et ne nécessite pas de GPU.
+
+## Implémentation initiale — 10 novembre 2026
+
+- `schema-v1.json` décrit le format normalisé et les contraintes de provenance.
+- `validator.js` refuse les fiches mal formées, doublons d'identifiant, dates incorrectes, sources sans HTTPS et promotion automatique de données Classic en vérités Forever.
+- `search.js` réalise une recherche textuelle locale déterministe avec normalisation des accents, score de pertinence et références ; une question insuffisamment couverte ne reçoit **pas** de réponse inventée.
+- `data/core.json` contient **3 fiches techniques sourcées de notre propre projet** (Faith, GrimoireSync, synchronisation). Ce sont des faits sur l'implémentation, **pas** des guides de gameplay externes.
+- `faith-dialogue.js` charge ce corpus et répond en citant ses fiches avant de revenir aux règles locales existantes.
+- `test-knowledge.cjs` : `node public/binch/faith-knowledge/test-knowledge.cjs` (test unitaire à faire tourner dans le dépôt local). Des tests interactifs de navigation et du client WoW restent requis.
+
+### Extension du corpus
+
+Quand OpenCode publie un build, vérifier l'arbre de talents WoW Forever et les sources indépendantes **avant** de créer une fiche marquée `verifie`. Éviter les guides copiés en bloc : rédiger des synthèses factuelles originales, datées et attribuées. Ne pas affirmer que le moteur possède une IA générative ou qu'il interroge automatiquement des sites externes.
+
+### Risques et limites
+
+Le chargement fonctionne via HTTPS sur GitHub Pages ; un `file://` direct ne permet pas nécessairement `fetch`. Les fiches sont embarquées dans le site, sans mise à jour automatique en cours de partie. Le score de recherche ne prouve pas la justesse d'un fait : seule la qualification préalable de la fiche le permet. Les modules ne connaissent pas les quotas OpenCode ni ceux de Work.
