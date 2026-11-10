@@ -2,7 +2,7 @@
 -- No network, microphone, combat automation or file-system access.
 local frame=CreateFrame("Frame","GrimoireFaithEvents",UIParent)
 local label="|cff8ad9d1Faith|r"
-local state={lastDeath=-100000,lastLevel=-100000,deaths=0,seenDeath=false}
+local state={lastDeath=-100000,lastLevel=-100000,deaths=0,levels=0,seenDeath=false}
 local win,output,input,launcher
 local function clock()
   if type(GetTime)=="function" then return GetTime() or 0 end
@@ -31,7 +31,7 @@ end
 local function response(query)
   local q=string.lower(tostring(query or ""))
   if q=="" or q=="help" or q=="aide" then
-    return "Demande : niveau, zone, classe, mort, quetes, metiers, equipement, sync. /faith mode taquin|sobre|silence ; /faith on|off ; /faith instance on|off. Pour des reponses encyclopediques, le compagnon Windows est encore a construire."
+    return "Demande : niveau, xp, zone, classe, mort, quetes, metiers, equipement, sync. /faith statut ; /faith mode taquin|sobre|silence ; /faith on|off ; /faith instance on|off. Reponses locales limitees, sans voix ni IA distante."
   end
   if string.find(q,"niveau",1,true) or string.find(q,"level",1,true) then
     local level=type(UnitLevel)=="function" and UnitLevel("player") or "?"
@@ -74,7 +74,7 @@ local function ask(query)
 end
 local function controls()
   win=CreateFrame("Frame","GrimoireFaithWindow",UIParent)
-  win:SetWidth(340);win:SetHeight(192)
+  win:SetWidth(360);win:SetHeight(204)
   win:SetPoint("CENTER",UIParent,"CENTER",0,70)
   win:SetFrameStrata("DIALOG");win:SetMovable(true);win:EnableMouse(true)
   win:RegisterForDrag("LeftButton")
@@ -89,12 +89,12 @@ local function controls()
   local close=CreateFrame("Button",nil,win,"UIPanelCloseButton")
   close:SetPoint("TOPRIGHT",win,"TOPRIGHT",0,0)
   output=win:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
-  output:SetWidth(312);output:SetHeight(70)
+  output:SetWidth(328);output:SetHeight(85)
   output:SetJustifyH("LEFT");output:SetJustifyV("TOP")
   output:SetPoint("TOPLEFT",win,"TOPLEFT",14,-57)
   output:SetText("Bien le bonjour, patron. Pose ta question. Je ne suis encore qu'une incarnation locale.")
   input=CreateFrame("EditBox",nil,win,"InputBoxTemplate")
-  input:SetWidth(220);input:SetHeight(24);input:SetAutoFocus(false)
+  input:SetWidth(235);input:SetHeight(24);input:SetAutoFocus(false)
   input:SetMaxLetters(240);input:SetPoint("BOTTOMLEFT",win,"BOTTOMLEFT",18,19)
   local send=CreateFrame("Button",nil,win,"UIPanelButtonTemplate")
   send:SetWidth(77);send:SetHeight(24);send:SetPoint("LEFT",input,"RIGHT",8,0)
@@ -108,7 +108,9 @@ local function controls()
   send:SetScript("OnClick",submit)
   win:Hide()
   launcher=CreateFrame("Button","GrimoireFaithButton",UIParent,"UIPanelButtonTemplate")
-  launcher:SetWidth(74);launcher:SetHeight(22);launcher:SetPoint("CENTER",UIParent,"CENTER",0,-145)
+  launcher:SetWidth(74);launcher:SetHeight(24)
+  if Minimap then launcher:SetPoint("BOTTOMLEFT",Minimap,"BOTTOMLEFT",-4,-24)
+  else launcher:SetPoint("TOPRIGHT",UIParent,"TOPRIGHT",-120,-125) end
   launcher:SetText("Faith")
   launcher:SetMovable(true);launcher:EnableMouse(true);launcher:RegisterForDrag("LeftButton")
   launcher:SetScript("OnDragStart",function(self)self:StartMoving()end)
@@ -127,9 +129,11 @@ local levels={
   "Un niveau de plus ! Meme les ancetres reconnaissent le progres.",
   "Tu progresses, patron. Je garde mon sarcasme en reserve."
 }
-local function chatter(lines,count)
-  local p=setting()
-  if p.mood=="sobre" then return count==1 and "La mort fait partie du chemin. Reprends ta route." or "Niveau atteint. Continue." end
+local function chatter(lines,count,isDeath)
+  if setting().mood=="sobre" then
+    if isDeath then return "La mort fait partie du chemin. Reprends ta route." end
+    return "Niveau atteint. Continue."
+  end
   return lines[(count-1)%#lines+1]
 end
 local function command(msg)
@@ -137,6 +141,11 @@ local function command(msg)
   msg=string.gsub(msg,"%s+$","")
   local lower=string.lower(msg)
   if lower=="on" then setting().enabled=true;if launcher then launcher:Show()end;speak("Mode actif. /faith ouvre le dialogue.",false);return end
+  if lower=="status" or lower=="statut" then
+    local p=setting()
+    speak("Faith "..(p.enabled and "actif" or "inactif")..", ton "..p.mood..", discretion en instance "..(p.quietInInstance and "activee" or "desactivee")..". Moteur local uniquement, sans voix ni connexion IA.",false)
+    return
+  end
   if lower=="off" then setting().enabled=false;if launcher then launcher:Hide()end;if win then win:Hide()end;speak("Reactions desactivees. /faith on pour revenir.",false);return end
   local mood=string.match(lower,"^mode%s+(%S+)$")
   if mood then if mood=="taquin" or mood=="sobre" or mood=="silence" then setting().mood=mood;speak("Ton choisi : "..mood..".",false)else speak("Modes : taquin, sobre, silence.",false)end;return end
@@ -155,12 +164,13 @@ frame:SetScript("OnEvent",function(_,event,...)
   elseif event=="PLAYER_DEAD" then
     if state.seenDeath or (state.lastDeath>=0 and clock()-state.lastDeath<25) then return end
     state.seenDeath=true;state.lastDeath=clock();state.deaths=state.deaths+1
-    speak(chatter(deaths,state.deaths),true)
+    speak(chatter(deaths,state.deaths,true),true)
   elseif event=="PLAYER_ALIVE" or event=="PLAYER_UNGHOST" then
     if type(UnitIsDeadOrGhost)=="function" and not UnitIsDeadOrGhost("player") then state.seenDeath=false end
   elseif event=="PLAYER_LEVEL_UP" then
     if clock()-state.lastLevel<3 then return end
     state.lastLevel=clock()
-    speak(chatter(levels,2),true)
+    state.levels=state.levels+1
+    speak(chatter(levels,state.levels,false),true)
   end
 end)
