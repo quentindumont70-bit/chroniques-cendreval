@@ -83,7 +83,11 @@ const load=()=>{try{const v=JSON.parse(localStorage.getItem(KEY));return v&&type
 let state=load();state.hits=state.hits||{};state.history=Array.isArray(state.history)?state.history:[];
 if(typeof state.enabled!=='boolean')state.enabled=true;
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch{}};
-let stage=null,closing=null;
+let stage=null,closing=null,collectionFilter='all',collectionSearch='';
+const FAV='binch.procs.favorites.v1';
+function favorites(){try{const v=JSON.parse(localStorage.getItem(FAV));return Array.isArray(v)?v:[]}catch{return []}}
+function toggleFavorite(id){const v=new Set(favorites());if(v.has(id))v.delete(id);else v.add(id);try{localStorage.setItem(FAV,JSON.stringify([...v]))}catch{}render()}
+
 const formatPercent=n=>n.toLocaleString('fr-FR',{maximumFractionDigits:2})+' %';
 function previewUnlocked(id){
  try{const hub=JSON.parse(localStorage.getItem('grimoire.hub.v3'));const name=String(hub?.data?.pseudo||hub?.name||'').toLocaleLowerCase('fr');if(name==='shaaby')return true}catch{}
@@ -112,13 +116,19 @@ function roll(){
 function render(){
  const table=$('#binch-true-procs-list'),stats=$('#binch-true-procs-stats'),log=$('#binch-true-procs-log');if(!table)return;
  const totalHits=Object.values(state.hits).reduce((n,v)=>n+(Number(v)||0),0);
- stats.textContent=(state.total||0)+' navigations éligibles · '+totalHits+' événements déclenchés';
+ stats.textContent=(state.total||0)+' navigations éligibles · '+totalHits+' événements déclenchés · '+DATA.filter(e=>previewUnlocked(e.id)).length+' / '+DATA.length+' scènes accessibles';
  const toggle=$('#binch-procs-enable');if(toggle)toggle.checked=!!state.enabled;
  table.replaceChildren();
- for(const e of DATA){
+ const favs=new Set(favorites());
+ const visible=DATA.filter(e=>(collectionFilter==='all'||(collectionFilter==='unlocked'?previewUnlocked(e.id):collectionFilter==='locked'?!previewUnlocked(e.id):favs.has(e.id)))&&(!collectionSearch||[e.title,e.rarity,e.caption].join(' ').toLocaleLowerCase('fr').includes(collectionSearch)));
+ const count=$('#binch-procs-visible');if(count)count.textContent=visible.length+' scène(s) affichée(s)';
+ for(const e of visible){
   const item=document.createElement('article');item.className='binch-procs-entry';
   const unlocked=previewUnlocked(e.id);item.classList.toggle('binch-proc-locked',!unlocked);item.innerHTML='<div class="binch-procs-entry-art">'+art[e.actors[0]]+'</div><div class="binch-procs-entry-text"><small>'+e.rarity+' · '+e.trigger+'</small><strong>'+e.title+'</strong><p>'+e.caption+'</p></div><div class="binch-procs-entry-chance"><strong>'+formatPercent(e.chance)+'</strong><small>par navigation éligible</small><span>'+(unlocked?'✦ Débloqué':'◇ Non découvert')+' · vus '+(state.hits[e.id]||0)+'</span><button type="button"'+(unlocked?'':' disabled title="Débloque la scène en la découvrant"')+'>'+(unlocked?'Revoir la scène':'À découvrir')+'</button></div>';
-  item.querySelector('button').onclick=()=>{if(previewUnlocked(e.id))play(e,true)};table.append(item);
+  const favorite=document.createElement('button');favorite.type='button';favorite.className='binch-procs-favorite';favorite.textContent=favs.has(e.id)?'★ Favori':'☆ Favori';favorite.setAttribute('aria-pressed',String(favs.has(e.id)));
+  favorite.setAttribute('aria-label',(favs.has(e.id)?'Retirer le favori ':'Marquer comme favori ')+e.title);
+  favorite.onclick=()=>toggleFavorite(e.id);item.append(favorite);
+  item.querySelector('.binch-procs-entry-chance button').onclick=()=>{if(previewUnlocked(e.id))play(e,true)};table.append(item);
  }
  log.replaceChildren();
  if(!state.history.length){log.textContent='Aucun proc naturel pour le moment. Un aperçu ne compte pas comme un tirage.';return}
@@ -128,11 +138,13 @@ function mount(){
  const nav=$('#app nav.nav'),main=$('#app main');if(!nav||!main||$('#page-evenements'))return;
  const button=document.createElement('button');button.type='button';button.dataset.page='evenements';button.textContent='Choc nébulaire';nav.append(button);
  const page=document.createElement('section');page.id='page-evenements';page.className='page';
- page.innerHTML='<div class="binch-procs-hero"><span>LA BINCH · LA SCÈNE DES IMPROBABLES</span><h1>Choc nébulaire</h1><p>Pas des artéfacts à gagner : de vrais mini-événements qui surgissent dans l’interface, avec leurs propres personnages et mouvements.</p><div class="binch-procs-mode">☑ Événements cosmétiques propres à La Binch — <strong>aucun objet, avantage ou taux de proc WoW officiel</strong>.</div><button type="button" id="binch-real-procs-jump">ϟ Chercher un vrai proc d’objet ou d’enchantement WoW →</button></div><div class="binch-procs-layout"><section class="binch-procs-main"><div class="binch-procs-subhead"><div><div class="eyebrow">TABLE D’ÉVÉNEMENTS</div><h2>Déclencheurs & probabilités</h2></div><span id="binch-true-procs-stats"></span></div><p class="binch-procs-rule">À chaque clic de navigation principale, si le cooldown de 45 secondes est terminé, un seul tirage est effectué. Les chances ci-dessous sont des valeurs internes transparentes, jamais des taux WoW. Un événement réussi démarre une scène visible ; les aperçus ne comptent pas.</p><label class="binch-procs-toggle"><input id="binch-procs-enable" type="checkbox" checked><span>Autoriser les événements surprises pendant la navigation</span></label><div id="binch-true-procs-list"></div></section><aside class="binch-procs-aside"><h2>Le journal de scène</h2><p>Souvenirs des scènes naturellement déclenchées sur cet appareil.</p><div id="binch-true-procs-log"></div><button type="button" id="binch-proc-demo">Voir un événement de démonstration</button><p>Accessibilité : bouton pour passer une scène, préférence système « Réduire les animations » respectée. Les effets ne tournent jamais en continu.</p></aside></div>';
+ page.innerHTML='<div class="binch-procs-hero"><span>LA BINCH · LA SCÈNE DES IMPROBABLES</span><h1>Choc nébulaire</h1><p>Pas des artéfacts à gagner : de vrais mini-événements qui surgissent dans l’interface, avec leurs propres personnages et mouvements.</p><div class="binch-procs-mode">☑ Événements cosmétiques propres à La Binch — <strong>aucun objet, avantage ou taux de proc WoW officiel</strong>.</div><button type="button" id="binch-real-procs-jump">ϟ Chercher un vrai proc d’objet ou d’enchantement WoW →</button></div><div class="binch-procs-layout"><section class="binch-procs-main"><div class="binch-procs-subhead"><div><div class="eyebrow">TABLE D’ÉVÉNEMENTS</div><h2>Déclencheurs & probabilités</h2></div><span id="binch-true-procs-stats"></span></div><p class="binch-procs-rule">À chaque clic de navigation principale, si le cooldown de 45 secondes est terminé, un seul tirage est effectué. Les chances ci-dessous sont des valeurs internes transparentes, jamais des taux WoW. Un événement réussi démarre une scène visible ; les aperçus ne comptent pas.</p><label class="binch-procs-toggle"><input id="binch-procs-enable" type="checkbox" checked><span>Autoriser les événements surprises pendant la navigation</span></label><div class="binch-procs-gallery-filters"><input id="binch-procs-search" type="search" placeholder="Rechercher une scène, rareté ou histoire" aria-label="Rechercher les scènes"><select id="binch-procs-filter" aria-label="Filtrer les scènes"><option value="all">Toutes les scènes</option><option value="unlocked">Débloquées</option><option value="locked">À découvrir</option><option value="favorites">Mes favorites</option></select><small id="binch-procs-visible"></small></div><div id="binch-true-procs-list"></div></section><aside class="binch-procs-aside"><h2>Le journal de scène</h2><p>Souvenirs des scènes naturellement déclenchées sur cet appareil.</p><div id="binch-true-procs-log"></div><button type="button" id="binch-proc-demo">Voir un événement de démonstration</button><p>Accessibilité : bouton pour passer une scène, préférence système « Réduire les animations » respectée. Les effets ne tournent jamais en continu.</p></aside></div>';
  main.append(page);
  button.onclick=()=>{nav.querySelectorAll('button[data-page]').forEach(b=>b.classList.toggle('active',b===button));main.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p===page));scrollTo({top:0,behavior:'instant'});render()};
  $('#binch-real-procs-jump').onclick=()=>{const navBtn=nav.querySelector('[data-page="bibliotheque"]');navBtn?.click();setTimeout(()=>window.BinchOpenWoWProcs?.(),75)};
  $('#binch-procs-enable').onchange=e=>{state.enabled=e.target.checked;save();render()};
+ $('#binch-procs-search').oninput=e=>{collectionSearch=e.target.value.trim().toLocaleLowerCase('fr');render()};
+ $('#binch-procs-filter').onchange=e=>{collectionFilter=e.target.value;render()};
  $('#binch-proc-demo').onclick=()=>{const pool=DATA.filter(e=>previewUnlocked(e.id));if(!pool.length){alert('Découvre ta première scène en naviguant dans La Binch.');return}play(pool[Math.floor(Math.random()*pool.length)],true)};
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&stage){e.preventDefault();closeStage()}});
  document.addEventListener('click',e=>{
