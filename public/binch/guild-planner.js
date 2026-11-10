@@ -14,7 +14,7 @@ const statusLabel={working:'Je suis sur le coup',ready:'Je les ai déjà',deposi
 const newState=()=>({version:1,requests:[],characters:[]});
 function read(){try{const v=JSON.parse(localStorage.getItem(KEY));return v&&v.version===1&&Array.isArray(v.requests)&&Array.isArray(v.characters)?v:newState()}catch{return newState()}}
 let state=read(),tab='requests',reqFilter='open';
-function save(){state.requests=state.requests.slice(-200);state.characters=state.characters.slice(-100);try{localStorage.setItem(KEY,JSON.stringify(state))}catch{};draw();}
+function save(){state.requests=state.requests.slice(-200);state.characters=state.characters.slice(-100);try{localStorage.setItem(KEY,JSON.stringify(state));document.dispatchEvent(new Event('binch:planner-change'))}catch{};draw();}
 function profile(){try{const p=JSON.parse(localStorage.getItem('grimoire.hub.v3'))||{};return clean(p.data?.pseudo||p.name||'',40)}catch{return ''}}
 function id(){return (window.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,12))}
 function count(r,type){return (r.contributions||[]).filter(c=>!type||c.status===type).reduce((x,c)=>x+Number(c.quantity||0),0)}
@@ -44,8 +44,9 @@ function contribution(r,action,quantity,person){
   if(!c||c.status!=='deposited'){alert('Il faut d’abord une déclaration de dépôt.');return}
   if(!confirm('Confirmer MANUELLEMENT que '+c.quantity+' × '+r.title+' sont bien dans le coffre ? Cette action ne vérifie pas WoW.'))return;
   c.status='confirmed';c.updatedAt=new Date().toISOString();
-  document.dispatchEvent(new CustomEvent('binch:planner-deposit',{detail:{id:'guild-plan-'+r.id+'-'+c.id,item:r.title,quantity:c.quantity,owner:c.character}}));
-  save();return;
+  save();
+  document.dispatchEvent(new CustomEvent('binch:planner-deposit',{detail:{id:'guild-plan-'+r.id+'-'+c.id,item:r.title,quantity:c.quantity,owner:c.character,verified:'manually-confirmed',requestId:r.id}}));
+  return;
  }
  if(!Number.isInteger(quantity)||quantity<1||quantity>r.quantity){alert('Quantité invalide.');return}
  if(c&&c.status==='confirmed'){alert('Ce dépôt a déjà été confirmé. Crée une nouvelle demande pour un nouvel apport.');return}
