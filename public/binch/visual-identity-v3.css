@@ -1,0 +1,46 @@
+/* La Binch: page identity without permanent animation or heavy blur.
+  Distinct settings for guild, leveling, equipment, auction house, treasures and LFG. */
+#page-gm{--binch-identity:#d8ad6b;--binch-identity-soft:#977044}
+#page-progression{--binch-identity:#98c69c;--binch-identity-soft:#426e64}
+#page-equipment{--binch-identity:#a4bde8;--binch-identity-soft:#586b91}
+#page-lfg{--binch-identity:#dfa78d;--binch-identity-soft:#985847}
+#page-coffre{--binch-identity:#ebc672;--binch-identity-soft:#836937}
+#page-market{--binch-identity:#d2c68b;--binch-identity-soft:#716a3e}
+#page-evenements{--binch-identity:#e7a6ce;--binch-identity-soft:#87607e}
+#page-command{--binch-identity:#9bd5d5;--binch-identity-soft:#477477}
+#page-bibliotheque{--binch-identity:#bdb1f3;--binch-identity-soft:#6d5c9c}
+#page-gm,#page-progression,#page-equipment,#page-lfg,#page-coffre,#page-market,#page-evenements,#page-command,#page-bibliotheque{
+ position:relative;isolation:isolate
+}
+#page-gm::before,#page-progression::before,#page-equipment::before,#page-lfg::before,#page-coffre::before,#page-market::before,#page-command::before,#page-bibliotheque::before{
+ content:'';pointer-events:none;position:absolute;inset:0 0 auto;min-height:340px;z-index:-1;opacity:.6;
+ background:radial-gradient(ellipse 72% 200px at 78% 0%,var(--binch-identity-soft),transparent),linear-gradient(transparent,#0b141100)
+}
+#page-gm .binch-gm-hub{background-image:radial-gradient(ellipse at 85% 12%,#c5a36427,transparent 50%),linear-gradient(115deg,#28352a,#1c2421);border-color:#9d855c}
+#page-lfg .binch-lfg-hero{background-image:radial-gradient(ellipse at 86% 10%,#e5a87d33,transparent 55%),linear-gradient(125deg,#3a2929,#171e25);border-color:#bd866f}
+#page-coffre .binch-chest header{background:radial-gradient(ellipse at 82% 9%,#e4c47922,transparent 55%)}
+#page-market .binch-market{background:radial-gradient(ellipse at 82% 0%,#d9be7728,transparent 50%)}
+#page-equipment .binch-equipment{background:radial-gradient(ellipse at 90% 5%,#91aace22,transparent 52%)}
+#page-command .binch-command{background-image:radial-gradient(ellipse at 90% 0%,#7dbfbe18,transparent 47%)}
+#page-bibliotheque .binch-library-loot{background:radial-gradient(ellipse at 90% 0%,#9b8fc825,transparent 40%)}
+#page-gm :is(button,summary,a):focus-visible,
+#page-lfg :is(button,summary,a):focus-visible,
+#page-coffre :is(button,summary,a):focus-visible,
+#page-market :is(button,summary,a):focus-visible,
+#page-equipment :is(button,summary,a):focus-visible,
+#page-command :is(button,summary,a):focus-visible{
+ outline:2px solid var(--binch-identity);outline-offset:3px
+}
+#page-gm .binch-ops-stats article:nth-child(1){border-color:#8c7854}
+#page-gm .binch-ops-stats article:nth-child(2){border-color:#5a927c}
+#page-gm .binch-ops-stats article:nth-child(3){border-color:#728eb2}
+#page-gm .binch-ops-stats article:nth-child(4){border-color:#a86d60}
+#page-gm .binch-ops-stats article:nth-child(5){border-color:#a18cc0}
+@media(prefers-reduced-motion:no-preference){
+ #page-gm .binch-ops button:hover,#page-market .binch-market button:hover,#page-lfg .binch-lfg-card-actions button:hover{
+  transform:translateY(-1px);transition:transform 120ms ease-out
+ }
+}
+@media(max-width:750px){
+ #page-gm::before,#page-progression::before,#page-equipment::before,#page-lfg::before,#page-coffre::before,#page-market::before,#page-command::before,#page-bibliotheque::before{min-height:200px;opacity:.4}
+}
