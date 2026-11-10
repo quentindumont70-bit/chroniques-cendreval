@@ -1,0 +1,21 @@
+.binch-ah-portfolio{margin-top:20px;padding:clamp(12px,2vw,22px);background:linear-gradient(145deg,#152a23,#0f1f1b);border:1px solid #7c6f50;border-radius:12px}
+.binch-ah-portfolio h2{color:#f0d29a;font:700 1.25rem Cinzel,Georgia,serif;margin:7px 0}
+.binch-ah-portfolio p{line-height:1.5;color:#c4d4c1;font-size:.84rem}
+.binch-ah-portfolio-filters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin:15px 0}
+.binch-ah-portfolio-filters label{flex:1;min-width:160px;display:grid;gap:5px;font-size:.77rem;color:#e0d8c0}
+.binch-ah-portfolio-filters select{width:100%;background:#0a1915;color:#eddcbd;border:1px solid #64806a;border-radius:7px;padding:9px}
+.binch-ah-portfolio-filters button{min-height:39px;border:1px solid #a48a5b;background:#304737;color:#f1d5a5;border-radius:8px;padding:8px 12px;cursor:pointer}
+#binch-ah-portfolio-current{display:block;color:#adbea9;margin-bottom:14px}
+#binch-ah-portfolio-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#binch-ah-portfolio-kpis article{display:grid;gap:7px;background:#0a1b16;border:1px solid #4c5e48;padding:13px;border-radius:9px}
+#binch-ah-portfolio-kpis small{color:#c1cbb4;font-size:.71rem}
+#binch-ah-portfolio-kpis strong{font:700 clamp(1.1rem,2.5vw,1.55rem) Cinzel,Georgia,serif;color:#f0d49e;overflow-wrap:anywhere}
+#binch-ah-portfolio-kpis span{font-size:.7rem;color:#abc2ac}
+.binch-ah-portfolio-row{display:grid;grid-template-columns:1.2fr 1fr 1.2fr;align-items:center;gap:12px;padding:12px 8px;border-bottom:1px solid #435e4d}
+.binch-ah-portfolio-row strong,.binch-ah-portfolio-row small,.binch-ah-portfolio-row span{display:block;overflow-wrap:anywhere}
+.binch-ah-portfolio-row strong{color:#ebd9b3}.binch-ah-portfolio-row small,.binch-ah-portfolio-row span{color:#aebca9;font-size:.72rem}
+#binch-ah-portfolio-sales article{padding:9px;border-bottom:1px solid #415944;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+#binch-ah-portfolio-sales strong{color:#e9d3a9}#binch-ah-portfolio-sales span{color:#bec7b6;font-size:.76rem}
+.binch-ah-portfolio details{border:1px solid #536747;border-radius:8px;padding:10px;margin-top:12px}
+.binch-ah-portfolio details summary{cursor:pointer;color:#f0d39d}
+@media(max-width:720px){#binch-ah-portfolio-kpis{grid-template-columns:1fr}.binch-ah-portfolio-row{grid-template-columns:1fr;gap:7px}}
