@@ -6,6 +6,11 @@ const saved=()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch{retu
 const db=saved(),$=id=>document.getElementById(id);
 function store(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch{status('Stockage local indisponible : disposition non sauvegardée.')}}
 let editing=false,handles=[],drag=null,frame=0,pending=null;
+const undoStack=[],redoStack=[],MAX_HISTORY=30;
+const snapshot=()=>JSON.stringify(cfg());
+function commitHistory(before){if(!before||before===snapshot())return;undoStack.push(before);if(undoStack.length>MAX_HISTORY)undoStack.shift();redoStack.length=0;historyState()}
+function historyState(){if($('binch-edit-undo'))$('binch-edit-undo').disabled=!undoStack.length;if($('binch-edit-redo'))$('binch-edit-redo').disabled=!redoStack.length}
+function restoreHistory(from,to){if(!from.length)return;const previous=snapshot(),state=JSON.parse(from.pop());db[key()]=state;to.push(previous);store();setupTargets();historyState();status('Disposition restaurée.')}
 const profileRead=()=>{try{const x=JSON.parse(localStorage.getItem(PROFILES));return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}catch{return {}}};
 const baseStyles=new WeakMap();
 let magnet=localStorage.getItem('binch.ui.magnet.v1')!=='0';
@@ -17,9 +22,28 @@ function key(){return pageKey()+'|'+viewport()}
 function cfg(){return db[key()]||(db[key()]={})}
 function profileList(){const select=$('binch-edit-profiles');if(!select)return;const names=Object.keys(profileRead()[key()]||{}).sort();select.replaceChildren(new Option('Profils sauvegardés',''),...names.map(n=>new Option(n,n)))}
 function saveProfile(){const name=window.prompt('Nom du profil (max. 40 caractères) :')?.trim().slice(0,40);if(!name)return;const all=profileRead(),group=all[key()]||{};if(Object.keys(group).length>=12&&!group[name]){status('12 profils maximum pour cette page.');return}group[name]=JSON.parse(JSON.stringify(cfg()));all[key()]=group;try{localStorage.setItem(PROFILES,JSON.stringify(all));profileList();$('binch-edit-profiles').value=name;status('Profil « '+name+' » enregistré.')}catch{status('Stockage local indisponible.')}}
-function loadProfile(){const name=$('binch-edit-profiles').value,source=profileRead()[key()]?.[name];if(!name||!source)return;db[key()]=JSON.parse(JSON.stringify(source));store();setupTargets();status('Profil « '+name+' » chargé.')}
+function loadProfile(){const name=$('binch-edit-profiles').value,source=profileRead()[key()]?.[name];if(!name||!source)return;const before=snapshot();db[key()]=JSON.parse(JSON.stringify(source));store();setupTargets();commitHistory(before);status('Profil « '+name+' » chargé.')}
 function deleteProfile(){const name=$('binch-edit-profiles').value;if(!name||!window.confirm('Supprimer le profil « '+name+' » ?'))return;const all=profileRead();delete all[key()][name];localStorage.setItem(PROFILES,JSON.stringify(all));profileList();status('Profil supprimé.')}
 function status(msg){const node=$('binch-edit-message');if(node)node.textContent=msg}
+function exportLayout(){
+ const body=JSON.stringify({format:'binch-ui-v3',page:pageKey(),viewport:viewport(),layout:cfg()},null,2);
+ const a=document.createElement('a'),url=URL.createObjectURL(new Blob([body],{type:'application/json'}));
+ a.href=url;a.download='binch-interface-'+pageKey()+'.json';a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);status('Disposition exportée au format JSON.');
+}
+async function importLayout(event){
+ const file=event.target.files?.[0];event.target.value='';if(!file)return;
+ try{
+  if(file.size>50000)throw Error('Fichier trop volumineux');
+  const value=JSON.parse(await file.text());
+  if(value?.format!=='binch-ui-v3'||value.page!==pageKey()||!value.layout||Array.isArray(value.layout)||typeof value.layout!=='object')throw Error('Format ou page incompatible');
+  const entries=Object.entries(value.layout);
+  if(entries.length>40||entries.some(([id,v])=>id.length>160||!v||typeof v!=='object'||Array.isArray(v)||['x','y','width','height'].some(k=>v[k]!=null&&(!Number.isFinite(v[k])||Math.abs(v[k])>10000))))throw Error('Dimensions invalides');
+  const before=snapshot();db[key()]={};
+  for(const [id,record] of entries){db[key()][id]={};for(const field of ['x','y','width','height'])if(Number.isFinite(record[field]))db[key()][id][field]=record[field]}
+  store();setupTargets();commitHistory(before);status('Disposition importée sur cette page.');
+ }catch(error){status('Import refusé : '+error.message)}
+}
 function targets(){
  const page=scope();if(!page)return [];
  const query=':scope > .panel,:scope > article,:scope > section,:scope > .binch-command,:scope > .binch-todo,:scope > .binch-play-today, #binch-command-deck > [data-command-widget], .binch-command-hero, .binch-command-layout, .binch-command-stats, .binch-command-pin-wrap, .binch-command-discoveries, .binch-command-questlog, .binch-command-progress, .binch-command-bottom, .binch-command-row, .binch-command-notes, .binch-command-row > .binch-command-card, .binch-command-bottom > .binch-command-card, .binch-command-stats > .binch-command-stat';
@@ -116,7 +140,7 @@ function begin(e,el,mode){
  if(!editing||e.button!==0||(e.target.closest('button,input,select,textarea,a')&&mode!=='resize'))return;
  e.preventDefault();e.stopPropagation();select(el);
  const r=el.getBoundingClientRect(),id=el.dataset.binchEditorId,c=cfg()[id]||{};
- drag={id,el,mode,startX:e.clientX,startY:e.clientY,offsetX:Number(c.x)||0,offsetY:Number(c.y)||0,width:r.width,height:r.height,changed:false};
+ drag={id,el,mode,startX:e.clientX,startY:e.clientY,offsetX:Number(c.x)||0,offsetY:Number(c.y)||0,width:r.width,height:r.height,changed:false,before:snapshot()};
  document.body.classList.add('binch-edit-dragging');
 }
 function onMove(e){
@@ -157,7 +181,7 @@ function end(){
  if(d.changed){
   if(d.mode==='resize'){record.width=Math.round(d.el.getBoundingClientRect().width);record.height=Math.round(d.el.getBoundingClientRect().height)}
   else{record.x=parseFloat(d.el.style.getPropertyValue('--binch-edit-x'))||0;record.y=parseFloat(d.el.style.getPropertyValue('--binch-edit-y'))||0}
-  cfg()[d.id]=record;store();$('binch-edit-message').textContent='Disposition enregistrée sur cet appareil.';
+  cfg()[d.id]=record;store();commitHistory(d.before);$('binch-edit-message').textContent='Disposition enregistrée sur cet appareil.';
  }
  drag=null;guides(null,null);document.body.classList.remove('binch-edit-dragging');
 }
@@ -174,16 +198,16 @@ function toggle(force){
  $('binch-editor-toggle').textContent=editing?'✓ Terminer':'✥ Modifier l’interface';
  $('binch-editor-toggle').setAttribute('aria-pressed',String(editing));
  $('binch-edit-toolbar').hidden=!editing;
- if(editing){setupTargets();profileList()}else{clearTransient();applySaved()}
+ if(editing){setupTargets();profileList();historyState()}else{clearTransient();applySaved()}
 }
 function reset(){
  if(!window.confirm('Réinitialiser la disposition de cette page sur cet appareil ?'))return;
- delete db[key()];store();setupTargets();$('binch-edit-message').textContent='Disposition de la page réinitialisée.';
+ const before=snapshot();delete db[key()];store();setupTargets();commitHistory(before);$('binch-edit-message').textContent='Disposition de la page réinitialisée.';
 }
 function mount(){
  if($('binch-editor-toggle'))return;
  const button=document.createElement('button');button.type='button';button.id='binch-editor-toggle';button.textContent='✥ Modifier l’interface';button.title='Mode édition WoW : déplacer et ajuster les panneaux';button.setAttribute('aria-pressed','false');document.body.append(button);
- const toolbar=document.createElement('div');toolbar.id='binch-edit-toolbar';toolbar.hidden=true;toolbar.innerHTML='<strong>✥ Mode édition</strong><span id="binch-edit-count"></span><label class="binch-edit-magnet"><input type="checkbox" id="binch-edit-magnet" checked> Aimantation grille + panneaux</label><select id="binch-edit-profiles" aria-label="Profils de disposition"><option value="">Profils sauvegardés</option></select><button type="button" id="binch-edit-profile-save">Sauver profil</button><button type="button" id="binch-edit-profile-load">Charger</button><button type="button" id="binch-edit-profile-delete">Supprimer</button><button type="button" id="binch-edit-reset">Réinitialiser la page</button><span id="binch-edit-message">Glisse les panneaux et redimensionne largeur + hauteur par le coin. Les collisions entre panneaux voisins sont bloquées.</span><button type="button" id="binch-edit-done">Terminer</button>';document.body.append(toolbar);
+ const toolbar=document.createElement('div');toolbar.id='binch-edit-toolbar';toolbar.hidden=true;toolbar.innerHTML='<strong>✥ Mode édition</strong><span id="binch-edit-count"></span><label class="binch-edit-magnet"><input type="checkbox" id="binch-edit-magnet" checked> Aimantation grille + panneaux</label><select id="binch-edit-profiles" aria-label="Profils de disposition"><option value="">Profils sauvegardés</option></select><button type="button" id="binch-edit-profile-save">Sauver profil</button><button type="button" id="binch-edit-profile-load">Charger</button><button type="button" id="binch-edit-profile-delete">Supprimer</button><button type="button" id="binch-edit-undo" disabled title="Ctrl+Z">Annuler</button><button type="button" id="binch-edit-redo" disabled title="Ctrl+Y">Refaire</button><button type="button" id="binch-edit-export">Exporter JSON</button><label class="binch-edit-import">Importer JSON<input id="binch-edit-import-file" type="file" accept=".json,application/json"></label><button type="button" id="binch-edit-reset">Réinitialiser la page</button><span id="binch-edit-message">Glisse les panneaux et redimensionne largeur + hauteur par le coin. Les collisions entre panneaux voisins sont bloquées.</span><button type="button" id="binch-edit-done">Terminer</button>';document.body.append(toolbar);
  const x=document.createElement('div');x.id='binch-edit-guide-x';x.className='binch-edit-guide vertical';x.hidden=true;document.body.append(x);
  const y=document.createElement('div');y.id='binch-edit-guide-y';y.className='binch-edit-guide horizontal';y.hidden=true;document.body.append(y);
  $('binch-edit-magnet').checked=magnet;
@@ -191,6 +215,10 @@ function mount(){
  $('binch-edit-done').addEventListener('click',()=>toggle(false));
  $('binch-edit-magnet').addEventListener('change',e=>{magnet=e.target.checked;localStorage.setItem('binch.ui.magnet.v1',magnet?'1':'0')});
  $('binch-edit-reset').addEventListener('click',reset);
+ $('binch-edit-undo').addEventListener('click',()=>restoreHistory(undoStack,redoStack));
+ $('binch-edit-redo').addEventListener('click',()=>restoreHistory(redoStack,undoStack));
+ $('binch-edit-export').addEventListener('click',exportLayout);
+ $('binch-edit-import-file').addEventListener('change',importLayout);
  $('binch-edit-profile-save').addEventListener('click',saveProfile);
  $('binch-edit-profile-load').addEventListener('click',loadProfile);
  $('binch-edit-profile-delete').addEventListener('click',deleteProfile);
@@ -201,7 +229,13 @@ function mount(){
   if(candidate)begin(e,candidate,'move')
  },true);
  document.addEventListener('pointermove',onMove,true);document.addEventListener('pointerup',end,true);document.addEventListener('pointercancel',end,true);
- document.addEventListener('keydown',e=>{if(e.key==='Escape'&&editing){end();toggle(false)}});
+ document.addEventListener('keydown',e=>{
+ if(!editing)return;
+ if(e.key==='Escape'){end();toggle(false);return}
+ if(e.target.closest('input,textarea,select,[contenteditable="true"]'))return;
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();restoreHistory(e.shiftKey?redoStack:undoStack,e.shiftKey?undoStack:redoStack)}
+ else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();restoreHistory(redoStack,undoStack)}
+});
  // Navigation of La Binch is dynamic and does not reload the document.
  document.addEventListener('click',e=>{
   if(!editing)return;
