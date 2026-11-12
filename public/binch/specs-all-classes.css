@@ -11,3 +11,7 @@
 #binch-specs-nine .binch-tree-node span{font-size:.62rem}
 #binch-specs-nine .binch-tree-description{overflow-wrap:anywhere}
 @media(max-width:750px){.binch-nine-class-picker{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+#binch-nine-details>summary{cursor:pointer;color:#f0d9a5;font:700 1.04rem Cinzel,Georgia,serif;padding:10px 5px;list-style-position:inside}
+#binch-nine-details>summary:focus-visible{outline:2px solid #f8d9aa;outline-offset:2px}
+#binch-nine-details[open]>summary{border-bottom:1px solid #5f6c52;margin-bottom:12px}
