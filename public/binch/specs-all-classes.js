@@ -45,14 +45,15 @@ async function display(){
 function mount(){
  const page=$('page-specs'),anchor=$('binch-specs-summary');if(!page||!anchor||$('binch-specs-nine'))return false;
  const section=document.createElement('section');section.id='binch-specs-nine';section.className='binch-specs-nine';
- section.innerHTML='<header><div><span class="eyebrow">L’ATLAS DES ARBRES FOREVER</span><h3>Les neuf classes · talents réels</h3><p>Explore les trois arbres de chaque classe, dans leur disposition du client, avec leurs icônes et descriptions officielles. Aucun build inventé.</p></div></header><div class="binch-nine-class-picker" id="binch-nine-class-picker">'+names.map(name=>'<button type="button" data-nine-class="'+esc(name)+'">'+esc(name)+'</button>').join('')+'</div><div id="binch-specs-nine-display"></div>';
+ section.innerHTML='<details id="binch-nine-details"><summary>Explorer les arbres des neuf classes WoW Forever</summary><header><div><span class="eyebrow">L’ATLAS DES ARBRES FOREVER</span><h3>Les neuf classes · talents réels</h3><p>Explore les trois arbres de chaque classe, dans leur disposition du client, avec leurs icônes et descriptions officielles. Aucun build inventé.</p></div></header><div class="binch-nine-class-picker" id="binch-nine-class-picker">'+names.map(name=>'<button type="button" data-nine-class="'+esc(name)+'">'+esc(name)+'</button>').join('')+'</div><div id="binch-specs-nine-display"></div>';
  anchor.after(section);
  $('binch-nine-class-picker').onclick=e=>{const btn=e.target.closest('[data-nine-class]');if(!btn)return;chosen=safeName(btn.dataset.nineClass);$('binch-nine-class-picker').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===btn));display()};
  const selected=$('binch-nine-class-picker').querySelector('[data-nine-class="Druide"]');chosen='Druide';selected?.classList.add('active');
  const specs=$('binch-specs-class');
- specs?.addEventListener('change',e=>{if(map[e.target.value]){chosen=e.target.value;$('binch-nine-class-picker').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x.dataset.nineClass===chosen));display()}});
- document.querySelector('#app nav.nav [data-page="specs"]')?.addEventListener('click',()=>{if(!cache.has(map[chosen]))display()});
- display();return true;
+ specs?.addEventListener('change',e=>{if(map[e.target.value]){chosen=e.target.value;$('binch-nine-class-picker').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x.dataset.nineClass===chosen));$('binch-nine-details').open=true;display()}});
+ document.querySelector('#app nav.nav [data-page="specs"]')?.addEventListener('click',()=>{if($('binch-nine-details')?.open&&!cache.has(map[chosen]))display()});
+ $('binch-nine-details').addEventListener('toggle',e=>{if(e.target.open)display()});
+ return true;
 }
 function init(){if(mount())return;const main=document.querySelector('#app main');if(!main)return;const observer=new MutationObserver(()=>{if(mount())observer.disconnect()});observer.observe(main,{childList:true});setTimeout(()=>observer.disconnect(),12000)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
