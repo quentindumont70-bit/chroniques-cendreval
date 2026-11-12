@@ -1,0 +1,15 @@
+.binch-display-comfort{margin:8px 0 16px;border:1px solid #536454;border-radius:9px;background:#101d18;color:#eedfbd}
+.binch-display-comfort>summary{padding:10px 14px;font-size:.78rem;cursor:pointer;font-weight:700;color:#e2c995}
+.binch-display-comfort>summary:focus-visible{outline:2px solid #e3cf9a}
+.binch-comfort-inner{padding:14px;border-top:1px solid #425943;font-size:.8rem}
+.binch-comfort-inner>strong{color:#f5dca9}
+.binch-comfort-inner>p{color:#b7c7b5}
+.binch-comfort-inner fieldset{border:1px solid #526454;border-radius:7px;display:flex;gap:15px;flex-wrap:wrap;margin:10px 0;padding:9px}
+.binch-comfort-inner legend{font-size:.76rem;color:#e8d4af}
+.binch-comfort-inner label{display:flex;align-items:center;gap:7px;cursor:pointer;color:#e4e3d3}
+html[data-binch-effects="reduced"] :is(#app,#binch-mobile-navigation,#binch-faith-dialogue,#binch-specs-pinned) *{animation-duration:0s!important;animation-delay:0s!important;transition-duration:0s!important;scroll-behavior:auto!important}
+html[data-binch-effects="reduced"] #app :is(.nav,.panel,.hero,.binch-front-widget,.binch-tree-panel){backdrop-filter:none!important;filter:none!important}
+html[data-binch-effects="reduced"] #class-layer{animation:none!important;opacity:.35!important}
+html[data-binch-effects="reduced"] body:before{filter:none!important}
+html[data-binch-scroll="native"] #binch-scroll-recovery{display:none!important}
+@media(prefers-reduced-motion:reduce){#app *{scroll-behavior:auto!important}}
