@@ -1,0 +1,13 @@
+.binch-specs-nine{margin-top:18px;padding:clamp(13px,2.4vw,24px);background:linear-gradient(150deg,#111f1c,#172a24);border:1px solid #726349;border-radius:13px}
+.binch-specs-nine h3{font:700 1.3rem Cinzel,Georgia,serif;color:#eed8a4;margin:4px 0 10px}
+.binch-specs-nine p{color:#c8d7cd;font-size:.81rem;line-height:1.5}
+.binch-nine-class-picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:7px;margin:13px 0}
+#binch-specs .binch-nine-class-picker button{font-size:.75rem;background:#1c302d;border:1px solid #647263;border-radius:7px;padding:8px 7px;min-height:37px}
+#binch-specs .binch-nine-class-picker button.active{background:#4a5033;color:#ffe1a5;border-color:#d5b477;box-shadow:inset 0 0 0 1px #a88b51}
+#binch-specs-nine .binch-tree-grid{margin-top:14px}
+#binch-specs-nine .binch-tree-node{filter:none!important;opacity:1!important;border-color:#4f6861!important}
+#binch-specs-nine .binch-tree-node:hover{border-color:#e8c184!important}
+#binch-specs-nine .binch-tree-node:focus-visible{outline:3px solid #fff0ae}
+#binch-specs-nine .binch-tree-node span{font-size:.62rem}
+#binch-specs-nine .binch-tree-description{overflow-wrap:anywhere}
+@media(max-width:750px){.binch-nine-class-picker{grid-template-columns:repeat(3,minmax(0,1fr))}}
