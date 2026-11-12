@@ -1,6 +1,6 @@
-/* Contenus pédagogiques originaux Big Cthu, accès libre. Liens externes crédités ; ne pas copier les ouvrages tiers. */
+/* Cours et quiz originaux Big Cthu : accès libre, ressources externes créditées. */
 window.BIG_CTHU_LEARNING_DATA={
-  "version": 1,
+  "version": 2,
   "courses": [
     {
       "id": "fr-a1",
@@ -377,6 +377,300 @@ window.BIG_CTHU_LEARNING_DATA={
           ],
           2,
           "Une compétence clinique nécessite un cadre de formation et de pratique adapté."
+        ]
+      ]
+    },
+    {
+      "id": "math-primaire",
+      "title": "Mathématiques — unités et problèmes",
+      "domain": "Scolaire",
+      "level": "Primaire",
+      "desc": "Comprendre les unités et résoudre des problèmes simples.",
+      "lesson": "Un mètre contient 100 centimètres. Pour trouver un total, on additionne les quantités compatibles. Pour calculer un prix de plusieurs objets identiques, on multiplie le prix unitaire par le nombre d'objets. Lire soigneusement l'unité permet d'éviter les erreurs.",
+      "source": "https://eduscol.education.gouv.fr/",
+      "license": "Cours et quiz originaux Big Cthu",
+      "questions": [
+        [
+          "2 mètres correspondent à :",
+          [
+            "20 cm",
+            "200 cm",
+            "2 000 cm"
+          ],
+          1,
+          "1 m = 100 cm, donc 2 m = 200 cm."
+        ],
+        [
+          "Trois cahiers à 4 € coûtent :",
+          [
+            "7 €",
+            "12 €",
+            "16 €"
+          ],
+          1,
+          "3 × 4 = 12."
+        ],
+        [
+          "Un objet de 500 g pèse :",
+          [
+            "0,5 kg",
+            "5 kg",
+            "50 kg"
+          ],
+          0,
+          "1 kilogramme vaut 1000 grammes."
+        ]
+      ]
+    },
+    {
+      "id": "svt-college",
+      "title": "SVT — cellules et organismes",
+      "domain": "Scolaire",
+      "level": "Collège",
+      "desc": "Des cellules aux êtres vivants.",
+      "lesson": "La cellule est une unité structurale de nombreux êtres vivants. Les cellules comportent généralement une membrane plasmique et du matériel génétique. Les végétaux possèdent des cellules avec des particularités, par exemple une paroi et, dans les cellules photosynthétiques, des chloroplastes. Tous les organismes ne sont pas constitués de plusieurs cellules.",
+      "source": "https://eduscol.education.gouv.fr/",
+      "license": "Cours et quiz originaux Big Cthu",
+      "questions": [
+        [
+          "La cellule est :",
+          [
+            "Une unité de base du vivant",
+            "Toujours visible à l'œil nu",
+            "Une substance minérale"
+          ],
+          0,
+          "Les cellules sont les unités fondamentales de structure de nombreux organismes."
+        ],
+        [
+          "Certaines cellules végétales photosynthétiques contiennent :",
+          [
+            "Des chloroplastes",
+            "Des os",
+            "Des poumons"
+          ],
+          0,
+          "Les chloroplastes sont des organites impliqués dans la photosynthèse."
+        ],
+        [
+          "Un organisme unicellulaire :",
+          [
+            "A un seul organe",
+            "Est composé d'une seule cellule",
+            "N'a pas de matériel génétique"
+          ],
+          1,
+          "Unicellulaire signifie formé d'une seule cellule."
+        ]
+      ]
+    },
+    {
+      "id": "physique-lycee",
+      "title": "Physique — vitesse et énergie",
+      "domain": "Scolaire",
+      "level": "Lycée",
+      "desc": "Grandeurs physiques et unités.",
+      "lesson": "La vitesse moyenne est la distance parcourue divisée par le temps écoulé. En unités SI, la vitesse s'exprime en mètres par seconde. L'énergie s'exprime en joules ; la puissance en watts, soit des joules par seconde. Lors d'une résolution, écrire les unités à chaque étape aide à vérifier le résultat.",
+      "source": "https://eduscol.education.gouv.fr/",
+      "license": "Cours et quiz originaux Big Cthu",
+      "questions": [
+        [
+          "100 mètres parcourus en 20 secondes donnent une vitesse moyenne de :",
+          [
+            "2 m/s",
+            "5 m/s",
+            "20 m/s"
+          ],
+          1,
+          "100 ÷ 20 = 5 m/s."
+        ],
+        [
+          "L'unité de la puissance dans le SI est :",
+          [
+            "Le watt",
+            "Le kilomètre",
+            "Le kilogramme"
+          ],
+          0,
+          "La puissance s'exprime en watts."
+        ],
+        [
+          "L'unité de l'énergie est :",
+          [
+            "Le joule",
+            "Le newton par mètre",
+            "Le degré Celsius"
+          ],
+          0,
+          "Le joule est l'unité SI de l'énergie."
+        ]
+      ]
+    },
+    {
+      "id": "allemand-a1",
+      "title": "Allemand — phrases du quotidien",
+      "domain": "Langues",
+      "level": "Débutant A1",
+      "desc": "Se présenter et demander son nom.",
+      "lesson": "En allemand, « Guten Tag » est une salutation polie en journée. « Ich heiße » signifie « je m'appelle » et « Wie heißt du? » signifie « Comment t'appelles-tu ? » avec tutoiement. Les noms communs allemands prennent en général une majuscule initiale.",
+      "source": "https://www.goethe.de/",
+      "license": "Cours et quiz originaux Big Cthu ; lien Goethe-Institut",
+      "questions": [
+        [
+          "« Guten Tag » signifie :",
+          [
+            "Bonne nuit",
+            "Bonjour",
+            "Merci"
+          ],
+          1,
+          "C'est une salutation utilisée dans la journée."
+        ],
+        [
+          "« Ich heiße Anna » veut dire :",
+          [
+            "J'habite à Anna",
+            "Je m'appelle Anna",
+            "J'aime Anna"
+          ],
+          1,
+          "« Ich heiße » indique son nom."
+        ],
+        [
+          "Dans l'orthographe allemande, les noms communs :",
+          [
+            "Ont généralement une majuscule initiale",
+            "Sont toujours au pluriel",
+            "N'ont jamais de majuscule"
+          ],
+          0,
+          "Les noms communs allemands prennent normalement une majuscule."
+        ]
+      ]
+    },
+    {
+      "id": "italien-a1",
+      "title": "Italien — premiers mots",
+      "domain": "Langues",
+      "level": "Débutant A1",
+      "desc": "Se saluer et remercier.",
+      "lesson": "En italien, « ciao » sert familièrement pour saluer ou dire au revoir. « Buongiorno » est une salutation plus formelle, surtout dans la journée. « Grazie » signifie merci, « per favore » s'il vous plaît. « Mi chiamo » veut dire « je m'appelle ».",
+      "source": "https://www.unistrapg.it/",
+      "license": "Cours et quiz originaux Big Cthu",
+      "questions": [
+        [
+          "Comment dit-on « merci » en italien ?",
+          [
+            "Prego",
+            "Grazie",
+            "Notte"
+          ],
+          1,
+          "« Grazie » signifie merci."
+        ],
+        [
+          "« Mi chiamo Luca » signifie :",
+          [
+            "Je suis fatigué",
+            "Je m'appelle Luca",
+            "Je viens demain"
+          ],
+          1,
+          "« Mi chiamo » exprime le nom."
+        ],
+        [
+          "« Per favore » correspond à :",
+          [
+            "S'il vous plaît",
+            "Au revoir",
+            "Bonsoir"
+          ],
+          0,
+          "La formule marque une demande polie."
+        ]
+      ]
+    },
+    {
+      "id": "cyber-base",
+      "title": "Informatique — cybersécurité quotidienne",
+      "domain": "Informatique",
+      "level": "Tous niveaux",
+      "desc": "Mots de passe, liens et vérification des sources.",
+      "lesson": "Une phrase de passe longue et unique, protégée par un gestionnaire de mots de passe, aide à sécuriser un compte. L'authentification multifacteur ajoute une protection. Un message inattendu demandant un code de connexion ou un paiement doit être traité avec prudence. Une adresse HTTPS chiffre la connexion, mais ne garantit pas à elle seule que le site est digne de confiance.",
+      "source": "https://www.cybermalveillance.gouv.fr/",
+      "license": "Cours et quiz originaux Big Cthu",
+      "questions": [
+        [
+          "Quel mot de passe est préférable ?",
+          [
+            "Le même sur tous les sites",
+            "Une phrase de passe longue et unique",
+            "Le prénom d'un proche"
+          ],
+          1,
+          "Une phrase de passe unique réduit les risques en cas de fuite."
+        ],
+        [
+          "HTTPS signifie que :",
+          [
+            "La connexion est chiffrée",
+            "Le site est forcément honnête",
+            "Aucun piratage n'est possible"
+          ],
+          0,
+          "Le chiffrement n'est pas une garantie de fiabilité du vendeur ou de l'éditeur."
+        ],
+        [
+          "Un code de validation reçu par SMS :",
+          [
+            "Peut être transmis à un inconnu qui le demande",
+            "Doit rester privé",
+            "Doit être publié en ligne"
+          ],
+          1,
+          "Un code de connexion ne doit pas être partagé."
+        ]
+      ]
+    },
+    {
+      "id": "economie-budget",
+      "title": "Vie pratique — gérer un budget simple",
+      "domain": "Vie pratique",
+      "level": "Tous niveaux",
+      "desc": "Revenus, dépenses fixes et variables.",
+      "lesson": "Un budget prévisionnel rapproche les ressources attendues et les dépenses anticipées. On distingue souvent les dépenses fixes (loyer, abonnements) des dépenses variables (loisirs, achats). Un budget peut dégager une marge positive, nulle ou négative. L'objectif est d'anticiper, non de se substituer à un conseil financier personnalisé.",
+      "source": "https://www.mesquestionsdargent.fr/",
+      "license": "Cours et quiz originaux Big Cthu",
+      "questions": [
+        [
+          "Le loyer mensuel est habituellement :",
+          [
+            "Une dépense fixe",
+            "Une dépense exceptionnelle variable",
+            "Une recette"
+          ],
+          0,
+          "Le loyer régulier est généralement classé dans les charges fixes."
+        ],
+        [
+          "Si les recettes dépassent les dépenses, le solde est :",
+          [
+            "Négatif",
+            "Positif",
+            "Toujours nul"
+          ],
+          1,
+          "Le solde recettes moins dépenses est positif."
+        ],
+        [
+          "Préparer un budget consiste notamment à :",
+          [
+            "Ignorer les dépenses",
+            "Anticiper ressources et charges",
+            "Garantir un enrichissement"
+          ],
+          1,
+          "Le budget aide à rendre visibles les entrées et sorties attendues."
         ]
       ]
     }
