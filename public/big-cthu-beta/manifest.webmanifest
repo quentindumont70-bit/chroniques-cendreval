@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "Big Cthu — Cockpit autonome",
+  "short_name": "Big Cthu",
+  "description": "Tableau de bord personnel indépendant des comptes d'intelligence artificielle",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#100e22",
+  "theme_color": "#100e22",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
