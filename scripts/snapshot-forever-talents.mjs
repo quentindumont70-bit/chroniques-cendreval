@@ -35,12 +35,14 @@ function sanitize(raw,name){
 }
 const site=await stat(ROOT).catch(()=>null);
 if(!site?.isDirectory())throw Error('pages-dist/binch absent; run build:pages first');
-for(const name of CLASSES){
- try{
-  const raw=await download(name),payload=sanitize(raw,name);
-  await writeFile(path.join(ROOT,'forever-talents-'+name+'.json'),JSON.stringify(payload)+'\n','utf8');
-  console.log('La Binch: '+name+' · '+payload.talents.trees.map(t=>t.name+' '+t.talents.length).join(', '));
- }catch(err){
-  console.warn('La Binch: no snapshot '+name+' ('+String(err?.message||err)+'); official calculator fallback available.');
- }
+for(let i=0;i<CLASSES.length;i+=3){
+ await Promise.all(CLASSES.slice(i,i+3).map(async name=>{
+  try{
+   const raw=await download(name),payload=sanitize(raw,name);
+   await writeFile(path.join(ROOT,'forever-talents-'+name+'.json'),JSON.stringify(payload)+'\n','utf8');
+   console.log('La Binch: '+name+' · '+payload.talents.trees.map(t=>t.name+' '+t.talents.length).join(', '));
+  }catch(err){
+   console.warn('La Binch: no snapshot '+name+' ('+String(err?.message||err)+'); calculator fallback available.');
+  }
+ }));
 }
