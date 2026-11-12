@@ -4,8 +4,9 @@
 const $=s=>document.querySelector(s);
 let button;
 const modal=()=>Boolean(document.querySelector('dialog[open],[aria-modal="true"]:not([hidden])'));
+const native=()=>document.documentElement.dataset.binchScroll==='native';
 function unlock(){
- if(modal())return false;
+ if(modal()||native())return false;
  let changed=false;
  for(const el of [document.documentElement,document.body]){
   if(!el)continue;
@@ -17,7 +18,7 @@ function unlock(){
  return changed;
 }
 function down(){
- if(modal())return;
+ if(modal()||native())return;
  unlock();
  const sc=document.scrollingElement||document.documentElement,old=window.scrollY||sc.scrollTop;
  window.scrollBy({top:Math.max(310,Math.round(innerHeight*.7)),behavior:'smooth'});
@@ -38,7 +39,7 @@ function paint(){
  const active=app&&!app.classList.contains('hidden');
  const tall=Math.max(sc.scrollHeight,document.body?.scrollHeight||0)>innerHeight+190;
  const bottom=(window.scrollY||sc.scrollTop)+innerHeight>=sc.scrollHeight-100;
- button.hidden=!active||!tall||bottom||modal();
+ button.hidden=!active||!tall||bottom||modal()||native();
 }
 function init(){
  if($('#binch-scroll-recovery'))return;
@@ -58,7 +59,7 @@ function init(){
   gesture={x:e.touches[0].clientX,y:e.touches[0].clientY,axis:''};
  },{passive:true});
  nav?.addEventListener('touchmove',e=>{
-  if(!gesture||e.touches.length!==1||modal())return;
+  if(!gesture||e.touches.length!==1||modal()||native())return;
   const touch=e.touches[0],dx=touch.clientX-gesture.x,dy=touch.clientY-gesture.y;
   if(!gesture.axis&&Math.max(Math.abs(dx),Math.abs(dy))>9)gesture.axis=Math.abs(dy)>Math.abs(dx)*1.35?'vertical':'horizontal';
   if(gesture.axis==='vertical'&&Math.abs(dy)>0){
@@ -68,10 +69,11 @@ function init(){
  nav?.addEventListener('touchend',()=>{gesture=null},{passive:true});
  nav?.addEventListener('touchcancel',()=>{gesture=null},{passive:true});
  nav?.addEventListener('wheel',e=>{
-  if(modal()||Math.abs(e.deltaX)>=Math.abs(e.deltaY)||!e.deltaY)return;
+  if(modal()||native()||Math.abs(e.deltaX)>=Math.abs(e.deltaY)||!e.deltaY)return;
   e.preventDefault();unlock();window.scrollBy({top:e.deltaY,behavior:'instant'});
  },{passive:false});
- document.addEventListener('keydown',e=>{if(e.key!=='PageDown'||modal()||['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;
+ document.addEventListener('binch:display-preferences',()=>{unlock();paint()});
+ document.addEventListener('keydown',e=>{if(e.key!=='PageDown'||modal()||native()||['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;
   const start=window.scrollY;setTimeout(()=>{if(window.scrollY===start)unlock()},100);
  });
  unlock();paint();
