@@ -1,0 +1,15 @@
+.binch-ah-public{margin-top:20px;padding:clamp(14px,2.5vw,24px);border:1px solid #997c4a;border-radius:12px;background:linear-gradient(135deg,#1e3228,#14231d)}
+.binch-ah-public h2{font:700 1.2rem Cinzel,Georgia,serif;color:#efcf96;margin:5px 0}
+.binch-ah-public p{font-size:.8rem;color:#c6d1bf;line-height:1.5}
+#binch-ah-public-form{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.8fr) auto;gap:9px;align-items:end}
+#binch-ah-public-form label{display:grid;gap:5px;color:#e1d6b6;font-size:.75rem}
+#binch-ah-public-form :is(input,select){width:100%;max-width:100%;padding:9px;background:#0d1a15;color:#f1dfba;border:1px solid #738468;border-radius:7px}
+#binch-ah-public-form button{padding:9px 13px;min-height:39px;background:#36543b;color:#f9dda9;border:1px solid #b89f6b;border-radius:7px;cursor:pointer}
+#binch-ah-public-result{margin:16px 0;padding:14px;background:#101f18;border:1px solid #56674b;border-radius:8px}
+.binch-ah-public-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.binch-ah-public-metrics>div{padding:10px;background:#1b3225;border-radius:6px}
+.binch-ah-public-metrics small,.binch-ah-public-metrics strong{display:block}
+.binch-ah-public-metrics small{color:#b9c9b5;font-size:.72rem}
+.binch-ah-public-metrics strong{color:#f0d29c;font-size:1.04rem;overflow-wrap:anywhere}
+.binch-ah-public a{color:#eed091}
+@media(max-width:640px){#binch-ah-public-form{grid-template-columns:1fr}.binch-ah-public-metrics{grid-template-columns:1fr}}
