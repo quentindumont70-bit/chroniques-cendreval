@@ -6,7 +6,7 @@ import {runInNewContext} from 'node:vm';
 const html=()=>readFile(new URL('../big-cthu-beta/tournee-complete.html',import.meta.url),'utf8');
 const empty={tidel_Pl:'[]'};
 const filled={tidel_Pl:JSON.stringify([{id:'fictif-1',n:'EXEMPLE FICTIF',a:'Rue inventée'}]),tidel_absences_journal_v1:'[]'};
-async function fixture({initial=empty,encrypted=false,password='',fail=false,old=false}={}){
+async function fixture({initial=empty,encrypted=false,portable=false,password='',fail=false,old=false}={}){
  const page=await html();
  const start=page.indexOf('const PORTABLE_FORMAT=');
  const end=page.indexOf('function fillFromBackup(d){',start);
@@ -15,7 +15,7 @@ async function fixture({initial=empty,encrypted=false,password='',fail=false,old
  const errors=[],statuses=[],local=new Map(old?[['original-vault','ancien coffre ne pas modifier']]:[]);
  const elements={
   'tour-pass':{value:password},
-  'tour-file':{files:[{size:100,async text(){return JSON.stringify(encrypted?{v:1,cipher:'test',salt:'test',iv:'test'}:{v:1,P:[],kv:{}})}}]},
+  'tour-file':{files:[{size:100,async text(){return JSON.stringify(portable?{format:'bigcthu-tournee-complete-portable-v1',v:1,data:filled}:encrypted?{v:1,cipher:'test',salt:'test',iv:'test'}:{v:1,P:[],kv:{}})}}]},
   'tour-security-gate':{hidden:false}
  };
  const ctx={
@@ -101,4 +101,14 @@ test('V95: sauvegarde JSON complète sans code conserve journal et suivi fictifs
  const bad={...saved,data:{...state,tidel_Pl:'INVALID JSON'}};
  assert.throws(()=>f.ctx.readPortable(bad),/incompatible/);
  assert.throws(()=>f.ctx.serializePortable({...state,untrustedField:'bad'}),/invalides/);
+});
+
+test('V95: import du fichier complet portable depuis un appareil vierge sans mot de passe',async()=>{
+ const f=await fixture({portable:true});
+ await f.ctx.recover(true);
+ assert.equal(f.reloaded(),1);
+ assert.equal(f.decrypts(),0);
+ assert.equal(f.flushes(),1);
+ assert.equal(f.ctx.current().tidel_Pl,filled.tidel_Pl);
+ assert.equal(f.ctx.current().tidel_absences_journal_v1,filled.tidel_absences_journal_v1);
 });
