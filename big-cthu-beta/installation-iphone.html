@@ -47,6 +47,13 @@ button:focus-visible,a:focus-visible{outline:3px solid #9cf1e0;outline-offset:3p
 </ol>
 <p class="muted">Les données Big Cthu sont locales : pas de sauvegarde dans un cloud Big Cthu, pas de synchronisation automatique entre appareils. Ne stocke pas de données de patients ni d'informations sensibles dans cette bêta.</p>
 </section>
+<section class="box">
+<h2>Vérification sur cet appareil</h2>
+<p id="appMode" class="muted" role="status">Mode d'ouverture à déterminer.</p>
+<p>Ce bouton teste uniquement l'enregistrement local d'une valeur fictive, puis l'efface. Il ne lit aucune de tes données personnelles.</p>
+<button id="testStorage" type="button" class="secondary">Tester le stockage local</button>
+<p id="storageState" class="status" role="status" aria-live="polite"></p>
+</section>
 <section class="box"><h2>Accès directs aux tentacules</h2>
 <p>Ces liens peuvent s'ouvrir dans Safari. Pour conserver les données au même endroit, utilise normalement l'icône principale puis la navigation interne.</p>
 <div id="modules"></div></section>
@@ -65,6 +72,14 @@ const entries=[
 ];
 const mainUrl=new URL('index.html',base).href;
 document.getElementById('mainUrl').textContent=mainUrl;
+const installed=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+document.getElementById('appMode').textContent=installed?'Mode application web détecté. Le stockage peut être distinct de Safari.':'Mode navigateur détecté. Tu peux installer l’icône depuis Safari.';
+document.getElementById('testStorage').addEventListener('click',()=>{
+ const key='big-cthu-iphone-storage-test';
+ try{localStorage.setItem(key,'test');if(localStorage.getItem(key)!=='test')throw Error('Lecture impossible');localStorage.removeItem(key);
+ document.getElementById('storageState').textContent='Test réussi : enregistrement local disponible dans cet environnement. Pense à sauvegarder le Coffre régulièrement.'}
+ catch(e){document.getElementById('storageState').textContent='Enregistrement local indisponible ici. Vérifie les réglages de Safari et n’y saisis pas encore de données à conserver.'}
+});
 async function copy(url){
  try{if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(url);
  else{const tmp=document.createElement('textarea');tmp.value=url;tmp.style.position='fixed';tmp.style.opacity='0';document.body.append(tmp);tmp.select();if(!document.execCommand('copy'))throw Error('Copie non prise en charge');tmp.remove()}
