@@ -496,7 +496,7 @@ body.tournee-locked #tour-save-strip{display:none}
 <button type="submit">Enregistrer au coffre</button>
 </form>
 <h3>Historique et filtres</h3>
-<div class="ap-shortcuts" role="group" aria-label="Période du journal"><button type="button" id="ap-today">Aujourd’hui</button><button type="button" id="ap-week">Cette semaine</button><button type="button" id="ap-clear">Effacer les filtres</button></div>
+<div class="ap-shortcuts" role="group" aria-label="Période du journal"><button type="button" id="ap-today">Aujourd’hui</button><button type="button" id="ap-week">Cette semaine</button><button type="button" id="ap-review">À rapprocher (0)</button><button type="button" id="ap-clear">Effacer les filtres</button></div>
 <div class="ap-grid">
 <label>Du<input id="ap-from" type="date"></label><label>Au<input id="ap-to" type="date"></label>
 <label>Motif<select id="ap-filter-reason"><option value="">Tous les motifs</option><option>Patient absent</option><option>Soin non réalisé</option><option>Horaire modifié</option><option>Autre</option></select></label>
@@ -1979,6 +1979,7 @@ function absenceTopazeText(rows,filters={}){
 
 function absenceRender(){
  const rows=absenceRead();if(!rows)return;
+ ap('ap-review').textContent='À rapprocher ('+absenceSummary(rows).toReview+')';
  const patients=absencePatients(), names=new Map(patients.map(p=>[p.id,p.n]));
  const select=ap('ap-patient'),selected=select.value;select.replaceChildren();
  const blank=document.createElement('option');blank.value='';blank.textContent='Choisir un patient';select.append(blank);
@@ -2002,6 +2003,7 @@ function absenceRender(){
  }
  ap('ap-topaze-note').textContent=absenceTopazeText(rows,filters);
  const host=ap('ap-events');host.replaceChildren();
+ if(!filtered.length){const empty=document.createElement('p');empty.textContent='Aucun signalement pour ces filtres.';empty.className='ap-caption';host.append(empty)}
  for(const x of filtered){
   const box=document.createElement('article');box.className='ap-entry';
   const title=document.createElement('strong');title.textContent=x.day+' · '+(names.get(x.patientId)||'Patient introuvable')+' · '+x.reason;box.append(title);
@@ -2089,14 +2091,15 @@ function absenceTodayLocal(){
 function absenceSetQuickRange(mode){
  const dates=absenceQuickRange(absenceTodayLocal(),mode);
  ap('ap-from').value=dates.from;ap('ap-to').value=dates.to;
- if(mode==='clear'){
+ if(mode==='clear'||mode==='review'){
   for(const id of ['ap-filter-reason','ap-filter-state','ap-search'])ap(id).value='';
   ap('ap-sort').value='newest';
   ap('ap-filter-cancelled').value='active';
+  if(mode==='review')ap('ap-filter-state').value='À rapprocher';
  }
  absenceRender();noteTourActivity();
 }
-for(const [button,mode] of [['ap-today','today'],['ap-week','week'],['ap-clear','clear']]){
+for(const [button,mode] of [['ap-today','today'],['ap-week','week'],['ap-review','review'],['ap-clear','clear']]){
  ap(button).addEventListener('click',()=>absenceSetQuickRange(mode));
 }
 ap('ap-copy-summary').addEventListener('click',async()=>{
