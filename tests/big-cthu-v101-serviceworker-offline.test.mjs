@@ -104,5 +104,5 @@ test('V101: activation supprime uniquement les anciens caches Big Cthu, conserve
  const f=await fixture();
  await f.install();
  await f.activate();
- assert.deepEqual(f.cleanup(),['big-cthu-public-v2-v99']);
+ assert.deepEqual(f.cleanup(),['big-cthu-public-v2-v99','big-cthu-public-v2-v102']);
 });

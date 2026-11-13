@@ -16,7 +16,7 @@ async function fixture({fail=false,readBackFails=false}={}){
   localStorage:{setItem(k,v){if(shouldFail)throw Error('QuotaExceeded');this.persisted=v;writes++},getItem(){return readBackFails?null:this.persisted??null}},
   crypto:{getRandomValues(arr){return arr.fill(1)},subtle:{encrypt:async()=>new Uint8Array([1,2,3])}},
   setTimeout:()=>1,clearTimeout:()=>{},TextEncoder,Uint8Array,JSON,
-  SECURE_KEY:'test-encrypted-only',secureKey:'fake-key',secureBooted:false,secureSalt:new Uint8Array(16),secureGen:1,secureSavedGen:0,secureActive:null,secureTimer:0,secureState:{tidel_Pl:'[]'},
+  SECURE_KEY:'test-encrypted-only',secureKey:'fake-key',secureBooted:false,secureSalt:new Uint8Array(16),secureGen:1,secureSavedGen:0,secureActive:null,secureLastWrittenRecord:null,secureTimer:0,secureState:{tidel_Pl:'[]'},
   to64:()=> 'AQID',enc:new TextEncoder(),location:{reload(){reloads++}}
  };
  runInNewContext(html.slice(begin,end)+'\nthis.flushTest=flush;this.dirtyTest=dirty;this.checkTourIdleTest=checkTourIdle;this.noteTourActivityTest=noteTourActivity;this.setIdleTest=(timestamp)=>{secureBooted=true;lastTourActivity=timestamp};',sandbox,{timeout:1000});
@@ -52,7 +52,7 @@ test('V92: bouton Sauvegarder conserve la session même si l écriture échoue',
 
 test('V77: ouverture de coffre existant ne réécrit pas inutilement son contenu',async()=>{
  const html=await read();
- assert.match(html,/if\(!full\)\{if\(importedEncrypted\)localStorage\.setItem\(SECURE_KEY,JSON\.stringify\(importedEncrypted\)\);else\{secureGen\+\+;await flush\(\)\}\}launch\(\)/);
+ assert.ok(html.includes('secureLastWrittenRecord=localStorage.getItem(SECURE_KEY)'));
  assert.match(html,/id="tour-save-strip"/);
  assert.match(html,/id="tour-lock"/);
  assert.match(html,/id="tour-save-retry"/);

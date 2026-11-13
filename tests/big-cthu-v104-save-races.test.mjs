@@ -28,7 +28,7 @@ async function fixture({blocked=false,failWrite=false}={}){
   crypto,TextEncoder,Uint8Array,JSON,
   setTimeout(){return 1},clearTimeout(){},
   SECURE_KEY:'fiction-only',secureKey:{},secureSalt:new Uint8Array(16),
-  secureGen:1,secureSavedGen:0,secureActive:null,secureTimer:0,
+  secureGen:1,secureSavedGen:0,secureActive:null,secureLastWrittenRecord:null,secureTimer:0,
   secureState:{tidel_Pl:'[{"id":"fiction-1"}]'},
   enc:new TextEncoder(),
   to64:bytes=>Buffer.from(bytes).toString('base64')
