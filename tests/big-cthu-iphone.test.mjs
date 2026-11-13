@@ -120,3 +120,25 @@ test('Tournée IDEL: une seule entrée officielle chiffrée et accès legacy uni
  assert.match(sw,/'\.\/tournee\.html'/);
  assert.match(sw,/'\.\/tournee-complete\.html'/);
 });
+
+
+test('iPhone V76: guide affiche une seule Tournée officielle et conserve l export historique',async()=>{
+ const guide=await read('installation-iphone.html');
+ assert.match(guide,/Tournée officielle : une seule version chiffrée/);
+ assert.match(guide,/href="\.\/tournee-complete\.html"/);
+ assert.match(guide,/ouvrir uniquement l'ancienne Tournée pour exporter/);
+ assert.match(guide,/Ne supprime jamais l'ancien stockage/);
+ const directLinks=guide.slice(guide.indexOf('const entries=['),guide.indexOf('];',guide.indexOf('const entries=[')));
+ assert.match(directLinks,/\['Tournée complète chiffrée','tournee-complete\.html'\]/);
+ assert.doesNotMatch(directLinks,/Tournée actuelle|tournee\.html/);
+});
+
+test('iPhone V76: état hors ligne informatif sans prétendre synchroniser',async()=>{
+ const guide=await read('installation-iphone.html');
+ assert.match(guide,/id="offlineState"/);
+ assert.match(guide,/navigator\.onLine===false/);
+ assert.match(guide,/addEventListener\('offline',renderNetwork\)/);
+ assert.match(guide,/addEventListener\('online',renderNetwork\)/);
+ assert.match(guide,/seules les pages déjà mises en cache/);
+ assert.doesNotMatch(guide,/synchronisation automatique des patients/);
+});
