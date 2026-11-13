@@ -1993,7 +1993,7 @@ async function lockTourSafely(){
  idleLockBusy=true;
  const button=document.getElementById('tour-lock');
  ap('tour-absence-panel').hidden=true;
- button.disabled=true;button.textContent='Sauvegarde avant verrouillage…';
+ button.disabled=true;button.textContent='Sauvegarde en cours…';
  try{await ensureVaultSaved();saveStatus('saved','Données chiffrées enregistrées sur cet appareil.');button.disabled=false;button.textContent='Sauvegarder';idleLockBusy=false}
  catch(e){
   saveFailure();button.disabled=false;button.textContent='Sauvegarder';
@@ -2036,7 +2036,7 @@ async function login(fileMode){try{
  secureSalt=importedEncrypted?from64(importedEncrypted.salt):full&&!fileMode?from64(JSON.parse(full).salt):crypto.getRandomValues(new Uint8Array(16));
  secureKey=await keyFor(password,secureSalt);
  if(!full){if(importedEncrypted)localStorage.setItem(SECURE_KEY,JSON.stringify(importedEncrypted));else{secureGen++;await flush()}}launch();
- if(typeof indexedDB!=='undefined')rememberDeviceKey(secureKey,secureSalt).catch(()=>{saveStatus('error','Déverrouillage automatique indisponible sur cet appareil : garde ta phrase secrète. Les données restent chiffrées.')});
+ if(typeof indexedDB!=='undefined')rememberDeviceKey(secureKey,secureSalt).catch(()=>{saveStatus('saved','Données chiffrées enregistrées. Accès automatique indisponible : conserve ta phrase secrète.')});
  }catch(err){report('Ouverture impossible : '+(err?.message||'mot de passe ou fichier invalide'))}}
 document.getElementById('tour-open').addEventListener('click',()=>login(false));
 document.getElementById('tour-import').addEventListener('click',()=>login(true));
