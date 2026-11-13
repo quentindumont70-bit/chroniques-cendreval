@@ -51,7 +51,7 @@ test('V78: refus de migration automatique sur coffre existant',async()=>{
  const {html}=await cryptoFixture();
  assert.match(html,/if\(fileMode\)\{\s*if\(full\|\|previous\)throw Error/);
  assert.match(html,/if\(!full\)\{if\(importedEncrypted\)localStorage\.setItem\(SECURE_KEY,JSON\.stringify\(importedEncrypted\)\);else\{secureGen\+\+;await flush\(\)\}\}launch\(\)/);
- assert.match(html,/await ensureVaultSaved\(\);location\.reload\(\)/);
+ assert.match(html,/await ensureVaultSaved\(\);saveStatus\('saved'/);\n assert.doesNotMatch(html,/await ensureVaultSaved\(\);location\.reload\(\)/);
 });
 
 
@@ -75,6 +75,6 @@ test('V84: reprise via pageshow ou focus contrôle immédiatement la session san
  const {html}=await cryptoFixture();
  assert.match(html,/window\.addEventListener\('pageshow',\(\)=>\{if\(secureBooted\)checkTourIdle\(\)\}\)/);
  assert.match(html,/window\.addEventListener\('focus',\(\)=>\{if\(secureBooted\)checkTourIdle\(\)\}\)/);
- assert.match(html,/if\(elapsed>=IDLE_LOCK_MS\)\{lockTourSafely\(\);return\}/);
+ assert.match(html,/if\(elapsed>=IDLE_LOCK_MS\)\{if\(secureKey&&secureGen!==secureSavedGen\)flush\(\)\.catch\(saveFailure\);return\}/);
  assert.match(html,/if\(document\.hidden\)saveIfPending\(\);else checkTourIdle\(\)/);
 });
