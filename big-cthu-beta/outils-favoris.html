@@ -18,6 +18,7 @@ const catalog=[
 {id:'compare',title:'Comparer deux textes',description:'Trouver les différences ligne par ligne',category:'media',tags:'texte diff compare',url:'./outils-atelier.html',icon:'📝'},
 {id:'contrast',title:'Contraste et couleurs',description:'Vérifier un ratio de contraste WCAG',category:'media',tags:'accessibilité palette couleur',url:'./outils-atelier.html',icon:'🎨'},
 {id:'tempo',title:'Métronome et Tap BPM',description:'Clics originaux et mesure du tempo',category:'time',tags:'musique rythme battement',url:'./outils-tempo.html',icon:'🥁'},
+{id:'intervals',title:'Minuteur d’intervalles',description:'Effort, repos et séries pour sport ou concentration',category:'time',tags:'hiit sport intervalle entraînement',url:'./outils-intervalles.html',icon:'⏳'},
 {id:'focus',title:'Concentration et compteur',description:'Minuteur de travail et compteur manuel',category:'time',tags:'focus pomodoro temps compteur',url:'./outils-tempo.html',icon:'🧘'}
 ];
 let fav=[];try{const a=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(a))fav=[...new Set(a.filter(v=>typeof v==='string'&&catalog.some(x=>x.id===v)))].slice(0,30)}catch(e){}
