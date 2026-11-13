@@ -1697,6 +1697,7 @@ async function autoOpenTournee(){
      const state=await decryptWithDeviceKey(saved,device.key);
      if(validVaultState(state)){
       secureState=Object.assign(Object.create(null),state);secureSalt=from64(record.salt);secureKey=device.key;
+      secureLastWrittenRecord=saved;
       launch();
       if(original&&SECURE_KEY===ALTERNATE_KEY)showLegacyRecovery();
       return true;
@@ -1807,13 +1808,16 @@ const TOUR_STORE={
  clear(){secureState=Object.create(null);dirty()},
  flush:()=>flush()
 };
+// Snapshot du dernier coffre confirme dans CET onglet : refuse les ecritures obsoletes.
+var secureLastWrittenRecord=null;
 function saveStatus(state,message){
  const bar=document.getElementById('tour-save-strip');if(!bar)return;
  bar.dataset.state=state;document.getElementById('tour-save-text').textContent=message;
  document.getElementById('tour-save-retry').hidden=state!=='error';
 }
-function saveFailure(){
- saveStatus('error','Sauvegarde impossible : tes modifications ne sont pas garanties sur cet appareil. Ne ferme pas la page. Libère de l’espace, puis réessaie.');
+function saveFailure(error){
+ const conflict=error&&/Conflit de sauvegarde/.test(String(error.message||error));
+ saveStatus('error',conflict?'Conflit de sauvegarde : le coffre a changé dans un autre onglet. Écriture refusée pour ne rien écraser. Garde cette page ouverte et ferme les autres onglets après vérification.':'Sauvegarde impossible : tes modifications ne sont pas garanties sur cet appareil. Ne ferme pas la page. Libère de l’espace, puis réessaie.');
 }
 function dirty(){secureGen++;saveStatus('pending','Chiffrement et enregistrement en cours…');clearTimeout(secureTimer);secureTimer=setTimeout(()=>flush().catch(saveFailure),100)}
 async function flush(){
@@ -1828,8 +1832,10 @@ async function flush(){
    const iv=crypto.getRandomValues(new Uint8Array(12));
    const cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},secureKey,enc.encode(JSON.stringify(secureState)));
    const record=JSON.stringify({v:1,salt:to64(secureSalt),iv:to64(iv),cipher:to64(new Uint8Array(cipher))});
+   if(localStorage.getItem(SECURE_KEY)!==secureLastWrittenRecord)throw Error('Conflit de sauvegarde : coffre modifié dans un autre onglet');
    localStorage.setItem(SECURE_KEY,record);
    if(localStorage.getItem(SECURE_KEY)!==record)throw Error('Le navigateur n’a pas confirmé l’enregistrement chiffré');
+   secureLastWrittenRecord=record;
   }while(last!==secureGen);
   secureSavedGen=last;
   saveStatus('saved','Données chiffrées enregistrées sur cet appareil.');
@@ -2187,7 +2193,8 @@ async function login(fileMode){if(typeof secureBooted!=='undefined'&&secureBoote
  secureState=Object.assign(Object.create(null),state);
  secureSalt=importedEncrypted?from64(importedEncrypted.salt):full&&!fileMode?from64(JSON.parse(full).salt):crypto.getRandomValues(new Uint8Array(16));
  secureKey=await keyFor(password,secureSalt);
- if(!full){if(importedEncrypted)localStorage.setItem(SECURE_KEY,JSON.stringify(importedEncrypted));else{secureGen++;await flush()}}launch();
+ secureLastWrittenRecord=localStorage.getItem(SECURE_KEY);
+ if(!full){if(importedEncrypted){const restored=JSON.stringify(importedEncrypted);localStorage.setItem(SECURE_KEY,restored);secureLastWrittenRecord=restored}else{secureGen++;await flush()}}launch();
  if(typeof indexedDB!=='undefined')rememberDeviceKey(secureKey,secureSalt).catch(()=>{saveStatus('saved','Données chiffrées enregistrées. Accès automatique indisponible : conserve ta phrase secrète.')});
  }catch(err){report('Ouverture impossible : '+(err?.message||'mot de passe ou fichier invalide'))}}
 document.getElementById('tour-open').addEventListener('click',()=>login(false));
