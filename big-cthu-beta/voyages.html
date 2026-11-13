@@ -65,7 +65,7 @@ hr{border:0;border-top:1px solid #4e4264;margin:20px 0}.foot{font-size:12px;colo
 <div class="row"><button type="button" id="searchWeather" class="secondary">Rechercher la ville pour la météo</button><button type="button" id="loadWeather" disabled>Afficher les prévisions</button></div>
 <div id="places" aria-live="polite"></div><div id="forecast" aria-live="polite"></div>
 <p class="foot">Données météo : <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a> (CC BY 4.0, attribution). Connexion nécessaire pour actualiser.</p>
-<hr><h2>🎒 Ma valise</h2><p>Suggestions génériques selon l’activité, complétées par les prévisions réellement disponibles. Tu peux tout cocher et ajouter tes propres éléments.</p>
+<hr><h2>🎒 Ma valise</h2><p>Sélectionne toutes les activités prévues et la personne concernée. Les suggestions tiennent compte de la durée, de l’activité et des prévisions réellement disponibles.</p><div id="packActivities" class="split"></div><label>Valise à préparer pour<select id="packOwner"></select></label><p class="foot">La liste commune et celles de chaque voyageur se cochent indépendamment. Les objets ajoutés sont proposés dans toutes les listes.</p>
 <div id="packItems"></div><form id="packForm" class="row"><input id="packExtra" maxlength="90" placeholder="Ajouter un objet à emporter" aria-label="Nouvel objet à emporter" style="flex:1"><button type="submit">Ajouter</button></form>
 </section>
 </div><p class="foot">Bêta de préparation de voyages · Aucun paiement ni transfert bancaire réalisé · Sauvegarde locale seulement, export général à intégrer au Coffre.</p>
@@ -73,12 +73,12 @@ hr{border:0;border-top:1px solid #4e4264;margin:20px 0}.foot{font-size:12px;colo
 <script src="./voyages-core.js"></script><script>
 (()=>{'use strict';
 const K='big-cthu-v2-trips-v1',C=window.BigCthuVoyages,$=id=>document.getElementById(id);
-let trips=[],selected=null,weather=new Map(),places=[];
+let trips=[],selected=null,weather=new Map(),places=[],packOwner='';
 const elem=(tag,text)=>{const x=document.createElement(tag);if(text!==undefined)x.textContent=text;return x};
 const euro=n=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(n/100);
 const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
 function validDate(v){return /^\d{4}-\d{2}-\d{2}$/.test(v)&&!Number.isNaN(Date.parse(v+'T12:00:00Z'))&&new Date(v+'T12:00:00Z').toISOString().slice(0,10)===v}
-function valid(t){return t&&typeof t.id==='string'&&t.id.length<=120&&typeof t.title==='string'&&t.title.trim().length>0&&t.title.length<=90&&typeof t.city==='string'&&t.city.length>0&&t.city.length<=100&&validDate(t.start)&&validDate(t.end)&&t.end>=t.start&&['plage','ville','randonnee','montagne','neige'].includes(t.activity)&&Array.isArray(t.people)&&t.people.length>=1&&t.people.length<=12&&t.people.every(p=>typeof p==='string'&&p.length>=1&&p.length<=40)&&new Set(t.people).size===t.people.length&&Array.isArray(t.expenses)&&t.expenses.length<=200&&(!t.reimbursements||(Array.isArray(t.reimbursements)&&t.reimbursements.length<=300&&t.reimbursements.every(p=>p&&typeof p.id==='string'&&p.id.length<=120&&Number.isSafeInteger(p.cents)&&p.cents>0&&p.cents<=100000000&&t.people.includes(p.from)&&t.people.includes(p.to)&&p.from!==p.to)))&&(!t.steps||(Array.isArray(t.steps)&&t.steps.length<=150&&t.steps.every(x=>x&&typeof x.id==='string'&&x.id.length<=120&&validDate(x.date)&&x.date>=t.start&&x.date<=t.end&&typeof x.title==='string'&&x.title.trim().length>0&&x.title.length<=120&&['activity','transport','lodging','task'].includes(x.kind)&&typeof x.done==='boolean'))) &&Array.isArray(t.packed)&&t.packed.length<=100&&t.packed.every(p=>typeof p==='string'&&p.length<=90)&&Array.isArray(t.extra)&&t.extra.length<=100&&t.extra.every(p=>typeof p==='string'&&p.length<=90)}
+function valid(t){return t&&typeof t.id==='string'&&t.id.length<=120&&typeof t.title==='string'&&t.title.trim().length>0&&t.title.length<=90&&typeof t.city==='string'&&t.city.length>0&&t.city.length<=100&&validDate(t.start)&&validDate(t.end)&&t.end>=t.start&&['plage','ville','randonnee','montagne','neige'].includes(t.activity)&&Array.isArray(t.people)&&t.people.length>=1&&t.people.length<=12&&t.people.every(p=>typeof p==='string'&&p.length>=1&&p.length<=40)&&new Set(t.people).size===t.people.length&&Array.isArray(t.expenses)&&t.expenses.length<=200&&(!t.reimbursements||(Array.isArray(t.reimbursements)&&t.reimbursements.length<=300&&t.reimbursements.every(p=>p&&typeof p.id==='string'&&p.id.length<=120&&Number.isSafeInteger(p.cents)&&p.cents>0&&p.cents<=100000000&&t.people.includes(p.from)&&t.people.includes(p.to)&&p.from!==p.to)))&&(!t.steps||(Array.isArray(t.steps)&&t.steps.length<=150&&t.steps.every(x=>x&&typeof x.id==='string'&&x.id.length<=120&&validDate(x.date)&&x.date>=t.start&&x.date<=t.end&&typeof x.title==='string'&&x.title.trim().length>0&&x.title.length<=120&&['activity','transport','lodging','task'].includes(x.kind)&&typeof x.done==='boolean'))) &&(!t.activities||(Array.isArray(t.activities)&&t.activities.length>=1&&t.activities.length<=5&&t.activities.every(x=>['plage','ville','randonnee','montagne','neige'].includes(x))&&new Set(t.activities).size===t.activities.length))&&Array.isArray(t.packed)&&t.packed.length<=100&&t.packed.every(p=>typeof p==='string'&&p.length<=90)&&(!t.packedByPerson||(t.packedByPerson&&typeof t.packedByPerson==='object'&&!Array.isArray(t.packedByPerson)&&Object.entries(t.packedByPerson).every(([person,items])=>t.people.includes(person)&&Array.isArray(items)&&items.length<=100&&items.every(x=>typeof x==='string'&&x.length<=90))))&&Array.isArray(t.extra)&&t.extra.length<=100&&t.extra.every(p=>typeof p==='string'&&p.length<=90)}
 try{const source=JSON.parse(localStorage.getItem(K)||'[]');if(Array.isArray(source)){trips=source.filter(valid).filter(t=>{try{C.balances(t);return true}catch(e){return false}}).slice(0,50);selected=trips[0]?.id||null}}catch(e){}
 function save(next){try{localStorage.setItem(K,JSON.stringify(next));trips=next;return true}catch(e){alert('Enregistrement impossible. Aucune modification conservée. Vérifie le stockage local.');return false}}
 function current(){return trips.find(x=>x.id===selected)}
@@ -86,7 +86,7 @@ function edit(fn){const old=current();if(!old)return false;const newTrip=fn(old)
 function addItem(host,title,detail){const n=elem('div');n.className='entry';n.append(elem('strong',title),elem('small',detail));host.append(n);return n}
 function render(){
  const list=$('tripList');list.replaceChildren();
- for(const t of trips){const b=elem('button',t.title+' · '+t.city+' · '+t.start);b.className='listButton';b.type='button';b.setAttribute('aria-pressed',String(t.id===selected));b.addEventListener('click',()=>{selected=t.id;places=[];render()});list.append(b)}
+ for(const t of trips){const b=elem('button',t.title+' · '+t.city+' · '+t.start);b.className='listButton';b.type='button';b.setAttribute('aria-pressed',String(t.id===selected));b.addEventListener('click',()=>{selected=t.id;places=[];packOwner='';render()});list.append(b)}
  if(!trips.length)list.append(elem('p','Aucun voyage. Commence par créer un séjour.'));
  const t=current();$('details').hidden=!t;if(!t)return;
  $('tripTitle').textContent=t.title+' · '+t.city;$('tripMeta').textContent=t.start+' → '+t.end;
@@ -132,12 +132,37 @@ function render(){
  else if(!w)addItem($('forecast'),'Prévisions disponibles à demander','Le service ne sera contacté qu’en cliquant sur les boutons météo.');
  else{addItem($('forecast'),'Prévisions Open-Meteo reçues le '+w.updated,w.label+' · '+(range.complete?'ensemble du séjour':'partie seulement du séjour'));for(const d of w.days)addItem($('forecast'),d.date,d.min+' à '+d.max+' °C · risque de pluie '+d.rain+' %')}
  $('places').replaceChildren();$('loadWeather').disabled=!(t.location&&range.available);
+ const activities=$('packActivities');activities.replaceChildren();
+ const activityLabels={ville:'Ville',plage:'Plage',randonnee:'Randonnée',montagne:'Montagne',neige:'Neige'};
+ for(const [code,labelText] of Object.entries(activityLabels)){
+  const label=elem('label');label.className='check';const cb=elem('input');cb.type='checkbox';cb.value=code;cb.checked=(t.activities||[t.activity]).includes(code);label.append(cb,elem('span',labelText));
+  cb.addEventListener('change',()=>{
+   const previous=t.activities||[t.activity],next=cb.checked?[...new Set([...previous,code])]:previous.filter(v=>v!==code);
+   if(!next.length){cb.checked=true;return alert('Garde au moins une activité pour préparer la valise.')}
+   edit(y=>({...y,activities:next}));
+  });activities.append(label)
+ }
+ const owner=$('packOwner');owner.replaceChildren();if(packOwner&&!t.people.includes(packOwner))packOwner='';
+ for(const name of ['',...t.people]){const option=elem('option',name||'Valise commune');option.value=name;owner.append(option)}
+ owner.value=packOwner;
+ const days=Math.round((Date.parse(t.end+'T12:00:00Z')-Date.parse(t.start+'T12:00:00Z'))/86400000)+1;
  const pack=$('packItems');pack.replaceChildren();
- const recommended=C.packing(t.activity,w?.days||[]);
- for(const name of [...new Set([...recommended,...t.extra])]){const label=elem('label');const cb=elem('input');cb.type='checkbox';cb.checked=t.packed.includes(name);cb.addEventListener('change',()=>edit(y=>({...y,packed:cb.checked?[...new Set([...y.packed,name])]:y.packed.filter(p=>p!==name)})));const text=elem('span',name);if(cb.checked)text.style.textDecoration='line-through';label.append(cb,text);pack.append(label)}
+ const recommended=C.packing(t.activities||[t.activity],w?.days||[],days);
+ const stored=packOwner?(t.packedByPerson&&Object.hasOwn(t.packedByPerson,packOwner)?t.packedByPerson[packOwner]:[]):t.packed;
+ for(const name of [...new Set([...recommended,...t.extra])]){
+  const label=elem('label'),cb=elem('input');cb.type='checkbox';cb.checked=stored.includes(name);
+  cb.addEventListener('change',()=>{
+   edit(y=>{
+    if(!packOwner)return {...y,packed:cb.checked?[...new Set([...y.packed,name])]:y.packed.filter(p=>p!==name)};
+    const previous=y.packedByPerson&&Object.hasOwn(y.packedByPerson,packOwner)?y.packedByPerson[packOwner]:[];
+    return {...y,packedByPerson:{...(y.packedByPerson||{}),[packOwner]:cb.checked?[...new Set([...previous,name])]:previous.filter(v=>v!==name)}};
+   })
+  });
+  const text=elem('span',name);if(cb.checked)text.style.textDecoration='line-through';label.append(cb,text);pack.append(label)
+ }
 }
-$('tripForm').addEventListener('submit',e=>{e.preventDefault();if(trips.length>=50)return alert('Limite de 50 voyages atteinte');const people=$('people').value.split(',').map(s=>s.trim()).filter(Boolean);const trip={id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+'-'+Math.random(),title:$('tripName').value.trim(),city:$('city').value.trim(),start:$('start').value,end:$('end').value,activity:$('activity').value,people,expenses:[],reimbursements:[],steps:[],extra:[],packed:[]};if(!valid(trip))return alert('Vérifie les dates et les voyageurs (12 maximum, pseudonymes différents).');if(save([...trips,trip])){selected=trip.id;$('tripForm').reset();render()}});
-$('deleteTrip').addEventListener('click',()=>{const t=current();if(!t||!confirm('Supprimer définitivement '+t.title+' et toutes ses dépenses ?'))return;if(save(trips.filter(x=>x.id!==t.id))){weather.delete(t.id);selected=trips[0]?.id||null;render()}});
+$('tripForm').addEventListener('submit',e=>{e.preventDefault();if(trips.length>=50)return alert('Limite de 50 voyages atteinte');const people=$('people').value.split(',').map(s=>s.trim()).filter(Boolean);const trip={id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+'-'+Math.random(),title:$('tripName').value.trim(),city:$('city').value.trim(),start:$('start').value,end:$('end').value,activity:$('activity').value,people,expenses:[],reimbursements:[],steps:[],extra:[],packed:[],packedByPerson:{},activities:[$('activity').value]};if(!valid(trip))return alert('Vérifie les dates et les voyageurs (12 maximum, pseudonymes différents).');if(save([...trips,trip])){selected=trip.id;packOwner='';$('tripForm').reset();render()}});
+$('deleteTrip').addEventListener('click',()=>{const t=current();if(!t||!confirm('Supprimer définitivement '+t.title+' et toutes ses dépenses ?'))return;if(save(trips.filter(x=>x.id!==t.id))){weather.delete(t.id);selected=trips[0]?.id||null;packOwner='';render()}});
 function refreshSplitInputs(){
  const mode=$('splitMode').value,visible=mode!=='equal';
  $('splitHint').textContent=mode==='amount'?'Indique la part en euros de chaque personne cochée. Le total doit être égal à la dépense.':mode==='percent'?'Indique le pourcentage de chaque personne cochée : la somme doit être de 100 %.':'À parts égales entre les personnes cochées.';
@@ -156,7 +181,8 @@ $('expenseForm').addEventListener('submit',e=>{e.preventDefault();const t=curren
  const x={id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+'-'+Math.random(),title:$('expenseTitle').value.trim(),cents:amount,payer:$('payer').value,shares};
  if(!x.title||x.title.length>90||!t.people.includes(x.payer))return alert('Dépense invalide');
  if(edit(y=>({...y,expenses:[...y.expenses,x]}))){$('expenseForm').reset();refreshSplitInputs()}}catch(err){alert(err.message)}});
-$('packForm').addEventListener('submit',e=>{e.preventDefault();const word=$('packExtra').value.trim(),t=current();if(!word||word.length>90||!t||t.extra.length>=100)return;edit(y=>({...y,extra:[...new Set([...y.extra,word])]}));$('packExtra').value=''});
+$('packOwner').addEventListener('change',()=>{packOwner=$('packOwner').value;render()});
+$('packForm').addEventListener('submit',e=>{e.preventDefault();const word=$('packExtra').value.trim(),t=current();if(!word||word.length>90||!t||t.extra.length>=100)return;if(edit(y=>({...y,extra:[...new Set([...y.extra,word])]})))$('packExtra').value=''});
 $('searchWeather').addEventListener('click',async()=>{const t=current();if(!t)return;const target=t.id;$('places').textContent='Recherche de destination…';try{const url='https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(t.city)+'&count=5&language=fr&format=json';const response=await fetch(url);if(!response.ok)throw Error('Service géographique indisponible');const out=await response.json();if(current()?.id!==target)return;const host=$('places');host.replaceChildren();const candidates=(out.results||[]).slice(0,5);if(!candidates.length){host.textContent='Ville non trouvée. Essaie le nom principal de la ville.';return}for(const x of candidates){const b=elem('button',[x.name,x.admin1,x.country].filter(Boolean).join(', '));b.type='button';b.className='secondary';b.addEventListener('click',()=>{edit(y=>({...y,location:{lat:x.latitude,lon:x.longitude,label:[x.name,x.country].filter(Boolean).join(', ')}}));$('places').textContent='Destination météo sélectionnée : '+x.name+', '+x.country});host.append(b)}}catch(err){$('places').textContent='Recherche impossible hors ligne ou fournisseur indisponible.'}});
 $('loadWeather').addEventListener('click',async()=>{const t=current();if(!t||!t.location)return;const target=t.id,range=C.windowForTrip(t.start,t.end,today());if(!range.available)return;const host=$('forecast');host.textContent='Actualisation des prévisions…';try{const params=new URLSearchParams({latitude:String(t.location.lat),longitude:String(t.location.lon),daily:'temperature_2m_max,temperature_2m_min,precipitation_probability_max',timezone:'auto',forecast_days:'16'});const response=await fetch('https://api.open-meteo.com/v1/forecast?'+params);if(!response.ok)throw Error('Météo indisponible');const data=await response.json();const daily=data.daily||{},days=[];for(let i=0;i<(daily.time||[]).length;i++){const date=daily.time[i];if(date<range.from||date>range.to)continue;const min=Number(daily.temperature_2m_min?.[i]),max=Number(daily.temperature_2m_max?.[i]),rain=Number(daily.precipitation_probability_max?.[i]);if([min,max,rain].every(Number.isFinite))days.push({date,min:Math.round(min),max:Math.round(max),rain:Math.round(rain)})}if(current()?.id!==target)return;weather.set(target,{days,label:t.location.label,updated:new Date().toLocaleString('fr-FR')});render()}catch(err){if(current()?.id===target)host.textContent='Prévisions momentanément indisponibles. Les listes et dépenses restent utilisables hors ligne.'}});
 render();
