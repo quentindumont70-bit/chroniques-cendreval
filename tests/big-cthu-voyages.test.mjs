@@ -81,8 +81,35 @@ test('Voyages: nouvelle interface étapes et paiements reste liée au coffre',as
  for(const id of ['splitMode','beneficiaries','reimbursements','stepForm','steps']){
    assert.match(page,new RegExp('id="'+id+'"'));
  }
- assert.match(backup,/Schéma V21/);
+ assert.match(backup,/Schéma V22/);
  assert.match(backup,/if\(t\.steps!==undefined/);
  assert.match(backup,/if\(t\.reimbursements!==undefined/);
  assert.match(sw,/voyages-core\.js/);
+});
+
+test('Voyages: plusieurs activités alimentent une valise commune sans doublons',()=>{
+ const result=C.packing(['ville','montagne','ville','plage'],[{min:3,max:17,rain:60}],3);
+ assert.ok(result.includes('Chaussures de ville confortables'));
+ assert.ok(result.includes('Couches chaudes'));
+ assert.ok(result.includes('Maillot de bain'));
+ assert.ok(result.includes('Imperméable ou parapluie'));
+ assert.ok(result.some(x=>x.includes('3 changes')));
+ assert.equal(new Set(result).size,result.length);
+});
+test('Voyages: les séjours longs suggèrent la lessive sans inventer la météo',()=>{
+ const result=C.packing(['randonnee'],[],12);
+ assert.ok(result.some(x=>x.includes('lessive')));
+ assert.equal(result.includes('Veste chaude'),false);
+ assert.equal(result.includes('Imperméable ou parapluie'),false); // La randonnée elle-même contient un vêtement de pluie générique, pas ce libellé météo
+});
+test('Voyages: valises personnalisées et migration Coffre V22 présentes dans la bêta',async()=>{
+ const root=new URL('../big-cthu-beta/',import.meta.url);
+ const [page,backup,sw]=await Promise.all(['voyages.html','sauvegardes.html','sw.js'].map(f=>readFile(new URL(f,root),'utf8')));
+ assert.match(page,/id="packOwner"/);
+ assert.match(page,/id="packActivities"/);
+ assert.match(page,/packedByPerson/);
+ assert.match(backup,/t\.packedByPerson!==undefined/);
+ assert.match(backup,/t\.activities!==undefined/);
+ assert.match(backup,/Schéma V22/);
+ assert.match(sw,/v55/);
 });
