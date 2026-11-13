@@ -70,7 +70,7 @@ test('V79: évite les écritures répétées du coffre déjà enregistré',async
 
 test('V79: sauvegarde en arrière-plan seulement si modifications non encore persistées',async()=>{
  const html=await read();
- assert.match(html,/document\.addEventListener\('visibilitychange',\(\)=>\{if\(document\.hidden\)saveIfPending\(\);else checkTourIdle\(\)\}\)/);
+ assert.match(html,/document\.addEventListener\('visibilitychange',\(\)=>\{if\(document\.hidden\)saveIfPending\(\);else resumeTournee\(\)\}\)/);
  assert.match(html,/window\.addEventListener\('pagehide',saveIfPending\)/);
  assert.match(html,/secureGen!==secureSavedGen/);
  assert.match(html,/secureSavedGen=last/);
@@ -107,7 +107,7 @@ test('V80: une interaction remet à zéro le délai et un retour iPhone vérifie
  assert.match(html,/const IDLE_LOCK_MS=15\*60\*1000/);
  assert.doesNotMatch(html,/if\(elapsed>=IDLE_LOCK_MS\)\{lockTourSafely\(\)/);
  assert.match(html,/for\(const event of \['pointerdown','keydown','input'\]\)/);
- assert.match(html,/if\(document\.hidden\)saveIfPending\(\);else checkTourIdle\(\)/);
+ assert.match(html,/if\(document\.hidden\)saveIfPending\(\);else resumeTournee\(\)/);
 });
 
 test('V98: écriture navigateur non confirmée en relecture = sauvegarde non garantie',async()=>{
