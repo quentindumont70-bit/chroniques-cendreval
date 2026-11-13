@@ -477,7 +477,7 @@ body.tournee-locked #tour-save-strip{display:none}
 <p id="tour-error" role="status"></p>
 <p>Attention : le déverrouillage automatique signifie que toute personne ayant accès à ce navigateur peut ouvrir Tournée. Protège l'accès à ton iPhone. Si un coffre chiffré existe déjà, l'import d'un autre JSON est bloqué pour éviter son écrasement. Les données restent chiffrées dans ce navigateur, mais cette version web n'est pas un hébergement HDS certifié. Conserve ta sauvegarde d'origine et l'application historique pour les soins.</p>
 </section>
-<div id="tour-save-strip" role="status" aria-live="polite" data-state="saved"><span id="tour-save-text">Données chiffrées enregistrées sur cet appareil.</span><span><button type="button" id="tour-save-retry" hidden>Réessayer la sauvegarde</button> <button type="button" id="tour-vault-export">Exporter le coffre chiffré</button> <button type="button" id="tour-absence-open">Absences &amp; modifications</button> <button type="button" id="tour-lock">Sauvegarder</button> <button type="button" id="tour-recovery-launch" hidden>Récupérer mes anciennes données</button></span></div>
+<div id="tour-save-strip" role="status" aria-live="polite" data-state="saved"><span id="tour-save-text">Données chiffrées enregistrées sur cet appareil.</span><span><button type="button" id="tour-save-retry" hidden>Réessayer la sauvegarde</button> <button type="button" id="tour-vault-export">Exporter le coffre chiffré</button> <button type="button" id="tour-absence-open">Absences &amp; modifications</button> <button type="button" id="tour-lock">Sauvegarder</button> <button type="button" id="tour-recovery-launch">Récupérer mes anciennes données</button></span></div>
 <section id="tour-absence-panel" hidden aria-label="Absences et modifications de Tournée">
 <div class="ap-inner">
 <div class="ap-closebar"><button id="ap-close" type="button">← Retour à Tournée</button><span class="ap-caption">Journal local chiffré</span></div>
@@ -1723,29 +1723,46 @@ function showLegacyRecovery(){
  button.hidden=false;
  saveStatus('saved','Tournée ouverte directement. Une ancienne sauvegarde chiffrée existe aussi sur cet appareil : récupération facultative.');
 }
+function recoverySpaceEmpty(state){
+ try{
+  if(!state||typeof state!=='object'||!Array.isArray(JSON.parse(state.tidel_Pl||'null')))return false;
+  return Object.entries(state).every(([key,value])=>{
+   if(key==='tidel_Pl')return JSON.parse(value).length===0;
+   if(!key.startsWith('tidel_'))return true;
+   return value==='[]'||value==='{}'||value===''||value==='null';
+  });
+ }catch(e){return false}
+}
 async function recoverOldVault(fileMode){
  try{
+  if(!recoverySpaceEmpty(secureState))throw Error('Tournée contient déjà des données. Récupération bloquée pour ne rien écraser.');
   const password=document.getElementById('tour-pass').value;
-  if(password.length<12)throw Error('Cette ancienne sauvegarde était chiffrée avec une phrase secrète. Elle est indispensable uniquement pour la récupérer.');
-  const existing=JSON.parse(secureState.tidel_Pl||'[]');
-  if(existing.length||JSON.parse(secureState.tidel_absences_journal_v1||'[]').length)throw Error('Une tournée est déjà présente ici : récupération arrêtée pour ne pas écraser des données.');
   let state;
   if(fileMode){
    const file=document.getElementById('tour-file').files[0];
    if(!file||file.size>25*1024*1024)throw Error('Fichier absent ou trop volumineux.');
    const candidate=JSON.parse(await file.text());
-   state=isEncryptedVaultRecord(candidate)?await decryptRecord(JSON.stringify(candidate),password):fillFromBackup(candidate);
+   if(isEncryptedVaultRecord(candidate)){
+    if(password.length<12)throw Error('Ce fichier avait une ancienne phrase secrète : saisis-la uniquement pour récupérer ce fichier.');
+    state=await decryptRecord(JSON.stringify(candidate),password);
+   }else state=fillFromBackup(candidate);
   }else{
+   if(password.length<12)throw Error('Cet ancien coffre était chiffré : sa phrase secrète est nécessaire uniquement pour récupérer ses données.');
    const old=localStorage.getItem(ORIGINAL_KEY),previous=localStorage.getItem(PREVIOUS_KEY);
    if(old&&SECURE_KEY!==ORIGINAL_KEY)state=await decryptRecord(old,password);
    else if(previous){const saved=await decryptRecord(previous,password);state=fillFromBackup(saved.data)}
-   else throw Error('Aucun ancien coffre différent à récupérer.');
+   else throw Error('Aucun ancien coffre local à récupérer. Tu peux sélectionner un fichier JSON ci-dessus.');
   }
   if(!validVaultState(state))throw Error('Sauvegarde incompatible. Aucun changement.');
+  const previousState=secureState;
   secureState=Object.assign(Object.create(null),state);secureGen++;
-  await ensureVaultSaved();
+  try{await ensureVaultSaved()}
+  catch(e){
+   secureState=previousState;secureGen++;
+   saveFailure();
+   throw Error('Enregistrement de la restauration impossible. Ancien coffre et contenu actuel conservés.');
+  }
   document.getElementById('tour-security-gate').hidden=true;
-  document.getElementById('tour-recovery-launch').hidden=true;
   saveStatus('saved','Anciennes données récupérées et enregistrées. Aucun coffre original supprimé.');
   location.reload();
  }catch(e){report(e.message||'Récupération impossible : ancien coffre conservé.')}
