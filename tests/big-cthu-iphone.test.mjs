@@ -102,15 +102,21 @@ test('iPhone: aucune ressource distante requise pour le shell public',async()=>{
  assert.match(sw,/origin!==self\.location\.origin/);
 });
 
-test('Tournée IDEL: le cockpit ouvre la page principale locale sans données patient',async()=>{
- const [home,tour,sw]=await Promise.all([read('index.html'),read('tournee.html'),read('sw.js')]);
- assert.ok(home.includes("b.href='./tournee.html'"),'le cockpit doit ouvrir Tournée locale');
+test('Tournée IDEL: une seule entrée officielle chiffrée et accès legacy uniquement pour exporter',async()=>{
+ const [home,legacy,secure,sw]=await Promise.all([read('index.html'),read('tournee.html'),read('tournee-complete.html'),read('sw.js')]);
+ assert.match(home,/b\.href='\.\/tournee-complete\.html'/);
+ assert.match(home,/id="openTourneeSecure"/);
+ assert.doesNotMatch(home,/id="openTourneeCurrent"/);
+ assert.match(home,/id="tourneeLegacyExport"/);
+ assert.match(home,/href="\.\/tournee\.html" id="tourneeLegacyExport"/);
+ assert.match(home,/\['tour','Tournée \(chiffrée\)','tournee-complete\.html'\]/);
+ assert.match(home,/id==='tourfull'\?'tour':id/);
  assert.doesNotMatch(home,/claude\.ai\/artifact/);
- assert.match(tour,/<main id="app"><\/main>/);
- assert.match(tour,/nav class="tabs"/);
- assert.match(tour,/function importAll\(inp\)/);
- assert.doesNotMatch(tour,/tour-security-gate|Phrase secrète \(12 caractères/);
- assert.doesNotMatch(tour,/HERCE Toulio|BOUCHARD Lucienne|REILLE Christiane/);
+ assert.match(legacy,/<main id="app"><\/main>/);
+ assert.match(legacy,/function importAll\(inp\)/);
+ assert.match(secure,/tour-security-gate/);
+ assert.match(secure,/AES-GCM/);
  assert.match(sw,/big-cthu-public-v2-v\d+/);
  assert.match(sw,/'\.\/tournee\.html'/);
+ assert.match(sw,/'\.\/tournee-complete\.html'/);
 });
