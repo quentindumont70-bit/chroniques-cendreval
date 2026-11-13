@@ -6,7 +6,7 @@ import {webcrypto} from 'node:crypto';
 
 async function cryptoFixture(){
  const html=await readFile(new URL('../big-cthu-beta/tournee-complete.html',import.meta.url),'utf8');
- const start=html.indexOf('const SECURE_KEY=');
+ const start=html.indexOf('const ORIGINAL_KEY=');
  const end=html.indexOf('function fillFromBackup(d){',start);
  assert.ok(start>0&&end>start,'same crypto implementation as the browser');
  const ctx={crypto:webcrypto,TextEncoder,TextDecoder,Uint8Array,btoa,atob};
