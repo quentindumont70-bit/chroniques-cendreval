@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#100e22"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Big Cthu">
+<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml">
+<title>Installer Big Cthu sur iPhone · Guide autonome</title>
+<style>
+:root{font-family:system-ui,-apple-system,sans-serif;background:#100e22;color:#faf6ff;color-scheme:dark}*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 85% 0,#403073,transparent 45%),#100e22;min-height:100vh}
+main{max-width:900px;margin:auto;padding:20px 16px calc(48px + env(safe-area-inset-bottom,0px))}
+a{color:#c6b4ff}h1{font-size:clamp(29px,6vw,44px);line-height:1.13;margin:24px 0 12px}h2{font-size:21px;margin:0 0 14px}h3{font-size:16px;margin:0}
+p{color:#ccc5dc;line-height:1.62}.box{background:#221d37;border:1px solid #5a4a78;border-radius:19px;padding:20px;margin:15px 0}
+.notice{background:#173734;border:1px solid #428479;border-radius:14px;padding:15px;color:#cdf6ec;line-height:1.62;font-size:14px}
+.warning{background:#3b2b38;border:1px solid #906077;color:#ffe2df}
+.steps{margin:0;padding-left:25px}.steps li{padding:7px 0;line-height:1.55}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}
+button{font:inherit;background:#8060d8;border:0;color:#fff;border-radius:12px;cursor:pointer;padding:11px 15px;min-height:44px}
+button.secondary{background:#352c4e;border:1px solid #766797}
+button:focus-visible,a:focus-visible{outline:3px solid #9cf1e0;outline-offset:3px}
+.url{font:12px/1.5 ui-monospace,monospace;word-break:break-all;color:#d7d0e8}
+.item{padding:13px 0;border-top:1px solid #514266}.item:first-child{border-top:0}
+.item h3{margin:0 0 3px}.muted{font-size:13px}.status{min-height:22px;color:#a4e8d9}
+@media(max-width:600px){.box{padding:16px}.row{align-items:stretch}.row button{flex:1}}
+</style></head><body><main>
+<a href="./index.html">← Retour au cockpit</a>
+<h1>📱 Big Cthu sur iPhone</h1>
+<p>Un raccourci qui ouvre tes outils directement depuis l'écran d'accueil, sans ChatGPT, Claude, Work, Codex ou compte d'IA. Le site statique est hébergé par GitHub Pages ; la météo de Voyages reste facultative et utilise un fournisseur externe uniquement à ta demande.</p>
+<div class="notice"><strong>Configuration recommandée : une seule icône Big Cthu.</strong> Tu ouvres ensuite Budget, Voyages, Cantine, Maison et les autres tentacules depuis le cockpit. Cela évite de multiplier les applications web avec des stockages locaux potentiellement distincts.</div>
+<section class="box">
+<h2>Installer l'icône principale</h2>
+<ol class="steps">
+<li>Sur l'iPhone, ouvre <strong>Safari</strong> et le lien du cockpit ci-dessous (pas le navigateur intégré d'une autre app).</li>
+<li>Appuie sur <strong>Partager</strong> puis sur <strong>Sur l'écran d'accueil</strong>.</li>
+<li>Active <strong>« Ouvrir comme app web »</strong> si cette option apparaît, puis touche <strong>Ajouter</strong>.</li>
+<li>Ouvre l'icône « Big Cthu ». Toutes les tentacules sont accessibles depuis le cockpit.</li>
+</ol>
+<div class="row"><a href="./index.html">Ouvrir le cockpit</a><button id="copyMain" type="button">Copier l'adresse principale</button></div>
+<div class="url" id="mainUrl"></div><p id="copyStatus" class="status" role="status" aria-live="polite"></p>
+</section>
+<section class="box">
+<h2>Avant de supprimer les anciens raccourcis</h2>
+<div class="notice warning"><strong>Attention aux données :</strong> Safari, une app ajoutée à l'écran d'accueil et une app créée depuis un autre raccourci peuvent utiliser des stockages séparés, même lorsque le site paraît identique. Créer une icône n'importe pas automatiquement les données de l'ancienne.</div>
+<ol class="steps">
+<li>Ouvre chaque ancienne app contenant des informations à conserver et cherche sa fonction d'export ou de sauvegarde.</li>
+<li>Conserve les fichiers exportés dans un emplacement privé, par exemple l'app Fichiers, sans données sensibles.</li>
+<li>Ouvre le nouveau Big Cthu, puis le <a href="./sauvegardes.html">Coffre de sauvegardes</a>. Importe uniquement les formats explicitement compatibles. Les sauvegardes provenant d'une autre app ne sont pas migrées automatiquement.</li>
+<li>Vérifie que tes éléments sont bien visibles et modifiables dans l'app installée. <strong>Garde les anciens raccourcis tant que ce contrôle n'est pas terminé.</strong></li>
+</ol>
+<p class="muted">Les données Big Cthu sont locales : pas de sauvegarde dans un cloud Big Cthu, pas de synchronisation automatique entre appareils. Ne stocke pas de données de patients ni d'informations sensibles dans cette bêta.</p>
+</section>
+<section class="box">
+<h2>Vérification sur cet appareil</h2>
+<p id="appMode" class="muted" role="status">Mode d'ouverture à déterminer.</p>
+<p>Ce bouton teste uniquement l'enregistrement local d'une valeur fictive, puis l'efface. Il ne lit aucune de tes données personnelles.</p>
+<button id="testStorage" type="button" class="secondary">Tester le stockage local</button>
+<p id="storageState" class="status" role="status" aria-live="polite"></p>
+</section>
+<section class="box"><h2>Accès directs aux tentacules</h2>
+<p>Ces liens peuvent s'ouvrir dans Safari. Pour conserver les données au même endroit, utilise normalement l'icône principale puis la navigation interne.</p>
+<div id="modules"></div></section>
+<section class="box"><h2>Réseau, mises à jour et autonomie</h2>
+<p>Après une première ouverture en ligne et la mise en cache, les pages publiques déjà téléchargées peuvent rester accessibles sans réseau. Les prévisions météo ne sont pas disponibles hors ligne, et les données saisies ne quittent pas cet appareil, sauf téléchargement de sauvegarde ou appel externe demandé.</p>
+<p>Les nouvelles versions arrivent depuis GitHub Pages, sans intervention d'une IA. Lorsque le cockpit détecte une mise à jour, il propose un rafraîchissement. L'iPhone reste susceptible de supprimer des données locales sous certaines conditions : <strong>exporte régulièrement le Coffre</strong>.</p>
+<p class="muted">Cette bêta n'est pas encore un produit destiné au traitement de données professionnelles ou médicales. Les éléments de Tournée/Topaze ne sont pas intégrés dans ce site public.</p>
+</section>
+</main><script>
+(()=>{'use strict';
+const base=new URL('./',location.href);
+const entries=[
+ ['Cockpit','index.html'],['Budget','budget.html'],['Voyages','voyages.html'],['Cantine et repas','cantine.html'],
+ ['Planificateur de repas','repas.html'],['Agenda','agenda.html'],['Maison','maison.html'],
+ ['Passions','passions.html'],['Coffre de sauvegardes','sauvegardes.html']
+];
+const mainUrl=new URL('index.html',base).href;
+document.getElementById('mainUrl').textContent=mainUrl;
+const installed=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+document.getElementById('appMode').textContent=installed?'Mode application web détecté. Le stockage peut être distinct de Safari.':'Mode navigateur détecté. Tu peux installer l’icône depuis Safari.';
+document.getElementById('testStorage').addEventListener('click',()=>{
+ const key='big-cthu-iphone-storage-test';
+ try{localStorage.setItem(key,'test');if(localStorage.getItem(key)!=='test')throw Error('Lecture impossible');localStorage.removeItem(key);
+ document.getElementById('storageState').textContent='Test réussi : enregistrement local disponible dans cet environnement. Pense à sauvegarder le Coffre régulièrement.'}
+ catch(e){document.getElementById('storageState').textContent='Enregistrement local indisponible ici. Vérifie les réglages de Safari et n’y saisis pas encore de données à conserver.'}
+});
+async function copy(url){
+ try{if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(url);
+ else{const tmp=document.createElement('textarea');tmp.value=url;tmp.style.position='fixed';tmp.style.opacity='0';document.body.append(tmp);tmp.select();if(!document.execCommand('copy'))throw Error('Copie non prise en charge');tmp.remove()}
+ document.getElementById('copyStatus').textContent='Adresse copiée.'}
+ catch(e){document.getElementById('copyStatus').textContent='Copie non disponible : maintiens le doigt sur l’adresse pour la sélectionner.'}
+}
+document.getElementById('copyMain').addEventListener('click',()=>copy(mainUrl));
+const host=document.getElementById('modules');
+for(const [label,path] of entries){
+ const item=document.createElement('div');item.className='item';
+ const title=document.createElement('h3');title.textContent=label;
+ const row=document.createElement('div');row.className='row';
+ const link=document.createElement('a');link.href='./'+path;link.textContent='Ouvrir '+label;
+ const button=document.createElement('button');button.className='secondary';button.type='button';button.textContent='Copier';button.addEventListener('click',()=>copy(new URL(path,base).href));
+ row.append(link,button);item.append(title,row);host.append(item)
+}
+if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./sw.js').catch(()=>{});
+})();
+</script></body></html>
