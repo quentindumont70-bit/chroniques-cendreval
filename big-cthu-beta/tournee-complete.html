@@ -453,6 +453,8 @@ body.tournee-locked #tour-save-strip{display:none}
 #tour-absence-panel .ap-entry button{margin:5px 8px 5px 0}
 #tour-absence-panel .ap-entry input,#tour-absence-panel .ap-entry select{margin:6px 0 12px}
 #tour-absence-panel .ap-caption{font-size:13px;color:#d6cbe9}
+#tour-absence-panel .ap-shortcuts{display:flex;gap:9px;flex-wrap:wrap;margin:9px 0 14px}
+#tour-absence-panel .ap-shortcuts button{flex:1 1 130px}
 #tour-absence-panel #ap-topaze-note{white-space:pre-wrap;background:#151329;border:1px solid #655680;border-radius:12px;padding:12px;overflow-wrap:anywhere}
 @media(max-width:600px){#tour-absence-panel .ap-grid,#tour-absence-panel #ap-period-report{grid-template-columns:1fr}#tour-absence-panel .ap-inner{padding:13px}#tour-absence-panel button{width:100%}#tour-absence-panel .ap-closebar button{width:auto}#tour-absence-panel .ap-entry{padding:11px}}
 </style>
@@ -487,6 +489,7 @@ body.tournee-locked #tour-save-strip{display:none}
 <button type="submit">Enregistrer au coffre</button>
 </form>
 <h3>Historique et filtres</h3>
+<div class="ap-shortcuts" role="group" aria-label="Période du journal"><button type="button" id="ap-today">Aujourd’hui</button><button type="button" id="ap-week">Cette semaine</button><button type="button" id="ap-clear">Effacer les filtres</button></div>
 <div class="ap-grid">
 <label>Du<input id="ap-from" type="date"></label><label>Au<input id="ap-to" type="date"></label>
 <label>Motif<select id="ap-filter-reason"><option value="">Tous les motifs</option><option>Patient absent</option><option>Soin non réalisé</option><option>Horaire modifié</option><option>Autre</option></select></label>
@@ -1731,6 +1734,16 @@ function absenceWeekStart(day){
  date.setUTCDate(date.getUTCDate()-(date.getUTCDay()+6)%7);
  return date.toISOString().slice(0,10);
 }
+function absenceQuickRange(today,mode){
+ if(!absenceDateOK(today))return {from:'',to:''};
+ if(mode==='today')return {from:today,to:today};
+ if(mode==='week'){
+  const from=absenceWeekStart(today),sunday=new Date(from+'T12:00:00Z');
+  sunday.setUTCDate(sunday.getUTCDate()+6);
+  return {from,to:sunday.toISOString().slice(0,10)};
+ }
+ return {from:'',to:''};
+}
 function absencePeriodRows(rows,{from='',to='',reason='',sync=''}={}){
  if((from&&!absenceDateOK(from))||(to&&!absenceDateOK(to))||(from&&to&&from>to))return [];
  return rows.filter(x=>absenceDateOK(x.day)&&(!from||x.day>=from)&&(!to||x.day<=to)&&(!reason||x.reason===reason)&&(!sync||x.sync===sync));
@@ -1866,6 +1879,22 @@ ap('tour-absence-open').addEventListener('click',()=>{
 });
 ap('ap-close').addEventListener('click',()=>{ap('tour-absence-panel').hidden=true;noteTourActivity()});
 for(const id of ['ap-from','ap-to','ap-filter-reason','ap-filter-state','ap-filter-cancelled'])ap(id).addEventListener('change',absenceRender);
+function absenceTodayLocal(){
+ const date=new Date();
+ return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+}
+function absenceSetQuickRange(mode){
+ const dates=absenceQuickRange(absenceTodayLocal(),mode);
+ ap('ap-from').value=dates.from;ap('ap-to').value=dates.to;
+ if(mode==='clear'){
+  for(const id of ['ap-filter-reason','ap-filter-state'])ap(id).value='';
+  ap('ap-filter-cancelled').value='active';
+ }
+ absenceRender();noteTourActivity();
+}
+for(const [button,mode] of [['ap-today','today'],['ap-week','week'],['ap-clear','clear']]){
+ ap(button).addEventListener('click',()=>absenceSetQuickRange(mode));
+}
 ap('ap-copy-summary').addEventListener('click',async()=>{
  const rows=absenceRead();if(!rows)return;
  const filters={from:ap('ap-from').value,to:ap('ap-to').value,reason:ap('ap-filter-reason').value,sync:ap('ap-filter-state').value};

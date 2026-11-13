@@ -11,7 +11,7 @@ async function fixture(){
  assert.ok(start>0&&end>start,'journal summary helpers present');
  const context={Date,Map,Object,Array,JSON};
  runInNewContext(html.slice(start,end)+
- '\nthis.report=absencePeriodReport;this.filter=absencePeriodRows;this.topaze=absenceTopazeText;this.week=absenceWeekStart;',context,{timeout:1000});
+ '\nthis.report=absencePeriodReport;this.filter=absencePeriodRows;this.topaze=absenceTopazeText;this.week=absenceWeekStart;this.quick=absenceQuickRange;',context,{timeout:1000});
  return {context,html};
 }
 const item=(id,day,reason='Patient absent',sync='À rapprocher',cancelled=false)=>({
@@ -76,4 +76,25 @@ test('V90: commande iPhone et éléments de synthèse disposent de grandes zones
  assert.match(html,/@media\(max-width:600px\)\{#tour-absence-panel \.ap-grid,#tour-absence-panel #ap-period-report\{grid-template-columns:1fr/);
  assert.match(html,/id="ap-topaze-note"/);
  assert.match(html,/id="ap-period-report"/);
+});
+
+test('V91: raccourcis jour et semaine utilisent la date locale sans décalage UTC',async()=>{
+ const {context}=await fixture();
+ assert.deepEqual(JSON.parse(JSON.stringify(context.quick('2026-11-13','today'))),{from:'2026-11-13',to:'2026-11-13'});
+ assert.deepEqual(JSON.parse(JSON.stringify(context.quick('2026-11-13','week'))),{from:'2026-11-09',to:'2026-11-15'});
+ assert.deepEqual(JSON.parse(JSON.stringify(context.quick('2026-11-15','week'))),{from:'2026-11-09',to:'2026-11-15'});
+ assert.deepEqual(JSON.parse(JSON.stringify(context.quick('2026-11-16','week'))),{from:'2026-11-16',to:'2026-11-22'});
+ assert.deepEqual(JSON.parse(JSON.stringify(context.quick('mauvais','week'))),{from:'',to:''});
+ assert.deepEqual(JSON.parse(JSON.stringify(context.quick('2026-11-13','clear'))),{from:'',to:''});
+});
+
+test('V91: raccourcis tactile ne modifient ni dossiers ni stockage lors du filtrage',async()=>{
+ const html=await source();
+ for(const id of ['ap-today','ap-week','ap-clear'])assert.match(html,new RegExp('id="'+id+'"'));
+ assert.match(html,/function absenceSetQuickRange\(mode\)/);
+ assert.match(html,/ap\('ap-from'\)\.value=dates\.from;ap\('ap-to'\)\.value=dates\.to/);
+ assert.match(html,/absenceRender\(\);noteTourActivity\(\)/);
+ assert.match(html,/\.ap-shortcuts\{display:flex/);
+ const filters=html.slice(html.indexOf('function absenceTodayLocal(){'),html.indexOf("ap('ap-copy-summary').addEventListener"));
+ assert.doesNotMatch(filters,/localStorage|TOUR_STORE|fetch\(|XMLHttpRequest|topaze\.fr/i);
 });
