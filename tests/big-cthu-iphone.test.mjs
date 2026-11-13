@@ -45,7 +45,7 @@ test('iPhone: les principales tentacules portent le même manifeste et activent 
 
 test('iPhone: le service worker contient les ressources publiques requises',async()=>{
  const sw=await read('sw.js');
- assert.match(sw,/public-v2-v57/);
+ assert.match(sw,/const CACHE='big-cthu-public-v2-v\d+'/);
  assert.match(sw,/ignoreSearch:true/);
  const assets=sw.match(/const ASSETS=\[([\s\S]*?)\];/)[1];
  const names=[...assets.matchAll(/'\.\/([^']+)'/g)].map(x=>x[1]);
