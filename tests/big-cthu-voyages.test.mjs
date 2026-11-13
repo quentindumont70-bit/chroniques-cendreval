@@ -127,7 +127,7 @@ test('Voyages: export CSV traite les montants, remboursements et soldes',()=>{
 test('Voyages: export CSV échappe les champs et neutralise les formules dangereuses',()=>{
  const trip={people:['Alice','Bob'],expenses:[{date:'',title:'=HYPERLINK("danger")',payer:'Alice',cents:100,shares:{Alice:50,Bob:50}}],reimbursements:[]};
  const csv=C.exportTripCsv(trip);
- assert.ok(csv.includes('"'=HYPERLINK(""danger"")"'));
+ assert.ok(csv.includes("\"'=HYPERLINK(\"\"danger\"\")\""));
  assert.match(csv,/\r\n/);
 });
 test('Voyages: la page conserve les dates facultatives et un export CSV local',async()=>{
