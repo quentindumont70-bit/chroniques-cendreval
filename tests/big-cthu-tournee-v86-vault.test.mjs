@@ -89,3 +89,12 @@ test('V86: export et verrouillage attendent toutes les écritures en cours',asyn
  assert.equal(attempts,2);
  assert.match(html,/await ensureVaultSaved\(\);location\.reload\(\)/);
 });
+
+
+test('V86: guide iPhone distingue coffre intégral chiffré, JSON classique et données locales',async()=>{
+ const guide=await readFile(new URL('../big-cthu-beta/installation-iphone.html',import.meta.url),'utf8');
+ assert.match(guide,/Exporter le coffre chiffré/);
+ assert.match(guide,/Le JSON classique de Tournée n’inclut pas ce journal/);
+ assert.match(guide,/avant<\/strong> de supprimer un ancien raccourci/);
+ assert.match(guide,/Coffre général/);
+});
