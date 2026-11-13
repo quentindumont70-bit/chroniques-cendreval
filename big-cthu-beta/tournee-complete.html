@@ -2006,7 +2006,7 @@ async function lockTourSafely(){
 function checkTourIdle(){
  if(!secureBooted||idleLockBusy||document.hidden)return;
  const elapsed=Date.now()-lastTourActivity;
- if(elapsed>=IDLE_LOCK_MS){saveIfPending();return}
+ if(elapsed>=IDLE_LOCK_MS){if(secureKey&&secureGen!==secureSavedGen)flush().catch(saveFailure);return}
  clearTimeout(idleLockTimer);
  idleLockTimer=setTimeout(checkTourIdle,IDLE_LOCK_MS-elapsed);
 }
