@@ -133,12 +133,29 @@ function packing(activity,forecast,durationDays=0){
  if(Array.isArray(forecast)&&forecast.some(d=>Number(d.max)>=27))list.push('Vêtements légers et protection solaire');
  return [...new Set(list)];
 }
+function packingChecklist(trip,person='',forecast=[]){
+ if(!trip||!Array.isArray(trip.people)||person&&!trip.people.includes(person))throw Error('Voyageur invalide');
+ const start=Date.parse(trip.start+'T12:00:00Z'),end=Date.parse(trip.end+'T12:00:00Z');
+ if(!Number.isFinite(start)||!Number.isFinite(end)||end<start)throw Error('Dates du séjour invalides');
+ const duration=Math.round((end-start)/86400000)+1;
+ const recommended=packing(trip.activities||[trip.activity],forecast,duration);
+ const list=[...new Set([...recommended,...(trip.extra||[])])];
+ const checked=person?(trip.packedByPerson?.[person]||[]):(trip.packed||[]);
+ return {items:list.map(title=>({title,checked:checked.includes(title)})),done:list.filter(title=>checked.includes(title)).length,total:list.length};
+}
+function packingText(trip,person='',forecast=[]){
+ const summary=packingChecklist(trip,person,forecast);
+ const label=person||'Valise commune';
+ const lines=[trip.title+' — '+label,trip.start+' → '+trip.end,'Préparé : '+summary.done+'/'+summary.total,''];
+ for(const item of summary.items)lines.push((item.checked?'[x] ':'[ ] ')+item.title);
+ return lines.join('\n')+'\n';
+}
 function windowForTrip(start,end,today){
  if(!/^\d{4}-\d\d-\d\d$/.test(start)||!/^\d{4}-\d\d-\d\d$/.test(end)||end<start)throw Error('Dates du voyage invalides');
  const startToday=new Date(today+'T12:00:00Z'),last=new Date(startToday.getTime()+15*86400000).toISOString().slice(0,10);
  return {available:start<=last&&end>=today,from:start<today?today:start,to:end>last?last:end,complete:start>=today&&end<=last,horizon:last};
 }
-const api={cents,budgetProgress,updateExpenseDetails,splitEqual,splitAmounts,splitPercentages,balances,transfers,exportTripCsv,packing,windowForTrip};
+const api={cents,budgetProgress,updateExpenseDetails,packingChecklist,packingText,splitEqual,splitAmounts,splitPercentages,balances,transfers,exportTripCsv,packing,windowForTrip};
 if(typeof module==='object'&&module.exports)module.exports=api;
 else root.BigCthuVoyages=api;
 })(typeof window!=='undefined'?window:{});

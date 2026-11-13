@@ -74,7 +74,9 @@ hr{border:0;border-top:1px solid #4e4264;margin:20px 0}.foot{font-size:12px;colo
 <div id="places" aria-live="polite"></div><div id="forecast" aria-live="polite"></div>
 <p class="foot">Données météo : <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a> (CC BY 4.0, attribution). Connexion nécessaire pour actualiser.</p>
 <hr><h2>🎒 Ma valise</h2><p>Sélectionne toutes les activités prévues et la personne concernée. Les suggestions tiennent compte de la durée, de l’activité et des prévisions réellement disponibles.</p><div id="packActivities" class="split"></div><label>Valise à préparer pour<select id="packOwner"></select></label><p class="foot">La liste commune et celles de chaque voyageur se cochent indépendamment. Les objets ajoutés sont proposés dans toutes les listes.</p>
-<div id="packItems"></div><form id="packForm" class="row"><input id="packExtra" maxlength="90" placeholder="Ajouter un objet à emporter" aria-label="Nouvel objet à emporter" style="flex:1"><button type="submit">Ajouter</button></form>
+<p id="packProgress" class="foot" role="status" aria-live="polite"></p>
+<div id="packItems"></div><button id="packExport" type="button" class="secondary">Exporter cette valise (TXT)</button>
+<form id="packForm" class="row"><input id="packExtra" maxlength="90" placeholder="Ajouter un objet à emporter" aria-label="Nouvel objet à emporter" style="flex:1"><button type="submit">Ajouter</button></form>
 </section>
 </div><p class="foot">Bêta de préparation de voyages · Aucun paiement ni transfert bancaire réalisé · Sauvegarde locale seulement, export général à intégrer au Coffre.</p>
 </main>
@@ -183,7 +185,9 @@ function render(){
  owner.value=packOwner;
  const days=Math.round((Date.parse(t.end+'T12:00:00Z')-Date.parse(t.start+'T12:00:00Z'))/86400000)+1;
  const pack=$('packItems');pack.replaceChildren();
- const recommended=C.packing(t.activities||[t.activity],w?.days||[],days);
+ const checklist=C.packingChecklist(t,packOwner,w?.days||[]);
+ const recommended=checklist.items.map(item=>item.title);
+ $('packProgress').textContent=(packOwner||'Valise commune')+' : '+checklist.done+'/'+checklist.total+' éléments préparés.';
  const stored=packOwner?(t.packedByPerson&&Object.hasOwn(t.packedByPerson,packOwner)?t.packedByPerson[packOwner]:[]):t.packed;
  for(const name of [...new Set([...recommended,...t.extra])]){
   const label=elem('label'),cb=elem('input');cb.type='checkbox';cb.checked=stored.includes(name);
@@ -233,6 +237,16 @@ $('exportTrip').addEventListener('click',()=>{
   a.href=url;a.download='voyage-'+t.title.normalize('NFD').replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,50)+'.csv';
   a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
  }catch(e){alert('Export impossible : '+e.message)}
+});
+$('packExport').addEventListener('click',()=>{
+ const t=current();if(!t)return;
+ try{
+  const text=C.packingText(t,packOwner,weather.get(t.id)?.days||[]);
+  const url=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'}));
+  const a=elem('a');a.href=url;
+  a.download='valise-'+t.title.normalize('NFD').replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,42)+(packOwner?'-'+packOwner.replace(/[^a-zA-Z0-9_-]/g,'-'):'-commune')+'.txt';
+  a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ }catch(err){alert('Export de la valise impossible : '+err.message)}
 });
 $('packForm').addEventListener('submit',e=>{e.preventDefault();const word=$('packExtra').value.trim(),t=current();if(!word||word.length>90||!t||t.extra.length>=100)return;if(edit(y=>({...y,extra:[...new Set([...y.extra,word])]})))$('packExtra').value=''});
 $('searchWeather').addEventListener('click',async()=>{const t=current();if(!t)return;const target=t.id;$('places').textContent='Recherche de destination…';try{const url='https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(t.city)+'&count=5&language=fr&format=json';const response=await fetch(url);if(!response.ok)throw Error('Service géographique indisponible');const out=await response.json();if(current()?.id!==target)return;const host=$('places');host.replaceChildren();const candidates=(out.results||[]).slice(0,5);if(!candidates.length){host.textContent='Ville non trouvée. Essaie le nom principal de la ville.';return}for(const x of candidates){const b=elem('button',[x.name,x.admin1,x.country].filter(Boolean).join(', '));b.type='button';b.className='secondary';b.addEventListener('click',()=>{edit(y=>({...y,location:{lat:x.latitude,lon:x.longitude,label:[x.name,x.country].filter(Boolean).join(', ')}}));$('places').textContent='Destination météo sélectionnée : '+x.name+', '+x.country});host.append(b)}}catch(err){$('places').textContent='Recherche impossible hors ligne ou fournisseur indisponible.'}});
