@@ -15,10 +15,28 @@ body[data-profile="steph"] .primary{background:#347e77}
 body[data-profile="steph"] .tag,body[data-profile="steph"] .pill{background:#203e3c;border-color:#44756a;color:#cff7e9}
 body[data-profile="steph"] .task{border-color:#385b58}body[data-profile="steph"] .eyebrow{color:#adebd5}
 @media(prefers-reduced-motion:no-preference){.hero .symbol{animation:cthuFloat 6s ease-in-out infinite}@keyframes cthuFloat{50%{transform:translateY(-9px) rotate(3deg)}}}
+.tournee-front{margin:15px 0 18px;padding:16px;border:1px solid #476e73;border-radius:17px;background:linear-gradient(145deg,#162f38,#201e3a)}
+.tournee-front h2{margin:0 0 7px;font-size:19px}
+.tournee-front p{font-size:13px;line-height:1.55;color:#c6dfdc;margin:7px 0 13px}
+.tournee-front .tournee-picks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tournee-front a{display:flex;flex-direction:column;gap:5px;justify-content:center;min-height:76px;padding:13px;border:1px solid #4a9898;background:#173e43;color:#e7fff9;text-decoration:none;border-radius:13px;font-weight:700;overflow-wrap:anywhere}
+.tournee-front a:last-child{background:#282346;border-color:#7566af;color:#eee6ff}
+.tournee-front a small{font-size:12px;font-weight:400;line-height:1.5;color:#bdcfd7}
+.tournee-front a:focus-visible{outline:3px solid #99f1db;outline-offset:3px}
+@media(max-width:520px){.tournee-front .tournee-picks{grid-template-columns:1fr}.tournee-front{padding:13px}}
 </style><link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png"></head><body><div class="shell">
 <header class="top"><div class="brand"><div class="octo" aria-hidden="true">🐙</div><div><strong>Big Cthu</strong><div class="muted">Ton univers, un seul cockpit</div></div></div><div class="actions"><button class="pill" id="profile" type="button" aria-label="Changer le profil">👤 Bobinch</button></div></header>
 <section class="hero"><div><div class="eyebrow">✦ Prototype indépendant · V2</div><h1 id="welcome">Ton monde, à portée de tentacule.</h1><p>Une seule interface pour tes journées, tes projets et tes passions. Aucun compte Claude ou ChatGPT nécessaire.</p><button class="primary" type="button" id="focus">Voir mes priorités</button> <a class="pill" href="./capture.html" style="display:inline-block;text-decoration:none;margin-top:8px">⚡ Capture rapide</a></div><div class="symbol" aria-hidden="true">🐙</div></section>
 <div class="notice" role="status"><strong>Mode local actif.</strong> Tes tâches de démonstration sont stockées uniquement dans ce navigateur. Sans synchronisation entre appareils pour l'instant. Aucun dossier patient n'est inclus dans le code public. Tournée stocke ses données séparément sur cet appareil ; les deux versions ne partagent pas automatiquement leurs sauvegardes.<span id="networkState" style="display:block;margin-top:6px" aria-live="polite"></span></div>
+<section class="tournee-front" aria-label="Accéder à Tournée">
+<h2>🩺 Tournée — accès prioritaire</h2>
+<p>Deux versions distinctes : ouvre celle où se trouvent déjà tes données. Il n'y a ni transfert ni synchronisation automatique entre elles.</p>
+<div class="tournee-picks">
+<a href="./tournee.html" id="openTourneeCurrent">Ouvrir Tournée actuelle<small>Le raccourci de ta version en cours · mêmes données locales si le navigateur et le stockage sont identiques</small></a>
+<a href="./tournee-complete.html" id="openTourneeSecure">Ouvrir Tournée complète<small>Version avec coffre local chiffré · import uniquement après vérification de la sauvegarde</small></a>
+</div>
+<p>Avant de changer de raccourci iPhone ou d'importer, exporte l'ancien et conserve-le. Aucun stockage patient ne transite par le cockpit.</p>
+</section>
 <p class="muted" id="profileWarning" style="font-size:12px;margin:10px 0" role="status"></p><div class="searchTentacules"><label for="tentacleSearch">Rechercher une tentacule</label><input id="tentacleSearch" type="search" placeholder="Maison, budget, musique…" maxlength="60" autocomplete="off" aria-controls="tiles"><button id="tentacleReset" class="pill" type="button">Effacer</button></div><p id="tentacleCount" class="muted" role="status" aria-live="polite"></p><section aria-label="Tentacules" class="tiles" id="tiles"></section>
 <section class="panel" style="margin-bottom:18px" aria-label="Accès rapides" id="fastAccess">
 <div class="panelhead"><h2>📌 Mes accès rapides</h2><span class="muted">Enregistrés sur cet appareil</span></div>
