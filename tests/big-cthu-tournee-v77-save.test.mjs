@@ -52,7 +52,7 @@ test('V92: bouton Sauvegarder conserve la session même si l écriture échoue',
 
 test('V77: ouverture de coffre existant ne réécrit pas inutilement son contenu',async()=>{
  const html=await read();
- assert.match(html,/secureLastWrittenRecord=localStorage\\.getItem\\(SECURE_KEY\\)/);
+ assert.ok(html.includes('secureLastWrittenRecord=localStorage.getItem(SECURE_KEY)'));
  assert.match(html,/id="tour-save-strip"/);
  assert.match(html,/id="tour-lock"/);
  assert.match(html,/id="tour-save-retry"/);
