@@ -308,7 +308,7 @@ test('Entretiens: completion is not recorded when storage fails; imported duplic
 test('Dépenses Maison: do not alter the ledger if a write is refused', async () => {
   const d = await boot('depenses-maison.html');
   const key = 'big-cthu-v2-house-expenses-v1';
-  d.get('date').value = '2026-11-13';
+  d.get('date').value = new Date().toISOString().slice(0, 10);
   d.get('amount').value = '25.50';
   d.get('category').value = 'Travaux';
   d.get('note').value = 'Achat fictif';
