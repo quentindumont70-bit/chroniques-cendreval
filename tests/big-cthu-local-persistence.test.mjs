@@ -149,3 +149,44 @@ test('Cockpit: report navigator connectivity without claiming cloud synchronizat
   h.setNetwork(true);
   assert.match(h.get('networkState').textContent, /sans synchronisation/);
 });
+
+test('Coffre: preflight and rollback preserve existing modules on quota failure', async () => {
+  const b = await boot('sauvegardes.html');
+  const tasksKey = 'big-cthu-v2-demo-tasks';
+  const jobsKey = 'big-cthu-v2-maison-v1';
+  const originalTasks = JSON.stringify([{ id: 'old-task', text: 'Conserver', done: false }]);
+  const originalJobs = JSON.stringify([{ id: 'old-job', name: 'Travaux conservés', status: 'todo', amount: 20 }]);
+  b.memory.set(tasksKey, originalTasks);
+  b.memory.set(jobsKey, originalJobs);
+  const fixture = { app: 'big-cthu-v2-backup', version: 1, tasks: [{ id: 'new-task', text: 'Nouvelle', done: false }], jobs: [{ id: 'new-job', name: 'Nouveau', status: 'todo', amount: 12 }] };
+  const file = { size: 300, text: async () => JSON.stringify(fixture) };
+  await b.get('file').fire('change', { target: { files: [file] } });
+  assert.match(b.get('preview').textContent, /Fichier valide/);
+  assert.ok(!b.get('preview').textContent.includes('undefined'));
+  b.get('consent').checked = true;
+  await b.get('consent').fire('change');
+  b.setFailedKey(jobsKey);
+  await b.get('restore').fire('click');
+  assert.equal(b.memory.get(tasksKey), originalTasks, 'task write is rolled back');
+  assert.equal(b.memory.get(jobsKey), originalJobs, 'failed job write leaves jobs untouched');
+  assert.match(b.get('preview').textContent, /Aucune modification conservée/);
+  b.setFailedKey(null);
+  await b.get('restore').fire('click');
+  assert.deepEqual(JSON.parse(b.memory.get(tasksKey)), fixture.tasks);
+  assert.deepEqual(JSON.parse(b.memory.get(jobsKey)), fixture.jobs);
+  assert.match(b.get('preview').textContent, /Restauration réussie/);
+});
+
+test('Coffre: invalid backup leaves local data unchanged', async () => {
+  const b = await boot('sauvegardes.html');
+  const key = 'big-cthu-v2-demo-tasks';
+  b.memory.set(key, JSON.stringify([{ id: 'old', text: 'Garder', done: false }]));
+  const file = { size: 150, text: async () => JSON.stringify({
+    app: 'big-cthu-v2-backup', version: 1,
+    tasks: [{ id: 'dupe', text: 'A', done: false }, { id: 'dupe', text: 'B', done: false }], jobs: [],
+  }) };
+  await b.get('file').fire('change', { target: { files: [file] } });
+  assert.match(b.get('preview').textContent, /Import impossible/);
+  assert.equal(b.get('restore').disabled, true);
+  assert.equal(JSON.parse(b.memory.get(key))[0].text, 'Garder');
+});
