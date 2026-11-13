@@ -16,7 +16,7 @@ async function boot(page) {
   const windowEvents = {}, navigator = { onLine: true };
   const node = (id) => ({
     id, children: [], value: '', checked: false, hidden: false, textContent: '',
-    className: '', dataset: {}, listeners: {},
+    className: '', dataset: {}, listeners: {}, style: {},
     append(...children) { this.children.push(...children); },
     replaceChildren(...children) { this.children = children; },
     setAttribute() {}, focus() {}, reset() {}, scrollIntoView() {},
@@ -251,4 +251,76 @@ test('Maison: reject quota, restore status selection and preserve data on invali
   await article.children.at(-1).children[1].fire('click');
   assert.equal(JSON.parse(m.memory.get(key)).length, 1);
   assert.ok(m.alerts.length >= 3);
+});
+
+test('Équipements: no phantom additions or deletions after quota failure', async () => {
+  const e = await boot('equipements.html');
+  const key = 'big-cthu-v2-equipments-v1';
+  e.get('name').value = 'Équipement fictif';
+  e.get('room').value = 'Atelier';
+  e.get('ref').value = '';
+  e.get('warranty').value = '';
+  e.get('maintenance').value = '';
+  e.get('notes').value = '';
+  e.setFull(true);
+  await e.get('form').fire('submit');
+  assert.equal(e.memory.has(key), false);
+  e.setFull(false);
+  await e.get('form').fire('submit');
+  assert.equal(JSON.parse(e.memory.get(key)).length, 1);
+  const card = e.get('list').children[0];
+  e.setFull(true);
+  await card.children.at(-1).children[0].fire('click');
+  assert.equal(JSON.parse(e.memory.get(key)).length, 1);
+  assert.ok(e.alerts.length >= 2);
+});
+
+test('Entretiens: completion is not recorded when storage fails; imported duplicates are deduplicated', async () => {
+  const m = await boot('entretiens.html');
+  const key = 'big-cthu-v2-maintenance-v1';
+  m.get('title').value = 'Révision fictive';
+  m.get('category').value = 'Maison';
+  m.get('interval').value = '12';
+  m.get('next').value = '2026-12-01';
+  m.setFull(true);
+  await m.get('form').fire('submit');
+  assert.equal(m.memory.has(key), false);
+  m.setFull(false);
+  await m.get('form').fire('submit');
+  assert.equal(JSON.parse(m.memory.get(key)).length, 1);
+  const item = m.get('list').children[0];
+  const done = item.children.at(-1).children[0];
+  m.setFull(true);
+  await done.fire('click');
+  assert.deepEqual(JSON.parse(m.memory.get(key))[0].history, []);
+  m.setFull(false);
+  await done.fire('click');
+  assert.equal(JSON.parse(m.memory.get(key))[0].history.length, 1);
+  const file = { size: 300, text: async () => JSON.stringify({ rec: [
+    { t: 'Fenêtres', cat: 'Maison', every: 12, next: '2026-12-01' },
+    { t: 'Fenêtres', cat: 'Maison', every: 12, next: '2026-12-01' },
+  ] }) };
+  await m.get('file').fire('change', { target: { files: [file] } });
+  assert.match(m.get('preview').textContent, /1 à ajouter/);
+  assert.ok(m.alerts.length >= 2);
+});
+
+test('Dépenses Maison: do not alter the ledger if a write is refused', async () => {
+  const d = await boot('depenses-maison.html');
+  const key = 'big-cthu-v2-house-expenses-v1';
+  d.get('date').value = new Date().toISOString().slice(0, 10);
+  d.get('amount').value = '25.50';
+  d.get('category').value = 'Travaux';
+  d.get('note').value = 'Achat fictif';
+  d.setFull(true);
+  await d.get('form').fire('submit');
+  assert.equal(d.memory.has(key), false);
+  d.setFull(false);
+  await d.get('form').fire('submit');
+  assert.equal(JSON.parse(d.memory.get(key)).length, 1);
+  const card = d.get('list').children[0];
+  d.setFull(true);
+  await card.children.at(-1).fire('click');
+  assert.equal(JSON.parse(d.memory.get(key)).length, 1);
+  assert.ok(d.alerts.length >= 2);
 });
