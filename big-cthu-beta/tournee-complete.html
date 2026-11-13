@@ -1615,14 +1615,40 @@ async function flush(){
  return secureActive;
 }
 document.getElementById('tour-save-retry').addEventListener('click',()=>flush().catch(saveFailure));
-document.getElementById('tour-lock').addEventListener('click',async()=>{
+const IDLE_LOCK_MS=15*60*1000;
+let lastTourActivity=Date.now(),idleLockTimer=null,idleLockBusy=false;
+function noteTourActivity(){
+ if(!secureBooted||idleLockBusy)return;
+ lastTourActivity=Date.now();
+ clearTimeout(idleLockTimer);
+ idleLockTimer=setTimeout(checkTourIdle,IDLE_LOCK_MS);
+}
+async function lockTourSafely(){
+ if(idleLockBusy)return;
+ idleLockBusy=true;
  const button=document.getElementById('tour-lock');
  button.disabled=true;button.textContent='Sauvegarde avant verrouillage…';
  try{await flush();location.reload()}
- catch(e){saveFailure();button.disabled=false;button.textContent='Verrouiller'}
-});
+ catch(e){
+  saveFailure();button.disabled=false;button.textContent='Verrouiller';
+  idleLockBusy=false;
+  lastTourActivity=Date.now();
+  clearTimeout(idleLockTimer);
+  idleLockTimer=setTimeout(checkTourIdle,IDLE_LOCK_MS);
+ }
+}
+function checkTourIdle(){
+ if(!secureBooted||idleLockBusy)return;
+ if(document.hidden)return;
+ const elapsed=Date.now()-lastTourActivity;
+ if(elapsed>=IDLE_LOCK_MS){lockTourSafely();return}
+ clearTimeout(idleLockTimer);
+ idleLockTimer=setTimeout(checkTourIdle,IDLE_LOCK_MS-elapsed);
+}
+for(const event of ['pointerdown','keydown','input'])document.addEventListener(event,noteTourActivity,{passive:true});
+document.getElementById('tour-lock').addEventListener('click',lockTourSafely);
 function report(message){document.getElementById('tour-error').textContent=message}
-function launch(){if(secureBooted)return;secureBooted=true;document.body.classList.remove('tournee-locked');document.getElementById('tour-security-gate').remove();let source=document.getElementById('tour-source-js');const script=document.createElement('script');script.textContent=source.textContent;document.body.append(script);source.remove();}
+function launch(){if(secureBooted)return;secureBooted=true;lastTourActivity=Date.now();idleLockTimer=setTimeout(checkTourIdle,IDLE_LOCK_MS);document.body.classList.remove('tournee-locked');document.getElementById('tour-security-gate').remove();let source=document.getElementById('tour-source-js');const script=document.createElement('script');script.textContent=source.textContent;document.body.append(script);source.remove();}
 async function login(fileMode){try{
  if(!crypto?.subtle)throw Error('Ouvre Tournée en HTTPS dans Safari.');
  const password=document.getElementById('tour-pass').value;if(password.length<12)throw Error('Entre ta phrase secrète (12 caractères minimum).');
@@ -1643,7 +1669,7 @@ document.getElementById('tour-open').addEventListener('click',()=>login(false));
 document.getElementById('tour-import').addEventListener('click',()=>login(true));
 document.getElementById('tour-saved-status').textContent=localStorage.getItem(SECURE_KEY)?'Une Tournée complète chiffrée est disponible. Utilise la même phrase secrète.':localStorage.getItem(PREVIOUS_KEY)?'✅ Ta sauvegarde chiffrée précédente est détectée. Utilise la même phrase secrète : les patients seront transférés dans l’application complète.':'Aucune sauvegarde locale détectée ici. Sélectionne ton fichier JSON.';
 function saveIfPending(){if(secureKey&&secureGen!==secureSavedGen)flush().catch(saveFailure)}
-document.addEventListener('visibilitychange',()=>{if(document.hidden)saveIfPending()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)saveIfPending();else checkTourIdle()});
 window.addEventListener('pagehide',saveIfPending);
 </script>
 </body>
