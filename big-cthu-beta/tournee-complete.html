@@ -416,6 +416,8 @@ body{min-height:100vh}
 [data-theme=lagon],[data-theme=nuit]{--bg:#100e22;--bg2:#16132a;--card:#211b36;--ink:#f7f2ff;--mut:#c1b6d7;--acc:#a78bfa;--acc-ink:#130d26;--soft:#33264c;--line:#54476f;--hdr:linear-gradient(135deg,#211b36,#0e4649);--hdr-ink:#f7f2ff;--tl:#594a72}
 body.tournee-locked>:not(#tour-security-gate):not(script){display:none!important}
 body.tournee-checking #tour-security-gate{visibility:hidden}
+#tour-security-gate[hidden]{display:none!important}
+body:not(.tournee-locked) #tour-security-gate:not([hidden]){position:fixed;inset:12px;z-index:10003;overflow:auto;max-height:calc(100dvh - 24px);box-shadow:0 0 0 9999px #000b}
 #tour-security-gate{position:relative;max-width:640px;margin:18px auto;padding:20px;background:#211b36;color:#f7f2ff;border:1px solid #63548e;border-radius:20px;font:16px/1.5 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;box-shadow:0 15px 55px #0005}
 #tour-security-gate h1{font-size:26px;color:#fff;margin:12px 0}
 #tour-security-gate p{font-size:14px;color:#d3cce1}
@@ -460,21 +462,22 @@ body.tournee-locked #tour-save-strip{display:none}
 @media(max-width:600px){#tour-absence-panel .ap-grid,#tour-absence-panel #ap-period-report{grid-template-columns:1fr}#tour-absence-panel .ap-inner{padding:13px}#tour-absence-panel button{width:100%}#tour-absence-panel .ap-closebar button{width:auto}#tour-absence-panel .ap-entry{padding:11px}}
 </style>
 </head>
-<body class="tournee-locked tournee-checking"><section id="tour-security-gate">
+<body class="tournee-locked tournee-checking"><section id="tour-security-gate" hidden>
 <a href="./index.html">← Retour au cockpit Big Cthu</a>
-<h1>🩺 Première ouverture sur cet appareil</h1>
+<h1>Récupérer une ancienne sauvegarde (facultatif)</h1>
+<button id="tour-recovery-close" type="button">← Retour à Tournée</button>
 <p class="info" id="tour-saved-status">Vérification de ta sauvegarde chiffrée sur cet appareil…</p>
-<p>Dernière saisie sur cet appareil pour associer ton coffre chiffré à ce navigateur. Ensuite Tournée s’ouvrira directement sans écran de verrouillage, tant que les données du navigateur sont conservées.</p>
+<p>Tournée s'ouvre directement sans code ni phrase secrète. Cet écran est réservé au cas où tu veux récupérer d'anciennes données déjà chiffrées. L'ancien coffre et les sauvegardes ne sont jamais effacés.</p>
 <label for="tour-pass">Phrase secrète utilisée pour la restauration</label>
 <input id="tour-pass" type="password" autocomplete="current-password" minlength="12" placeholder="Ta phrase secrète">
-<button id="tour-open">Déverrouiller et ouvrir toute l'application</button>
+<button id="tour-open">Récupérer l’ancien coffre dans Tournée</button>
 <details style="margin-top:14px"><summary style="cursor:pointer">Importer une sauvegarde JSON ou un coffre chiffré (uniquement si cet espace est vide)</summary>
 <label for="tour-file">Sauvegarde Tournée : JSON classique ou coffre chiffré complet</label><input type="file" id="tour-file" accept=".json,application/json">
 <button id="tour-import">Importer dans Tournée complète</button></details>
 <p id="tour-error" role="status"></p>
 <p>Attention : le déverrouillage automatique signifie que toute personne ayant accès à ce navigateur peut ouvrir Tournée. Protège l'accès à ton iPhone. Si un coffre chiffré existe déjà, l'import d'un autre JSON est bloqué pour éviter son écrasement. Les données restent chiffrées dans ce navigateur, mais cette version web n'est pas un hébergement HDS certifié. Conserve ta sauvegarde d'origine et l'application historique pour les soins.</p>
 </section>
-<div id="tour-save-strip" role="status" aria-live="polite" data-state="saved"><span id="tour-save-text">Données chiffrées enregistrées sur cet appareil.</span><span><button type="button" id="tour-save-retry" hidden>Réessayer la sauvegarde</button> <button type="button" id="tour-vault-export">Exporter le coffre chiffré</button> <button type="button" id="tour-absence-open">Absences &amp; modifications</button> <button type="button" id="tour-lock">Sauvegarder</button></span></div>
+<div id="tour-save-strip" role="status" aria-live="polite" data-state="saved"><span id="tour-save-text">Données chiffrées enregistrées sur cet appareil.</span><span><button type="button" id="tour-save-retry" hidden>Réessayer la sauvegarde</button> <button type="button" id="tour-vault-export">Exporter le coffre chiffré</button> <button type="button" id="tour-absence-open">Absences &amp; modifications</button> <button type="button" id="tour-lock">Sauvegarder</button> <button type="button" id="tour-recovery-launch" hidden>Récupérer mes anciennes données</button></span></div>
 <section id="tour-absence-panel" hidden aria-label="Absences et modifications de Tournée">
 <div class="ap-inner">
 <div class="ap-closebar"><button id="ap-close" type="button">← Retour à Tournée</button><span class="ap-caption">Journal local chiffré</span></div>
@@ -1624,7 +1627,8 @@ async function impApply(rep,b){if(!IMPR||!IMPR.ok.length)return;if(rep&&!b.datas
 </script><script>
 'use strict';
 /* Data never bundled with this public source. Decrypt on this device only. */
-const SECURE_KEY='bigcthu_tournee_full_encrypted_v1', PREVIOUS_KEY='bigcthu_tournee_encrypted_v1';
+const ORIGINAL_KEY='bigcthu_tournee_full_encrypted_v1', ALTERNATE_KEY='bigcthu_tournee_auto_encrypted_v1', PREVIOUS_KEY='bigcthu_tournee_encrypted_v1';
+let SECURE_KEY=ORIGINAL_KEY;
 let secureState=Object.create(null),secureKey=null,secureSalt=null,secureGen=0,secureSavedGen=0,secureActive=null,secureTimer=null,secureBooted=false;
 const enc=new TextEncoder(),dec=new TextDecoder();
 const to64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s)};
@@ -1676,23 +1680,75 @@ function validVaultState(state){
 }
 async function autoOpenTournee(){
  try{
-  const saved=localStorage.getItem(SECURE_KEY);
-  if(!saved)return false;
-  const record=JSON.parse(saved);
-  if(!isEncryptedVaultRecord(record))return false;
-  const device=await recalledDeviceKey();
-  if(!device||device.v!==1||device.salt!==record.salt||!device.key)return false;
-  const state=await decryptWithDeviceKey(saved,device.key);
-  if(!validVaultState(state))return false;
-  secureState=Object.assign(Object.create(null),state);
-  secureSalt=from64(record.salt);
-  secureKey=device.key;
+  const alternate=localStorage.getItem(ALTERNATE_KEY),original=localStorage.getItem(ORIGINAL_KEY);
+  SECURE_KEY=alternate?ALTERNATE_KEY:ORIGINAL_KEY;
+  const saved=alternate||original;
+  if(saved){
+   try{
+    const record=JSON.parse(saved),device=await recalledDeviceKey();
+    if(isEncryptedVaultRecord(record)&&device&&device.v===1&&device.salt===record.salt&&device.key){
+     const state=await decryptWithDeviceKey(saved,device.key);
+     if(validVaultState(state)){
+      secureState=Object.assign(Object.create(null),state);secureSalt=from64(record.salt);secureKey=device.key;
+      launch();
+      if(original&&SECURE_KEY===ALTERNATE_KEY)showLegacyRecovery();
+      return true;
+     }
+    }
+   }catch(e){/* Conservons les coffres existants, sans jamais les remplacer. */}
+   SECURE_KEY=ALTERNATE_KEY;
+   if(localStorage.getItem(SECURE_KEY))throw Error('Le coffre de cet appareil ne peut pas être lu. Aucun fichier effacé.');
+  }
+  if(!crypto?.subtle)throw Error('Le chiffrement local nécessite HTTPS.');
+  secureSalt=crypto.getRandomValues(new Uint8Array(16));
+  secureKey=await crypto.subtle.generateKey({name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+  await rememberDeviceKey(secureKey,secureSalt);
+  secureState=Object.assign(Object.create(null),{tidel_Pl:'[]'});
+  secureGen++;await flush();
   launch();
+  if(original||localStorage.getItem(PREVIOUS_KEY))showLegacyRecovery();
   return true;
- }catch(e){return false}
- finally{
+ }catch(e){
+  document.body.classList.remove('tournee-locked');
+  const gate=document.getElementById('tour-security-gate');gate.hidden=true;
+  const strip=document.getElementById('tour-save-strip');strip.hidden=false;
+  saveStatus('error','Ouverture locale impossible, aucune donnée effacée : '+e.message);
+  return false;
+ }finally{
   document.body.classList.remove('tournee-checking');
  }
+}
+function showLegacyRecovery(){
+ const button=document.getElementById('tour-recovery-launch');
+ button.hidden=false;
+ saveStatus('saved','Tournée ouverte directement. Une ancienne sauvegarde chiffrée existe aussi sur cet appareil : récupération facultative.');
+}
+async function recoverOldVault(fileMode){
+ try{
+  const password=document.getElementById('tour-pass').value;
+  if(password.length<12)throw Error('Cette ancienne sauvegarde était chiffrée avec une phrase secrète. Elle est indispensable uniquement pour la récupérer.');
+  const existing=JSON.parse(secureState.tidel_Pl||'[]');
+  if(existing.length||JSON.parse(secureState.tidel_absences_journal_v1||'[]').length)throw Error('Une tournée est déjà présente ici : récupération arrêtée pour ne pas écraser des données.');
+  let state;
+  if(fileMode){
+   const file=document.getElementById('tour-file').files[0];
+   if(!file||file.size>25*1024*1024)throw Error('Fichier absent ou trop volumineux.');
+   const candidate=JSON.parse(await file.text());
+   state=isEncryptedVaultRecord(candidate)?await decryptRecord(JSON.stringify(candidate),password):fillFromBackup(candidate);
+  }else{
+   const old=localStorage.getItem(ORIGINAL_KEY),previous=localStorage.getItem(PREVIOUS_KEY);
+   if(old&&SECURE_KEY!==ORIGINAL_KEY)state=await decryptRecord(old,password);
+   else if(previous){const saved=await decryptRecord(previous,password);state=fillFromBackup(saved.data)}
+   else throw Error('Aucun ancien coffre différent à récupérer.');
+  }
+  if(!validVaultState(state))throw Error('Sauvegarde incompatible. Aucun changement.');
+  secureState=Object.assign(Object.create(null),state);secureGen++;
+  await ensureVaultSaved();
+  document.getElementById('tour-security-gate').hidden=true;
+  document.getElementById('tour-recovery-launch').hidden=true;
+  saveStatus('saved','Anciennes données récupérées et enregistrées. Aucun coffre original supprimé.');
+  location.reload();
+ }catch(e){report(e.message||'Récupération impossible : ancien coffre conservé.')}
 }
 
 function fillFromBackup(d){
@@ -2013,8 +2069,8 @@ function checkTourIdle(){
 for(const event of ['pointerdown','keydown','input'])document.addEventListener(event,noteTourActivity,{passive:true});
 document.getElementById('tour-lock').addEventListener('click',lockTourSafely);
 function report(message){document.getElementById('tour-error').textContent=message}
-function launch(){if(secureBooted)return;secureBooted=true;lastTourActivity=Date.now();idleLockTimer=setTimeout(checkTourIdle,IDLE_LOCK_MS);document.body.classList.remove('tournee-locked');document.getElementById('tour-security-gate').remove();let source=document.getElementById('tour-source-js');const script=document.createElement('script');script.textContent=source.textContent;document.body.append(script);source.remove();}
-async function login(fileMode){try{
+function launch(){if(secureBooted)return;secureBooted=true;lastTourActivity=Date.now();idleLockTimer=setTimeout(checkTourIdle,IDLE_LOCK_MS);document.body.classList.remove('tournee-locked');document.getElementById('tour-security-gate').hidden=true;let source=document.getElementById('tour-source-js');const script=document.createElement('script');script.textContent=source.textContent;document.body.append(script);source.remove();}
+async function login(fileMode){if(typeof secureBooted!=='undefined'&&secureBooted)return recoverOldVault(fileMode);try{
  if(!crypto?.subtle)throw Error('Ouvre Tournée en HTTPS dans Safari.');
  const password=document.getElementById('tour-pass').value;if(password.length<12)throw Error('Entre ta phrase secrète (12 caractères minimum).');
  report('Déchiffrement en cours sur cet appareil…');let state,importedEncrypted=null;
@@ -2039,6 +2095,8 @@ async function login(fileMode){try{
  if(typeof indexedDB!=='undefined')rememberDeviceKey(secureKey,secureSalt).catch(()=>{saveStatus('saved','Données chiffrées enregistrées. Accès automatique indisponible : conserve ta phrase secrète.')});
  }catch(err){report('Ouverture impossible : '+(err?.message||'mot de passe ou fichier invalide'))}}
 document.getElementById('tour-open').addEventListener('click',()=>login(false));
+document.getElementById('tour-recovery-launch').addEventListener('click',()=>{document.getElementById('tour-security-gate').hidden=false});
+document.getElementById('tour-recovery-close').addEventListener('click',()=>{document.getElementById('tour-security-gate').hidden=true});
 document.getElementById('tour-import').addEventListener('click',()=>login(true));
 document.getElementById('tour-saved-status').textContent=localStorage.getItem(SECURE_KEY)?'Une Tournée complète chiffrée est disponible. Utilise la même phrase secrète.':localStorage.getItem(PREVIOUS_KEY)?'✅ Ta sauvegarde chiffrée précédente est détectée. Utilise la même phrase secrète : les patients seront transférés dans l’application complète.':'Aucune sauvegarde locale détectée ici. Sélectionne ton fichier JSON.';
 function saveIfPending(){if(secureKey&&secureGen!==secureSavedGen)flush().catch(saveFailure)}
