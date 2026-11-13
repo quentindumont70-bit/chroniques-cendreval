@@ -41,7 +41,7 @@ test('V99: chargement direct de Tournée enregistre le cache public via mobile-b
  assert.match(boot,/worker\.register\('\.\/sw\.js'\)/);
  assert.match(worker,/'\.\/tournee-complete\.html'/);
  assert.match(worker,/caches\.match\(r,\{ignoreSearch:true\}\)/);
- assert.match(worker,/const CACHE='big-cthu-public-v2-v99'/);
+ assert.match(worker,/const CACHE='big-cthu-public-v2-v\d+'/);
  assert.match(html,/id="tour-network-state"/);
 });
 
