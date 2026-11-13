@@ -470,3 +470,15 @@ test('Coffre V25: sauvegarde les favoris, conserve les versions antérieures et 
  assert.match(html,/20,21,22,23,24,25,26/);
  assert.doesNotMatch(html,/stage\(.*tidel_/);
 });
+
+test('Cockpit: Tournée a deux entrées explicites sans import de données au clic',async()=>{
+ const html=await readFile(new URL('../big-cthu-beta/index.html',import.meta.url),'utf8');
+ const original=html.match(/<a href="\.\/tournee\.html" id="openTourneeCurrent">([\s\S]*?)<\/a>/);
+ const secure=html.match(/<a href="\.\/tournee-complete\.html" id="openTourneeSecure">([\s\S]*?)<\/a>/);
+ assert.ok(original,'Tournée actuelle must have a direct link');
+ assert.ok(secure,'Tournée chiffrée must have a separate direct link');
+ assert.match(original[1],/Tournée actuelle/);
+ assert.match(secure[1],/coffre local chiffré/);
+ assert.match(html,/ni transfert ni synchronisation automatique/);
+ assert.doesNotMatch(html,/autoImportTournee|syncTourneePatients/);
+});
