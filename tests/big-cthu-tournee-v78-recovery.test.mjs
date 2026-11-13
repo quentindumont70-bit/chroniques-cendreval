@@ -51,7 +51,8 @@ test('V78: refus de migration automatique sur coffre existant',async()=>{
  const {html}=await cryptoFixture();
  assert.match(html,/if\(fileMode\)\{\s*if\(full\|\|previous\)throw Error/);
  assert.match(html,/if\(!full\)\{if\(importedEncrypted\)localStorage\.setItem\(SECURE_KEY,JSON\.stringify\(importedEncrypted\)\);else\{secureGen\+\+;await flush\(\)\}\}launch\(\)/);
- assert.match(html,/await ensureVaultSaved\(\);saveStatus\('saved'/);\n assert.doesNotMatch(html,/await ensureVaultSaved\(\);location\.reload\(\)/);
+ assert.match(html,/await ensureVaultSaved\(\);saveStatus\('saved'/);
+ assert.doesNotMatch(html,/await ensureVaultSaved\(\);location\.reload\(\)/);
 });
 
 
