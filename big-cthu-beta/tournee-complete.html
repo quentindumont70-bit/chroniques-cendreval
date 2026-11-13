@@ -499,7 +499,10 @@ body.tournee-locked #tour-save-strip{display:none}
 <label>Motif<select id="ap-filter-reason"><option value="">Tous les motifs</option><option>Patient absent</option><option>Soin non réalisé</option><option>Horaire modifié</option><option>Autre</option></select></label>
 <label>Rapprochement<select id="ap-filter-state"><option value="">Tous les états</option><option>À rapprocher</option><option>Vérifié localement</option><option>Sans suite</option></select></label>
 <label>Signalements<select id="ap-filter-cancelled"><option value="active">Actifs uniquement</option><option value="all">Tous, y compris annulés</option><option value="cancelled">Annulés uniquement</option></select></label>
+<label>Rechercher dans le journal<input id="ap-search" type="search" maxlength="100" autocomplete="off" placeholder="Patient, motif ou observation" aria-describedby="ap-search-help"></label>
+<label>Trier<select id="ap-sort"><option value="newest">Plus récents</option><option value="oldest">Plus anciens</option><option value="patient">Patient (A–Z)</option></select></label>
 </div>
+<p class="ap-caption" id="ap-search-help">Recherche uniquement dans ce navigateur, après ouverture directe de Tournée. Les noms recherchés ne sont ni sauvegardés ni copiés vers Topaze.</p>
 <p id="ap-status" role="status" aria-live="polite"></p>
 <p id="ap-summary" aria-live="polite"></p>
 <p id="ap-breakdown" aria-live="polite"></p>
@@ -1921,6 +1924,26 @@ function absencePeriodRows(rows,{from='',to='',reason='',sync=''}={}){
  if((from&&!absenceDateOK(from))||(to&&!absenceDateOK(to))||(from&&to&&from>to))return [];
  return rows.filter(x=>absenceDateOK(x.day)&&(!from||x.day>=from)&&(!to||x.day<=to)&&(!reason||x.reason===reason)&&(!sync||x.sync===sync));
 }
+function absenceFold(value){
+ return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('fr').trim();
+}
+function absenceSearchAndSort(rows,{search='',sort='newest'}={},patientNames=new Map()){
+ const query=absenceFold(search).slice(0,100);
+ const matches=rows.filter(x=>!query||[patientNames.get(x.patientId)||'',x.day,x.reason,x.note||'',x.sync].some(text=>absenceFold(text).includes(query)));
+ const order=matches.map((entry,index)=>({entry,index}));
+ order.sort((a,b)=>{
+  const x=a.entry,y=b.entry;
+  if(sort==='patient'){
+   const name=absenceFold(patientNames.get(x.patientId)||'');
+   const other=absenceFold(patientNames.get(y.patientId)||'');
+   return name.localeCompare(other,'fr')||x.day.localeCompare(y.day)||a.index-b.index;
+  }
+  const byDate=sort==='oldest'?x.day.localeCompare(y.day):y.day.localeCompare(x.day);
+  return byDate||a.index-b.index;
+ });
+ return order.map(x=>x.entry);
+}
+
 function absencePeriodReport(rows){
  const active=rows.filter(x=>!x.cancelled);
  const daily=new Map(),weekly=new Map();
@@ -1959,7 +1982,8 @@ function absenceRender(){
  const filters={from:ap('ap-from').value,to:ap('ap-to').value,reason:ap('ap-filter-reason').value,sync:ap('ap-filter-state').value,cancelled:ap('ap-filter-cancelled').value};
  const scoped=absencePeriodRows(rows,filters);
  const counts=absenceSummary(scoped);
- const filtered=scoped.filter(x=>filters.cancelled==='all'||(filters.cancelled==='cancelled'?!!x.cancelled:!x.cancelled));
+ const stateFiltered=scoped.filter(x=>filters.cancelled==='all'||(filters.cancelled==='cancelled'?!!x.cancelled:!x.cancelled));
+ const filtered=absenceSearchAndSort(stateFiltered,{search:ap('ap-search').value,sort:ap('ap-sort').value},names);
  ap('ap-summary').textContent=counts.active+' actif(s), '+counts.cancelled+' annulé(s), dont '+counts.toReview+' à rapprocher. '+filtered.length+' affiché(s) · '+rows.length+' au coffre.';
  ap('ap-breakdown').textContent=ABSENCE_REASONS.map(reason=>reason+' : '+counts.reasons[reason]).join(' · ');
  const periodReport=absencePeriodReport(scoped);
@@ -1973,7 +1997,7 @@ function absenceRender(){
  }
  ap('ap-topaze-note').textContent=absenceTopazeText(rows,filters);
  const host=ap('ap-events');host.replaceChildren();
- for(const x of filtered.slice().reverse()){
+ for(const x of filtered){
   const box=document.createElement('article');box.className='ap-entry';
   const title=document.createElement('strong');title.textContent=x.day+' · '+(names.get(x.patientId)||'Patient introuvable')+' · '+x.reason;box.append(title);
   const note=document.createElement('p');note.textContent=(x.cancelled?'[ANNULÉ] · ':'')+(x.note||'Sans observation');box.append(note);
@@ -2051,7 +2075,8 @@ ap('tour-absence-open').addEventListener('click',()=>{
  absenceRender();noteTourActivity();
 });
 ap('ap-close').addEventListener('click',()=>{ap('tour-absence-panel').hidden=true;noteTourActivity()});
-for(const id of ['ap-from','ap-to','ap-filter-reason','ap-filter-state','ap-filter-cancelled'])ap(id).addEventListener('change',absenceRender);
+for(const id of ['ap-from','ap-to','ap-filter-reason','ap-filter-state','ap-filter-cancelled','ap-sort'])ap(id).addEventListener('change',absenceRender);
+ap('ap-search').addEventListener('input',absenceRender);
 function absenceTodayLocal(){
  const date=new Date();
  return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
@@ -2060,7 +2085,8 @@ function absenceSetQuickRange(mode){
  const dates=absenceQuickRange(absenceTodayLocal(),mode);
  ap('ap-from').value=dates.from;ap('ap-to').value=dates.to;
  if(mode==='clear'){
-  for(const id of ['ap-filter-reason','ap-filter-state'])ap(id).value='';
+  for(const id of ['ap-filter-reason','ap-filter-state','ap-search'])ap(id).value='';
+  ap('ap-sort').value='newest';
   ap('ap-filter-cancelled').value='active';
  }
  absenceRender();noteTourActivity();
