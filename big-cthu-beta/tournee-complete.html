@@ -429,6 +429,20 @@ body.tournee-locked>:not(#tour-security-gate):not(script){display:none!important
 #tour-save-strip button{min-height:42px;padding:8px 12px;border:1px solid currentColor;border-radius:9px;background:transparent;color:inherit;font:inherit;font-weight:700;cursor:pointer}
 #tour-save-strip button[hidden]{display:none}
 body.tournee-locked #tour-save-strip{display:none}
+#tour-absence-panel[hidden]{display:none!important}
+#tour-absence-panel{position:fixed;inset:0;z-index:10000;overflow:auto;background:#110e20f5;color:#f6f0ff;padding:calc(15px + env(safe-area-inset-top,0px)) 14px calc(35px + env(safe-area-inset-bottom,0px));font:15px/1.5 system-ui,-apple-system,sans-serif}
+#tour-absence-panel .ap-inner{max-width:800px;margin:auto;background:#211b36;border:1px solid #5b4f7e;border-radius:18px;padding:17px}
+#tour-absence-panel h2{font-size:22px;margin:6px 0}
+#tour-absence-panel p{margin:10px 0}
+#tour-absence-panel .ap-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#tour-absence-panel label{display:block;font-size:13px;font-weight:700}
+#tour-absence-panel input,#tour-absence-panel select,#tour-absence-panel textarea{display:block;width:100%;min-height:44px;margin-top:4px;background:#100e22;color:#fff;border:1px solid #8a7baa;border-radius:9px;padding:10px;font:inherit}
+#tour-absence-panel button{min-height:44px;background:#493b72;border:1px solid #8f7eb8;color:white;border-radius:10px;font:inherit;padding:10px 13px}
+#tour-absence-panel button:focus-visible,#tour-absence-panel input:focus-visible,#tour-absence-panel select:focus-visible{outline:3px solid #9cf1e0;outline-offset:2px}
+#tour-absence-panel .ap-entry{padding:12px 0;border-top:1px solid #5c5072}
+#tour-absence-panel .ap-history{font-size:12px;color:#d5c9e5}
+#tour-absence-panel #ap-status{color:#a6f5d8}
+@media(max-width:600px){#tour-absence-panel .ap-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body class="tournee-locked"><section id="tour-security-gate">
@@ -445,7 +459,32 @@ body.tournee-locked #tour-save-strip{display:none}
 <p id="tour-error" role="status"></p>
 <p>Si un coffre chiffré existe déjà, l'import d'un autre JSON est bloqué pour éviter son écrasement. Les données restent chiffrées dans ce navigateur, mais cette version web n'est pas un hébergement HDS certifié. Conserve ta sauvegarde d'origine et l'application historique pour les soins.</p>
 </section>
-<div id="tour-save-strip" role="status" aria-live="polite" data-state="saved"><span id="tour-save-text">Données chiffrées enregistrées sur cet appareil.</span><span><button type="button" id="tour-save-retry" hidden>Réessayer la sauvegarde</button> <button type="button" id="tour-lock">Verrouiller</button></span></div>
+<div id="tour-save-strip" role="status" aria-live="polite" data-state="saved"><span id="tour-save-text">Données chiffrées enregistrées sur cet appareil.</span><span><button type="button" id="tour-save-retry" hidden>Réessayer la sauvegarde</button> <button type="button" id="tour-absence-open">Absences &amp; modifications</button> <button type="button" id="tour-lock">Verrouiller</button></span></div>
+<section id="tour-absence-panel" hidden aria-label="Absences et modifications de Tournée">
+<div class="ap-inner">
+<button id="ap-close" type="button">← Retour à Tournée</button>
+<h2>Absences &amp; modifications</h2>
+<p>Journal conservé dans le même coffre local chiffré que Tournée. Il ne modifie ni les soins planifiés ni Topaze. Les états de rapprochement sont manuels.</p>
+<form id="ap-form">
+<div class="ap-grid">
+<label>Date du changement<input id="ap-day" type="date" required></label>
+<label>Patient existant<select id="ap-patient" required><option value="">Choisir un patient</option></select></label>
+<label>Motif<select id="ap-reason" required><option>Patient absent</option><option>Soin non réalisé</option><option>Horaire modifié</option><option>Autre</option></select></label>
+<label>Observation concise (facultative)<input id="ap-note" maxlength="200" autocomplete="off" placeholder="Sans information médicale détaillée"></label>
+</div>
+<button type="submit">Enregistrer au coffre</button>
+</form>
+<h3>Historique et filtres</h3>
+<div class="ap-grid">
+<label>Du<input id="ap-from" type="date"></label><label>Au<input id="ap-to" type="date"></label>
+<label>Motif<select id="ap-filter-reason"><option value="">Tous les motifs</option><option>Patient absent</option><option>Soin non réalisé</option><option>Horaire modifié</option><option>Autre</option></select></label>
+<label>Rapprochement<select id="ap-filter-state"><option value="">Tous les états</option><option>À rapprocher</option><option>Vérifié localement</option><option>Sans suite</option></select></label>
+</div>
+<p id="ap-status" role="status" aria-live="polite"></p>
+<p id="ap-summary" aria-live="polite"></p>
+<div id="ap-events"></div>
+</div>
+</section>
 <header>
  <div class="t"><div class="ttl" onclick="if(tab==='tour')monthPick()" style="cursor:pointer"><h1 id="ht">Tournée</h1><small id="hs"></small></div><button class="hbtn" onclick="askOpen()" aria-label="Question médicale à Claude">🩺</button><button class="hbtn" onclick="goInfo()" aria-label="Infos pratiques">ℹ️</button><button class="hbtn" onclick="openSearch()" aria-label="Rechercher">🔍</button><button class="hbtn" onclick="guide(0)" aria-label="Revoir le guide de bienvenue" title="Guide">❔</button><button class="hbtn" onclick="openPk()" aria-label="Thème">🎨</button></div>
 <p class="cit" style="margin:6px 16px 2px;font-size:13px;color:var(--mut);font-style:italic;line-height:1.45">« D’abord, ne pas nuire. » <span style="font-style:normal;white-space:nowrap">— principe hippocratique (primum non nocere)</span></p>
@@ -1615,6 +1654,85 @@ async function flush(){
  return secureActive;
 }
 document.getElementById('tour-save-retry').addEventListener('click',()=>flush().catch(saveFailure));
+
+// V83 : un seul coffre chiffré, aucune seconde base patients ni connexion Topaze.
+const ABSENCE_KEY='tidel_absences_journal_v1';
+const ABSENCE_REASONS=['Patient absent','Soin non réalisé','Horaire modifié','Autre'];
+const ABSENCE_STATES=['À rapprocher','Vérifié localement','Sans suite'];
+const ap=id=>document.getElementById(id);
+function absenceRead(){
+ try{
+  const raw=TOUR_STORE.getItem(ABSENCE_KEY);
+  const rows=raw?JSON.parse(raw):[];
+  if(!Array.isArray(rows)||rows.length>500)throw Error('Journal invalide');
+  if(!rows.every(x=>x&&typeof x.id==='string'&&typeof x.patientId==='string'&&typeof x.day==='string'&&ABSENCE_REASONS.includes(x.reason)&&ABSENCE_STATES.includes(x.sync)&&Array.isArray(x.history)))throw Error('Journal invalide');
+  return rows;
+ }catch(e){ap('ap-status').textContent='Journal illisible. Aucun élément n’a été écrasé. Conserve ton coffre.';return null}
+}
+function absencePatients(){
+ const raw=TOUR_STORE.getItem('tidel_Pl');
+ try{const list=JSON.parse(raw||'[]');return Array.isArray(list)?list.filter(x=>x&&typeof x.id==='string'&&typeof x.n==='string'):[]}
+ catch(e){return []}
+}
+function absenceDateOK(day){return /^\d{4}-\d{2}-\d{2}$/.test(day)&&!Number.isNaN(Date.parse(day+'T12:00:00Z'))}
+function absenceRender(){
+ const rows=absenceRead();if(!rows)return;
+ const patients=absencePatients(), names=new Map(patients.map(p=>[p.id,p.n]));
+ const select=ap('ap-patient'),selected=select.value;select.replaceChildren();
+ const blank=document.createElement('option');blank.value='';blank.textContent='Choisir un patient';select.append(blank);
+ for(const p of patients){const o=document.createElement('option');o.value=p.id;o.textContent=p.n;select.append(o)}
+ if(patients.some(x=>x.id===selected))select.value=selected;
+ const filters={from:ap('ap-from').value,to:ap('ap-to').value,reason:ap('ap-filter-reason').value,sync:ap('ap-filter-state').value};
+ const filtered=rows.filter(x=>(!filters.from||x.day>=filters.from)&&(!filters.to||x.day<=filters.to)&&(!filters.reason||x.reason===filters.reason)&&(!filters.sync||x.sync===filters.sync)&&(!filters.from||!filters.to||filters.from<=filters.to));
+ ap('ap-summary').textContent=filtered.length+' événement(s), dont '+filtered.filter(x=>x.sync==='À rapprocher').length+' à rapprocher. Total dans le coffre : '+rows.length+'.';
+ const host=ap('ap-events');host.replaceChildren();
+ for(const x of filtered.slice().reverse()){
+  const box=document.createElement('article');box.className='ap-entry';
+  const title=document.createElement('strong');title.textContent=x.day+' · '+(names.get(x.patientId)||'Patient introuvable')+' · '+x.reason;box.append(title);
+  const note=document.createElement('p');note.textContent=x.note||'Sans observation';box.append(note);
+  const label=document.createElement('label');label.textContent='État de rapprochement manuel';
+  const state=document.createElement('select');state.setAttribute('aria-label','État pour '+x.day);
+  for(const v of ABSENCE_STATES){const opt=document.createElement('option');opt.value=v;opt.textContent=v;state.append(opt)}
+  state.value=x.sync;state.addEventListener('change',()=>absenceUpdate(x.id,state.value));label.append(state);box.append(label);
+  const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='Historique ('+x.history.length+')';details.append(summary);
+  for(const item of x.history){const line=document.createElement('div');line.className='ap-history';line.textContent=item.at+' · '+item.action;details.append(line)}
+  box.append(details);host.append(box);
+ }
+}
+async function absenceSave(rows,previous){
+ if(rows.length>500)throw Error('Limite de 500 événements atteinte');
+ TOUR_STORE.setItem(ABSENCE_KEY,JSON.stringify(rows));
+ try{await flush();ap('ap-status').textContent='Journal chiffré enregistré sur cet appareil.';return true}
+ catch(e){
+  // Conserver les changements en mémoire pour permettre Réessayer (V77) ; ne pas annoncer de succès.
+  ap('ap-status').textContent='Sauvegarde chiffrée impossible : données non garanties. Ne ferme pas la page et utilise Réessayer.';
+  return false;
+ }
+}
+async function absenceUpdate(id,next){
+ if(!ABSENCE_STATES.includes(next))return;
+ const rows=absenceRead();if(!rows)return;
+ const event=rows.find(x=>x.id===id);if(!event||event.sync===next)return;
+ const copy=rows.map(x=>x.id===id?{...x,sync:next,history:[...x.history.slice(-48),{at:new Date().toISOString(),action:'Rapprochement : '+next}]}:x);
+ await absenceSave(copy,rows);absenceRender();
+}
+ap('tour-absence-open').addEventListener('click',()=>{
+ ap('tour-absence-panel').hidden=false;
+ ap('ap-day').value=new Date().toLocaleDateString('en-CA');
+ absenceRender();noteTourActivity();
+});
+ap('ap-close').addEventListener('click',()=>{ap('tour-absence-panel').hidden=true;noteTourActivity()});
+for(const id of ['ap-from','ap-to','ap-filter-reason','ap-filter-state'])ap(id).addEventListener('change',absenceRender);
+ap('ap-form').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const rows=absenceRead();if(!rows)return;
+ const day=ap('ap-day').value,patientId=ap('ap-patient').value,reason=ap('ap-reason').value,note=ap('ap-note').value.trim();
+ if(!absenceDateOK(day)||!ABSENCE_REASONS.includes(reason)||note.length>200||!absencePatients().some(p=>p.id===patientId)){ap('ap-status').textContent='Saisie invalide, aucun changement.';return}
+ if(rows.length>=500){ap('ap-status').textContent='Journal plein (500 événements), aucun changement.';return}
+ const event={id:crypto.randomUUID(),patientId,day,reason,note,sync:'À rapprocher',history:[{at:new Date().toISOString(),action:'Signalement ajouté'}]};
+ if(await absenceSave([...rows,event],rows)){ap('ap-note').value='';absenceRender()}
+});
+
 const IDLE_LOCK_MS=15*60*1000;
 let lastTourActivity=Date.now(),idleLockTimer=null,idleLockBusy=false;
 function noteTourActivity(){
@@ -1627,6 +1745,7 @@ async function lockTourSafely(){
  if(idleLockBusy)return;
  idleLockBusy=true;
  const button=document.getElementById('tour-lock');
+ ap('tour-absence-panel').hidden=true;
  button.disabled=true;button.textContent='Sauvegarde avant verrouillage…';
  try{await flush();location.reload()}
  catch(e){
