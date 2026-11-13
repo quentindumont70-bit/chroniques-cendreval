@@ -324,3 +324,25 @@ test('Dépenses Maison: do not alter the ledger if a write is refused', async ()
   assert.equal(JSON.parse(d.memory.get(key)).length, 1);
   assert.ok(d.alerts.length >= 2);
 });
+
+test('Cockpit: find tentacules without accents and respect current profile', async () => {
+  const h = await boot('index.html');
+  const lookup = h.get('tentacleSearch');
+  assert.match(h.get('tentacleCount').textContent, /17 tentacule/);
+  lookup.value = 'musique';
+  await lookup.fire('input');
+  assert.equal(h.get('tiles').children.length, 1);
+  assert.match(h.get('tiles').children[0].children[1].textContent, /Musique/);
+  lookup.value = 'infirmiere';
+  await lookup.fire('input');
+  assert.equal(h.get('tiles').children.length, 1);
+  assert.match(h.get('tiles').children[0].textContent, /Aucune tentacule/);
+  lookup.value = 'tournée';
+  await lookup.fire('input');
+  assert.equal(h.get('tiles').children.length, 1);
+  await h.get('profile').fire('click');
+  assert.equal(h.get('tiles').children.length, 1);
+  assert.match(h.get('tiles').children[0].textContent, /Aucune tentacule/);
+  await h.get('tentacleReset').fire('click');
+  assert.match(h.get('tentacleCount').textContent, /17 tentacule/);
+});
