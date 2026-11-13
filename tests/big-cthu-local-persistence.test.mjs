@@ -12,7 +12,7 @@ async function boot(page) {
   const nodes = new Map();
   const memory = new Map();
   const alerts = [];
-  let full = false, seq = 0;
+  let full = false, failedKey = null, seq = 0;
   const node = (id) => ({
     id, children: [], value: '', checked: false, hidden: false, textContent: '',
     className: '', dataset: {}, listeners: {},
@@ -37,9 +37,10 @@ async function boot(page) {
     querySelector: (s) => get(s.startsWith('#') ? s.slice(1) : s),
     addEventListener() {},
   };
+  get('filter').value = 'all';
   const localStorage = {
     getItem: (k) => memory.get(k) ?? null,
-    setItem(k, v) { if (full) throw new Error('QuotaExceededError'); memory.set(k, String(v)); },
+    setItem(k, v) { if (full || failedKey === k) throw new Error('QuotaExceededError'); memory.set(k, String(v)); },
     removeItem: (k) => memory.delete(k),
   };
   runInNewContext(source, {
@@ -50,7 +51,7 @@ async function boot(page) {
     URL: { createObjectURL: () => 'blob:mock', revokeObjectURL() {} },
     Blob: class {}, setTimeout() {},
   }, { filename: page, timeout: 1500 });
-  return { get, memory, alerts, setFull: (value) => { full = value; } };
+  return { get, memory, alerts, setFull: (value) => { full = value; }, setFailedKey: (value) => { failedKey = value; } };
 }
 
 test('Budget: no phantom add/delete/settings when browser storage fails', async () => {
@@ -110,4 +111,30 @@ test('Cockpit: reject invalid task imports before overwriting local tasks', asyn
   await h.get('importfile').fire('change', { target: { files: [file], value: '' } });
   assert.equal(JSON.parse(h.memory.get(key))[0].text, 'Tâche conservée');
   assert.match(h.alerts.at(-1), /Import impossible/);
+});
+
+test('Capture: a failed inbox write can be retried without duplicating the destination', async () => {
+  const box = await boot('capture.html');
+  const inboxKey = 'big-cthu-v2-inbox-v1';
+  const tasksKey = 'big-cthu-v2-demo-tasks';
+  box.get('title').value = 'Note fictive';
+  box.get('target').value = 'task';
+  box.get('due').value = '';
+  box.get('notes').value = '';
+  box.setFull(true);
+  await box.get('form').fire('submit');
+  assert.equal(box.memory.has(inboxKey), false);
+  box.setFull(false);
+  await box.get('form').fire('submit');
+  assert.equal(JSON.parse(box.memory.get(inboxKey)).length, 1);
+  box.setFailedKey(inboxKey);
+  let send = box.get('list').children[0].children[1].children[0];
+  await send.fire('click');
+  assert.equal(JSON.parse(box.memory.get(tasksKey)).length, 1);
+  assert.equal(JSON.parse(box.memory.get(inboxKey))[0].status, 'new');
+  box.setFailedKey(null);
+  send = box.get('list').children[0].children[1].children[0];
+  await send.fire('click');
+  assert.equal(JSON.parse(box.memory.get(tasksKey)).length, 1);
+  assert.equal(JSON.parse(box.memory.get(inboxKey))[0].status, 'sent');
 });
