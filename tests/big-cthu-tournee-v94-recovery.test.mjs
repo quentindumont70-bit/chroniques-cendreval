@@ -6,16 +6,16 @@ import {runInNewContext} from 'node:vm';
 const html=()=>readFile(new URL('../big-cthu-beta/tournee-complete.html',import.meta.url),'utf8');
 const empty={tidel_Pl:'[]'};
 const filled={tidel_Pl:JSON.stringify([{id:'fictif-1',n:'EXEMPLE FICTIF',a:'Rue inventée'}]),tidel_absences_journal_v1:'[]'};
-async function fixture({initial=empty,encrypted=false,password='',fail=false,old=false}={}){
+async function fixture({initial=empty,encrypted=false,portable=false,password='',fail=false,old=false}={}){
  const page=await html();
- const start=page.indexOf('function recoverySpaceEmpty(state){');
+ const start=page.indexOf('const PORTABLE_FORMAT=');
  const end=page.indexOf('function fillFromBackup(d){',start);
  assert.ok(start>0&&end>start,'restoration must be isolated and explicit');
  let reloaded=0,decrypts=0,flushes=0;
  const errors=[],statuses=[],local=new Map(old?[['original-vault','ancien coffre ne pas modifier']]:[]);
  const elements={
   'tour-pass':{value:password},
-  'tour-file':{files:[{size:100,async text(){return JSON.stringify(encrypted?{v:1,cipher:'test',salt:'test',iv:'test'}:{v:1,P:[],kv:{}})}}]},
+  'tour-file':{files:[{size:100,async text(){return JSON.stringify(portable?{format:'bigcthu-tournee-complete-portable-v1',v:1,data:filled}:encrypted?{v:1,cipher:'test',salt:'test',iv:'test'}:{v:1,P:[],kv:{}})}}]},
   'tour-security-gate':{hidden:false}
  };
  const ctx={
@@ -24,14 +24,14 @@ async function fixture({initial=empty,encrypted=false,password='',fail=false,old
   document:{getElementById:id=>elements[id]},localStorage:{getItem:key=>local.get(key)??null},
   isEncryptedVaultRecord:x=>!!x.cipher,
   decryptRecord:async()=>{decrypts++;return filled},
-  fillFromBackup:()=>filled,validVaultState:x=>!!x&&Array.isArray(JSON.parse(x.tidel_Pl||'null')),
+  fillFromBackup:()=>filled,validVaultState:x=>{try{return !!x&&Array.isArray(JSON.parse(x.tidel_Pl||'null'))}catch(e){return false}},
   ensureVaultSaved:async()=>{flushes++;if(fail)throw Error('Storage full')},
   saveFailure:()=>statuses.push('error'),saveStatus:(type,message)=>statuses.push(type+':'+message),
   report:message=>errors.push(message),
   location:{reload(){reloaded++}}
  };
  runInNewContext(page.slice(start,end)+
- '\nthis.recover=recoverOldVault;this.isEmpty=recoverySpaceEmpty;this.current=()=>secureState;',
+ '\nthis.recover=recoverOldVault;this.isEmpty=recoverySpaceEmpty;this.current=()=>secureState;this.serializePortable=serializePortableVault;this.readPortable=readPortableVault;',
  ctx,{timeout:1000});
  return {ctx,errors,statuses,elements,local,reloaded:()=>reloaded,decrypts:()=>decrypts,flushes:()=>flushes};
 }
@@ -53,7 +53,7 @@ test('V94: une ancienne sauvegarde chiffrée ne se déchiffre que sur action exp
  assert.equal(f.decrypts(),0);
  assert.equal(f.flushes(),0);
  assert.equal(f.reloaded(),0);
- assert.match(f.errors[0],/ancienne phrase secrète/);
+ assert.match(f.errors[0],/ancien secret/);
  const g=await fixture({encrypted:true,password:'phrase-historique-de-test'});
  await g.ctx.recover(true);
  assert.equal(g.decrypts(),1);
@@ -88,4 +88,27 @@ test('V94: accès direct et récupération volontaire accessibles sans écran de
  assert.match(page,/async function autoOpenTournee\(\)/);
  assert.match(page,/Récupération bloquée pour ne rien écraser/);
  assert.doesNotMatch(page.slice(page.indexOf('async function autoOpenTournee(){'),page.indexOf('function recoverySpaceEmpty(')),/document\.getElementById\('tour-pass'\)/);
+});
+
+test('V95: sauvegarde JSON complète sans code conserve journal et suivi fictifs',async()=>{
+ const f=await fixture();
+ const state={tidel_Pl:JSON.stringify([{id:'fictif-1',n:'EXEMPLE FICTIF',a:'Rue imaginaire'}]),tidel_absences_journal_v1:JSON.stringify([{id:'evt-fictif',reason:'Patient absent'}]),tidel_done_2026_11_13:'["fictif-1"]'};
+ const file=f.ctx.serializePortable(state);
+ assert.match(file,/bigcthu-tournee-complete-portable-v1/);
+ assert.match(file,/evt-fictif/,'portable export is deliberately readable, warn the user');
+ const saved=JSON.parse(file);
+ assert.deepEqual(JSON.parse(JSON.stringify(f.ctx.readPortable(saved))),state);
+ const bad={...saved,data:{...state,tidel_Pl:'INVALID JSON'}};
+ assert.throws(()=>f.ctx.readPortable(bad),/incompatible/);
+ assert.throws(()=>f.ctx.serializePortable({...state,untrustedField:'bad'}),/invalides/);
+});
+
+test('V95: import du fichier complet portable depuis un appareil vierge sans mot de passe',async()=>{
+ const f=await fixture({portable:true});
+ await f.ctx.recover(true);
+ assert.equal(f.reloaded(),1);
+ assert.equal(f.decrypts(),0);
+ assert.equal(f.flushes(),1);
+ assert.equal(f.ctx.current().tidel_Pl,filled.tidel_Pl);
+ assert.equal(f.ctx.current().tidel_absences_journal_v1,filled.tidel_absences_journal_v1);
 });

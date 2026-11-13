@@ -477,12 +477,12 @@ body.tournee-locked #tour-save-strip{display:none}
 <p id="tour-error" role="status"></p>
 <p>Attention : le déverrouillage automatique signifie que toute personne ayant accès à ce navigateur peut ouvrir Tournée. Protège l'accès à ton iPhone. Si un coffre chiffré existe déjà, l'import d'un autre JSON est bloqué pour éviter son écrasement. Les données restent chiffrées dans ce navigateur, mais cette version web n'est pas un hébergement HDS certifié. Conserve ta sauvegarde d'origine et l'application historique pour les soins.</p>
 </section>
-<div id="tour-save-strip" role="status" aria-live="polite" data-state="saved"><span id="tour-save-text">Données chiffrées enregistrées sur cet appareil.</span><span><button type="button" id="tour-save-retry" hidden>Réessayer la sauvegarde</button> <button type="button" id="tour-vault-export">Exporter le coffre chiffré</button> <button type="button" id="tour-absence-open">Absences &amp; modifications</button> <button type="button" id="tour-lock">Sauvegarder</button> <button type="button" id="tour-recovery-launch">Récupérer mes anciennes données</button></span></div>
+<div id="tour-save-strip" role="status" aria-live="polite" data-state="saved"><span id="tour-save-text">Données chiffrées enregistrées sur cet appareil.</span><span><button type="button" id="tour-save-retry" hidden>Réessayer la sauvegarde</button> <button type="button" id="tour-vault-export">Copie chiffrée locale</button> <button type="button" id="tour-portable-export">Exporter une sauvegarde complète JSON</button> <button type="button" id="tour-absence-open">Absences &amp; modifications</button> <button type="button" id="tour-lock">Sauvegarder</button> <button type="button" id="tour-recovery-launch">Récupérer mes anciennes données</button></span></div>
 <section id="tour-absence-panel" hidden aria-label="Absences et modifications de Tournée">
 <div class="ap-inner">
 <div class="ap-closebar"><button id="ap-close" type="button">← Retour à Tournée</button><span class="ap-caption">Journal local chiffré</span></div>
 <h2>Absences &amp; modifications</h2>
-<p>Journal conservé dans le même coffre local chiffré que Tournée. Il ne modifie ni les soins planifiés ni Topaze. Les états de rapprochement sont manuels. <strong>Pour conserver ce journal lors d'un changement d'appareil, utilise « Exporter le coffre chiffré » : l'ancien export JSON classique ne l'inclut pas.</strong></p>
+<p>Journal conservé dans le même coffre local chiffré que Tournée. Il ne modifie ni les soins planifiés ni Topaze. Les états de rapprochement sont manuels. <strong>Pour transférer ce journal sur un autre appareil sans code, utilise « Exporter une sauvegarde complète JSON ». Ce fichier est lisible sans phrase secrète : conserve-le dans un emplacement privé.</strong></p>
 <form id="ap-form">
 <div class="ap-grid">
 <label>Date du changement<input id="ap-day" type="date" required></label>
@@ -1723,6 +1723,21 @@ function showLegacyRecovery(){
  button.hidden=false;
  saveStatus('saved','Tournée ouverte directement. Une ancienne sauvegarde chiffrée existe aussi sur cet appareil : récupération facultative.');
 }
+const PORTABLE_FORMAT='bigcthu-tournee-complete-portable-v1';
+function validPortableState(state){
+ if(!validVaultState(state))return false;
+ const entries=Object.entries(state);
+ return entries.length<=20000&&entries.every(([key,value])=>/^tidel_[A-Za-z0-9_-]{1,160}$/.test(key)&&typeof value==='string');
+}
+function serializePortableVault(state){
+ if(!validPortableState(state))throw Error('Impossible de créer la sauvegarde : données locales invalides.');
+ return JSON.stringify({format:PORTABLE_FORMAT,v:1,data:Object.fromEntries(Object.entries(state)),exportedAt:new Date().toISOString()});
+}
+function readPortableVault(candidate){
+ if(!candidate||candidate.format!==PORTABLE_FORMAT||candidate.v!==1||!validPortableState(candidate.data))throw Error('Sauvegarde complète incompatible. Aucun élément remplacé.');
+ return candidate.data;
+}
+
 function recoverySpaceEmpty(state){
  try{
   if(!state||typeof state!=='object'||!Array.isArray(JSON.parse(state.tidel_Pl||'null')))return false;
@@ -1742,8 +1757,9 @@ async function recoverOldVault(fileMode){
    const file=document.getElementById('tour-file').files[0];
    if(!file||file.size>25*1024*1024)throw Error('Fichier absent ou trop volumineux.');
    const candidate=JSON.parse(await file.text());
-   if(isEncryptedVaultRecord(candidate)){
-    if(password.length<12)throw Error('Ce fichier avait une ancienne phrase secrète : saisis-la uniquement pour récupérer ce fichier.');
+   if(candidate&&candidate.format===PORTABLE_FORMAT)state=readPortableVault(candidate);
+   else if(isEncryptedVaultRecord(candidate)){
+    if(password.length<12)throw Error('Ce fichier est chiffré : sa récupération exige son ancien secret. Pour transférer sans code, utilise « Exporter une sauvegarde complète JSON » depuis l’ancien appareil.');
     state=await decryptRecord(JSON.stringify(candidate),password);
    }else state=fillFromBackup(candidate);
   }else{
@@ -1834,12 +1850,32 @@ async function exportEncryptedVault(){
   anchor.href=url;anchor.download='tournee-coffre-chiffre-'+stamp+'.json';
   document.body.append(anchor);anchor.click();
   setTimeout(()=>{anchor.remove();URL.revokeObjectURL(url)},30000);
-  status.textContent='Coffre chiffré exporté. Conserve le fichier ET ta phrase secrète dans un endroit sûr.';
+  status.textContent='Copie chiffrée locale exportée. Sans la clé de cet appareil, elle ne peut pas être restaurée ailleurs. Pour transférer sans code, utilise la sauvegarde complète JSON.';
  }catch(e){
   status.textContent='Export impossible : conserve la page ouverte et réessaie après avoir vérifié le coffre.';
  }
 }
 document.getElementById('tour-vault-export').addEventListener('click',exportEncryptedVault);
+
+async function exportPortableVault(){
+ const status=document.getElementById('tour-save-text');
+ try{
+  await ensureVaultSaved();
+  const data=serializePortableVault(secureState);
+  const now=new Date();
+  const stamp=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
+  const file=new Blob([data],{type:'application/json'});
+  const url=URL.createObjectURL(file),anchor=document.createElement('a');
+  anchor.href=url;anchor.download='tournee-complete-PORTABLE-LISIBLE-'+stamp+'.json';
+  document.body.append(anchor);anchor.click();
+  setTimeout(()=>{anchor.remove();URL.revokeObjectURL(url)},30000);
+  status.textContent='Sauvegarde complète JSON créée localement, sans code. ATTENTION : fichier lisible, à conserver dans un emplacement privé.';
+ }catch(e){
+  status.textContent='Export complet impossible : aucune sauvegarde nouvelle garantie. Garde Tournée ouverte et réessaie.';
+ }
+}
+document.getElementById('tour-portable-export').addEventListener('click',exportPortableVault);
+
 
 
 // V83 : un seul coffre chiffré, aucune seconde base patients ni connexion Topaze.

@@ -68,6 +68,6 @@ test('V89: checklist terrain limite les essais aux données fictives sans nettoy
  assert.match(guide,/Essai de reprise iPhone sur données fictives/);
  assert.match(guide,/Ne supprime aucun stockage/);
  assert.match(guide,/second navigateur vierge/);
- assert.match(guide,/Exporter le coffre chiffré/);
+ assert.match(guide,/Exporter une sauvegarde complète JSON/);
  assert.doesNotMatch(guide,/Effacer l'historique Safari pour réinitialiser/);
 });
