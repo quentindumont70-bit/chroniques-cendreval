@@ -50,8 +50,8 @@ test('V78: après une interruption avant commit, le dernier coffre valide reste 
 test('V78: refus de migration automatique sur coffre existant',async()=>{
  const {html}=await cryptoFixture();
  assert.match(html,/if\(fileMode\)\{\s*if\(full\|\|previous\)throw Error/);
- assert.match(html,/if\(!full\)\{secureGen\+\+;await flush\(\)\}launch\(\)/);
- assert.match(html,/await flush\(\);location\.reload\(\)/);
+ assert.match(html,/if\(!full\)\{if\(importedEncrypted\)localStorage\.setItem\(SECURE_KEY,JSON\.stringify\(importedEncrypted\)\);else\{secureGen\+\+;await flush\(\)\}\}launch\(\)/);
+ assert.match(html,/await ensureVaultSaved\(\);location\.reload\(\)/);
 });
 
 

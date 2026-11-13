@@ -453,18 +453,18 @@ body.tournee-locked #tour-save-strip{display:none}
 <label for="tour-pass">Phrase secrète utilisée pour la restauration</label>
 <input id="tour-pass" type="password" autocomplete="current-password" minlength="12" placeholder="Ta phrase secrète">
 <button id="tour-open">Déverrouiller et ouvrir toute l'application</button>
-<details style="margin-top:14px"><summary style="cursor:pointer">Importer une sauvegarde JSON (uniquement si cet espace est vide)</summary>
-<label for="tour-file">Fichier JSON de Tournée</label><input type="file" id="tour-file" accept=".json,application/json">
+<details style="margin-top:14px"><summary style="cursor:pointer">Importer une sauvegarde JSON ou un coffre chiffré (uniquement si cet espace est vide)</summary>
+<label for="tour-file">Sauvegarde Tournée : JSON classique ou coffre chiffré complet</label><input type="file" id="tour-file" accept=".json,application/json">
 <button id="tour-import">Importer dans Tournée complète</button></details>
 <p id="tour-error" role="status"></p>
 <p>Si un coffre chiffré existe déjà, l'import d'un autre JSON est bloqué pour éviter son écrasement. Les données restent chiffrées dans ce navigateur, mais cette version web n'est pas un hébergement HDS certifié. Conserve ta sauvegarde d'origine et l'application historique pour les soins.</p>
 </section>
-<div id="tour-save-strip" role="status" aria-live="polite" data-state="saved"><span id="tour-save-text">Données chiffrées enregistrées sur cet appareil.</span><span><button type="button" id="tour-save-retry" hidden>Réessayer la sauvegarde</button> <button type="button" id="tour-absence-open">Absences &amp; modifications</button> <button type="button" id="tour-lock">Verrouiller</button></span></div>
+<div id="tour-save-strip" role="status" aria-live="polite" data-state="saved"><span id="tour-save-text">Données chiffrées enregistrées sur cet appareil.</span><span><button type="button" id="tour-save-retry" hidden>Réessayer la sauvegarde</button> <button type="button" id="tour-vault-export">Exporter le coffre chiffré</button> <button type="button" id="tour-absence-open">Absences &amp; modifications</button> <button type="button" id="tour-lock">Verrouiller</button></span></div>
 <section id="tour-absence-panel" hidden aria-label="Absences et modifications de Tournée">
 <div class="ap-inner">
 <button id="ap-close" type="button">← Retour à Tournée</button>
 <h2>Absences &amp; modifications</h2>
-<p>Journal conservé dans le même coffre local chiffré que Tournée. Il ne modifie ni les soins planifiés ni Topaze. Les états de rapprochement sont manuels.</p>
+<p>Journal conservé dans le même coffre local chiffré que Tournée. Il ne modifie ni les soins planifiés ni Topaze. Les états de rapprochement sont manuels. <strong>Pour conserver ce journal lors d'un changement d'appareil, utilise « Exporter le coffre chiffré » : l'ancien export JSON classique ne l'inclut pas.</strong></p>
 <form id="ap-form">
 <div class="ap-grid">
 <label>Date du changement<input id="ap-day" type="date" required></label>
@@ -1609,6 +1609,7 @@ const enc=new TextEncoder(),dec=new TextDecoder();
 const to64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s)};
 const from64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 async function keyFor(password,salt){const base=await crypto.subtle.importKey('raw',enc.encode(password),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:180000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+function isEncryptedVaultRecord(x){return x&&x.v===1&&typeof x.salt==='string'&&x.salt.length<128&&typeof x.iv==='string'&&x.iv.length<128&&typeof x.cipher==='string'&&x.cipher.length>0}
 async function decryptRecord(record,password){let x=JSON.parse(record);const key=await keyFor(password,from64(x.salt));const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:from64(x.iv)},key,from64(x.cipher));return JSON.parse(dec.decode(plain))}
 function fillFromBackup(d){
  if(!d||d.v!==1||!Array.isArray(d.P)||!d.kv||typeof d.kv!=='object'||Array.isArray(d.kv))throw Error('Sauvegarde JSON incompatible');
@@ -1653,7 +1654,36 @@ async function flush(){
  })().catch(e=>{saveFailure();throw e}).finally(()=>{secureActive=null});
  return secureActive;
 }
+async function ensureVaultSaved(){
+ for(let attempt=0;attempt<5;attempt++){
+  await flush();
+  if(secureSavedGen===secureGen)return;
+ }
+ throw Error('Des modifications sont encore en cours : réessaie.');
+}
 document.getElementById('tour-save-retry').addEventListener('click',()=>flush().catch(saveFailure));
+
+async function exportEncryptedVault(){
+ const status=document.getElementById('tour-save-text');
+ try{
+  await ensureVaultSaved();
+  const stored=localStorage.getItem(SECURE_KEY);
+  if(!stored)throw Error('Coffre introuvable');
+  const record=JSON.parse(stored);
+  if(!isEncryptedVaultRecord(record))throw Error('Coffre invalide');
+  const date=new Date(),stamp=[date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+  const blob=new Blob([stored],{type:'application/json'});
+  const url=URL.createObjectURL(blob),anchor=document.createElement('a');
+  anchor.href=url;anchor.download='tournee-coffre-chiffre-'+stamp+'.json';
+  document.body.append(anchor);anchor.click();
+  setTimeout(()=>{anchor.remove();URL.revokeObjectURL(url)},30000);
+  status.textContent='Coffre chiffré exporté. Conserve le fichier ET ta phrase secrète dans un endroit sûr.';
+ }catch(e){
+  status.textContent='Export impossible : conserve la page ouverte et réessaie après avoir vérifié le coffre.';
+ }
+}
+document.getElementById('tour-vault-export').addEventListener('click',exportEncryptedVault);
+
 
 // V83 : un seul coffre chiffré, aucune seconde base patients ni connexion Topaze.
 const ABSENCE_KEY='tidel_absences_journal_v1';
@@ -1789,7 +1819,7 @@ async function lockTourSafely(){
  const button=document.getElementById('tour-lock');
  ap('tour-absence-panel').hidden=true;
  button.disabled=true;button.textContent='Sauvegarde avant verrouillage…';
- try{await flush();location.reload()}
+ try{await ensureVaultSaved();location.reload()}
  catch(e){
   saveFailure();button.disabled=false;button.textContent='Verrouiller';
   idleLockBusy=false;
@@ -1813,18 +1843,25 @@ function launch(){if(secureBooted)return;secureBooted=true;lastTourActivity=Date
 async function login(fileMode){try{
  if(!crypto?.subtle)throw Error('Ouvre Tournée en HTTPS dans Safari.');
  const password=document.getElementById('tour-pass').value;if(password.length<12)throw Error('Entre ta phrase secrète (12 caractères minimum).');
- report('Déchiffrement en cours sur cet appareil…');let state;
+ report('Déchiffrement en cours sur cet appareil…');let state,importedEncrypted=null;
  const full=localStorage.getItem(SECURE_KEY),previous=localStorage.getItem(PREVIOUS_KEY);
  if(fileMode){
  if(full||previous)throw Error('Une Tournée chiffrée existe déjà dans ce navigateur. Déverrouille-la : un nouvel import pourrait écraser tes dossiers. Conserve ta sauvegarde originale.');
- const file=document.getElementById('tour-file').files[0];if(!file)throw Error('Sélectionne ton fichier JSON.');if(file.size>25*1024*1024)throw Error('Fichier trop volumineux.');state=fillFromBackup(JSON.parse(await file.text()))}
+ const file=document.getElementById('tour-file').files[0];if(!file)throw Error('Sélectionne ton fichier JSON.');if(file.size>25*1024*1024)throw Error('Fichier trop volumineux.');
+ const candidate=JSON.parse(await file.text());
+ if(isEncryptedVaultRecord(candidate)){
+  state=await decryptRecord(JSON.stringify(candidate),password);
+  if(!state||typeof state!=='object'||!Array.isArray(JSON.parse(state.tidel_Pl||'null')))throw Error('Coffre chiffré invalide');
+  importedEncrypted={v:1,salt:candidate.salt,iv:candidate.iv,cipher:candidate.cipher};
+ }else state=fillFromBackup(candidate)
+ }
  else if(full){state=await decryptRecord(full,password);if(!state||typeof state!=='object'||!Array.isArray(JSON.parse(state.tidel_Pl||'null')))throw Error('Données chiffrées invalides.')}
  else if(previous){const saved=await decryptRecord(previous,password);state=fillFromBackup(saved.data)}
  else throw Error('Aucune sauvegarde chiffrée ici. Importe ton JSON.');
  secureState=Object.assign(Object.create(null),state);
- secureSalt=full&&!fileMode?from64(JSON.parse(full).salt):crypto.getRandomValues(new Uint8Array(16));
+ secureSalt=importedEncrypted?from64(importedEncrypted.salt):full&&!fileMode?from64(JSON.parse(full).salt):crypto.getRandomValues(new Uint8Array(16));
  secureKey=await keyFor(password,secureSalt);
- if(!full){secureGen++;await flush()}launch();
+ if(!full){if(importedEncrypted)localStorage.setItem(SECURE_KEY,JSON.stringify(importedEncrypted));else{secureGen++;await flush()}}launch();
  }catch(err){report('Ouverture impossible : '+(err?.message||'mot de passe ou fichier invalide'))}}
 document.getElementById('tour-open').addEventListener('click',()=>login(false));
 document.getElementById('tour-import').addEventListener('click',()=>login(true));

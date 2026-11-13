@@ -9,7 +9,7 @@ async function fixture({fail=false}={}){
  const begin=html.indexOf('function saveStatus(state,message){');
  const end=html.indexOf('function report(message){',begin);
  assert.ok(begin>=0&&end>begin,'save pipeline present');
- const elements=Object.fromEntries(['tour-save-strip','tour-save-text','tour-save-retry','tour-lock','tour-absence-open','tour-absence-panel','ap-close','ap-form','ap-from','ap-to','ap-filter-reason','ap-filter-state'].map(id=>[id,{dataset:{},hidden:false,disabled:false,textContent:'',addEventListener(type,fn){this[type]=fn}}]));
+ const elements=Object.fromEntries(['tour-save-strip','tour-save-text','tour-save-retry','tour-lock','tour-vault-export','tour-absence-open','tour-absence-panel','ap-close','ap-form','ap-from','ap-to','ap-filter-reason','ap-filter-state'].map(id=>[id,{dataset:{},hidden:false,disabled:false,textContent:'',addEventListener(type,fn){this[type]=fn}}]));
  let writes=0,reloads=0,shouldFail=fail;
  const sandbox={
   document:{hidden:false,getElementById:id=>elements[id],addEventListener(){}},
@@ -51,7 +51,7 @@ test('V77: verrouillage refuse la fermeture tant que la sauvegarde échoue',asyn
 
 test('V77: ouverture de coffre existant ne réécrit pas inutilement son contenu',async()=>{
  const html=await read();
- assert.match(html,/if\(!full\)\{secureGen\+\+;await flush\(\)\}launch\(\)/);
+ assert.match(html,/if\(!full\)\{if\(importedEncrypted\)localStorage\.setItem\(SECURE_KEY,JSON\.stringify\(importedEncrypted\)\);else\{secureGen\+\+;await flush\(\)\}\}launch\(\)/);
  assert.match(html,/id="tour-save-strip"/);
  assert.match(html,/id="tour-lock"/);
  assert.match(html,/id="tour-save-retry"/);
