@@ -55,9 +55,9 @@ button:focus-visible,a:focus-visible{outline:3px solid #9cf1e0;outline-offset:3p
 <p id="storageState" class="status" role="status" aria-live="polite"></p>
 </section>
 <section class="box"><h2>Tournée officielle : une seule version chiffrée</h2>
-<p><a href="./tournee-complete.html">Ouvrir Tournée complète chiffrée</a>. C'est l'unique version mise en avant dans Big Cthu. Le coffre se déverrouille avec une phrase secrète distincte du Coffre général.</p>
+<p><a href="./tournee-complete.html">Ouvrir Tournée complète chiffrée</a>. C'est l'unique version mise en avant dans Big Cthu. Tournée s’ouvre directement, sans écran de verrouillage ni phrase secrète à saisir, même lors d’une première visite. La protection par code du téléphone reste celle que tu utilises. L’enregistrement local conserve un chiffrement automatique sans te demander de code. Si tu avais déjà un ancien coffre protégé, ses données restent intactes : utilise seulement l’option « Récupérer mes anciennes données » depuis l’application pour les retrouver. Une ancienne phrase secrète peut être indispensable uniquement pour déchiffrer ces anciennes données, pas pour ouvrir Tournée. Protège l’accès à ton téléphone.</p>
 <p>Pour terminer une migration : <a href="./tournee.html">ouvrir uniquement l'ancienne Tournée pour exporter une sauvegarde</a>. Vérifie le fichier exporté dans un emplacement privé, restaure-le dans la nouvelle application si son format est compatible, puis contrôle toutes les rubriques avant de retirer l'ancien raccourci. Ne supprime jamais l'ancien stockage ou le fichier source pendant ces vérifications.</p>
-<p><strong>Transférer le coffre complet et le journal d’absences :</strong> sur l’ancien appareil, ouvre Tournée complète, déverrouille et touche « Exporter le coffre chiffré ». Conserve le fichier dans un emplacement privé et la phrase secrète séparément. Sur le nouvel appareil, dans une Tournée complète vide, importe ce coffre avec la même phrase secrète. Contrôle la liste, les modifications et leur historique <strong>avant</strong> de supprimer un ancien raccourci. Le JSON classique de Tournée n’inclut pas ce journal.</p>
+<p><strong>Transférer le coffre complet et le journal d’absences :</strong> sur l’ancien appareil, ouvre Tournée complète directement et touche « Exporter le coffre chiffré ». Conserve le fichier dans un emplacement privé. Sur le nouvel appareil, ouvre Tournée directement puis utilise « Récupérer mes anciennes données » pour restaurer le fichier chiffré ; si ce coffre avait une ancienne phrase secrète, elle est nécessaire uniquement pour ce transfert. Contrôle la liste, les modifications et leur historique <strong>avant</strong> de supprimer un ancien raccourci. Le JSON classique de Tournée n’inclut pas ce journal.</p>
 <p class="muted"><strong>Important :</strong> ne dépose jamais une sauvegarde de patients dans le <a href="./sauvegardes.html">Coffre général</a> et ne publie aucun fichier clinique dans GitHub ou dans le chat. Garde ton ancien accès jusqu'à vérification indépendante de toutes tes données.</p></section>
 <section class="box"><h2>Accès directs aux tentacules</h2>
 <p>Ces liens peuvent s'ouvrir dans Safari. Pour conserver les données au même endroit, utilise normalement l'icône principale puis la navigation interne.</p>
@@ -65,9 +65,9 @@ button:focus-visible,a:focus-visible{outline:3px solid #9cf1e0;outline-offset:3p
 <section class="box"><h2>Essai de reprise iPhone sur données fictives</h2>
 <p>Protocole de vérification uniquement : ne commence pas avec tes dossiers réels. Conserve une sauvegarde indépendante et utilise un navigateur de test sans données cliniques.</p>
 <ol>
-<li>Dans un environnement de test vierge, utilise une sauvegarde de Tournée contenant seulement des patients inventés.</li>
-<li>Ouvre Tournée complète, déverrouille et crée un signalement fictif dans Absences &amp; modifications.</li>
-<li>Passe Safari en arrière-plan, puis reviens. Après 15 minutes sans activité, confirme que l'application demande de nouveau la phrase secrète.</li>
+<li>Dans un environnement de test vierge, ouvre Tournée sans créer de phrase secrète, puis utilise exclusivement des patients inventés.</li>
+<li>Ouvre Tournée complète directement et crée un signalement fictif dans Absences &amp; modifications.</li>
+<li>Passe Safari en arrière-plan, puis reviens. Après 15 minutes sans activité, confirme que Tournée reste ouverte sans te redemander de phrase secrète, et que les modifications fictives restent présentes. Ferme puis rouvre l’onglet pour valider l’ouverture automatique.</li>
 <li>Utilise « Exporter le coffre chiffré », conserve ce fichier dans un emplacement privé, puis restaure-le dans un second navigateur vierge avec la même phrase secrète.</li>
 <li>Contrôle les événements fictifs, les annulations, les filtres et l'historique. Essaie aussi une mauvaise phrase secrète sur l'environnement de test.</li>
 </ol>

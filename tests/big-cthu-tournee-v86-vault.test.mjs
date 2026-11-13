@@ -87,7 +87,7 @@ test('V86: export et verrouillage attendent toutes les écritures en cours',asyn
  runInNewContext(html.slice(a,b)+'\nthis.ensure=ensureVaultSaved;',ctx,{timeout:1000});
  await ctx.ensure();
  assert.equal(attempts,2);
- assert.match(html,/await ensureVaultSaved\(\);location\.reload\(\)/);
+ assert.match(html,/await ensureVaultSaved\(\);saveStatus\('saved'/);
 });
 
 
