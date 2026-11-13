@@ -28,6 +28,9 @@ test('iPhone: guide accessible depuis le cockpit avec précautions de migration'
  assert.match(guide,/anciens raccourcis/);
  assert.match(guide,/sauvegardes\.html/);
  assert.match(guide,/Copier l'adresse principale/);
+ assert.match(guide,/id="testStorage"/);
+ assert.match(guide,/localStorage\.removeItem\(key\)/);
+ assert.match(guide,/display-mode: standalone/);
  assert.match(guide,/Une seule icône|une seule icône/);
  assert.doesNotMatch(guide,/api\.openai\.com|api\.anthropic\.com|generativelanguage\.googleapis\.com/);
 });
