@@ -83,8 +83,15 @@ const ACTIVITIES={
  ville:['Chaussures de ville confortables','Petit sac de journée'],
  neige:['Manteau chaud','Gants et bonnet','Chaussures adaptées à la neige']
 };
-function packing(activity,forecast){
- let list=[...BASE,...(ACTIVITIES[activity]||[])];
+function packing(activity,forecast,durationDays=0){
+ const activities=Array.isArray(activity)?activity:[activity];
+ let list=[...BASE];
+ for(const name of activities)list.push(...(ACTIVITIES[name]||[]));
+ if(Number.isInteger(durationDays)&&durationDays>1&&durationDays<=366){
+  const count=Math.min(durationDays,7);
+  list.push(count+' changes de vêtements (ou équivalent selon les besoins)');
+  if(durationDays>7)list.push('Prévoir une lessive ou des tenues supplémentaires pour le séjour long');
+ }
  if(Array.isArray(forecast)&&forecast.some(d=>Number(d.rain)>=40))list.push('Imperméable ou parapluie');
  if(Array.isArray(forecast)&&forecast.some(d=>Number(d.min)<=8))list.push('Veste chaude');
  if(Array.isArray(forecast)&&forecast.some(d=>Number(d.max)>=27))list.push('Vêtements légers et protection solaire');
