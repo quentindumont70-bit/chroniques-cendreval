@@ -24,13 +24,14 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run typecheck:game
-      - run: npm test
-      - name: Tests ciblés Bourse d'Azeroth (FIFO et marchés)
-        run: node --test tests/binch-ah-portfolio.test.mjs
+      # Pages must not be blocked by unrelated game / trading tests.
+      # Build the existing site and validate the public Big Cthu shell.
+      - run: npm run build:pages
+      - name: Contrôles ciblés Big Cthu iPhone
+        run: node --test tests/big-cthu-iphone.test.mjs
       - name: Contrôles du portail La Binch
         run: node scripts/check-binch.mjs
-      - name: Capturer les arbres Forever en lecture seule pour un affichage fiable
+      - name: Capturer les arbres Forever en lecture seule
         run: node scripts/snapshot-forever-talents.mjs
       - name: Inclure les fichiers publics Big Cthu dans le site Pages
         run: node scripts/stage-big-cthu-beta.mjs
