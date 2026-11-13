@@ -1654,12 +1654,19 @@ async function flush(){
  })().catch(e=>{saveFailure();throw e}).finally(()=>{secureActive=null});
  return secureActive;
 }
+async function ensureVaultSaved(){
+ for(let attempt=0;attempt<5;attempt++){
+  await flush();
+  if(secureSavedGen===secureGen)return;
+ }
+ throw Error('Des modifications sont encore en cours : réessaie.');
+}
 document.getElementById('tour-save-retry').addEventListener('click',()=>flush().catch(saveFailure));
 
 async function exportEncryptedVault(){
  const status=document.getElementById('tour-save-text');
  try{
-  await flush();
+  await ensureVaultSaved();
   const stored=localStorage.getItem(SECURE_KEY);
   if(!stored)throw Error('Coffre introuvable');
   const record=JSON.parse(stored);
@@ -1812,7 +1819,7 @@ async function lockTourSafely(){
  const button=document.getElementById('tour-lock');
  ap('tour-absence-panel').hidden=true;
  button.disabled=true;button.textContent='Sauvegarde avant verrouillage…';
- try{await flush();location.reload()}
+ try{await ensureVaultSaved();location.reload()}
  catch(e){
   saveFailure();button.disabled=false;button.textContent='Verrouiller';
   idleLockBusy=false;
