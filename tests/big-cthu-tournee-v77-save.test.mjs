@@ -16,7 +16,7 @@ async function fixture({fail=false}={}){
   localStorage:{setItem(){if(shouldFail)throw Error('QuotaExceeded');writes++}},
   crypto:{getRandomValues(arr){return arr.fill(1)},subtle:{encrypt:async()=>new Uint8Array([1,2,3])}},
   setTimeout:()=>1,clearTimeout:()=>{},TextEncoder,Uint8Array,JSON,
-  SECURE_KEY:'test-encrypted-only',secureKey:'fake-key',secureSalt:new Uint8Array(16),secureGen:1,secureActive:null,secureTimer:0,secureState:{tidel_Pl:'[]'},
+  SECURE_KEY:'test-encrypted-only',secureKey:'fake-key',secureSalt:new Uint8Array(16),secureGen:1,secureSavedGen:0,secureActive:null,secureTimer:0,secureState:{tidel_Pl:'[]'},
   to64:()=> 'AQID',enc:new TextEncoder(),location:{reload(){reloads++}}
  };
  runInNewContext(html.slice(begin,end)+'\nthis.flushTest=flush;this.dirtyTest=dirty;',sandbox,{timeout:1000});
@@ -57,4 +57,21 @@ test('V77: ouverture de coffre existant ne réécrit pas inutilement son contenu
  assert.match(html,/id="tour-save-retry"/);
  assert.match(html,/type="password" autocomplete="current-password"/);
  assert.doesNotMatch(html,/fetch\(['"]https:\/\/.*patient/);
+});
+
+test('V79: évite les écritures répétées du coffre déjà enregistré',async()=>{
+ const f=await fixture();
+ await f.flush();
+ assert.equal(f.writes(),1);
+ await f.flush();
+ assert.equal(f.writes(),1);
+});
+
+test('V79: sauvegarde en arrière-plan seulement si modifications non encore persistées',async()=>{
+ const html=await read();
+ assert.match(html,/document\.addEventListener\('visibilitychange',\(\)=>\{if\(document\.hidden\)saveIfPending\(\)\}\)/);
+ assert.match(html,/window\.addEventListener\('pagehide',saveIfPending\)/);
+ assert.match(html,/secureGen!==secureSavedGen/);
+ assert.match(html,/secureSavedGen=last/);
+ assert.match(html,/if\(secureSavedGen===secureGen\)return/);
 });

@@ -1565,7 +1565,7 @@ async function impApply(rep,b){if(!IMPR||!IMPR.ok.length)return;if(rep&&!b.datas
 'use strict';
 /* Data never bundled with this public source. Decrypt on this device only. */
 const SECURE_KEY='bigcthu_tournee_full_encrypted_v1', PREVIOUS_KEY='bigcthu_tournee_encrypted_v1';
-let secureState=Object.create(null),secureKey=null,secureSalt=null,secureGen=0,secureActive=null,secureTimer=null,secureBooted=false;
+let secureState=Object.create(null),secureKey=null,secureSalt=null,secureGen=0,secureSavedGen=0,secureActive=null,secureTimer=null,secureBooted=false;
 const enc=new TextEncoder(),dec=new TextDecoder();
 const to64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s)};
 const from64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
@@ -1599,6 +1599,7 @@ function dirty(){secureGen++;saveStatus('pending','Chiffrement et enregistrement
 async function flush(){
  if(!secureKey)throw Error('Chiffrement non initialisé');
  if(secureActive)return secureActive;
+ if(secureSavedGen===secureGen)return;
  clearTimeout(secureTimer);
  secureActive=(async()=>{
   let last;
@@ -1608,6 +1609,7 @@ async function flush(){
    const cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},secureKey,enc.encode(JSON.stringify(secureState)));
    localStorage.setItem(SECURE_KEY,JSON.stringify({v:1,salt:to64(secureSalt),iv:to64(iv),cipher:to64(new Uint8Array(cipher))}));
   }while(last!==secureGen);
+  secureSavedGen=last;
   saveStatus('saved','Données chiffrées enregistrées sur cet appareil.');
  })().catch(e=>{saveFailure();throw e}).finally(()=>{secureActive=null});
  return secureActive;
@@ -1640,7 +1642,9 @@ async function login(fileMode){try{
 document.getElementById('tour-open').addEventListener('click',()=>login(false));
 document.getElementById('tour-import').addEventListener('click',()=>login(true));
 document.getElementById('tour-saved-status').textContent=localStorage.getItem(SECURE_KEY)?'Une Tournée complète chiffrée est disponible. Utilise la même phrase secrète.':localStorage.getItem(PREVIOUS_KEY)?'✅ Ta sauvegarde chiffrée précédente est détectée. Utilise la même phrase secrète : les patients seront transférés dans l’application complète.':'Aucune sauvegarde locale détectée ici. Sélectionne ton fichier JSON.';
-window.addEventListener('pagehide',()=>{if(secureKey&&secureGen)flush().catch(saveFailure)});
+function saveIfPending(){if(secureKey&&secureGen!==secureSavedGen)flush().catch(saveFailure)}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)saveIfPending()});
+window.addEventListener('pagehide',saveIfPending);
 </script>
 </body>
 </html>
