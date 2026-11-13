@@ -81,7 +81,7 @@ test('Voyages: nouvelle interface étapes et paiements reste liée au coffre',as
  for(const id of ['splitMode','beneficiaries','reimbursements','stepForm','steps']){
    assert.match(page,new RegExp('id="'+id+'"'));
  }
- assert.match(backup,/Schéma V22/);
+ assert.match(backup,/Schéma V23/);
  assert.match(backup,/if\(t\.steps!==undefined/);
  assert.match(backup,/if\(t\.reimbursements!==undefined/);
  assert.match(sw,/voyages-core\.js/);
@@ -110,6 +110,30 @@ test('Voyages: valises personnalisées et migration Coffre V22 présentes dans l
  assert.match(page,/packedByPerson/);
  assert.match(backup,/t\.packedByPerson!==undefined/);
  assert.match(backup,/t\.activities!==undefined/);
- assert.match(backup,/Schéma V22/);
+ assert.match(backup,/Schéma V23/);
  assert.match(sw,/v55/);
+});
+
+test('Voyages: export CSV traite les montants, remboursements et soldes',()=>{
+ const trip={people:['Alice','Bob'],expenses:[{id:'e1',date:'2026-11-13',title:'Train',payer:'Alice',cents:1000,shares:{Alice:500,Bob:500}}],reimbursements:[{id:'r1',date:'2026-11-14',from:'Bob',to:'Alice',cents:200}]};
+ const csv=C.exportTripCsv(trip);
+ assert.match(csv,/"dépense";"2026-11-13";"Train";"Alice"/);
+ assert.match(csv,/"remboursement";"2026-11-14";"Remboursement";"Bob";"Alice";"2.00"/);
+ assert.match(csv,/"solde";"";"Après remboursements";"Alice";"net à recevoir/);
+ assert.match(csv,/"3.00"/);
+});
+test('Voyages: export CSV échappe les champs et neutralise les formules dangereuses',()=>{
+ const trip={people:['Alice','Bob'],expenses:[{date:'',title:'=HYPERLINK("danger")',payer:'Alice',cents:100,shares:{Alice:50,Bob:50}}],reimbursements:[]};
+ const csv=C.exportTripCsv(trip);
+ assert.ok(csv.includes('"'=HYPERLINK(""danger"")"'));
+ assert.match(csv,/\r\n/);
+});
+test('Voyages: la page conserve les dates facultatives et un export CSV local',async()=>{
+ const root=new URL('../big-cthu-beta/',import.meta.url);
+ const [page,backup]=await Promise.all(['voyages.html','sauvegardes.html'].map(f=>readFile(new URL(f,root),'utf8')));
+ assert.match(page,/id="expenseDate"/);
+ assert.match(page,/id="exportTrip"/);
+ assert.match(page,/String\.fromCharCode\(0xFEFF\)/);
+ assert.match(backup,/Schéma V23/);
+ assert.match(backup,/p\.date===undefined\|\|travelDate\(p\.date\)/);
 });
