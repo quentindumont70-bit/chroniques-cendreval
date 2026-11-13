@@ -182,3 +182,23 @@ test('Voyages: bouton modifier la dépense et informer du maintien des comptes',
  assert.match(html,/C\.updateExpenseDetails\(y,x\.id,name\.value,day\.value\)/);
  assert.match(html,/Montant, payeur et répartition conservés/);
 });
+
+test('Voyages: valises texte individuelles et communes ne mélangent pas les cases',()=>{
+ const trip={title:'Vacances fictives',start:'2026-11-15',end:'2026-11-17',activity:'ville',people:['Alice','Bob'],extra:['Chargeur téléphone'],packed:['Chargeur téléphone'],packedByPerson:{Alice:['Téléphone et chargeur'],Bob:[]}};
+ const shared=C.packingChecklist(trip);
+ const alice=C.packingChecklist(trip,'Alice');
+ const bob=C.packingChecklist(trip,'Bob');
+ assert.ok(shared.items.some(x=>x.title==='Chargeur téléphone'&&x.checked));
+ assert.ok(alice.items.some(x=>x.title==='Téléphone et chargeur'&&x.checked));
+ assert.ok(bob.items.some(x=>x.title==='Chargeur téléphone'&&!x.checked));
+ assert.match(C.packingText(trip,'Alice'),/Vacances fictives — Alice/);
+ assert.match(C.packingText(trip,'Bob'),/\[ \] Chargeur téléphone/);
+ assert.throws(()=>C.packingChecklist(trip,'Chloé'),/Voyageur/);
+});
+test('Voyages: export de valise sans données serveur et progression à l écran',async()=>{
+ const html=await readFile(new URL('../big-cthu-beta/voyages.html',import.meta.url),'utf8');
+ assert.match(html,/id="packExport"/);
+ assert.match(html,/id="packProgress"/);
+ assert.match(html,/C\.packingText\(t,packOwner/);
+ assert.match(html,/text\/plain;charset=utf-8/);
+});
