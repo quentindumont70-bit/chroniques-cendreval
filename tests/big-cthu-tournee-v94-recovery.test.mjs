@@ -8,7 +8,7 @@ const empty={tidel_Pl:'[]'};
 const filled={tidel_Pl:JSON.stringify([{id:'fictif-1',n:'EXEMPLE FICTIF',a:'Rue inventée'}]),tidel_absences_journal_v1:'[]'};
 async function fixture({initial=empty,encrypted=false,password='',fail=false,old=false}={}){
  const page=await html();
- const start=page.indexOf('function recoverySpaceEmpty(state){');
+ const start=page.indexOf('const PORTABLE_FORMAT=');
  const end=page.indexOf('function fillFromBackup(d){',start);
  assert.ok(start>0&&end>start,'restoration must be isolated and explicit');
  let reloaded=0,decrypts=0,flushes=0;
@@ -31,7 +31,7 @@ async function fixture({initial=empty,encrypted=false,password='',fail=false,old
   location:{reload(){reloaded++}}
  };
  runInNewContext(page.slice(start,end)+
- '\nthis.recover=recoverOldVault;this.isEmpty=recoverySpaceEmpty;this.current=()=>secureState;',
+ '\nthis.recover=recoverOldVault;this.isEmpty=recoverySpaceEmpty;this.current=()=>secureState;this.serializePortable=serializePortableVault;this.readPortable=readPortableVault;',
  ctx,{timeout:1000});
  return {ctx,errors,statuses,elements,local,reloaded:()=>reloaded,decrypts:()=>decrypts,flushes:()=>flushes};
 }
@@ -88,4 +88,17 @@ test('V94: accès direct et récupération volontaire accessibles sans écran de
  assert.match(page,/async function autoOpenTournee\(\)/);
  assert.match(page,/Récupération bloquée pour ne rien écraser/);
  assert.doesNotMatch(page.slice(page.indexOf('async function autoOpenTournee(){'),page.indexOf('function recoverySpaceEmpty(')),/document\.getElementById\('tour-pass'\)/);
+});
+
+test('V95: sauvegarde JSON complète sans code conserve journal et suivi fictifs',async()=>{
+ const f=await fixture();
+ const state={tidel_Pl:JSON.stringify([{id:'fictif-1',n:'EXEMPLE FICTIF',a:'Rue imaginaire'}]),tidel_absences_journal_v1:JSON.stringify([{id:'evt-fictif',reason:'Patient absent'}]),tidel_done_2026_11_13:'["fictif-1"]'};
+ const file=f.ctx.serializePortable(state);
+ assert.match(file,/bigcthu-tournee-complete-portable-v1/);
+ assert.match(file,/evt-fictif/,'portable export is deliberately readable, warn the user');
+ const saved=JSON.parse(file);
+ assert.deepEqual(JSON.parse(JSON.stringify(f.ctx.readPortable(saved))),state);
+ const bad={...saved,data:{...state,tidel_Pl:'INVALID JSON'}};
+ assert.throws(()=>f.ctx.readPortable(bad),/incompatible/);
+ assert.throws(()=>f.ctx.serializePortable({...state,untrustedField:'bad'}),/invalides/);
 });
