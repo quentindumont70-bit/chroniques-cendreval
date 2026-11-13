@@ -13,6 +13,7 @@ async function boot(page) {
   const memory = new Map();
   const alerts = [];
   let full = false, failedKey = null, seq = 0;
+  const windowEvents = {}, navigator = { onLine: true };
   const node = (id) => ({
     id, children: [], value: '', checked: false, hidden: false, textContent: '',
     className: '', dataset: {}, listeners: {},
@@ -44,14 +45,15 @@ async function boot(page) {
     removeItem: (k) => memory.delete(k),
   };
   runInNewContext(source, {
-    document, localStorage, window: { addEventListener() {} }, navigator: {},
+    document, localStorage, window: { addEventListener(type, fn) { (windowEvents[type] ??= []).push(fn); } }, navigator,
     location: { protocol: 'http:', hostname: 'test.invalid' },
     crypto: { randomUUID: () => 'sample-' + ++seq },
     confirm: () => true, alert: (msg) => alerts.push(msg),
     URL: { createObjectURL: () => 'blob:mock', revokeObjectURL() {} },
     Blob: class {}, setTimeout() {},
   }, { filename: page, timeout: 1500 });
-  return { get, memory, alerts, setFull: (value) => { full = value; }, setFailedKey: (value) => { failedKey = value; } };
+  return { get, memory, alerts, setFull: (value) => { full = value; }, setFailedKey: (value) => { failedKey = value; },
+    setNetwork: (online) => { navigator.onLine = online; for (const fn of windowEvents[online ? 'online' : 'offline'] ?? []) fn(); } };
 }
 
 test('Budget: no phantom add/delete/settings when browser storage fails', async () => {
@@ -137,4 +139,13 @@ test('Capture: a failed inbox write can be retried without duplicating the desti
   await send.fire('click');
   assert.equal(JSON.parse(box.memory.get(tasksKey)).length, 1);
   assert.equal(JSON.parse(box.memory.get(inboxKey))[0].status, 'sent');
+});
+
+test('Cockpit: report navigator connectivity without claiming cloud synchronization', async () => {
+  const h = await boot('index.html');
+  assert.match(h.get('networkState').textContent, /Connexion détectée/);
+  h.setNetwork(false);
+  assert.match(h.get('networkState').textContent, /Réseau absent/);
+  h.setNetwork(true);
+  assert.match(h.get('networkState').textContent, /sans synchronisation/);
 });
