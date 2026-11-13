@@ -54,13 +54,15 @@ button:focus-visible,a:focus-visible{outline:3px solid #9cf1e0;outline-offset:3p
 <button id="testStorage" type="button" class="secondary">Tester le stockage local</button>
 <p id="storageState" class="status" role="status" aria-live="polite"></p>
 </section>
-<section class="box"><h2>Deux versions de Tournée : ne pas confondre</h2>
-<p><a href="./tournee.html">Tournée actuelle</a> conserve son fonctionnement local et son propre import. <a href="./tournee-complete.html">Tournée complète chiffrée</a> possède un déverrouillage distinct et une restauration spécifique à la sauvegarde Tournée. Passer de l'une à l'autre ne transporte pas les données automatiquement.</p>
+<section class="box"><h2>Tournée officielle : une seule version chiffrée</h2>
+<p><a href="./tournee-complete.html">Ouvrir Tournée complète chiffrée</a>. C'est l'unique version mise en avant dans Big Cthu. Le coffre se déverrouille avec une phrase secrète distincte du Coffre général.</p>
+<p>Pour terminer une migration : <a href="./tournee.html">ouvrir uniquement l'ancienne Tournée pour exporter une sauvegarde</a>. Vérifie le fichier exporté dans un emplacement privé, restaure-le dans la nouvelle application si son format est compatible, puis contrôle toutes les rubriques avant de retirer l'ancien raccourci. Ne supprime jamais l'ancien stockage ou le fichier source pendant ces vérifications.</p>
 <p class="muted"><strong>Important :</strong> ne dépose jamais une sauvegarde de patients dans le <a href="./sauvegardes.html">Coffre général</a> et ne publie aucun fichier clinique dans GitHub ou dans le chat. Garde ton ancien accès jusqu'à vérification indépendante de toutes tes données.</p></section>
 <section class="box"><h2>Accès directs aux tentacules</h2>
 <p>Ces liens peuvent s'ouvrir dans Safari. Pour conserver les données au même endroit, utilise normalement l'icône principale puis la navigation interne.</p>
 <div id="modules"></div></section>
 <section class="box"><h2>Réseau, mises à jour et autonomie</h2>
+<p id="offlineState" class="status" role="status" aria-live="polite">État du réseau à déterminer.</p>
 <p>Après une première ouverture en ligne et la mise en cache, les pages publiques déjà téléchargées peuvent rester accessibles sans réseau. Les prévisions météo ne sont pas disponibles hors ligne, et les données saisies ne quittent pas cet appareil, sauf téléchargement de sauvegarde ou appel externe demandé.</p>
 <p>Les nouvelles versions arrivent depuis GitHub Pages, sans intervention d'une IA. Lorsque le cockpit détecte une mise à jour, il propose un rafraîchissement. L'iPhone reste susceptible de supprimer des données locales sous certaines conditions : <strong>exporte régulièrement le Coffre</strong>.</p>
 <p class="muted">Cette bêta n'est pas encore un produit destiné au traitement de données professionnelles ou médicales. La Tournée Big Cthu dispose de pages séparées, dont une version chiffrée ; elles ne constituent pas un hébergement HDS certifié. Ne confonds jamais une sauvegarde Tournée avec le Coffre général. Topaze n'est pas remplacé.</p>
@@ -69,12 +71,14 @@ button:focus-visible,a:focus-visible{outline:3px solid #9cf1e0;outline-offset:3p
 (()=>{'use strict';
 const base=new URL('./',location.href);
 const entries=[
- ['Cockpit','index.html'],['Tournée actuelle','tournee.html'],['Tournée complète chiffrée','tournee-complete.html'],['Budget','budget.html'],['Voyages','voyages.html'],['Cantine et repas','cantine.html'],
+ ['Cockpit','index.html'],['Tournée complète chiffrée','tournee-complete.html'],['Budget','budget.html'],['Voyages','voyages.html'],['Cantine et repas','cantine.html'],
  ['Planificateur de repas','repas.html'],['Agenda','agenda.html'],['Maison','maison.html'],
  ['Passions','passions.html'],['Coffre de sauvegardes','sauvegardes.html']
 ];
 const mainUrl=new URL('index.html',base).href;
 document.getElementById('mainUrl').textContent=mainUrl;
+function renderNetwork(){document.getElementById('offlineState').textContent=navigator.onLine===false?'Hors ligne (selon iOS) : seules les pages déjà mises en cache peuvent fonctionner. Aucun transfert automatique des données.':'Réseau détecté (indicatif) : les données restent locales ; aucune synchronisation automatique.'}
+renderNetwork();window.addEventListener('online',renderNetwork);window.addEventListener('offline',renderNetwork);
 const installed=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
 document.getElementById('appMode').textContent=installed?'Mode application web détecté. Le stockage peut être distinct de Safari.':'Mode navigateur détecté. Tu peux installer l’icône depuis Safari.';
 document.getElementById('testStorage').addEventListener('click',()=>{
