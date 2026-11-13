@@ -19,7 +19,7 @@ async function fixture({fail=false}={}){
   SECURE_KEY:'test-encrypted-only',secureKey:'fake-key',secureSalt:new Uint8Array(16),secureGen:1,secureSavedGen:0,secureActive:null,secureTimer:0,secureState:{tidel_Pl:'[]'},
   to64:()=> 'AQID',enc:new TextEncoder(),location:{reload(){reloads++}}
  };
- runInNewContext(html.slice(begin,end)+'\nthis.flushTest=flush;this.dirtyTest=dirty;this.checkTourIdleTest=checkTourIdle;this.noteTourActivityTest=noteTourActivity;',sandbox,{timeout:1000});
+ runInNewContext(html.slice(begin,end)+'\nthis.flushTest=flush;this.dirtyTest=dirty;this.checkTourIdleTest=checkTourIdle;this.noteTourActivityTest=noteTourActivity;this.setIdleTest=(timestamp)=>{secureBooted=true;lastTourActivity=timestamp};',sandbox,{timeout:1000});
  return {sandbox,elements,flush:()=>sandbox.flushTest(),setFail:v=>{shouldFail=v},writes:()=>writes,reloads:()=>reloads};
 }
 
@@ -78,8 +78,7 @@ test('V79: sauvegarde en arrière-plan seulement si modifications non encore per
 
 test('V80: 15 minutes sans interaction provoquent une sauvegarde avant verrouillage',async()=>{
  const f=await fixture();
- f.sandbox.secureBooted=true;
- f.sandbox.lastTourActivity=Date.now()-16*60*1000;
+ f.sandbox.setIdleTest(Date.now()-16*60*1000);
  f.sandbox.checkTourIdleTest();
  await new Promise(resolve=>setImmediate(resolve));
  assert.equal(f.reloads(),1);
@@ -88,8 +87,7 @@ test('V80: 15 minutes sans interaction provoquent une sauvegarde avant verrouill
 
 test('V80: ne verrouille pas si la sauvegarde échoue, même après inactivité',async()=>{
  const f=await fixture({fail:true});
- f.sandbox.secureBooted=true;
- f.sandbox.lastTourActivity=Date.now()-16*60*1000;
+ f.sandbox.setIdleTest(Date.now()-16*60*1000);
  f.sandbox.checkTourIdleTest();
  await new Promise(resolve=>setImmediate(resolve));
  assert.equal(f.reloads(),0);
@@ -99,8 +97,7 @@ test('V80: ne verrouille pas si la sauvegarde échoue, même après inactivité'
 
 test('V80: une interaction remet à zéro le délai et un retour iPhone vérifie le verrou',async()=>{
  const f=await fixture();
- f.sandbox.secureBooted=true;
- f.sandbox.lastTourActivity=Date.now()-16*60*1000;
+ f.sandbox.setIdleTest(Date.now()-16*60*1000);
  f.sandbox.noteTourActivityTest();
  f.sandbox.checkTourIdleTest();
  await new Promise(resolve=>setImmediate(resolve));
