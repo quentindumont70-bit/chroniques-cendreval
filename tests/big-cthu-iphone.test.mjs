@@ -102,15 +102,15 @@ test('iPhone: aucune ressource distante requise pour le shell public',async()=>{
  assert.match(sw,/origin!==self\.location\.origin/);
 });
 
-test('Tournée IDEL: le cockpit ouvre le lien existant sans publier de données médicales',async()=>{
- const home=await read('index.html');
- const tour='https://claude.ai/artifact/Na1RpnwQ5d5pqbqBLdnjj8';
- assert.ok(home.includes("b.href='"+tour+"'"),'historical Tournée link not configured');
- assert.match(home,/b\.target='_blank'/);
- assert.match(home,/b\.rel='noopener noreferrer'/);
- assert.match(home,/if\(i\[3\]!=='tour'\)b\.addEventListener/);
- assert.match(home,/Le cockpit public ne copie ni ne synchronise les patients/);
- const sw=await read('sw.js');
- assert.doesNotMatch(sw,/Na1RpnwQ5d5pqbqBLdnjj8/);
- assert.match(sw,/public-v2-v59/);
+test('Tournée IDEL: le cockpit ouvre la page principale locale sans données patient',async()=>{
+ const [home,tour,sw]=await Promise.all([read('index.html'),read('tournee.html'),read('sw.js')]);
+ assert.ok(home.includes("b.href='./tournee.html'"),'le cockpit doit ouvrir Tournée locale');
+ assert.doesNotMatch(home,/claude\.ai\/artifact/);
+ assert.match(tour,/<main id="app"><\/main>/);
+ assert.match(tour,/nav class="tabs"/);
+ assert.match(tour,/function importAll\(inp\)/);
+ assert.doesNotMatch(tour,/tour-security-gate|Phrase secrète \(12 caractères/);
+ assert.doesNotMatch(tour,/HERCE Toulio|BOUCHARD Lucienne|REILLE Christiane/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
+ assert.match(sw,/'\.\/tournee\.html'/);
 });
