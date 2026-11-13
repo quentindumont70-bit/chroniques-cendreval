@@ -1979,6 +1979,7 @@ function absenceTopazeText(rows,filters={}){
 }
 
 const ABSENCE_PAGE_SIZE=50;
+function absenceVisiblePage(rows,limit){return rows.slice(0,Math.max(0,Math.min(limit,500)))}
 let absenceVisible=ABSENCE_PAGE_SIZE;
 function absenceRender(){
  const rows=absenceRead();if(!rows)return;
@@ -1993,7 +1994,7 @@ function absenceRender(){
  const counts=absenceSummary(scoped);
  const stateFiltered=scoped.filter(x=>filters.cancelled==='all'||(filters.cancelled==='cancelled'?!!x.cancelled:!x.cancelled));
  const filtered=absenceSearchAndSort(stateFiltered,{search:ap('ap-search').value,sort:ap('ap-sort').value},names);
- const visible=filtered.slice(0,absenceVisible);
+ const visible=absenceVisiblePage(filtered,absenceVisible);
  const more=ap('ap-more');more.hidden=visible.length===filtered.length;
  more.textContent='Afficher 50 autres signalements ('+visible.length+' / '+filtered.length+')';
  ap('ap-summary').textContent=counts.active+' actif(s), '+counts.cancelled+' annulé(s), dont '+counts.toReview+' à rapprocher. '+visible.length+' affiché(s) sur '+filtered.length+' correspondant(s) · '+rows.length+' au coffre.';
