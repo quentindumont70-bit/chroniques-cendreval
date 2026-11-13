@@ -54,19 +54,22 @@ button:focus-visible,a:focus-visible{outline:3px solid #9cf1e0;outline-offset:3p
 <button id="testStorage" type="button" class="secondary">Tester le stockage local</button>
 <p id="storageState" class="status" role="status" aria-live="polite"></p>
 </section>
+<section class="box"><h2>Deux versions de Tournée : ne pas confondre</h2>
+<p><a href="./tournee.html">Tournée actuelle</a> conserve son fonctionnement local et son propre import. <a href="./tournee-complete.html">Tournée complète chiffrée</a> possède un déverrouillage distinct et une restauration spécifique à la sauvegarde Tournée. Passer de l'une à l'autre ne transporte pas les données automatiquement.</p>
+<p class="muted"><strong>Important :</strong> ne dépose jamais une sauvegarde de patients dans le <a href="./sauvegardes.html">Coffre général</a> et ne publie aucun fichier clinique dans GitHub ou dans le chat. Garde ton ancien accès jusqu'à vérification indépendante de toutes tes données.</p></section>
 <section class="box"><h2>Accès directs aux tentacules</h2>
 <p>Ces liens peuvent s'ouvrir dans Safari. Pour conserver les données au même endroit, utilise normalement l'icône principale puis la navigation interne.</p>
 <div id="modules"></div></section>
 <section class="box"><h2>Réseau, mises à jour et autonomie</h2>
 <p>Après une première ouverture en ligne et la mise en cache, les pages publiques déjà téléchargées peuvent rester accessibles sans réseau. Les prévisions météo ne sont pas disponibles hors ligne, et les données saisies ne quittent pas cet appareil, sauf téléchargement de sauvegarde ou appel externe demandé.</p>
 <p>Les nouvelles versions arrivent depuis GitHub Pages, sans intervention d'une IA. Lorsque le cockpit détecte une mise à jour, il propose un rafraîchissement. L'iPhone reste susceptible de supprimer des données locales sous certaines conditions : <strong>exporte régulièrement le Coffre</strong>.</p>
-<p class="muted">Cette bêta n'est pas encore un produit destiné au traitement de données professionnelles ou médicales. Les éléments de Tournée/Topaze ne sont pas intégrés dans ce site public.</p>
+<p class="muted">Cette bêta n'est pas encore un produit destiné au traitement de données professionnelles ou médicales. La Tournée Big Cthu dispose de pages séparées, dont une version chiffrée ; elles ne constituent pas un hébergement HDS certifié. Ne confonds jamais une sauvegarde Tournée avec le Coffre général. Topaze n'est pas remplacé.</p>
 </section>
 </main><script>
 (()=>{'use strict';
 const base=new URL('./',location.href);
 const entries=[
- ['Cockpit','index.html'],['Budget','budget.html'],['Voyages','voyages.html'],['Cantine et repas','cantine.html'],
+ ['Cockpit','index.html'],['Tournée actuelle','tournee.html'],['Tournée complète chiffrée','tournee-complete.html'],['Budget','budget.html'],['Voyages','voyages.html'],['Cantine et repas','cantine.html'],
  ['Planificateur de repas','repas.html'],['Agenda','agenda.html'],['Maison','maison.html'],
  ['Passions','passions.html'],['Coffre de sauvegardes','sauvegardes.html']
 ];
