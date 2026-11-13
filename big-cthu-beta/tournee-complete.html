@@ -415,6 +415,7 @@ body{min-height:100vh}
 /* Big Cthu dark shell */
 [data-theme=lagon],[data-theme=nuit]{--bg:#100e22;--bg2:#16132a;--card:#211b36;--ink:#f7f2ff;--mut:#c1b6d7;--acc:#a78bfa;--acc-ink:#130d26;--soft:#33264c;--line:#54476f;--hdr:linear-gradient(135deg,#211b36,#0e4649);--hdr-ink:#f7f2ff;--tl:#594a72}
 body.tournee-locked>:not(#tour-security-gate):not(script){display:none!important}
+body.tournee-checking #tour-security-gate{visibility:hidden}
 #tour-security-gate{position:relative;max-width:640px;margin:18px auto;padding:20px;background:#211b36;color:#f7f2ff;border:1px solid #63548e;border-radius:20px;font:16px/1.5 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;box-shadow:0 15px 55px #0005}
 #tour-security-gate h1{font-size:26px;color:#fff;margin:12px 0}
 #tour-security-gate p{font-size:14px;color:#d3cce1}
@@ -459,11 +460,11 @@ body.tournee-locked #tour-save-strip{display:none}
 @media(max-width:600px){#tour-absence-panel .ap-grid,#tour-absence-panel #ap-period-report{grid-template-columns:1fr}#tour-absence-panel .ap-inner{padding:13px}#tour-absence-panel button{width:100%}#tour-absence-panel .ap-closebar button{width:auto}#tour-absence-panel .ap-entry{padding:11px}}
 </style>
 </head>
-<body class="tournee-locked"><section id="tour-security-gate">
+<body class="tournee-locked tournee-checking"><section id="tour-security-gate">
 <a href="./index.html">← Retour au cockpit Big Cthu</a>
-<h1>🩺 Accès à ma tournée</h1>
+<h1>🩺 Première ouverture sur cet appareil</h1>
 <p class="info" id="tour-saved-status">Vérification de ta sauvegarde chiffrée sur cet appareil…</p>
-<p>Déverrouille pour ouvrir directement ta tournée avec tous les onglets. La restauration est disponible dans Mes données. Aucune fiche patient n'est incluse dans le code public.</p>
+<p>Dernière saisie sur cet appareil pour associer ton coffre chiffré à ce navigateur. Ensuite Tournée s’ouvrira directement sans écran de verrouillage, tant que les données du navigateur sont conservées.</p>
 <label for="tour-pass">Phrase secrète utilisée pour la restauration</label>
 <input id="tour-pass" type="password" autocomplete="current-password" minlength="12" placeholder="Ta phrase secrète">
 <button id="tour-open">Déverrouiller et ouvrir toute l'application</button>
@@ -471,9 +472,9 @@ body.tournee-locked #tour-save-strip{display:none}
 <label for="tour-file">Sauvegarde Tournée : JSON classique ou coffre chiffré complet</label><input type="file" id="tour-file" accept=".json,application/json">
 <button id="tour-import">Importer dans Tournée complète</button></details>
 <p id="tour-error" role="status"></p>
-<p>Si un coffre chiffré existe déjà, l'import d'un autre JSON est bloqué pour éviter son écrasement. Les données restent chiffrées dans ce navigateur, mais cette version web n'est pas un hébergement HDS certifié. Conserve ta sauvegarde d'origine et l'application historique pour les soins.</p>
+<p>Attention : le déverrouillage automatique signifie que toute personne ayant accès à ce navigateur peut ouvrir Tournée. Protège l'accès à ton iPhone. Si un coffre chiffré existe déjà, l'import d'un autre JSON est bloqué pour éviter son écrasement. Les données restent chiffrées dans ce navigateur, mais cette version web n'est pas un hébergement HDS certifié. Conserve ta sauvegarde d'origine et l'application historique pour les soins.</p>
 </section>
-<div id="tour-save-strip" role="status" aria-live="polite" data-state="saved"><span id="tour-save-text">Données chiffrées enregistrées sur cet appareil.</span><span><button type="button" id="tour-save-retry" hidden>Réessayer la sauvegarde</button> <button type="button" id="tour-vault-export">Exporter le coffre chiffré</button> <button type="button" id="tour-absence-open">Absences &amp; modifications</button> <button type="button" id="tour-lock">Verrouiller</button></span></div>
+<div id="tour-save-strip" role="status" aria-live="polite" data-state="saved"><span id="tour-save-text">Données chiffrées enregistrées sur cet appareil.</span><span><button type="button" id="tour-save-retry" hidden>Réessayer la sauvegarde</button> <button type="button" id="tour-vault-export">Exporter le coffre chiffré</button> <button type="button" id="tour-absence-open">Absences &amp; modifications</button> <button type="button" id="tour-lock">Sauvegarder</button></span></div>
 <section id="tour-absence-panel" hidden aria-label="Absences et modifications de Tournée">
 <div class="ap-inner">
 <div class="ap-closebar"><button id="ap-close" type="button">← Retour à Tournée</button><span class="ap-caption">Journal local chiffré</span></div>
@@ -1631,6 +1632,69 @@ const from64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 async function keyFor(password,salt){const base=await crypto.subtle.importKey('raw',enc.encode(password),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:180000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
 function isEncryptedVaultRecord(x){return x&&x.v===1&&typeof x.salt==='string'&&x.salt.length<128&&typeof x.iv==='string'&&x.iv.length<128&&typeof x.cipher==='string'&&x.cipher.length>0}
 async function decryptRecord(record,password){let x=JSON.parse(record);const key=await keyFor(password,from64(x.salt));const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:from64(x.iv)},key,from64(x.cipher));return JSON.parse(dec.decode(plain))}
+
+const DEVICE_DB='bigcthu_tournee_device_key_v1';
+function deviceKeyDb(){
+ return new Promise((resolve,reject)=>{
+  if(typeof indexedDB==='undefined'){reject(Error('Stockage de clé indisponible'));return}
+  const req=indexedDB.open(DEVICE_DB,1);
+  req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains('keys'))req.result.createObjectStore('keys')};
+  req.onsuccess=()=>resolve(req.result);
+  req.onerror=()=>reject(req.error||Error('Stockage de clé indisponible'));
+ });
+}
+async function deviceKeyRecord(mode,key,value){
+ const db=await deviceKeyDb();
+ try{
+  return await new Promise((resolve,reject)=>{
+   const tx=db.transaction('keys',mode),store=tx.objectStore('keys');
+   const req=mode==='readonly'?store.get(key):store.put(value,key);
+   let result;
+   req.onsuccess=()=>{result=req.result};
+   req.onerror=()=>reject(req.error||Error('Stockage de clé impossible'));
+   tx.oncomplete=()=>resolve(result);
+   tx.onerror=()=>reject(tx.error||Error('Stockage de clé impossible'));
+   tx.onabort=()=>reject(tx.error||Error('Stockage de clé annulé'));
+  });
+ }finally{db.close()}
+}
+function rememberDeviceKey(key,salt){
+ return deviceKeyRecord('readwrite','current',{v:1,salt:to64(salt),key});
+}
+function recalledDeviceKey(){
+ return deviceKeyRecord('readonly','current');
+}
+async function decryptWithDeviceKey(record,key){
+ const x=JSON.parse(record);
+ if(!isEncryptedVaultRecord(x))throw Error('Coffre invalide');
+ const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:from64(x.iv)},key,from64(x.cipher));
+ return JSON.parse(dec.decode(plain));
+}
+function validVaultState(state){
+ try{return !!state&&typeof state==='object'&&!Array.isArray(state)&&Array.isArray(JSON.parse(state.tidel_Pl||'null'))}
+ catch(e){return false}
+}
+async function autoOpenTournee(){
+ try{
+  const saved=localStorage.getItem(SECURE_KEY);
+  if(!saved)return false;
+  const record=JSON.parse(saved);
+  if(!isEncryptedVaultRecord(record))return false;
+  const device=await recalledDeviceKey();
+  if(!device||device.v!==1||device.salt!==record.salt||!device.key)return false;
+  const state=await decryptWithDeviceKey(saved,device.key);
+  if(!validVaultState(state))return false;
+  secureState=Object.assign(Object.create(null),state);
+  secureSalt=from64(record.salt);
+  secureKey=device.key;
+  launch();
+  return true;
+ }catch(e){return false}
+ finally{
+  document.body.classList.remove('tournee-checking');
+ }
+}
+
 function fillFromBackup(d){
  if(!d||d.v!==1||!Array.isArray(d.P)||!d.kv||typeof d.kv!=='object'||Array.isArray(d.kv))throw Error('Sauvegarde JSON incompatible');
  if(d.P.some(p=>!p||typeof p.id!=='string'||typeof p.n!=='string'||typeof p.a!=='string'))throw Error('Patients invalides');
@@ -1930,9 +1994,9 @@ async function lockTourSafely(){
  const button=document.getElementById('tour-lock');
  ap('tour-absence-panel').hidden=true;
  button.disabled=true;button.textContent='Sauvegarde avant verrouillage…';
- try{await ensureVaultSaved();location.reload()}
+ try{await ensureVaultSaved();saveStatus('saved','Données chiffrées enregistrées sur cet appareil.');button.disabled=false;button.textContent='Sauvegarder';idleLockBusy=false}
  catch(e){
-  saveFailure();button.disabled=false;button.textContent='Verrouiller';
+  saveFailure();button.disabled=false;button.textContent='Sauvegarder';
   idleLockBusy=false;
   lastTourActivity=Date.now();
   clearTimeout(idleLockTimer);
@@ -1940,10 +2004,9 @@ async function lockTourSafely(){
  }
 }
 function checkTourIdle(){
- if(!secureBooted||idleLockBusy)return;
- if(document.hidden)return;
+ if(!secureBooted||idleLockBusy||document.hidden)return;
  const elapsed=Date.now()-lastTourActivity;
- if(elapsed>=IDLE_LOCK_MS){lockTourSafely();return}
+ if(elapsed>=IDLE_LOCK_MS){saveIfPending();return}
  clearTimeout(idleLockTimer);
  idleLockTimer=setTimeout(checkTourIdle,IDLE_LOCK_MS-elapsed);
 }
@@ -1973,6 +2036,7 @@ async function login(fileMode){try{
  secureSalt=importedEncrypted?from64(importedEncrypted.salt):full&&!fileMode?from64(JSON.parse(full).salt):crypto.getRandomValues(new Uint8Array(16));
  secureKey=await keyFor(password,secureSalt);
  if(!full){if(importedEncrypted)localStorage.setItem(SECURE_KEY,JSON.stringify(importedEncrypted));else{secureGen++;await flush()}}launch();
+ if(typeof indexedDB!=='undefined')rememberDeviceKey(secureKey,secureSalt).catch(()=>{saveStatus('error','Déverrouillage automatique indisponible sur cet appareil : garde ta phrase secrète. Les données restent chiffrées.')});
  }catch(err){report('Ouverture impossible : '+(err?.message||'mot de passe ou fichier invalide'))}}
 document.getElementById('tour-open').addEventListener('click',()=>login(false));
 document.getElementById('tour-import').addEventListener('click',()=>login(true));
@@ -1982,6 +2046,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)saveIfPendi
 window.addEventListener('pagehide',saveIfPending);
 window.addEventListener('pageshow',()=>{if(secureBooted)checkTourIdle()});
 window.addEventListener('focus',()=>{if(secureBooted)checkTourIdle()});
+autoOpenTournee();
 </script>
 </body>
 </html>
