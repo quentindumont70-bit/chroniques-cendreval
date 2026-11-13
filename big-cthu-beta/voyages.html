@@ -118,7 +118,30 @@ function render(){
  }
  refreshSplitInputs();
  const ex=$('expenses');ex.replaceChildren();if(!t.expenses.length)ex.append(elem('p','Aucune dépense enregistrée.'));
- for(const x of t.expenses){const entry=addItem(ex,x.title,euro(x.cents)+' · payé par '+x.payer+' · pour '+Object.keys(x.shares).join(', '));const del=elem('button','Supprimer');del.type='button';del.className='secondary';del.addEventListener('click',()=>{if(confirm('Supprimer cette dépense ?'))edit(y=>({...y,expenses:y.expenses.filter(i=>i.id!==x.id)}))});entry.append(del)}
+ for(const x of t.expenses){
+  const entry=addItem(ex,x.title,euro(x.cents)+' · '+(x.date||'date inconnue')+' · payé par '+x.payer+' · pour '+Object.keys(x.shares).join(', '));
+  const change=elem('button','Modifier le libellé et la date');change.type='button';change.className='secondary';
+  change.addEventListener('click',()=>{
+    const form=elem('form');const label=elem('label','Libellé de la dépense');const name=elem('input');
+    name.value=x.title;name.required=true;name.maxLength=90;label.append(name);
+    const dateLabel=elem('label','Date de la dépense');const day=elem('input');day.type='date';day.value=x.date||'';dateLabel.append(day);
+    const note=elem('p','Montant, payeur et répartition conservés à l’identique.');note.className='foot';
+    const saveButton=elem('button','Enregistrer les modifications');saveButton.type='submit';
+    const cancel=elem('button','Annuler');cancel.type='button';cancel.className='secondary';cancel.addEventListener('click',()=>render());
+    form.append(label,dateLabel,note,saveButton,cancel);
+    form.addEventListener('submit',e=>{
+      e.preventDefault();
+      try{edit(y=>C.updateExpenseDetails(y,x.id,name.value,day.value))}
+      catch(err){alert(err.message)}
+    });
+    entry.replaceChildren(form);
+  });
+  const del=elem('button','Supprimer');del.type='button';del.className='secondary';
+  del.addEventListener('click',()=>{
+    if(confirm('Supprimer définitivement '+x.title+' ? Les soldes seront recalculés, mais les remboursements déjà enregistrés seront conservés.'))edit(y=>({...y,expenses:y.expenses.filter(i=>i.id!==x.id)}))
+  });
+  entry.append(change,del);
+}
  const balance=C.balances(t);$('balances').replaceChildren();for(const [name,value] of Object.entries(balance))addItem($('balances'),name,value>0?'À recevoir : '+euro(value):value<0?'À payer : '+euro(-value):'À jour');
  const trans=$('transfers');trans.replaceChildren();const movements=C.transfers(balance);if(!movements.length)trans.append(elem('p','Tout le monde est à jour.'));for(const m of movements){
   const entry=addItem(trans,m.from+' → '+m.to,euro(m.cents)+' à rembourser (suggestion)');

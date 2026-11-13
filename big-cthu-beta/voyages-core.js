@@ -51,6 +51,15 @@ function splitPercentages(amount,values){
  for(let i=0;i<leftover;i++)result[parts[i].person]++;
  return result;
 }
+function updateExpenseDetails(trip,id,title,date){
+ const name=String(title??'').trim();
+ if(!name||name.length>90)throw Error('Libellé invalide');
+ const day=String(date??'');
+ if(day&&!/^\d{4}-\d{2}-\d{2}$/.test(day))throw Error('Date invalide');
+ if(day&&new Date(day+'T12:00:00Z').toISOString().slice(0,10)!==day)throw Error('Date invalide');
+ if(!trip?.expenses?.some(x=>x.id===id))throw Error('Dépense introuvable');
+ return {...trip,expenses:trip.expenses.map(x=>x.id===id?{...x,title:name,date:day}:x)};
+}
 function balances(trip){
  const people=trip?.people||[];
  if(!Array.isArray(people)||new Set(people).size!==people.length||!people.every(p=>typeof p==='string'&&p.length>0))throw Error('Participants invalides');
@@ -129,7 +138,7 @@ function windowForTrip(start,end,today){
  const startToday=new Date(today+'T12:00:00Z'),last=new Date(startToday.getTime()+15*86400000).toISOString().slice(0,10);
  return {available:start<=last&&end>=today,from:start<today?today:start,to:end>last?last:end,complete:start>=today&&end<=last,horizon:last};
 }
-const api={cents,budgetProgress,splitEqual,splitAmounts,splitPercentages,balances,transfers,exportTripCsv,packing,windowForTrip};
+const api={cents,budgetProgress,updateExpenseDetails,splitEqual,splitAmounts,splitPercentages,balances,transfers,exportTripCsv,packing,windowForTrip};
 if(typeof module==='object'&&module.exports)module.exports=api;
 else root.BigCthuVoyages=api;
 })(typeof window!=='undefined'?window:{});

@@ -157,3 +157,28 @@ test('Voyages: formulaire du budget et Coffre V24 compatibles avec les anciens s
  assert.match(backup,/t\.budgetCents!==undefined/);
  assert.match(backup,/20,21,22,23,24/);
 });
+
+test('Voyages: modification du libellé et de la date préserve montants, parts et remboursements',()=>{
+ const original={people:['Alice','Bob'],expenses:[{id:'e1',date:'2026-11-13',title:'Train',payer:'Alice',cents:999,shares:{Alice:499,Bob:500}}],reimbursements:[{id:'r1',from:'Bob',to:'Alice',cents:100}]};
+ const next=C.updateExpenseDetails(original,'e1','  TGV  ','2026-11-14');
+ assert.equal(next.expenses[0].title,'TGV');
+ assert.equal(next.expenses[0].date,'2026-11-14');
+ assert.equal(next.expenses[0].cents,999);
+ assert.equal(next.expenses[0].payer,'Alice');
+ assert.deepEqual({...next.expenses[0].shares},{Alice:499,Bob:500});
+ assert.deepEqual({...C.balances(next)},{...C.balances(original)});
+ assert.equal(original.expenses[0].title,'Train');
+ assert.equal(next.reimbursements,original.reimbursements);
+});
+test('Voyages: refus des modifications erronées et des dépenses introuvables',()=>{
+ const trip={expenses:[{id:'fake',title:'Train',cents:500,shares:{Alice:500},payer:'Alice'}]};
+ assert.throws(()=>C.updateExpenseDetails(trip,'fake','  ','2026-11-13'),/Libellé/);
+ assert.throws(()=>C.updateExpenseDetails(trip,'fake','Train','2026-02-31'),/Date/);
+ assert.throws(()=>C.updateExpenseDetails(trip,'unknown','Train','2026-11-13'),/introuvable/);
+});
+test('Voyages: bouton modifier la dépense et informer du maintien des comptes',async()=>{
+ const html=await readFile(new URL('../big-cthu-beta/voyages.html',import.meta.url),'utf8');
+ assert.match(html,/Modifier le libellé et la date/);
+ assert.match(html,/C\.updateExpenseDetails\(y,x\.id,name\.value,day\.value\)/);
+ assert.match(html,/Montant, payeur et répartition conservés/);
+});
