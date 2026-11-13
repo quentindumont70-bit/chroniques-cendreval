@@ -5,12 +5,12 @@ import { runInNewContext } from 'node:vm';
 
 // Browser-less smoke tests for the public, dummy-data-only Big Cthu beta.
 // The fake localStorage deliberately throws to simulate a full/private browser.
-async function boot(page) {
+async function boot(page, initial = {}) {
   const html = await readFile(new URL('../big-cthu-beta/' + page, import.meta.url), 'utf8');
   const source = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
   assert.ok(source, page + ' must have a script');
   const nodes = new Map();
-  const memory = new Map();
+  const memory = new Map(Object.entries(initial));
   const alerts = [];
   let full = false, failedKey = null, seq = 0;
   const windowEvents = {}, navigator = { onLine: true };
@@ -36,6 +36,7 @@ async function boot(page) {
     createElement: node,
     getElementById: get,
     querySelector: (s) => get(s.startsWith('#') ? s.slice(1) : s),
+    querySelectorAll() { return []; },
     addEventListener() {},
   };
   get('filter').value = 'all';
