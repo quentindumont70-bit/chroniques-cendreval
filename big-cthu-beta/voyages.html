@@ -178,7 +178,7 @@ $('tripForm').addEventListener('submit',e=>{e.preventDefault();if(trips.length>=
 $('tripBudgetForm').addEventListener('submit',e=>{
  e.preventDefault();const raw=$('tripBudgetAmount').value.trim();
  let next=0;
- try{if(raw!=='')next=C.cents(raw)}catch(e){return alert('Budget invalide : '+e.message)}
+ try{if(raw!==''&&raw!=='0'&&raw!=='0.00'&&raw!=='0,00')next=C.cents(raw)}catch(e){return alert('Budget invalide : '+e.message)}
  if(edit(y=>({...y,budgetCents:next})))$('tripBudgetAmount').value=next?(next/100).toFixed(2):'';
 });
 $('deleteTrip').addEventListener('click',()=>{const t=current();if(!t||!confirm('Supprimer définitivement '+t.title+' et toutes ses dépenses ?'))return;if(save(trips.filter(x=>x.id!==t.id))){weather.delete(t.id);selected=trips[0]?.id||null;packOwner='';render()}});
