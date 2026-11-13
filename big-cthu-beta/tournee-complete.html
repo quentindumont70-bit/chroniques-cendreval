@@ -2213,6 +2213,10 @@ function resumeTournee(){
 }
 document.addEventListener('visibilitychange',()=>{if(document.hidden)saveIfPending();else resumeTournee()});
 window.addEventListener('pagehide',saveIfPending);
+// iOS peut suspendre la page sans pagehide ; ces signaux sont des chances supplémentaires
+// de lancer la sauvegarde immédiatement (sans garantie de fin en cas de fermeture forcée).
+document.addEventListener('freeze',saveIfPending);
+window.addEventListener('blur',saveIfPending);
 window.addEventListener('pageshow',resumeTournee);
 window.addEventListener('focus',resumeTournee);
 autoOpenTournee();
