@@ -111,7 +111,7 @@ test('Voyages: valises personnalisées et migration Coffre présentes dans la b�
  assert.match(backup,/t\.packedByPerson!==undefined/);
  assert.match(backup,/t\.activities!==undefined/);
  assert.match(backup,/Schéma V23/);
- assert.match(sw,/v56/);
+ assert.match(sw,/const CACHE='big-cthu-public-v2-v\d+'/);
 });
 
 test('Voyages: export CSV traite les montants, remboursements et soldes',()=>{
