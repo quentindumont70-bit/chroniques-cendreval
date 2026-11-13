@@ -58,7 +58,9 @@ hr{border:0;border-top:1px solid #4e4264;margin:20px 0}.foot{font-size:12px;colo
 <button type="submit">Ajouter la dépense</button></form>
 <h3>Dépenses enregistrées</h3><div id="expenses" aria-live="polite"></div>
 <h3>Soldes et règlements proposés</h3><div id="balances"></div><div id="transfers"></div>
-<h3>Remboursements enregistrés</h3><div id="reimbursements"></div><button id="exportTrip" type="button" class="secondary">Exporter les comptes du voyage (CSV)</button><p class="foot">Ce fichier non chiffré contient les pseudonymes et montants : conserve-le dans un espace privé.</p>
+<h3>Remboursements enregistrés</h3><div id="reimbursements"></div>
+<h3>Historique des changements</h3><div id="accountHistory" aria-live="polite"></div>
+<p class="foot">Journal local des modifications, suppressions et remboursements (limite de 500 entrées par voyage). Les événements antérieurs à cette version ne sont pas recréés.</p><button id="exportTrip" type="button" class="secondary">Exporter les comptes du voyage (CSV)</button><p class="foot">Ce fichier non chiffré contient les pseudonymes et montants : conserve-le dans un espace privé.</p>
 <p class="foot">Ces opérations servent uniquement à tenir les comptes. Big Cthu n'effectue jamais de transfert bancaire.</p>
 <hr><h2>📍 Étapes et préparation</h2>
 <p class="foot">Rendez-vous, transport, hébergement et activités : conserve seulement des notes sans numéros de réservation confidentiels.</p>
@@ -140,7 +142,7 @@ function render(){
   });
   const del=elem('button','Supprimer');del.type='button';del.className='secondary';
   del.addEventListener('click',()=>{
-    if(confirm('Supprimer définitivement '+x.title+' ? Les soldes seront recalculés, mais les remboursements déjà enregistrés seront conservés.'))edit(y=>({...y,expenses:y.expenses.filter(i=>i.id!==x.id)}))
+    if(confirm('Supprimer définitivement '+x.title+' ? Les soldes seront recalculés, mais les remboursements déjà enregistrés seront conservés.')){try{edit(y=>C.removeExpenseWithHistory(y,x.id))}catch(err){alert(err.message)}}
   });
   entry.append(change,del);
 }
@@ -153,12 +155,21 @@ function render(){
   const mark=elem('button','Enregistrer ce remboursement');mark.type='button';mark.className='secondary';mark.addEventListener('click',()=>{
    try{const n=C.cents(amountInput.value);if(n>m.cents)throw Error('Montant supérieur au solde proposé');
     if((current().reimbursements||[]).length>=300)throw Error('Limite de remboursements atteinte');
-    edit(y=>({...y,reimbursements:[...(y.reimbursements||[]),{id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+'-'+Math.random(),from:m.from,to:m.to,cents:n,date:today()}]}))
+    edit(y=>C.addReimbursementWithHistory(y,{id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+'-'+Math.random(),from:m.from,to:m.to,cents:n,date:today()}))
    }catch(e){alert(e.message)}
   });entry.append(mark);
  }
  const receipts=$('reimbursements');receipts.replaceChildren();if(!(t.reimbursements||[]).length)receipts.append(elem('p','Aucun remboursement enregistré.'));
- for(const pay of t.reimbursements||[]){const item=addItem(receipts,pay.from+' → '+pay.to,euro(pay.cents)+' déjà remboursés');const undo=elem('button','Annuler cette opération');undo.type='button';undo.className='secondary';undo.addEventListener('click',()=>{if(confirm('Annuler cet enregistrement de remboursement ?'))edit(y=>({...y,reimbursements:(y.reimbursements||[]).filter(x=>x.id!==pay.id)}))});item.append(undo)}
+ for(const pay of t.reimbursements||[]){const item=addItem(receipts,pay.from+' → '+pay.to,euro(pay.cents)+' déjà remboursés');const undo=elem('button','Annuler cette opération');undo.type='button';undo.className='secondary';undo.addEventListener('click',()=>{if(confirm('Annuler cet enregistrement de remboursement ?')){try{edit(y=>C.removeReimbursementWithHistory(y,pay.id))}catch(err){alert(err.message)}}});item.append(undo)}
+ const history=$('accountHistory');history.replaceChildren();
+ const labels={'expense-edit':'Dépense modifiée','expense-delete':'Dépense supprimée','reimbursement-add':'Remboursement enregistré','reimbursement-cancel':'Remboursement annulé'};
+ const logs=(t.accountHistory||[]).slice().reverse().slice(0,35);
+ if(!logs.length)history.append(elem('p','Aucune modification enregistrée depuis l’activation de ce journal.'));
+ for(const h of logs){
+   const before=h.type==='expense-edit'?h.before+' → '+h.after:h.type==='expense-delete'?h.before+' ('+euro(h.cents)+')':h.before+' → '+h.after+' · '+euro(h.cents);
+   const label=labels[h.type]||'Modification';
+   addItem(history,label,(new Date(h.at)).toLocaleString('fr-FR')+' · '+before);
+ }
  const steps=$('steps');steps.replaceChildren();const typeLabels={activity:'Activité',transport:'Transport',lodging:'Hébergement',task:'Préparation'};
  for(const step of [...(t.steps||[])].sort((a,b)=>a.date.localeCompare(b.date))){const entry=addItem(steps,step.date+' · '+step.title,typeLabels[step.kind]||'Étape');const box=elem('input');box.type='checkbox';box.checked=step.done;const label=elem('label');label.className='check';label.append(box,elem('span','Terminée'));entry.append(label);box.addEventListener('change',()=>edit(y=>({...y,steps:(y.steps||[]).map(x=>x.id===step.id?{...x,done:box.checked}:x)})));
   const remove=elem('button','Supprimer');remove.type='button';remove.className='secondary';remove.addEventListener('click',()=>{if(confirm('Supprimer cette étape ?'))edit(y=>({...y,steps:(y.steps||[]).filter(x=>x.id!==step.id)}))});entry.append(remove)
