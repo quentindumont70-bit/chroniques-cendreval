@@ -17,3 +17,17 @@ export function filterChanges(rows,{from='',to='',reason='',sync=''}={}){
 export function summary(rows){
  return {total:rows.length,absences:rows.filter(x=>x.kind==='absence').length,soins:rows.filter(x=>x.kind==='soin').length,horaires:rows.filter(x=>x.kind==='horaire').length,aRapprocher:rows.filter(x=>x.sync==='À rapprocher').length};
 }
+
+function csvCell(value){
+ let text=String(value??'').replace(/\r\n?/g,'\n');
+ if(/^\s*[=+\-@\t\r]/.test(text))text="'"+text;
+ return '"'+text.replace(/"/g,'""')+'"';
+}
+export function exportDemoCsv(rows){
+ const columns=['Date fictive','Identifiant de démo','Motif','État fictif','Note fictive','Nombre de changements'];
+ const lines=[columns.map(csvCell).join(';')];
+ for(const row of rows){
+  lines.push([row.day,row.alias,row.reason,row.sync,row.note,row.history?.length??0].map(csvCell).join(';'));
+ }
+ return '\uFEFF'+lines.join('\r\n')+'\r\n';
+}
