@@ -450,3 +450,23 @@ test('Tournée: les deux versions locales restent distinctes et sans promesse de
   assert.match(complete,/id="tour-import"/);
   assert.match(original,/function importAll\(/);
 });
+
+test('Coffre V25: compte les favoris du cockpit sans accéder aux données Tournée',async()=>{
+ const key='big-cthu-v2-favorites-v1';
+ const c=await boot('sauvegardes.html',{[key]:JSON.stringify(['tour','tourfull','coffre'])});
+ assert.match(c.get('counts').textContent,/favoris : 3/);
+ assert.equal(c.memory.has('tidel_Pl'),false);
+ const broken=await boot('sauvegardes.html',{[key]:JSON.stringify(['tour','tour','other'])});
+ assert.match(broken.get('counts').textContent,/Favoris invalides/);
+});
+test('Coffre V25: sauvegarde les favoris, conserve les versions antérieures et protège la restauration',async()=>{
+ const html=await readFile(new URL('../big-cthu-beta/sauvegardes.html',import.meta.url),'utf8');
+ assert.match(html,/Schéma V25/);
+ assert.match(html,/version:25/);
+ assert.match(html,/if\(data.version>=25\)/);
+ assert.match(html,/validFavorites\(data.favorites\)/);
+ assert.match(html,/data.favorites=readFavorites\(\)/);
+ assert.match(html,/stage\(FAVORITES,staged.favorites\)/);
+ assert.match(html,/20,21,22,23,24,25/);
+ assert.doesNotMatch(html,/stage\(.*tidel_/);
+});
