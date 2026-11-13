@@ -23,7 +23,7 @@ async function fixture({server='offline'}={}){
   async open(name){
    return {async addAll(assets){for(const a of assets)cached.set(keyOf(a),{status:200,body:'CACHED '+a});},name};
   },
-  async keys(){return ['big-cthu-public-v2-v99','big-cthu-public-v2-v101']},
+  async keys(){return ['big-cthu-public-v2-v99','big-cthu-public-v2-v102']},
   async delete(name){cleanup.push(name);return true}
  };
  const ctx={
