@@ -424,6 +424,11 @@ body.tournee-locked>:not(#tour-security-gate):not(script){display:none!important
 #tour-security-gate .info{border-radius:12px;padding:12px;background:#153b3d;color:#cffff3}
 #tour-security-gate a{color:#b1ffe9}
 #tour-security-gate #tour-error{color:#ffc7c7;min-height:22px}
+#tour-save-strip{position:sticky;top:0;z-index:9999;padding:9px 14px;background:#173b36;color:#d9fff4;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;font:13px/1.45 system-ui,-apple-system,sans-serif}
+#tour-save-strip[data-state="error"]{background:#5c2531;color:#fff2f2}
+#tour-save-strip button{min-height:42px;padding:8px 12px;border:1px solid currentColor;border-radius:9px;background:transparent;color:inherit;font:inherit;font-weight:700;cursor:pointer}
+#tour-save-strip button[hidden]{display:none}
+body.tournee-locked #tour-save-strip{display:none}
 </style>
 </head>
 <body class="tournee-locked"><section id="tour-security-gate">
@@ -440,6 +445,7 @@ body.tournee-locked>:not(#tour-security-gate):not(script){display:none!important
 <p id="tour-error" role="status"></p>
 <p>Si un coffre chiffré existe déjà, l'import d'un autre JSON est bloqué pour éviter son écrasement. Les données restent chiffrées dans ce navigateur, mais cette version web n'est pas un hébergement HDS certifié. Conserve ta sauvegarde d'origine et l'application historique pour les soins.</p>
 </section>
+<div id="tour-save-strip" role="status" aria-live="polite" data-state="saved"><span id="tour-save-text">Données chiffrées enregistrées sur cet appareil.</span><span><button type="button" id="tour-save-retry" hidden>Réessayer la sauvegarde</button> <button type="button" id="tour-lock">Verrouiller</button></span></div>
 <header>
  <div class="t"><div class="ttl" onclick="if(tab==='tour')monthPick()" style="cursor:pointer"><h1 id="ht">Tournée</h1><small id="hs"></small></div><button class="hbtn" onclick="askOpen()" aria-label="Question médicale à Claude">🩺</button><button class="hbtn" onclick="goInfo()" aria-label="Infos pratiques">ℹ️</button><button class="hbtn" onclick="openSearch()" aria-label="Rechercher">🔍</button><button class="hbtn" onclick="guide(0)" aria-label="Revoir le guide de bienvenue" title="Guide">❔</button><button class="hbtn" onclick="openPk()" aria-label="Thème">🎨</button></div>
 <p class="cit" style="margin:6px 16px 2px;font-size:13px;color:var(--mut);font-style:italic;line-height:1.45">« D’abord, ne pas nuire. » <span style="font-style:normal;white-space:nowrap">— principe hippocratique (primum non nocere)</span></p>
@@ -1581,8 +1587,38 @@ const TOUR_STORE={
  clear(){secureState=Object.create(null);dirty()},
  flush:()=>flush()
 };
-function dirty(){secureGen++;clearTimeout(secureTimer);secureTimer=setTimeout(()=>flush().catch(e=>console.error('Sauvegarde chiffrée impossible',e)),100)}
-async function flush(){if(!secureKey)throw Error('Chiffrement non initialisé');if(secureActive)return secureActive;secureActive=(async()=>{let last;do{last=secureGen;const iv=crypto.getRandomValues(new Uint8Array(12));const cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},secureKey,enc.encode(JSON.stringify(secureState)));localStorage.setItem(SECURE_KEY,JSON.stringify({v:1,salt:to64(secureSalt),iv:to64(iv),cipher:to64(new Uint8Array(cipher))}));}while(last!==secureGen)})().finally(()=>{secureActive=null});return secureActive}
+function saveStatus(state,message){
+ const bar=document.getElementById('tour-save-strip');if(!bar)return;
+ bar.dataset.state=state;document.getElementById('tour-save-text').textContent=message;
+ document.getElementById('tour-save-retry').hidden=state!=='error';
+}
+function saveFailure(){
+ saveStatus('error','Sauvegarde impossible : tes modifications ne sont pas garanties sur cet appareil. Ne ferme pas la page. Libère de l’espace, puis réessaie.');
+}
+function dirty(){secureGen++;saveStatus('pending','Chiffrement et enregistrement en cours…');clearTimeout(secureTimer);secureTimer=setTimeout(()=>flush().catch(saveFailure),100)}
+async function flush(){
+ if(!secureKey)throw Error('Chiffrement non initialisé');
+ if(secureActive)return secureActive;
+ clearTimeout(secureTimer);
+ secureActive=(async()=>{
+  let last;
+  do{
+   last=secureGen;
+   const iv=crypto.getRandomValues(new Uint8Array(12));
+   const cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},secureKey,enc.encode(JSON.stringify(secureState)));
+   localStorage.setItem(SECURE_KEY,JSON.stringify({v:1,salt:to64(secureSalt),iv:to64(iv),cipher:to64(new Uint8Array(cipher))}));
+  }while(last!==secureGen);
+  saveStatus('saved','Données chiffrées enregistrées sur cet appareil.');
+ })().catch(e=>{saveFailure();throw e}).finally(()=>{secureActive=null});
+ return secureActive;
+}
+document.getElementById('tour-save-retry').addEventListener('click',()=>flush().catch(saveFailure));
+document.getElementById('tour-lock').addEventListener('click',async()=>{
+ const button=document.getElementById('tour-lock');
+ button.disabled=true;button.textContent='Sauvegarde avant verrouillage…';
+ try{await flush();location.reload()}
+ catch(e){saveFailure();button.disabled=false;button.textContent='Verrouiller'}
+});
 function report(message){document.getElementById('tour-error').textContent=message}
 function launch(){if(secureBooted)return;secureBooted=true;document.body.classList.remove('tournee-locked');document.getElementById('tour-security-gate').remove();let source=document.getElementById('tour-source-js');const script=document.createElement('script');script.textContent=source.textContent;document.body.append(script);source.remove();}
 async function login(fileMode){try{
@@ -1599,12 +1635,12 @@ async function login(fileMode){try{
  secureState=Object.assign(Object.create(null),state);
  secureSalt=full&&!fileMode?from64(JSON.parse(full).salt):crypto.getRandomValues(new Uint8Array(16));
  secureKey=await keyFor(password,secureSalt);
- secureGen++;await flush();launch();
+ if(!full){secureGen++;await flush()}launch();
  }catch(err){report('Ouverture impossible : '+(err?.message||'mot de passe ou fichier invalide'))}}
 document.getElementById('tour-open').addEventListener('click',()=>login(false));
 document.getElementById('tour-import').addEventListener('click',()=>login(true));
 document.getElementById('tour-saved-status').textContent=localStorage.getItem(SECURE_KEY)?'Une Tournée complète chiffrée est disponible. Utilise la même phrase secrète.':localStorage.getItem(PREVIOUS_KEY)?'✅ Ta sauvegarde chiffrée précédente est détectée. Utilise la même phrase secrète : les patients seront transférés dans l’application complète.':'Aucune sauvegarde locale détectée ici. Sélectionne ton fichier JSON.';
-window.addEventListener('pagehide',()=>{if(secureKey)flush().catch(()=>{})});
+window.addEventListener('pagehide',()=>{if(secureKey&&secureGen)flush().catch(saveFailure)});
 </script>
 </body>
 </html>
