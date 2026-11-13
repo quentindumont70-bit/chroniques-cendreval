@@ -442,7 +442,19 @@ body.tournee-locked #tour-save-strip{display:none}
 #tour-absence-panel .ap-entry{padding:12px 0;border-top:1px solid #5c5072}
 #tour-absence-panel .ap-history{font-size:12px;color:#d5c9e5}
 #tour-absence-panel #ap-status{color:#a6f5d8}
-@media(max-width:600px){#tour-absence-panel .ap-grid{grid-template-columns:1fr}}
+#tour-absence-panel .ap-closebar{position:sticky;top:0;z-index:2;background:#211b36;padding:8px 0 12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+#tour-absence-panel .ap-closebar button{flex-shrink:0}
+#tour-absence-panel .ap-summary-card{background:#302846;padding:12px;border-radius:12px;overflow-wrap:anywhere}
+#tour-absence-panel #ap-period-report{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#tour-absence-panel #ap-period-report section{padding:10px;border:1px solid #63587f;border-radius:12px;min-width:0}
+#tour-absence-panel #ap-period-report li{margin:3px 0;overflow-wrap:anywhere}
+#tour-absence-panel .ap-entry{border-radius:10px;padding:12px;margin:7px 0;background:#29213e;overflow-wrap:anywhere}
+#tour-absence-panel .ap-entry summary{min-height:44px;padding:10px 0;cursor:pointer}
+#tour-absence-panel .ap-entry button{margin:5px 8px 5px 0}
+#tour-absence-panel .ap-entry input,#tour-absence-panel .ap-entry select{margin:6px 0 12px}
+#tour-absence-panel .ap-caption{font-size:13px;color:#d6cbe9}
+#tour-absence-panel #ap-topaze-note{white-space:pre-wrap;background:#151329;border:1px solid #655680;border-radius:12px;padding:12px;overflow-wrap:anywhere}
+@media(max-width:600px){#tour-absence-panel .ap-grid,#tour-absence-panel #ap-period-report{grid-template-columns:1fr}#tour-absence-panel .ap-inner{padding:13px}#tour-absence-panel button{width:100%}#tour-absence-panel .ap-closebar button{width:auto}#tour-absence-panel .ap-entry{padding:11px}}
 </style>
 </head>
 <body class="tournee-locked"><section id="tour-security-gate">
@@ -462,7 +474,7 @@ body.tournee-locked #tour-save-strip{display:none}
 <div id="tour-save-strip" role="status" aria-live="polite" data-state="saved"><span id="tour-save-text">Données chiffrées enregistrées sur cet appareil.</span><span><button type="button" id="tour-save-retry" hidden>Réessayer la sauvegarde</button> <button type="button" id="tour-vault-export">Exporter le coffre chiffré</button> <button type="button" id="tour-absence-open">Absences &amp; modifications</button> <button type="button" id="tour-lock">Verrouiller</button></span></div>
 <section id="tour-absence-panel" hidden aria-label="Absences et modifications de Tournée">
 <div class="ap-inner">
-<button id="ap-close" type="button">← Retour à Tournée</button>
+<div class="ap-closebar"><button id="ap-close" type="button">← Retour à Tournée</button><span class="ap-caption">Journal local chiffré</span></div>
 <h2>Absences &amp; modifications</h2>
 <p>Journal conservé dans le même coffre local chiffré que Tournée. Il ne modifie ni les soins planifiés ni Topaze. Les états de rapprochement sont manuels. <strong>Pour conserver ce journal lors d'un changement d'appareil, utilise « Exporter le coffre chiffré » : l'ancien export JSON classique ne l'inclut pas.</strong></p>
 <form id="ap-form">
@@ -484,6 +496,8 @@ body.tournee-locked #tour-save-strip{display:none}
 <p id="ap-status" role="status" aria-live="polite"></p>
 <p id="ap-summary" aria-live="polite"></p>
 <p id="ap-breakdown" aria-live="polite"></p>
+<div id="ap-period-report" aria-live="polite"></div>
+<section class="ap-summary-card" aria-label="Bilan manuel pour Topaze"><h3>Bilan manuel pour Topaze</h3><p class="ap-caption">Synthèse agrégée des signalements actifs filtrés : aucune identité, observation ou donnée clinique. Ce texte n’est pas une facture. Vérifie chaque soin dans Topaze avant toute modification ou facturation.</p><pre id="ap-topaze-note"></pre><button id="ap-copy-summary" type="button">Copier uniquement le bilan anonymisé</button></section>
 <p><small>Récapitulatif local pour préparer un rapprochement manuel. Aucune facture créée, aucune donnée transmise à Topaze. Les signalements annulés sont exclus des totaux actifs.</small></p>
 <div id="ap-events"></div>
 </div>
@@ -1710,6 +1724,45 @@ function absencePatients(){
 function absenceDateOK(day){return /^\d{4}-\d{2}-\d{2}$/.test(day)&&!Number.isNaN(Date.parse(day+'T12:00:00Z'))}
 function absenceSummary(rows){const active=rows.filter(x=>!x.cancelled);return {total:rows.length,active:active.length,cancelled:rows.length-active.length,toReview:active.filter(x=>x.sync==='À rapprocher').length,reasons:Object.fromEntries(ABSENCE_REASONS.map(reason=>[reason,active.filter(x=>x.reason===reason).length]))}}
 function absenceDuplicate(rows,{patientId,day,reason}){return rows.some(x=>!x.cancelled&&x.patientId===patientId&&x.day===day&&x.reason===reason)}
+
+function absenceWeekStart(day){
+ if(!absenceDateOK(day))return '';
+ const date=new Date(day+'T12:00:00Z');
+ date.setUTCDate(date.getUTCDate()-(date.getUTCDay()+6)%7);
+ return date.toISOString().slice(0,10);
+}
+function absencePeriodRows(rows,{from='',to='',reason='',sync=''}={}){
+ if((from&&!absenceDateOK(from))||(to&&!absenceDateOK(to))||(from&&to&&from>to))return [];
+ return rows.filter(x=>absenceDateOK(x.day)&&(!from||x.day>=from)&&(!to||x.day<=to)&&(!reason||x.reason===reason)&&(!sync||x.sync===sync));
+}
+function absencePeriodReport(rows){
+ const active=rows.filter(x=>!x.cancelled);
+ const daily=new Map(),weekly=new Map();
+ for(const x of active){
+  const week=absenceWeekStart(x.day);
+  for(const [map,key] of [[daily,x.day],[weekly,week]]){
+   if(!key)continue;
+   const entry=map.get(key)||{total:0,toReview:0,reasons:Object.fromEntries(ABSENCE_REASONS.map(reason=>[reason,0]))};
+   entry.total++;
+   if(x.sync==='À rapprocher')entry.toReview++;
+   if(ABSENCE_REASONS.includes(x.reason))entry.reasons[x.reason]++;
+   map.set(key,entry);
+  }
+ }
+ return {daily:[...daily.entries()].sort(([a],[b])=>a.localeCompare(b)),weekly:[...weekly.entries()].sort(([a],[b])=>a.localeCompare(b))};
+}
+function absenceTopazeText(rows,filters={}){
+ const active=absencePeriodRows(rows,filters).filter(x=>!x.cancelled);
+ const stats=absenceSummary(active);
+ const report=absencePeriodReport(active);
+ const intro='BILAN MANUEL — TOURNEE / A VERIFIER DANS TOPAZE\nSynthese anonymisee, sans identite ni note clinique. Aucune action automatique.';
+ const range='Periode : '+(filters.from||'debut non precise')+' au '+(filters.to||'fin non precise');
+ const reasonText=ABSENCE_REASONS.map(reason=>reason+' : '+stats.reasons[reason]).join(' | ');
+ const dayText=report.daily.map(([day,v])=>day+' : '+v.total+' signalement(s), '+v.toReview+' a rapprocher').join('\n')||'Aucun signalement actif';
+ const weekText=report.weekly.map(([week,v])=>'Semaine du '+week+' : '+v.total+' signalement(s), '+v.toReview+' a rapprocher').join('\n')||'Aucune semaine concernee';
+ return [intro,range,'Actifs : '+stats.active+' | A rapprocher : '+stats.toReview,reasonText,'PAR JOUR',dayText,'PAR SEMAINE (lundi)',weekText,'Verification manuelle indispensable : chaque acte et facture restent geres dans Topaze.'].join('\n');
+}
+
 function absenceRender(){
  const rows=absenceRead();if(!rows)return;
  const patients=absencePatients(), names=new Map(patients.map(p=>[p.id,p.n]));
@@ -1718,12 +1771,21 @@ function absenceRender(){
  for(const p of patients){const o=document.createElement('option');o.value=p.id;o.textContent=p.n;select.append(o)}
  if(patients.some(x=>x.id===selected))select.value=selected;
  const filters={from:ap('ap-from').value,to:ap('ap-to').value,reason:ap('ap-filter-reason').value,sync:ap('ap-filter-state').value,cancelled:ap('ap-filter-cancelled').value};
- const period=rows.filter(x=>(!filters.from||x.day>=filters.from)&&(!filters.to||x.day<=filters.to)&&(!filters.from||!filters.to||filters.from<=filters.to));
- const scoped=period.filter(x=>(!filters.reason||x.reason===filters.reason)&&(!filters.sync||x.sync===filters.sync));
+ const scoped=absencePeriodRows(rows,filters);
  const counts=absenceSummary(scoped);
  const filtered=scoped.filter(x=>filters.cancelled==='all'||(filters.cancelled==='cancelled'?!!x.cancelled:!x.cancelled));
  ap('ap-summary').textContent=counts.active+' actif(s), '+counts.cancelled+' annulé(s), dont '+counts.toReview+' à rapprocher. '+filtered.length+' affiché(s) · '+rows.length+' au coffre.';
  ap('ap-breakdown').textContent=ABSENCE_REASONS.map(reason=>reason+' : '+counts.reasons[reason]).join(' · ');
+ const periodReport=absencePeriodReport(scoped);
+ const periodHost=ap('ap-period-report');periodHost.replaceChildren();
+ for(const [title,groups] of [['Par jour',periodReport.daily],['Par semaine (lundi)',periodReport.weekly]]){
+  const section=document.createElement('section'),heading=document.createElement('h4'),list=document.createElement('ul');
+  heading.textContent=title;section.append(heading);
+  if(!groups.length){const empty=document.createElement('p');empty.textContent='Aucun signalement actif';section.append(empty)}
+  else for(const [day,entry] of groups){const li=document.createElement('li');li.textContent=day+' · '+entry.total+' actif(s), '+entry.toReview+' à rapprocher';list.append(li)}
+  section.append(list);periodHost.append(section);
+ }
+ ap('ap-topaze-note').textContent=absenceTopazeText(rows,filters);
  const host=ap('ap-events');host.replaceChildren();
  for(const x of filtered.slice().reverse()){
   const box=document.createElement('article');box.className='ap-entry';
@@ -1804,6 +1866,16 @@ ap('tour-absence-open').addEventListener('click',()=>{
 });
 ap('ap-close').addEventListener('click',()=>{ap('tour-absence-panel').hidden=true;noteTourActivity()});
 for(const id of ['ap-from','ap-to','ap-filter-reason','ap-filter-state','ap-filter-cancelled'])ap(id).addEventListener('change',absenceRender);
+ap('ap-copy-summary').addEventListener('click',async()=>{
+ const rows=absenceRead();if(!rows)return;
+ const filters={from:ap('ap-from').value,to:ap('ap-to').value,reason:ap('ap-filter-reason').value,sync:ap('ap-filter-state').value};
+ const text=absenceTopazeText(rows,filters);
+ try{
+  if(!navigator.clipboard||!navigator.clipboard.writeText)throw Error('Presse-papiers indisponible');
+  await navigator.clipboard.writeText(text);
+  ap('ap-status').textContent='Bilan agrégé copié sans identités. Vérifie les soins et les factures manuellement dans Topaze.';
+ }catch(e){ap('ap-status').textContent='Copie indisponible : le bilan reste visible ci-dessous. Aucun envoi effectué.'}
+});
 ap('ap-form').addEventListener('submit',async e=>{
  e.preventDefault();
  const rows=absenceRead();if(!rows)return;
