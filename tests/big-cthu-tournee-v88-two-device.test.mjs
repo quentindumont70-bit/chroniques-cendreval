@@ -13,7 +13,7 @@ const fakeState={
 
 async function browserFixture(storage,secret=phrase){
  const html=await readFile(new URL('../big-cthu-beta/tournee-complete.html',import.meta.url),'utf8');
- const cryptStart=html.indexOf('const SECURE_KEY=');
+ const cryptStart=html.indexOf('const ORIGINAL_KEY=');
  const cryptStop=html.indexOf('function fillFromBackup(d){',cryptStart);
  const loginStart=html.indexOf('async function login(fileMode){',cryptStop);
  const loginStop=html.indexOf("document.getElementById('tour-open').addEventListener",loginStart);
