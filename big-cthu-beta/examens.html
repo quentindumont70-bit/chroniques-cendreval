@@ -15,5 +15,5 @@ for(let i=0;i<total;i++){const item=session.items[i],q=item.question,good=sessio
 $('begin').addEventListener('click',()=>{const all=pool(),count=Math.min(all.length,Number($('amount').value));if(!count)return;session={items:shuffle(all).slice(0,count),index:0,answers:Array(count).fill(null),domain:$('domain').value};present()});
 $('next').addEventListener('click',()=>{if(!session||session.answers[session.index]===null)return;if(session.index===session.items.length-1)finish();else{session.index++;present()}});
 $('domain').addEventListener('change',refreshAvailable);$('clearHistory').addEventListener('click',()=>{if(!history.length)return;if(!confirm('Effacer les résultats des simulations sur cet appareil ?'))return;history=[];localStorage.removeItem(KEY);showHistory()});
-refreshAvailable();showHistory()})();
+const queryDomain=new URLSearchParams(location.search).get('domaine');if(queryDomain&&[...$('domain').options].some(o=>o.value===queryDomain))$('domain').value=queryDomain;refreshAvailable();showHistory()})();
 </script></body></html>
