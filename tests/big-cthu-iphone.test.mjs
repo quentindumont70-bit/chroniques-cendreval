@@ -101,3 +101,16 @@ test('iPhone: aucune ressource distante requise pour le shell public',async()=>{
  assert.match(sw,/r\.method!=='GET'/);
  assert.match(sw,/origin!==self\.location\.origin/);
 });
+
+test('Tournée IDEL: le cockpit ouvre le lien existant sans publier de données médicales',async()=>{
+ const home=await read('index.html');
+ const tour='https://claude.ai/artifact/Na1RpnwQ5d5pqbqBLdnjj8';
+ assert.ok(home.includes("b.href='"+tour+"'"),'historical Tournée link not configured');
+ assert.match(home,/b\.target='_blank'/);
+ assert.match(home,/b\.rel='noopener noreferrer'/);
+ assert.match(home,/if\(i\[3\]!=='tour'\)b\.addEventListener/);
+ assert.match(home,/Le cockpit public ne copie ni ne synchronise les patients/);
+ const sw=await read('sw.js');
+ assert.doesNotMatch(sw,/Na1RpnwQ5d5pqbqBLdnjj8/);
+ assert.match(sw,/public-v2-v59/);
+});
