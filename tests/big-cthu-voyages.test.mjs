@@ -121,6 +121,8 @@ test('Voyages: export CSV traite les montants, remboursements et soldes',()=>{
  assert.match(csv,/"remboursement";"2026-11-14";"Remboursement";"Bob";"Alice";"2.00"/);
  assert.match(csv,/"solde";"";"Après remboursements";"Alice";"net à recevoir/);
  assert.match(csv,/"3.00"/);
+ assert.match(csv,/"-3.00"/); // Les débits restent numériques et exploitables dans le tableur
+ assert.doesNotMatch(csv,/"'-3.00"/);
 });
 test('Voyages: export CSV échappe les champs et neutralise les formules dangereuses',()=>{
  const trip={people:['Alice','Bob'],expenses:[{date:'',title:'=HYPERLINK("danger")',payer:'Alice',cents:100,shares:{Alice:50,Bob:50}}],reimbursements:[]};
