@@ -102,7 +102,7 @@ test('Voyages: les séjours longs suggèrent la lessive sans inventer la météo
  assert.equal(result.includes('Veste chaude'),false);
  assert.equal(result.includes('Imperméable ou parapluie'),false); // La randonnée elle-même contient un vêtement de pluie générique, pas ce libellé météo
 });
-test('Voyages: valises personnalisées et migration Coffre V22 présentes dans la bêta',async()=>{
+test('Voyages: valises personnalisées et migration Coffre présentes dans la bêta',async()=>{
  const root=new URL('../big-cthu-beta/',import.meta.url);
  const [page,backup,sw]=await Promise.all(['voyages.html','sauvegardes.html','sw.js'].map(f=>readFile(new URL(f,root),'utf8')));
  assert.match(page,/id="packOwner"/);
@@ -111,7 +111,7 @@ test('Voyages: valises personnalisées et migration Coffre V22 présentes dans l
  assert.match(backup,/t\.packedByPerson!==undefined/);
  assert.match(backup,/t\.activities!==undefined/);
  assert.match(backup,/Schéma V23/);
- assert.match(sw,/v55/);
+ assert.match(sw,/v56/);
 });
 
 test('Voyages: export CSV traite les montants, remboursements et soldes',()=>{
