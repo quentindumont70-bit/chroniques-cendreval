@@ -75,6 +75,26 @@ function transfers(result){
  }
  return output;
 }
+function exportTripCsv(trip){
+ const result=balances(trip);
+ const clean=x=>{
+  let text=String(x??'');
+  if(/^[\s]*[=+\-@\t\r\n]/.test(text))text="'"+text;
+  return '"'+text.replace(/"/g,'""')+'"';
+ };
+ const eur=amount=>(amount/100).toFixed(2);
+ const rows=[['type','date','libelle','source','destination_ou_parts','montant_eur']];
+ for(const e of trip.expenses||[]){
+  const date=typeof e.date==='string'?e.date:'';
+  const people=Object.entries(e.shares||{}).map(([p,v])=>p+' : '+eur(v)+' €').join(' | ');
+  rows.push(['dépense',date,e.title,e.payer,people,eur(e.cents)]);
+ }
+ for(const r of trip.reimbursements||[]){
+  rows.push(['remboursement',typeof r.date==='string'?r.date:'','Remboursement',r.from,r.to,eur(r.cents)]);
+ }
+ for(const [person,net] of Object.entries(result))rows.push(['solde','','Après remboursements',person,'net à recevoir (+) / à régler (-)',eur(net)]);
+ return rows.map(row=>row.map(clean).join(';')).join('\r\n')+'\r\n';
+}
 const BASE=['Pièce d’identité / documents de voyage à vérifier','Téléphone et chargeur','Sous-vêtements et chaussettes','Tenues pour la durée du séjour','Trousse de toilette','Chaussures confortables','Moyen de paiement','Réservations et billets à vérifier'];
 const ACTIVITIES={
  plage:['Maillot de bain','Serviette de plage','Chapeau et protection solaire','Sandales'],
@@ -102,7 +122,7 @@ function windowForTrip(start,end,today){
  const startToday=new Date(today+'T12:00:00Z'),last=new Date(startToday.getTime()+15*86400000).toISOString().slice(0,10);
  return {available:start<=last&&end>=today,from:start<today?today:start,to:end>last?last:end,complete:start>=today&&end<=last,horizon:last};
 }
-const api={cents,splitEqual,splitAmounts,splitPercentages,balances,transfers,packing,windowForTrip};
+const api={cents,splitEqual,splitAmounts,splitPercentages,balances,transfers,exportTripCsv,packing,windowForTrip};
 if(typeof module==='object'&&module.exports)module.exports=api;
 else root.BigCthuVoyages=api;
 })(typeof window!=='undefined'?window:{});
