@@ -16,7 +16,7 @@ async function fixture({fail=false}={}){
   localStorage:{setItem(){if(shouldFail)throw Error('QuotaExceeded');writes++}},
   crypto:{getRandomValues(arr){return arr.fill(1)},subtle:{encrypt:async()=>new Uint8Array([1,2,3])}},
   setTimeout:()=>1,clearTimeout:()=>{},TextEncoder,Uint8Array,JSON,
-  SECURE_KEY:'test-encrypted-only',secureKey:'fake-key',secureSalt:new Uint8Array(16),secureGen:1,secureSavedGen:0,secureActive:null,secureTimer:0,secureState:{tidel_Pl:'[]'},
+  SECURE_KEY:'test-encrypted-only',secureKey:'fake-key',secureBooted:false,secureSalt:new Uint8Array(16),secureGen:1,secureSavedGen:0,secureActive:null,secureTimer:0,secureState:{tidel_Pl:'[]'},
   to64:()=> 'AQID',enc:new TextEncoder(),location:{reload(){reloads++}}
  };
  runInNewContext(html.slice(begin,end)+'\nthis.flushTest=flush;this.dirtyTest=dirty;this.checkTourIdleTest=checkTourIdle;this.noteTourActivityTest=noteTourActivity;this.setIdleTest=(timestamp)=>{secureBooted=true;lastTourActivity=timestamp};',sandbox,{timeout:1000});
