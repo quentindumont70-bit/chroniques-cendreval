@@ -32,3 +32,8 @@ jobs:
         run: npm run typecheck:game
       - name: Exécuter les tests et compiler GitHub Pages
         run: npm test
+      - name: Vérifier la présence de Big Cthu dans le paquet Pages
+        run: |
+          node scripts/stage-big-cthu-beta.mjs
+          test -f pages-dist/big-cthu-beta/index.html
+          test -f pages-dist/big-cthu-beta/flashcards.html
