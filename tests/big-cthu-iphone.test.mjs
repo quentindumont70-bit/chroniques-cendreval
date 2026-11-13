@@ -2,6 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {runInNewContext} from 'node:vm';
+import {inflateSync} from 'node:zlib';
 
 const base=new URL('../big-cthu-beta/',import.meta.url);
 const read=name=>readFile(new URL(name,base),'utf8');
@@ -15,6 +16,14 @@ test('iPhone: manifeste autonome garde une identité stable et la même portée'
  assert.equal(manifest.display,'standalone');
  assert.equal(manifest.lang,'fr');
  assert.ok((await read('icon.svg')).includes('<svg'));
+ assert.ok(manifest.icons.some(i=>i.src==='./apple-touch-icon.png'&&i.sizes==='180x180'&&i.type==='image/png'));
+ const png=await readFile(new URL('apple-touch-icon.png',base));
+ assert.equal(png.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
+ assert.equal(png.readUInt32BE(16),180);
+ assert.equal(png.readUInt32BE(20),180);
+ const length=png.readUInt32BE(33);
+ assert.equal(png.subarray(37,41).toString(),'IDAT');
+ assert.equal(inflateSync(png.subarray(41,41+length)).length,180*(1+180*4));
 });
 
 test('iPhone: guide accessible depuis le cockpit avec précautions de migration',async()=>{
@@ -22,8 +31,10 @@ test('iPhone: guide accessible depuis le cockpit avec précautions de migration'
  assert.match(home,/href="\.\/installation-iphone\.html"/);
  assert.match(home,/rel="manifest"/);
  assert.match(home,/apple-mobile-web-app-capable/);
+ assert.match(home,/rel="apple-touch-icon"/);
  assert.match(home,/controllerchange/);
  assert.match(guide,/Ouvrir comme app web/);
+ assert.match(guide,/rel="apple-touch-icon"/);
  assert.match(guide,/stockages (?:séparés|locaux|distincts)/);
  assert.match(guide,/anciens raccourcis/);
  assert.match(guide,/sauvegardes\.html/);
@@ -53,9 +64,9 @@ test('iPhone: le service worker contient les ressources publiques requises',asyn
  const assets=sw.match(/const ASSETS=\[([\s\S]*?)\];/)[1];
  const names=[...assets.matchAll(/'\.\/([^']+)'/g)].map(x=>x[1]);
  assert.equal(names.length,new Set(names).size);
- for(const name of ['index.html','installation-iphone.html','mobile-boot.js','sauvegardes.html','voyages.html','cantine.html','manifest.webmanifest','icon.svg']){
+ for(const name of ['index.html','installation-iphone.html','mobile-boot.js','sauvegardes.html','voyages.html','cantine.html','manifest.webmanifest','icon.svg','apple-touch-icon.png']){
   assert.ok(names.includes(name),name+' missing');
-  await read(name);
+  if(name.endsWith('.png'))await readFile(new URL(name,base));else await read(name);
  }
  const guide=await read('installation-iphone.html');
  const localLinks=[...guide.matchAll(/href="\.\/([^"#?]+)"/g)].map(x=>x[1]);
