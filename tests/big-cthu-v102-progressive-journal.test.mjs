@@ -46,7 +46,8 @@ test('V102: recherche et filtres repartent à 50 sans écriture de donnée patie
  assert.match(html,/for\(const x of visible\)/);
  assert.match(html,/function absenceFiltersChanged\(\)\{absenceVisible=ABSENCE_PAGE_SIZE;absenceRender\(\)\}/);
  assert.match(html,/ap\('ap-search'\)\.addEventListener\('input',absenceFiltersChanged\)/);
- assert.match(html,/ap\('ap-more'\)\.addEventListener\('click',\(\)=>\{absenceVisible=Math\.min\(absenceVisible\+ABSENCE_PAGE_SIZE,500\);absenceRender\(\)\}\)/);
+ assert.match(html,/absenceVisible=Math\.min\(absenceVisible\+ABSENCE_PAGE_SIZE,500\)/);
+ assert.match(html,/const next=ap\('ap-events'\)\.children\[previousCount\]/);
  const paginator=html.slice(html.indexOf('const ABSENCE_PAGE_SIZE=50;'),html.indexOf('function absenceRender(){'));
  assert.doesNotMatch(paginator,/fetch\(|XMLHttpRequest|localStorage|TOUR_STORE|indexedDB/);
 });
