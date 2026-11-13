@@ -79,7 +79,7 @@ function exportTripCsv(trip){
  const result=balances(trip);
  const clean=x=>{
   let text=String(x??'');
-  if(/^[\s]*[=+\-@\t\r\n]/.test(text))text="'"+text;
+  if(/^[\s]*[=+\-@\t\r\n]/.test(text)&&!/^[-+]?\d+(?:\.\d+)?$/.test(text))text="'"+text;
   return '"'+text.replace(/"/g,'""')+'"';
  };
  const eur=amount=>(amount/100).toFixed(2);
