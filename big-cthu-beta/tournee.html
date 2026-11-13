@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b6e69">
-<title>Tournée · Application principale · Big Cthu</title>
+<title>Big Cthu · Tournée IDEL</title>
 <script>try{var t=JSON.parse(localStorage.getItem("tidel_theme")||'"auto"');if(t==="auto")t=matchMedia("(prefers-color-scheme: dark)").matches?"nuit":"lagon";document.documentElement.dataset.theme=t}catch(e){}</script>
 <style>
 /* ===== THÈMES ===== */
@@ -412,40 +412,16 @@ body{min-height:100vh}
 .cact button{font-size:12.5px;padding-left:4px;padding-right:4px}
 .gd{position:relative}.gx{position:absolute;top:-6px;right:-4px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(127,127,127,.18);color:inherit;font-size:18px;cursor:pointer}
 
-/* Big Cthu dark shell */
-[data-theme=lagon],[data-theme=nuit]{--bg:#100e22;--bg2:#16132a;--card:#211b36;--ink:#f7f2ff;--mut:#c1b6d7;--acc:#a78bfa;--acc-ink:#130d26;--soft:#33264c;--line:#54476f;--hdr:linear-gradient(135deg,#211b36,#0e4649);--hdr-ink:#f7f2ff;--tl:#594a72}
-body.tournee-locked>:not(#tour-security-gate):not(script){display:none!important}
-#tour-security-gate{position:relative;max-width:640px;margin:18px auto;padding:20px;background:#211b36;color:#f7f2ff;border:1px solid #63548e;border-radius:20px;font:16px/1.5 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;box-shadow:0 15px 55px #0005}
-#tour-security-gate h1{font-size:26px;color:#fff;margin:12px 0}
-#tour-security-gate p{font-size:14px;color:#d3cce1}
-#tour-security-gate label{display:block;margin:16px 0 5px}
-#tour-security-gate input{font:inherit;box-sizing:border-box;display:block;width:100%;border:1px solid #8875a8;border-radius:12px;padding:12px;background:#100e22;color:white;min-height:46px}
-#tour-security-gate button{font:inherit;border:0;border-radius:12px;background:#7b5ac6;color:white;padding:13px 17px;margin-top:12px;min-height:46px;width:100%}
-#tour-security-gate .info{border-radius:12px;padding:12px;background:#153b3d;color:#cffff3}
-#tour-security-gate a{color:#b1ffe9}
-#tour-security-gate #tour-error{color:#ffc7c7;min-height:22px}
+[data-theme=lagon],[data-theme=nuit]{--bg:#100e22;--bg2:#171329;--card:#211b36;--ink:#f7f2ff;--mut:#c5b7d7;--acc:#a88bf4;--acc-ink:#100e22;--soft:#322748;--line:#5a4876;--hdr:linear-gradient(135deg,#28194a,#0c4d4c);--hdr-ink:#faf6ff;--tl:#5a4774}
 </style>
 </head>
-<body class="tournee-locked"><section id="tour-security-gate">
-<a href="./index.html">← Retour au cockpit Big Cthu</a>
-<h1>🩺 Accès à ma tournée</h1>
-<p class="info" id="tour-saved-status">Vérification de ta sauvegarde chiffrée sur cet appareil…</p>
-<p>Déverrouille pour ouvrir directement ta tournée avec tous les onglets. La restauration est disponible dans Mes données. Aucune fiche patient n'est incluse dans le code public.</p>
-<label for="tour-pass">Phrase secrète utilisée pour la restauration</label>
-<input id="tour-pass" type="password" autocomplete="current-password" minlength="12" placeholder="Ta phrase secrète">
-<button id="tour-open">Déverrouiller et ouvrir toute l'application</button>
-<details style="margin-top:14px"><summary style="cursor:pointer">Autre solution : importer ma sauvegarde JSON</summary>
-<label for="tour-file">Fichier JSON de Tournée</label><input type="file" id="tour-file" accept=".json,application/json">
-<button id="tour-import">Importer dans Tournée complète</button></details>
-<p id="tour-error" role="status"></p>
-<p>Les données restent chiffrées dans ce navigateur, mais cette version web n'est pas un hébergement HDS certifié. Conserve ta sauvegarde d'origine et l'application historique pour les soins.</p>
-</section>
+<body>
 <header>
- <div class="t"><div class="ttl" onclick="if(tab==='tour')monthPick()" style="cursor:pointer"><h1 id="ht">Tournée</h1><small id="hs"></small></div><button class="hbtn" onclick="askOpen()" aria-label="Question médicale à Claude">🩺</button><button class="hbtn" onclick="goInfo()" aria-label="Infos pratiques">ℹ️</button><button class="hbtn" onclick="openSearch()" aria-label="Rechercher">🔍</button><button class="hbtn" onclick="guide(0)" aria-label="Revoir le guide de bienvenue" title="Guide">❔</button><button class="hbtn" onclick="openPk()" aria-label="Thème">🎨</button></div>
+ <div class="t"><div class="ttl" onclick="if(tab==='tour')monthPick()" style="cursor:pointer"><h1 id="ht">Tournée</h1><small id="hs"></small></div><button class="hbtn" onclick="askOpen()" aria-label="Question médicale à Claude">🩺</button><button class="hbtn" onclick="goInfo()" aria-label="Infos pratiques et import de sauvegarde">💾</button><button class="hbtn" onclick="openSearch()" aria-label="Rechercher">🔍</button><button class="hbtn" onclick="guide(0)" aria-label="Revoir le guide de bienvenue" title="Guide">❔</button><button class="hbtn" onclick="openPk()" aria-label="Thème">🎨</button></div>
 <p class="cit" style="margin:6px 16px 2px;font-size:13px;color:var(--mut);font-style:italic;line-height:1.45">« D’abord, ne pas nuire. » <span style="font-style:normal;white-space:nowrap">— principe hippocratique (primum non nocere)</span></p>
  <div class="bar" id="bar"><i></i></div>
 </header>
-<main id="app"></main>
+<section id="tour-restore-banner" style="display:none;margin:12px 14px;background:#211b36;border:1px solid #6a5689;border-radius:13px;padding:12px;color:#f8f3ff;font:14px system-ui,sans-serif"><strong style="display:block;margin-bottom:8px">📂 Importer ma sauvegarde</strong><label style="display:inline-block;background:#785bc5;padding:12px 16px;color:#fff;border-radius:10px;cursor:pointer">Choisir le fichier JSON<input type="file" accept="application/json,.json" hidden onchange="importAll(this)"></label><div style="margin-top:8px;font-size:12px;color:#d7cdeb">L'application est ouverte. Import possible aussi via Infos → Mes données. Aucune phrase secrète demandée.</div></section><main id="app"></main>
 <nav class="tabs">
  <button data-t="tour" class="on"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6.5"/></svg>Tournée</button>
  <button data-t="pat"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.6"/><path d="M16 14.2a5 5 0 0 1 5.5 5"/></svg>Patients</button>
@@ -460,13 +436,13 @@ body.tournee-locked>:not(#tour-security-gate):not(script){display:none!important
 <div class="toast" id="toast"></div>
 <div class="nb" id="nb"></div>
 <div class="lb" id="lb" onclick="this.classList.remove('on')"><img id="lbi" alt=""></div>
-<script type="text/plain" id="tour-source-js">
+<script>
 let P=[];
-try{const l=JSON.parse(TOUR_STORE.getItem("tidel_Pl")||"null");if(Array.isArray(l)&&l.length)P=l}catch(e){}
+try{const l=JSON.parse(localStorage.getItem("tidel_Pl")||"null");if(Array.isArray(l)&&l.length)P=l}catch(e){}
 const PH={};
 const THEMES=[["auto","Auto","Suit le téléphone","linear-gradient(90deg,#edf3f4 50%,#0a0f15 50%)","#0b6e69","#fff"],["lagon","Lagon","Clair, apaisant","#edf3f4","#0b6e69","#fff"],["nuit","Nuit","Tournée à l'aube","#0a0f15","#62b4ff","#141d27"],["aube","Aube","Chaud, éditorial","#f8f0e6","#b9502a","#fffaf3"],["foret","Forêt","Doux, naturel","#ecf1e8","#3c7448","#fbfcf8"],["neon","Néon","Breakcore mode","#0c0612","#ff3ea5","#180d25"],["soleil","Plein soleil","Contraste max","#ffffff","#000000","#ffe600"],["sakura","Sakura","Cerisiers en fleurs","#fbeef2","#c2185b","#fff8fa"],["espace","Espace","Étoiles filantes","#070a1f","#9d8cff","#121a3a"],["tropiques","Tropiques","Lagon, frangipaniers","#e9f7f3","#00897b","#fffdf6"],["volcan","Volcan","Piton de la Fournaise","#140b0a","#ff6a2b","#22130f"],["marin","Marin","Lagon et petits poissons","#c9f1f0","#0097a7","#f4fdfc"],["aurore","Aurore boréale","Voiles verts et violets","#06121a","#3dffb5","#0e1f2a"],["pluie","Pluie lo-fi","Nuit de pluie en ville","#12131c","#ffb86b","#1c1e2b"],["arcade","Arcade","Rétro 8-bit","#0d0221","#f15bb5","#1a0b38"]];
 const ALL=[0,1,2,3,4,5,6], JN=["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"], JC=["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"];
-const st={get(k,d){try{const v=TOUR_STORE.getItem("tidel_"+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{TOUR_STORE.setItem("tidel_"+k,JSON.stringify(v))}catch(e){}}};
+const st={get(k,d){try{const v=localStorage.getItem("tidel_"+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem("tidel_"+k,JSON.stringify(v))}catch(e){}}};
 const IC={nav:'<svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8z"/></svg>',tel:'<svg viewBox="0 0 24 24"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>',chk:'<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'};
 let PER=(()=>{const a=[],d=new Date(2026,10,6);while(d<=new Date(2026,10,16)){a.push(d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"));d.setDate(d.getDate()+1)}return a})();
 function DT(s){const[a,b,c]=s.split("-");return new Date(+a,b-1,+c)}
@@ -555,7 +531,7 @@ function viewNotes(){
 }
 function ok(id){const e=document.getElementById(id);if(e){e.textContent="✓ Enregistré";clearTimeout(e._t);e._t=setTimeout(()=>e.textContent="",1200)}}
 function shareNotes(){const t=anon(notesText());if(navigator.share)navigator.share({text:t}).catch(()=>{});else if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>alert("Copié, colle-le dans WhatsApp."));else prompt("Copie ce texte :",t)}
-function clearAll(){try{TOUR_STORE.keys().filter(k=>/^tidel_(done_|dt_|pn_|notes_gen|memo_|memod_|tk_|ord_|cs_|abs_|fac_|hx_)/.test(k)).forEach(k=>TOUR_STORE.removeItem(k))}catch(e){}syncPush();render()}
+function clearAll(){try{Object.keys(localStorage).filter(k=>/^tidel_(done_|dt_|pn_|notes_gen|memo_|memod_|tk_|ord_|cs_|abs_|fac_|hx_)/.test(k)).forEach(k=>localStorage.removeItem(k))}catch(e){}syncPush();render()}
 function viewInfo(){
  const groups={};P.forEach(p=>{const k=p.lieu||p.a;(groups[k]=groups[k]||[]).push(p)});
  return `${editBlock()}${modeBlock()}${typeof impBlock==="function"?impBlock():""}${lockBlock()}${saveBlock()}${ctBlock()}<div class="blk"><div class="lab">Déroulé type</div>Départ vers <b>6h45</b>, fin vers <b>11h</b>. Horaires indicatifs.</div>
@@ -677,7 +653,7 @@ try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",autoAmb
 
 /* ===== V8 : pense-bêtes datés, météo, proverbe, Sakura ===== */
 let DN=[];
-try{const importedDN=JSON.parse(TOUR_STORE.getItem("tidel_import_DN")||"null");if(Array.isArray(importedDN))DN=importedDN}catch(e){}
+try{const importedDN=JSON.parse(localStorage.getItem("tidel_import_DN")||"null");if(Array.isArray(importedDN))DN=importedDN}catch(e){}
 function memos(d){return DN.filter(m=>m.d===d).map((m,i)=>Object.assign({fixe:1,k:"f"+i},m)).concat(st.get("memo_"+d,[]))}
 function memoDone(d,k){return st.get("memod_"+d,[]).includes(k)}
 function togMemo(d,k){const key="memod_"+d;let a=st.get(key,[]);a=a.includes(k)?a.filter(x=>x!==k):a.concat(k);st.set(key,a);render()}
@@ -713,7 +689,7 @@ async function qaNew(){const n=document.getElementById("qn").value.trim(),a=docu
  P=P.concat(p);qaOrder();closePk();render();toast("Patient ajouté à la tournée");await qaSave("Patient ajouté")}
 
 /* --- Mode édition + actions par passage --- */
-function editBlock(){const loc=!!TOUR_STORE.getItem("tidel_Pl");return `<div class="blk"><div class="lab">✏️ Édition de la tournée</div><div class="fs"><span>Mode édition (créer / modifier les fiches)</span><span class="seg"><button class="${EDIT?"on":""}" onclick="editTog(1)">Oui</button><button class="${EDIT?"":"on"}" onclick="editTog(0)">Non</button></span></div><div class="sub" style="margin-top:6px">${EDIT?"Actif : ＋ Nouveau patient dans l'onglet Patients, ✏️ dans chaque fiche, ordre de tournée modifiable.":"Désactivé : lecture et ajout rapide de passages seulement."}</div>${loc?`<div class="warnbox" style="margin-top:8px">Des modifications sont enregistrées uniquement sur cet appareil. <button class="lnk" onclick="if(confirm('Revenir à la version de la page ?')){TOUR_STORE.removeItem('tidel_Pl');location.reload()}">Les effacer</button></div>`:""}</div>`}
+function editBlock(){const loc=!!localStorage.getItem("tidel_Pl");return `<div class="blk"><div class="lab">✏️ Édition de la tournée</div><div class="fs"><span>Mode édition (créer / modifier les fiches)</span><span class="seg"><button class="${EDIT?"on":""}" onclick="editTog(1)">Oui</button><button class="${EDIT?"":"on"}" onclick="editTog(0)">Non</button></span></div><div class="sub" style="margin-top:6px">${EDIT?"Actif : ＋ Nouveau patient dans l'onglet Patients, ✏️ dans chaque fiche, ordre de tournée modifiable.":"Désactivé : lecture et ajout rapide de passages seulement."}</div>${loc?`<div class="warnbox" style="margin-top:8px">Des modifications sont enregistrées uniquement sur cet appareil. <button class="lnk" onclick="if(confirm('Revenir à la version de la page ?')){localStorage.removeItem('tidel_Pl');location.reload()}">Les effacer</button></div>`:""}</div>`}
 function editTog(v){EDIT=!!v;st.set("edit",v?1:0);toast(v?"Mode édition activé":"Mode édition désactivé");render()}
 function dayHour(id){const p=P.find(x=>x.id===id);if(!p)return;document.getElementById("pki").innerHTML=`<div class="grab"></div><h3>Horaire · ${esc(p.n.split(" ")[0])} · ${short(day)}</h3><div class="sub" style="margin-bottom:8px">Habituel : ${esc(p.h)}. Ne change que ce jour.</div><label class="fl">Horaire du jour<input type="search" id="dh" value="${esc(hOf(p))}" placeholder="Ex. 9h30"></label><div class="acts"><button class="btn" style="flex:1;justify-content:center" onclick="dayHourOk('${id}')">Valider</button><button class="btn ghost" onclick="dayHourOk('${id}',1)">Rétablir</button></div>`;document.getElementById("pk").classList.add("on")}
 function dayHourOk(id,reset){const hx=hxGet(),v=(document.getElementById("dh").value||"").trim();if(reset||!v)delete hx[id];else hx[id]=v;st.set("hx_"+day,hx);qaOrder();closePk();render();toast("Horaire mis à jour")}
@@ -803,9 +779,9 @@ function bilanCard(){const b=bilan(day);if(!b)return"";return `<div class="bil">
 /* ===== V11 : synchronisation partagée (titulaire ↔ remplaçant) ===== */
 const SYNC_RE=/^tidel_(nais_|done_|dt_|pn_|notes_gen|memo_|memod_|tk_|ord_|cs_|abs_|pb$|fac_|hx_|fh_|rdv_|ard_|stock$|guided$|news$)/;
 const SY={db:null,ref:null,st:"local",at:0,by:"",pull:false,t:0,busy:false,again:false,timer:0};
-function syncKV(){const o={};try{TOUR_STORE.keys().filter(k=>SYNC_RE.test(k)).forEach(k=>o[k.slice(6)]=TOUR_STORE.getItem(k))}catch(e){}return o}
+function syncKV(){const o={};try{Object.keys(localStorage).filter(k=>SYNC_RE.test(k)).forEach(k=>o[k.slice(6)]=localStorage.getItem(k))}catch(e){}return o}
 function syncPush(){if(!SY.ref||SY.pull)return;clearTimeout(SY.t);SY.t=setTimeout(async()=>{if(SY.busy){SY.again=true;return}SY.busy=true;try{const at=Date.now();SY.at=at;await SY.ref.set({kv:syncKV(),by:who()||"",at});SY.st="ok"}catch(e){SY.st="err"}SY.busy=false;syncUI();if(SY.again){SY.again=false;syncPush()}},1200)}
-function syncApply(d){if(!d||!d.kv||d.at===SY.at)return;SY.pull=true;try{TOUR_STORE.keys().filter(k=>SYNC_RE.test(k)).forEach(k=>{if(!(k.slice(6) in d.kv))TOUR_STORE.removeItem(k)});Object.entries(d.kv).forEach(([k,v])=>TOUR_STORE.setItem("tidel_"+k,v))}catch(e){}SY.pull=false;SY.at=d.at;SY.by=d.by||"";SY.last=d.at;
+function syncApply(d){if(!d||!d.kv||d.at===SY.at)return;SY.pull=true;try{Object.keys(localStorage).filter(k=>SYNC_RE.test(k)).forEach(k=>{if(!(k.slice(6) in d.kv))localStorage.removeItem(k)});Object.entries(d.kv).forEach(([k,v])=>localStorage.setItem("tidel_"+k,v))}catch(e){}SY.pull=false;SY.at=d.at;SY.by=d.by||"";SY.last=d.at;
  const sh=document.getElementById("sheet");if(!(sh.classList.contains("on")&&document.activeElement&&document.activeElement.tagName==="TEXTAREA"))render()}
 function syncUI(){const e=document.getElementById("sy");if(!e)return;const lbl={local:"Sur ce téléphone uniquement",wait:"Connexion au partage…",ok:"Partagé en direct avec le cabinet",err:"Partage momentanément indisponible",ro:"Lecture seule (pas d'accès en écriture)"}[SY.st];e.className="sy "+SY.st;e.innerHTML=`<i></i><span>${lbl}${SY.st==="ok"&&SY.last?` · maj ${new Date(SY.last).toTimeString().slice(0,5).replace(":","h")}${SY.by?" par "+esc(SY.by):""}`:""}</span>`}
 (async function(){if(!window.claude||!claude.use)return;SY.st="wait";syncUI();const db=await claude.use("db");if(!db){SY.st="local";syncUI();return}
@@ -859,7 +835,7 @@ function perLabel(long){const a=DT(PER[0]),b=DT(PER[PER.length-1]);const o={day:
  try{ASSETS=await claude.use("assets")}catch(e){}
  softRender()})();
 function softRender(){const sh=document.getElementById("sheet");const typing=document.activeElement&&/TEXTAREA|INPUT|SELECT/.test(document.activeElement.tagName);if(typing)return;if(sh.classList.contains("on")&&curF&&!sh.classList.contains("fm")&&!sh.classList.contains("ed"))fiche(curF,true);render()}
-async function cfgSave(msg){if(!CFG.ref){try{TOUR_STORE.setItem("tidel_Pl",JSON.stringify(P));toast((msg||"Enregistré")+" · sur cet appareil");return true}catch(e){toast("Enregistrement impossible");return false}}if(CFG.busy){await new Promise(r=>setTimeout(r,400))}CFG.busy=true;try{await CFG.ref.set({P,remps:REMPS,per:[PER[0],PER[PER.length-1]],dn:DN,at:Date.now(),by:who()||"titulaire"});try{TOUR_STORE.removeItem("tidel_Pl")}catch(e){}toast(msg||"Enregistré pour tout le monde");return true}catch(e){toast("Échec de l'enregistrement");return false}finally{CFG.busy=false}}
+async function cfgSave(msg){if(!CFG.ref){try{localStorage.setItem("tidel_Pl",JSON.stringify(P));toast((msg||"Enregistré")+" · sur cet appareil");return true}catch(e){toast("Enregistrement impossible");return false}}if(CFG.busy){await new Promise(r=>setTimeout(r,400))}CFG.busy=true;try{await CFG.ref.set({P,remps:REMPS,per:[PER[0],PER[PER.length-1]],dn:DN,at:Date.now(),by:who()||"titulaire"});try{localStorage.removeItem("tidel_Pl")}catch(e){}toast(msg||"Enregistré pour tout le monde");return true}catch(e){toast("Échec de l'enregistrement");return false}finally{CFG.busy=false}}
 
 /* --- BLOC 13 : éditeur titulaire --- */
 function toTxt(h){return String(h||"").replace(/<span class="code">(.*?)<\/span>/g,"[$1]").replace(/<br\s*\/?>/g,"\n").replace(/<[^>]+>/g,"")}
@@ -1162,17 +1138,17 @@ function importAll(inp){
    if(d.contacts)writes.push(["tidel_contacts",JSON.stringify(d.contacts)]);
    if(d.DN)writes.push(["tidel_import_DN",JSON.stringify(d.DN)]);
    // Le rollback limite le risque d'une restauration partielle (quota du navigateur, etc.).
-   rollback=writes.map(([k])=>[k,TOUR_STORE.getItem(k)]);
-   for(const [k,v] of writes)TOUR_STORE.setItem(k,v);
+   rollback=writes.map(([k])=>[k,localStorage.getItem(k)]);
+   for(const [k,v] of writes)localStorage.setItem(k,v);
    P=d.P;
    if(d.remps)REMPS=d.remps;
    if(d.ordos)ORD=d.ordos;
    if(d.contacts)CT=d.contacts;
    if(d.DN)DN=d.DN;
    toast("Restauration terminée · "+P.length+" patients");
-   setTimeout(async()=>{await TOUR_STORE.flush();location.reload()},450);
+   setTimeout(()=>location.reload(),450);
   }catch(e){
-   if(rollback.length)for(const [k,v] of rollback){try{if(v===null)TOUR_STORE.removeItem(k);else TOUR_STORE.setItem(k,v)}catch(_){}}
+   if(rollback.length)for(const [k,v] of rollback){try{if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(_){}}
    toast("Import refusé : "+(e.message||"fichier invalide"));
   }
  };
@@ -1426,7 +1402,7 @@ function anomBlock(){const A=anomItems(day);return `<div class="blk"><div class=
 function reconRows(){const R=[];PER.filter(d=>d<=TODAY).forEach(d=>{const L=list(d),dn=seen(d),ab=st.get("abs_"+d,[]);L.forEach(p=>{if(ab.includes(p.id))R.push([d,p.n,"Absent : supprimer sur Topaze"]);else if(!dn.includes(p.id))R.push([d,p.n,"Non validé : à vérifier avant facturation"])})});return R}
 function reconBlock(){const R=reconRows(),a=R.filter(r=>r[2].startsWith("Absent")).length,m=R.length-a;
  return `<div class="blk"><div class="lab">🧾 Avant facturation</div><div class="sub" style="margin-bottom:8px">${a} absence${a>1?"s":""} à retirer de Topaze · ${m} passage${m>1?"s":""} non validé${m>1?"s":""}${ROUT()?" (en mode routine, rien n'est « non validé »)":""}</div>${R.slice(0,12).map(r=>`<div style="margin:5px 0;font-size:13px"><b>${short(r[0])}</b> ${esc(r[1])} <span class="sub">· ${r[2]}</span></div>`).join("")}${R.length>12?`<div class="sub">… et ${R.length-12} autres dans le fichier</div>`:""}${R.length?"":`<div class="sub">Rien à vérifier.</div>`}<div class="acts" style="margin-top:8px"><button class="btn ghost" onclick="dlFile('Verification_facturation.csv','date;patient;action\\n'+reconRows().map(r=>r.join(';')).join('\\n'),'text/csv')">⬇ CSV Topaze</button></div></div>`}
-function checkBlock(){let n=0,sz=0;try{for(let i=0;i<TOUR_STORE.length;i++){const k=TOUR_STORE.key(i);if(k&&k.startsWith("tidel_")){n++;sz+=(TOUR_STORE.getItem(k)||"").length}}}catch(e){}
+function checkBlock(){let n=0,sz=0;try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith("tidel_")){n++;sz+=(localStorage.getItem(k)||"").length}}}catch(e){}
  const inc=P.filter(p=>!(p.tel&&p.tel.length)||!p.soins||!p.etage&&!p.acces).slice(0,12),bk=st.get("lastbk",0);
  return `<div class="blk"><div class="lab">🩺 Check-up de l'appli</div><div style="margin:4px 0">📦 ${n} réglages et notes enregistrés sur cet appareil (${Math.round(sz/1024)} Ko)</div><div style="margin:4px 0">👥 ${P.length} patients dans la base</div><div style="margin:4px 0">💾 Dernière sauvegarde : ${bk?esc(String(bk)):"jamais faite sur cet appareil"}</div><div style="margin:4px 0">🔄 Version de l'appli : ${NEWS}</div>
  <div class="lab" style="margin-top:10px">Fiches à compléter</div>${inc.length?inc.map(p=>`<div style="margin:4px 0;font-size:13px"><b>${esc(p.n)}</b> <span class="sub">· ${[!(p.tel&&p.tel.length)?"téléphone":"",!p.soins?"soins":"",!p.etage&&!p.acces?"accès / étage":""].filter(Boolean).join(", ")}</span></div>`).join(""):`<div class="sub">Toutes les fiches ont téléphone, soins et accès.</div>`}</div>`}
@@ -1478,10 +1454,10 @@ const NEWS="v42";
 const NEWSL=[["🕯️","Pense-bête : une bougie sur chaque ligne copie le pense-bête pour l'appli Garde-fou (Big Cthu), où tous tes pense-bêtes se regroupent par domaine."],["🌅","Préparer demain : dès 16 h, un bandeau ouvre la préparation du lendemain (patients, horaires, allergies, RDV, ardoise, sac à compléter) avec résumé copiable."],["🗓","Infos : les 30 prochains jours (débuts, fins, reprises, RDV, anniversaires, charge par jour) et les statistiques par patient avec export CSV."],["🎂","Anniversaires des patients : renseigne la date de naissance sur la fiche (ou dans Infos). L'accueil affiche ceux du jour et de la semaine."],["📑","Dans Infos : rapport de remplacement, anomalies du jour, vérification avant facturation (avec CSV pour Topaze) et check-up de l'appli."],["👆","Le guide et les astuces se parcourent aussi en glissant le doigt à gauche ou à droite."],["📍","« Ce qui change aujourd'hui » regroupe en un seul endroit tout ce qui sort de la routine : passage exceptionnel, horaire modifié, cure de chimio, reprise après suspension, RDV, ardoise, constantes à surveiller."],["💬","Nouveau champ « À savoir » dans la fiche (habitudes, relationnel, particularités)."],["🎯","Mode routine en option (Infos) : plus rien à cocher, les passages prévus sont considérés faits. Par défaut, tu valides toujours les soins comme avant."],["🧾","Ardoise par patient : ce que tu avances (pain, courses…), le total dû, un rappel quand tu le vois, et un récap dans Transmissions."],["🔍","La recherche trouve aussi un médicament, une allergie, un antécédent, une hospitalisation ou un médecin."],["⚖️","Nouvelles constantes : poids et INR. Le tableau n'affiche que les colonnes qui ont des valeurs."],["📋","Dans Infos : taux de fiches complétées et piluliers de la semaine."],["⚠️","Mode tournée : allergies, RDV du jour et traitements s'affichent maintenant pour chaque patient. Le pilulier à préparer entre dans les rappels de la semaine."],["🧭","Fiche patient : une barre de raccourcis (Accès, Soins, Traitements, Constantes, Photos, Notes) pour aller directement au bon endroit."],["🏁","Fin de journée : rappel des absences à supprimer sur Topaze. Le guide et le PDF intègrent aussi les nouveautés."],["📷","Photos par catégorie (accès, soin / plaie, dossier médical, autre) avec légende, et comparateur avant / après pour les plaies."],["💊","Traitements par moment de la journée, consignes et « vue pilulier » pour le préparer sans erreur."],["🏥","Hospitalisations avec résumé, 📅 RDV et examens du patient (repère le jour J), et frise chronologique du patient."],["🚫","Récap des absences (onglet Transmissions, bandeau orange sur la tournée) : par patient, à traiter / semaine / mois, avec case « supprimé sur Topaze » et alerte si un patient est coché fait ET absent."],["📈","Courbes de constantes dans chaque fiche : TA, FC, T°, SpO₂, dextro, EVA sur 60 jours, avec zone repère."],["⏸","Suspendre un patient (hospitalisation, vacances) ou clôturer sa prise en charge depuis ✏️ : il disparaît de la tournée aux bonnes dates, avec rappel de reprise."],["📊","Bilan mensuel dans Infos : passages, absences, saisie Topaze, export CSV."],["💬","Fiche patient : prévenir par SMS (« J'arrive dans 10, 20, 30 min » ou « léger retard ») en un tap, sans info de santé."],["🚑","Fiche urgence : bouton 15 + résumé prêt à dicter au régulateur (adresse, accès, allergies, médecin)."],["🔒","Écran de confidentialité optionnel par code à 4 chiffres, dans Infos."],["💾","Rappel de sauvegarde si la dernière date de plus de 7 jours."],["👆","Glisse à gauche ou à droite pour changer de jour, ou touche la date pour ouvrir le calendrier du mois."],["❤️","Saisis les constantes depuis chaque carte : les valeurs anormales passent en rouge ou en bleu."],["🚪","« Absent » met le patient en gris et ajoute « Déclarer l'absence sur Topaze » au pense-bête."],["🩺","Les points de vigilance du jour regroupent constantes anormales, problèmes répétés et ordonnances."],["🎒","Stock du sac de soins dans l'onglet Pense-bête : un tap sur un article manquant l'ajoute aux achats."],["🩻","Sur chaque fiche : dossier court (médecin, allergies) et synthèse 7 jours à envoyer au médecin."]];
 function newsOpen(){document.getElementById("pki").innerHTML=`<div class="grab"></div><h3>Quoi de neuf</h3>${NEWSL.map(([i,t])=>`<div class="nw1"><b>${i}</b><span>${t}</span></div>`).join("")}<button class="btn" style="width:100%;justify-content:center;margin-top:12px" onclick="st.set('news',NEWS);closePk()">Compris</button>`;document.getElementById("pk").classList.add("on")}
 
-function render(){header();document.getElementById("app").innerHTML=tab==="tour"?viewTour():tab==="pat"?viewPat():tab==="notes"?viewNotes():tab==="ordo"?viewOrdo():tab==="pb"?viewPb():tab==="remp"?viewRem():viewInfo();navBadge();pbBadge();nextBar();syncUI();chipFix();absBadge();infoNav()}
+function render(){const rb=document.getElementById('tour-restore-banner');if(rb)rb.style.display=P.length?'none':'block';header();document.getElementById("app").innerHTML=tab==="tour"?viewTour():tab==="pat"?viewPat():tab==="notes"?viewNotes():tab==="ordo"?viewOrdo():tab==="pb"?viewPb():tab==="remp"?viewRem():viewInfo();navBadge();pbBadge();nextBar();syncUI();chipFix();absBadge();infoNav()}
 document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;document.querySelectorAll("nav.tabs button").forEach(x=>x.classList.toggle("on",x===b));window.scrollTo(0,0);render()});
 (function(){const fs=st.get("fs",100);if(fs!==100)setFs(fs)})();
-if(location.hash==="#print")printView();else{render();lockNow()}netUI();loadMeteo();skSync();if(location.hash!=='#print'){if(!st.get('guided',0)){st.set('guided',1);setTimeout(()=>guide(0),400)}else if(st.get('news','')!==NEWS){st.set('news',NEWS);setTimeout(newsOpen,600)}}
+if(location.hash==="#print")printView();else{render();lockNow()}netUI();loadMeteo();skSync();if(location.hash!=='#print'){st.set('guided',1);st.set('news',NEWS)}
 
 /* ===== Question médicale rapide à Claude (+ contexte patient anonyme facultatif) ===== */
 const ASK_PROMPT="Tu réponds à une infirmière libérale (IDEL) en France, en pleine tournée. Réponse courte, claire et pratique, en français : 1) les points clés, 2) la conduite à tenir, 3) les signes d'alerte qui justifient d'appeler le médecin ou le 15. Ne cite un seuil, une dose ou un délai que si tu en es sûr ; sinon écris « à vérifier » et renvoie vers le RCP, le médecin ou le pharmacien. Tu ne remplaces pas un avis médical et tu ne poses pas de diagnostic définitif. Pas d'introduction ni de formule de politesse.";
@@ -1555,49 +1531,6 @@ function impShow(){const{ok,ko}=IMPR;document.getElementById("pki").innerHTML=`<
  <div class="acts" style="margin-top:12px"><button class="btn" style="flex:1;justify-content:center" onclick="impApply(false)">Ajouter à ma liste</button><button class="btn ghost" id="impRep" onclick="impApply(true,this)">Remplacer ma liste</button></div>`:`<div class="sub">Rien à importer. Corrige le fichier puis recommence.</div>`}`;document.getElementById("pk").classList.add("on")}
 async function impApply(rep,b){if(!IMPR||!IMPR.ok.length)return;if(rep&&!b.dataset.c){b.dataset.c=1;b.textContent="Confirmer : efface la liste actuelle";setTimeout(()=>{if(b.isConnected){b.dataset.c="";b.textContent="Remplacer ma liste"}},4000);return}
  const prev=P;P=rep?IMPR.ok.slice():P.concat(IMPR.ok);const n=IMPR.ok.length;if(await cfgSave(n+" patient"+(n>1?"s":"")+" importé"+(n>1?"s":""))){IMPR=null;closePk();render()}else P=prev}
-</script><script>
-'use strict';
-/* Data never bundled with this public source. Decrypt on this device only. */
-const SECURE_KEY='bigcthu_tournee_full_encrypted_v1', PREVIOUS_KEY='bigcthu_tournee_encrypted_v1';
-let secureState=Object.create(null),secureKey=null,secureSalt=null,secureGen=0,secureActive=null,secureTimer=null,secureBooted=false;
-const enc=new TextEncoder(),dec=new TextDecoder();
-const to64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s)};
-const from64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
-async function keyFor(password,salt){const base=await crypto.subtle.importKey('raw',enc.encode(password),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:180000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
-async function decryptRecord(record,password){let x=JSON.parse(record);const key=await keyFor(password,from64(x.salt));const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:from64(x.iv)},key,from64(x.cipher));return JSON.parse(dec.decode(plain))}
-function fillFromBackup(d){if(!d||!Array.isArray(d.P)||!d.kv||typeof d.kv!=='object')throw Error('Sauvegarde JSON incompatible');const s=Object.create(null);for(const [k,v] of Object.entries(d.kv)){if(/^[a-zA-Z0-9_-]{1,160}$/.test(k)&&typeof v==='string')s['tidel_'+k]=v}if(d.P.length>10000)throw Error('Trop de patients');s.tidel_Pl=JSON.stringify(d.P);for(const [k,v] of [['remps',d.remps],['ordos',d.ordos],['contacts',d.contacts],['import_DN',d.DN]])if(Array.isArray(v))s['tidel_'+k]=JSON.stringify(v);return s}
-const TOUR_STORE={
- keys(){return [...new Set([...Object.keys(secureState),...Object.keys(localStorage).filter(k=>!k.startsWith('tidel_'))])]},
- get length(){return this.keys().length},
- key(i){return this.keys()[i]??null},
- getItem(k){k=String(k);return k.startsWith('tidel_')?secureState[k]??null:localStorage.getItem(k)},
- setItem(k,v){k=String(k);if(k.startsWith('tidel_')){secureState[k]=String(v);dirty()}else localStorage.setItem(k,v)},
- removeItem(k){k=String(k);if(k.startsWith('tidel_')){delete secureState[k];dirty()}else localStorage.removeItem(k)},
- clear(){secureState=Object.create(null);dirty()},
- flush:()=>flush()
-};
-function dirty(){secureGen++;clearTimeout(secureTimer);secureTimer=setTimeout(()=>flush().catch(e=>console.error('Sauvegarde chiffrée impossible',e)),100)}
-async function flush(){if(!secureKey)throw Error('Chiffrement non initialisé');if(secureActive)return secureActive;secureActive=(async()=>{let last;do{last=secureGen;const iv=crypto.getRandomValues(new Uint8Array(12));const cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},secureKey,enc.encode(JSON.stringify(secureState)));localStorage.setItem(SECURE_KEY,JSON.stringify({v:1,salt:to64(secureSalt),iv:to64(iv),cipher:to64(new Uint8Array(cipher))}));}while(last!==secureGen)})().finally(()=>{secureActive=null});return secureActive}
-function report(message){document.getElementById('tour-error').textContent=message}
-function launch(){if(secureBooted)return;secureBooted=true;document.body.classList.remove('tournee-locked');document.getElementById('tour-security-gate').remove();let source=document.getElementById('tour-source-js');const script=document.createElement('script');script.textContent=source.textContent;document.body.append(script);source.remove();}
-async function login(fileMode){try{
- if(!crypto?.subtle)throw Error('Ouvre Tournée en HTTPS dans Safari.');
- const password=document.getElementById('tour-pass').value;if(password.length<12)throw Error('Entre ta phrase secrète (12 caractères minimum).');
- report('Déchiffrement en cours sur cet appareil…');let state;
- const full=localStorage.getItem(SECURE_KEY),previous=localStorage.getItem(PREVIOUS_KEY);
- if(fileMode){const file=document.getElementById('tour-file').files[0];if(!file)throw Error('Sélectionne ton fichier JSON.');if(file.size>25*1024*1024)throw Error('Fichier trop volumineux.');state=fillFromBackup(JSON.parse(await file.text()))}
- else if(full){state=await decryptRecord(full,password);if(!state||typeof state!=='object'||!Array.isArray(JSON.parse(state.tidel_Pl||'null')))throw Error('Données chiffrées invalides.')}
- else if(previous){const saved=await decryptRecord(previous,password);state=fillFromBackup(saved.data)}
- else throw Error('Aucune sauvegarde chiffrée ici. Importe ton JSON.');
- secureState=Object.assign(Object.create(null),state);
- secureSalt=full&&!fileMode?from64(JSON.parse(full).salt):crypto.getRandomValues(new Uint8Array(16));
- secureKey=await keyFor(password,secureSalt);
- secureGen++;await flush();launch();
- }catch(err){report('Ouverture impossible : '+(err?.message||'mot de passe ou fichier invalide'))}}
-document.getElementById('tour-open').addEventListener('click',()=>login(false));
-document.getElementById('tour-import').addEventListener('click',()=>login(true));
-document.getElementById('tour-saved-status').textContent=localStorage.getItem(SECURE_KEY)?'Une Tournée complète chiffrée est disponible. Utilise la même phrase secrète.':localStorage.getItem(PREVIOUS_KEY)?'✅ Ta sauvegarde chiffrée précédente est détectée. Utilise la même phrase secrète : les patients seront transférés dans l’application complète.':'Aucune sauvegarde locale détectée ici. Sélectionne ton fichier JSON.';
-window.addEventListener('pagehide',()=>{if(secureKey)flush().catch(()=>{})});
 </script>
 </body>
 </html>
