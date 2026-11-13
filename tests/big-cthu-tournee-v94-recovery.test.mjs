@@ -53,7 +53,7 @@ test('V94: une ancienne sauvegarde chiffrée ne se déchiffre que sur action exp
  assert.equal(f.decrypts(),0);
  assert.equal(f.flushes(),0);
  assert.equal(f.reloaded(),0);
- assert.match(f.errors[0],/ancienne phrase secrète/);
+ assert.match(f.errors[0],/ancien secret/);
  const g=await fixture({encrypted:true,password:'phrase-historique-de-test'});
  await g.ctx.recover(true);
  assert.equal(g.decrypts(),1);
