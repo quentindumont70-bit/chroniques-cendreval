@@ -102,12 +102,14 @@ test('V106: coffre chiffré corrompu au redémarrage : aucune suppression ni ouv
  const store={coffre:new Map(),device:null};
  const first=await openFictionalSafari(store);
  assert.equal(await first.context.open(),true);
- const key='bigcthu_tournee_full_encrypted_v1';
- const invalid=JSON.parse(store.coffre.get(key));
- invalid.cipher=invalid.cipher.slice(0,-4)+'AAAA';
+ const originalKey='bigcthu_tournee_full_encrypted_v1';
+ const key='bigcthu_tournee_auto_encrypted_v1';
+ const invalid=JSON.parse(store.coffre.get(originalKey));
+ invalid.cipher='AAAA';
  const corrupted=JSON.stringify(invalid);
+ store.coffre.delete(originalKey);
  store.coffre.set(key,corrupted);
- // Historical path refuses overwriting an unreadable alternate vault.
+ // Refuse de remplacer un coffre automatique illisible lors du redémarrage.
  const last=await openFictionalSafari(store);
  const result=await last.context.open();
  assert.equal(result,false);
