@@ -81,7 +81,7 @@ test('Voyages: nouvelle interface étapes et paiements reste liée au coffre',as
  for(const id of ['splitMode','beneficiaries','reimbursements','stepForm','steps']){
    assert.match(page,new RegExp('id="'+id+'"'));
  }
- assert.match(backup,/Schéma V25/);
+ assert.match(backup,/Schéma V26/);
  assert.match(backup,/if\(t\.steps!==undefined/);
  assert.match(backup,/if\(t\.reimbursements!==undefined/);
  assert.match(sw,/voyages-core\.js/);
@@ -110,7 +110,7 @@ test('Voyages: valises personnalisées et migration Coffre présentes dans la b�
  assert.match(page,/packedByPerson/);
  assert.match(backup,/t\.packedByPerson!==undefined/);
  assert.match(backup,/t\.activities!==undefined/);
- assert.match(backup,/Schéma V25/);
+ assert.match(backup,/Schéma V26/);
  assert.match(sw,/const CACHE='big-cthu-public-v2-v\d+'/);
 });
 
@@ -136,7 +136,7 @@ test('Voyages: la page conserve les dates facultatives et un export CSV local',a
  assert.match(page,/id="expenseDate"/);
  assert.match(page,/id="exportTrip"/);
  assert.match(page,/String\.fromCharCode\(0xFEFF\)/);
- assert.match(backup,/Schéma V25/);
+ assert.match(backup,/Schéma V26/);
  assert.match(backup,/p\.date===undefined\|\|travelDate\(p\.date\)/);
 });
 
@@ -153,7 +153,7 @@ test('Voyages: formulaire du budget et Coffre V24 compatibles avec les anciens s
  assert.match(page,/id="tripBudgetForm"/);
  assert.match(page,/id="tripBudgetStatus"/);
  assert.match(page,/budgetCents:0/);
- assert.match(backup,/Schéma V25/);
+ assert.match(backup,/Schéma V26/);
  assert.match(backup,/t\.budgetCents!==undefined/);
  assert.match(backup,/20,21,22,23,24/);
 });
@@ -201,4 +201,41 @@ test('Voyages: export de valise sans données serveur et progression à l écran
  assert.match(html,/id="packProgress"/);
  assert.match(html,/C\.packingText\(t,packOwner/);
  assert.match(html,/text\/plain;charset=utf-8/);
+});
+
+test('Voyages: journalise les changements sans altérer les comptes',()=>{
+ const initial={people:['A','B'],expenses:[{id:'expense',title:'Train',date:'2026-11-13',payer:'A',cents:1700,shares:{A:850,B:850}}],reimbursements:[]};
+ const updated=C.updateExpenseDetails(initial,'expense','TGV','2026-11-14');
+ assert.equal(updated.accountHistory.length,1);
+ assert.equal(updated.accountHistory[0].type,'expense-edit');
+ assert.equal(C.updateExpenseDetails(updated,'expense','TGV','2026-11-14'),updated,'unchanged edit does not make ghost history');
+ assert.deepEqual({...C.balances(updated)},{...C.balances(initial)});
+ const removed=C.removeExpenseWithHistory(updated,'expense');
+ assert.equal(removed.expenses.length,0);
+ assert.equal(removed.accountHistory.length,2);
+ assert.equal(removed.accountHistory[1].type,'expense-delete');
+ assert.equal(initial.accountHistory,undefined,'input unchanged');
+});
+test('Voyages: journalise les remboursements partiels et leur annulation',()=>{
+ const trip={people:['A','B'],expenses:[{id:'e',title:'Repas',cents:2000,payer:'A',shares:{A:1000,B:1000}}]};
+ const paid=C.addReimbursementWithHistory(trip,{id:'r',from:'B',to:'A',cents:400});
+ assert.deepEqual({...C.balances(paid)},{A:600,B:-600});
+ assert.equal(paid.accountHistory[0].type,'reimbursement-add');
+ const undone=C.removeReimbursementWithHistory(paid,'r');
+ assert.deepEqual({...C.balances(undone)},{A:1000,B:-1000});
+ assert.equal(undone.accountHistory[1].type,'reimbursement-cancel');
+ assert.throws(()=>C.removeReimbursementWithHistory(undone,'r'),/introuvable/);
+});
+test('Voyages: le journal refuse les écritures au-delà de 500 événements',()=>{
+ const full={people:['A'],expenses:[{id:'x',title:'Train',cents:200,payer:'A',shares:{A:200}}],accountHistory:Array.from({length:500},()=>({}))};
+ assert.throws(()=>C.updateExpenseDetails(full,'x','TGV','2026-11-13'),/Historique plein/);
+});
+test('Voyages: Coffre V26 préserve le journal et les anciennes versions',async()=>{
+ const backup=await readFile(new URL('../big-cthu-beta/sauvegardes.html',import.meta.url),'utf8');
+ const page=await readFile(new URL('../big-cthu-beta/voyages.html',import.meta.url),'utf8');
+ assert.match(backup,/Schéma V26/);
+ assert.match(backup,/t\.accountHistory!==undefined/);
+ assert.match(page,/id="accountHistory"/);
+ assert.match(page,/C\.removeExpenseWithHistory/);
+ assert.match(page,/C\.addReimbursementWithHistory/);
 });
