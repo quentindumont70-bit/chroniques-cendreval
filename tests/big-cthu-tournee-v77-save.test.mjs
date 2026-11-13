@@ -9,7 +9,7 @@ async function fixture({fail=false}={}){
  const begin=html.indexOf('function saveStatus(state,message){');
  const end=html.indexOf('function report(message){',begin);
  assert.ok(begin>=0&&end>begin,'save pipeline present');
- const elements=Object.fromEntries(['tour-save-strip','tour-save-text','tour-save-retry','tour-lock','tour-vault-export','tour-absence-open','tour-absence-panel','ap-close','ap-form','ap-from','ap-to','ap-filter-reason','ap-filter-state','ap-filter-cancelled','ap-copy-summary'].map(id=>[id,{dataset:{},hidden:false,disabled:false,textContent:'',addEventListener(type,fn){this[type]=fn}}]));
+ const elements=Object.fromEntries(['tour-save-strip','tour-save-text','tour-save-retry','tour-lock','tour-vault-export','tour-absence-open','tour-absence-panel','ap-close','ap-form','ap-from','ap-to','ap-filter-reason','ap-filter-state','ap-filter-cancelled','ap-copy-summary','ap-today','ap-week','ap-clear'].map(id=>[id,{dataset:{},hidden:false,disabled:false,textContent:'',addEventListener(type,fn){this[type]=fn}}]));
  let writes=0,reloads=0,shouldFail=fail;
  const sandbox={
   document:{hidden:false,getElementById:id=>elements[id],addEventListener(){}},
