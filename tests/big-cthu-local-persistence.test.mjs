@@ -461,7 +461,7 @@ test('Coffre V25: compte les favoris du cockpit sans accéder aux données Tourn
 });
 test('Coffre V25: sauvegarde les favoris, conserve les versions antérieures et protège la restauration',async()=>{
  const html=await readFile(new URL('../big-cthu-beta/sauvegardes.html',import.meta.url),'utf8');
- assert.match(html,/Schéma V25/);
+ assert.match(html,/Schéma V26/);
  assert.match(html,/version:25/);
  assert.match(html,/if\(data.version>=25\)/);
  assert.match(html,/validFavorites\(data.favorites\)/);
