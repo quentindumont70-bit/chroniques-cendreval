@@ -18,7 +18,7 @@ function fixture(html,{fail=false,initial=null}={}){
   Date,JSON,Map,Array,
  };
  runInNewContext(html.slice(start,end)+
-  '\nthis.readJournal=absenceRead;this.dateOK=absenceDateOK;this.saveJournal=absenceSave;this.listPatients=absencePatients;this.amendRecord=absenceAmendRecord;this.cancelRecord=absenceCancelRecord;this.summarizeJournal=absenceSummary;this.hasDuplicate=absenceDuplicate;',
+  '\nthis.readJournal=absenceRead;this.dateOK=absenceDateOK;this.saveJournal=absenceSave;this.listPatients=absencePatients;this.amendRecord=absenceAmendRecord;this.cancelRecord=absenceCancelRecord;this.summarizeJournal=absenceSummary;this.hasDuplicate=absenceDuplicate;this.searchSort=absenceSearchAndSort;',
   context,{timeout:1000});
  return {context,state,elements,saves:()=>saves,setFail:v=>{shouldFail=v}};
 }
@@ -147,4 +147,34 @@ test('V87: filtres par période et annulation accessibles et aucun changement au
  assert.match(html,/absenceDuplicate\(rows,\{patientId,day,reason\}\)/);
  const journalCode=html.slice(html.indexOf('// V83 :'),html.indexOf('const IDLE_LOCK_MS='));
  assert.doesNotMatch(journalCode,/fetch\(|XMLHttpRequest|WebSocket|localStorage\.(?:setItem|removeItem)|topaze\.fr/i);
+});
+
+test('V96: recherche sans accent dans patient, motif et observation et tri stable',async()=>{
+ const f=fixture(await source());
+ const rows=[
+  {...event('b'),patientId:'synthetic-1',day:'2026-11-12',reason:'Soin non réalisé',note:'fièvre imaginaire'},
+  {...event('c'),patientId:'synthetic-2',day:'2026-11-13',reason:'Patient absent',note:'test synthétique'},
+  {...event('a'),patientId:'synthetic-1',day:'2026-11-13',reason:'Patient absent',note:'suivi fictif'}
+ ];
+ const names=new Map([['synthetic-1','Élodie Fictive'],['synthetic-2','Zéphyr Imaginaire']]);
+ const search=(opts)=>f.context.searchSort(rows,opts,names).map(x=>x.id).join(',');
+ assert.equal(search({search:'elodie',sort:'newest'}),'a,b');
+ assert.equal(search({search:'FIEVRE',sort:'newest'}),'b');
+ assert.equal(search({search:'absent',sort:'oldest'}),'c,a');
+ assert.equal(search({search:'',sort:'newest'}),'c,a,b');
+ assert.equal(search({search:'',sort:'oldest'}),'b,c,a');
+ assert.equal(search({search:'',sort:'patient'}),'b,a,c');
+ assert.equal(search({search:'inexistant'}),'');
+ assert.equal(rows[0].id,'b','no mutation of encrypted journal order');
+});
+test('V96: recherche reste locale et ne se retrouve pas dans export manuel',async()=>{
+ const html=await source();
+ assert.match(html,/id="ap-search" type="search"/);
+ assert.match(html,/id="ap-sort"/);
+ assert.match(html,/ap\('ap-search'\)\.addEventListener\('input',absenceRender\)/);
+ assert.match(html,/const filtered=absenceSearchAndSort\(stateFiltered/);
+ const code=html.slice(html.indexOf('function absenceFold('),html.indexOf('function absencePeriodReport('));
+ assert.doesNotMatch(code,/TOUR_STORE|localStorage|fetch\(|XMLHttpRequest|WebSocket/);
+ const topaze=html.slice(html.indexOf('function absenceTopazeText('),html.indexOf('function absenceRender('));
+ assert.doesNotMatch(topaze,/ap-search|patientNames|\.note\b|patientId/);
 });
