@@ -434,11 +434,11 @@ body.tournee-locked>:not(#tour-security-gate):not(script){display:none!important
 <label for="tour-pass">Phrase secrète utilisée pour la restauration</label>
 <input id="tour-pass" type="password" autocomplete="current-password" minlength="12" placeholder="Ta phrase secrète">
 <button id="tour-open">Déverrouiller et ouvrir toute l'application</button>
-<details style="margin-top:14px"><summary style="cursor:pointer">Autre solution : importer ma sauvegarde JSON</summary>
+<details style="margin-top:14px"><summary style="cursor:pointer">Importer une sauvegarde JSON (uniquement si cet espace est vide)</summary>
 <label for="tour-file">Fichier JSON de Tournée</label><input type="file" id="tour-file" accept=".json,application/json">
 <button id="tour-import">Importer dans Tournée complète</button></details>
 <p id="tour-error" role="status"></p>
-<p>Les données restent chiffrées dans ce navigateur, mais cette version web n'est pas un hébergement HDS certifié. Conserve ta sauvegarde d'origine et l'application historique pour les soins.</p>
+<p>Si un coffre chiffré existe déjà, l'import d'un autre JSON est bloqué pour éviter son écrasement. Les données restent chiffrées dans ce navigateur, mais cette version web n'est pas un hébergement HDS certifié. Conserve ta sauvegarde d'origine et l'application historique pour les soins.</p>
 </section>
 <header>
  <div class="t"><div class="ttl" onclick="if(tab==='tour')monthPick()" style="cursor:pointer"><h1 id="ht">Tournée</h1><small id="hs"></small></div><button class="hbtn" onclick="askOpen()" aria-label="Question médicale à Claude">🩺</button><button class="hbtn" onclick="goInfo()" aria-label="Infos pratiques">ℹ️</button><button class="hbtn" onclick="openSearch()" aria-label="Rechercher">🔍</button><button class="hbtn" onclick="guide(0)" aria-label="Revoir le guide de bienvenue" title="Guide">❔</button><button class="hbtn" onclick="openPk()" aria-label="Thème">🎨</button></div>
@@ -1565,7 +1565,12 @@ const to64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCha
 const from64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 async function keyFor(password,salt){const base=await crypto.subtle.importKey('raw',enc.encode(password),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:180000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
 async function decryptRecord(record,password){let x=JSON.parse(record);const key=await keyFor(password,from64(x.salt));const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:from64(x.iv)},key,from64(x.cipher));return JSON.parse(dec.decode(plain))}
-function fillFromBackup(d){if(!d||!Array.isArray(d.P)||!d.kv||typeof d.kv!=='object')throw Error('Sauvegarde JSON incompatible');const s=Object.create(null);for(const [k,v] of Object.entries(d.kv)){if(/^[a-zA-Z0-9_-]{1,160}$/.test(k)&&typeof v==='string')s['tidel_'+k]=v}if(d.P.length>10000)throw Error('Trop de patients');s.tidel_Pl=JSON.stringify(d.P);for(const [k,v] of [['remps',d.remps],['ordos',d.ordos],['contacts',d.contacts],['import_DN',d.DN]])if(Array.isArray(v))s['tidel_'+k]=JSON.stringify(v);return s}
+function fillFromBackup(d){
+ if(!d||d.v!==1||!Array.isArray(d.P)||!d.kv||typeof d.kv!=='object'||Array.isArray(d.kv))throw Error('Sauvegarde JSON incompatible');
+ if(d.P.some(p=>!p||typeof p.id!=='string'||typeof p.n!=='string'||typeof p.a!=='string'))throw Error('Patients invalides');
+ const entries=Object.entries(d.kv);
+ if(entries.length>20000||entries.some(([k,v])=>!/^[a-zA-Z0-9_-]{1,160}$/.test(k)||typeof v!=='string'))throw Error('Suivi invalide');
+ for(const field of ['remps','ordos','contacts','DN'])if(d[field]!==undefined&&!Array.isArray(d[field]))throw Error('Rubrique invalide : '+field);const s=Object.create(null);for(const [k,v] of Object.entries(d.kv)){if(/^[a-zA-Z0-9_-]{1,160}$/.test(k)&&typeof v==='string')s['tidel_'+k]=v}if(d.P.length>10000)throw Error('Trop de patients');s.tidel_Pl=JSON.stringify(d.P);for(const [k,v] of [['remps',d.remps],['ordos',d.ordos],['contacts',d.contacts],['import_DN',d.DN]])if(Array.isArray(v))s['tidel_'+k]=JSON.stringify(v);return s}
 const TOUR_STORE={
  keys(){return [...new Set([...Object.keys(secureState),...Object.keys(localStorage).filter(k=>!k.startsWith('tidel_'))])]},
  get length(){return this.keys().length},
@@ -1585,7 +1590,9 @@ async function login(fileMode){try{
  const password=document.getElementById('tour-pass').value;if(password.length<12)throw Error('Entre ta phrase secrète (12 caractères minimum).');
  report('Déchiffrement en cours sur cet appareil…');let state;
  const full=localStorage.getItem(SECURE_KEY),previous=localStorage.getItem(PREVIOUS_KEY);
- if(fileMode){const file=document.getElementById('tour-file').files[0];if(!file)throw Error('Sélectionne ton fichier JSON.');if(file.size>25*1024*1024)throw Error('Fichier trop volumineux.');state=fillFromBackup(JSON.parse(await file.text()))}
+ if(fileMode){
+ if(full||previous)throw Error('Une Tournée chiffrée existe déjà dans ce navigateur. Déverrouille-la : un nouvel import pourrait écraser tes dossiers. Conserve ta sauvegarde originale.');
+ const file=document.getElementById('tour-file').files[0];if(!file)throw Error('Sélectionne ton fichier JSON.');if(file.size>25*1024*1024)throw Error('Fichier trop volumineux.');state=fillFromBackup(JSON.parse(await file.text()))}
  else if(full){state=await decryptRecord(full,password);if(!state||typeof state!=='object'||!Array.isArray(JSON.parse(state.tidel_Pl||'null')))throw Error('Données chiffrées invalides.')}
  else if(previous){const saved=await decryptRecord(previous,password);state=fillFromBackup(saved.data)}
  else throw Error('Aucune sauvegarde chiffrée ici. Importe ton JSON.');
