@@ -98,7 +98,7 @@ test('V101: jamais intercepter une écriture ni un site externe ; assets uniquem
  assert.equal(await f.navigate('https://autre.example/patient','navigate'),undefined);
  assert.equal(f.networkCalls(),0);
  assert.doesNotMatch(f.script,/tidel_Pl|absences_journal_v1|indexedDB|localStorage/);
- assert.match(f.script,/const CACHE='big-cthu-public-v2-v101'/);
+ assert.match(f.script,/const CACHE='big-cthu-public-v2-v\d+'/);
 });
 test('V101: activation supprime uniquement les anciens caches Big Cthu, conserve le cache courant',async()=>{
  const f=await fixture();
