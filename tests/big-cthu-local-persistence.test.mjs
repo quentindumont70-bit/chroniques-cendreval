@@ -190,3 +190,65 @@ test('Coffre: invalid backup leaves local data unchanged', async () => {
   assert.equal(b.get('restore').disabled, true);
   assert.equal(JSON.parse(b.memory.get(key))[0].text, 'Garder');
 });
+
+test('Agenda: failed saves cannot create or remove ghost events', async () => {
+  const a = await boot('agenda.html');
+  const key = 'big-cthu-v2-agenda-v1';
+  a.get('title').value = 'Rendez-vous fictif';
+  a.get('date').value = '2026-12-01';
+  a.get('time').value = '08:30';
+  a.get('category').value = 'perso';
+  a.get('notes').value = 'Sans donnée sensible';
+  a.setFull(true);
+  await a.get('form').fire('submit');
+  assert.equal(a.memory.has(key), false);
+  assert.equal(a.get('title').value, 'Rendez-vous fictif');
+  a.setFull(false);
+  await a.get('form').fire('submit');
+  assert.equal(JSON.parse(a.memory.get(key)).length, 1);
+  const article = a.get('events').children[0];
+  const deleteButton = article.children.at(-1).children[0];
+  a.setFull(true);
+  await deleteButton.fire('click');
+  assert.equal(JSON.parse(a.memory.get(key)).length, 1);
+  a.setFull(false);
+  await deleteButton.fire('click');
+  assert.equal(JSON.parse(a.memory.get(key)).length, 0);
+  assert.ok(a.alerts.length >= 2);
+});
+
+test('Maison: reject quota, restore status selection and preserve data on invalid import', async () => {
+  const m = await boot('maison.html');
+  const key = 'big-cthu-v2-maison-v1';
+  m.get('name').value = 'Réparer une fenêtre';
+  m.get('amount').value = '120';
+  m.get('room').value = 'Salon';
+  m.get('priority').value = 'normale';
+  m.get('due').value = '';
+  m.get('notes').value = '';
+  m.setFull(true);
+  await m.get('form').fire('submit');
+  assert.equal(m.memory.has(key), false);
+  m.setFull(false);
+  await m.get('form').fire('submit');
+  assert.equal(JSON.parse(m.memory.get(key)).length, 1);
+  const article = m.get('jobs').children[0];
+  const status = article.children.at(-1).children[0];
+  status.value = 'doing';
+  m.setFull(true);
+  await status.fire('change');
+  assert.equal(status.value, 'todo');
+  assert.equal(JSON.parse(m.memory.get(key))[0].status, 'todo');
+  m.setFull(false);
+  const file = { size: 300, text: async () => JSON.stringify({ app: 'big-cthu-maison', version: 1, jobs: [
+    { id: 'dupe', name: 'Un', amount: 30, status: 'todo' },
+    { id: 'dupe', name: 'Deux', amount: 40, status: 'todo' },
+  ] }) };
+  await m.get('file').fire('change', { target: { files: [file], value: '' } });
+  assert.equal(JSON.parse(m.memory.get(key)).length, 1);
+  assert.match(m.alerts.at(-1), /Import impossible/);
+  m.setFull(true);
+  await article.children.at(-1).children[1].fire('click');
+  assert.equal(JSON.parse(m.memory.get(key)).length, 1);
+  assert.ok(m.alerts.length >= 3);
+});
