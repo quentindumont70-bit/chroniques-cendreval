@@ -1735,14 +1735,31 @@ const PORTABLE_FORMAT='bigcthu-tournee-complete-portable-v1';
 function validPortableState(state){
  if(!validVaultState(state))return false;
  const entries=Object.entries(state);
- return entries.length<=20000&&entries.every(([key,value])=>/^tidel_[A-Za-z0-9_-]{1,160}$/.test(key)&&typeof value==='string');
+ if(entries.length>20000||!entries.every(([key,value])=>/^tidel_[A-Za-z0-9_-]{1,160}$/.test(key)&&typeof value==='string'))return false;
+ if(state.tidel_absences_journal_v1!==undefined){
+  try{
+   const rows=JSON.parse(state.tidel_absences_journal_v1);
+   if(!Array.isArray(rows)||rows.length>500||!rows.every(x=>x&&typeof x.id==='string'&&typeof x.patientId==='string'&&typeof x.day==='string'&&['Patient absent','Soin non réalisé','Horaire modifié','Autre'].includes(x.reason)&&['À rapprocher','Vérifié localement','Sans suite'].includes(x.sync)&&Array.isArray(x.history)&&(x.cancelled===undefined||typeof x.cancelled==='boolean')))return false;
+  }catch(e){return false}
+ }
+ return true;
+}
+// Empreinte non cryptographique : detecte les alterations accidentelles du JSON lisible.
+// Ne remplace ni chiffrement ni authentification; compatibilite avec exports V95 sans empreinte.
+function portableChecksum(data){
+ let h=0x811c9dc5;
+ const text=JSON.stringify(data);
+ for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}
+ return h.toString(16).padStart(8,'0');
 }
 function serializePortableVault(state){
  if(!validPortableState(state))throw Error('Impossible de créer la sauvegarde : données locales invalides.');
- return JSON.stringify({format:PORTABLE_FORMAT,v:1,data:Object.fromEntries(Object.entries(state)),exportedAt:new Date().toISOString()});
+ const data=Object.fromEntries(Object.entries(state));
+ return JSON.stringify({format:PORTABLE_FORMAT,v:1,data,exportedAt:new Date().toISOString(),checksumType:'fnv1a32',checksum:portableChecksum(data)});
 }
 function readPortableVault(candidate){
  if(!candidate||candidate.format!==PORTABLE_FORMAT||candidate.v!==1||!validPortableState(candidate.data))throw Error('Sauvegarde complète incompatible. Aucun élément remplacé.');
+ if(candidate.checksum!==undefined&&(candidate.checksumType!=='fnv1a32'||typeof candidate.checksum!=='string'||candidate.checksum!==portableChecksum(candidate.data)))throw Error('Sauvegarde modifiée ou corrompue. Aucun élément remplacé.');
  return candidate.data;
 }
 
