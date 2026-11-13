@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {runInNewContext} from 'node:vm';
 
 const read=()=>readFile(new URL('../big-cthu-beta/tournee-complete.html',import.meta.url),'utf8');
-async function fixture({fail=false}={}){
+async function fixture({fail=false,readBackFails=false}={}){
  const html=await read();
  const begin=html.indexOf('function saveStatus(state,message){');
  const end=html.indexOf('function report(message){',begin);
@@ -13,7 +13,7 @@ async function fixture({fail=false}={}){
  let writes=0,reloads=0,shouldFail=fail;
  const sandbox={
   document:{hidden:false,getElementById:id=>elements[id],addEventListener(){}},
-  localStorage:{setItem(){if(shouldFail)throw Error('QuotaExceeded');writes++}},
+  localStorage:{setItem(k,v){if(shouldFail)throw Error('QuotaExceeded');this.persisted=v;writes++},getItem(){return readBackFails?null:this.persisted??null}},
   crypto:{getRandomValues(arr){return arr.fill(1)},subtle:{encrypt:async()=>new Uint8Array([1,2,3])}},
   setTimeout:()=>1,clearTimeout:()=>{},TextEncoder,Uint8Array,JSON,
   SECURE_KEY:'test-encrypted-only',secureKey:'fake-key',secureBooted:false,secureSalt:new Uint8Array(16),secureGen:1,secureSavedGen:0,secureActive:null,secureTimer:0,secureState:{tidel_Pl:'[]'},
@@ -70,7 +70,7 @@ test('V79: évite les écritures répétées du coffre déjà enregistré',async
 
 test('V79: sauvegarde en arrière-plan seulement si modifications non encore persistées',async()=>{
  const html=await read();
- assert.match(html,/document\.addEventListener\('visibilitychange',\(\)=>\{if\(document\.hidden\)saveIfPending\(\);else checkTourIdle\(\)\}\)/);
+ assert.match(html,/document\.addEventListener\('visibilitychange',\(\)=>\{if\(document\.hidden\)saveIfPending\(\);else resumeTournee\(\)\}\)/);
  assert.match(html,/window\.addEventListener\('pagehide',saveIfPending\)/);
  assert.match(html,/secureGen!==secureSavedGen/);
  assert.match(html,/secureSavedGen=last/);
@@ -107,5 +107,14 @@ test('V80: une interaction remet à zéro le délai et un retour iPhone vérifie
  assert.match(html,/const IDLE_LOCK_MS=15\*60\*1000/);
  assert.doesNotMatch(html,/if\(elapsed>=IDLE_LOCK_MS\)\{lockTourSafely\(\)/);
  assert.match(html,/for\(const event of \['pointerdown','keydown','input'\]\)/);
- assert.match(html,/if\(document\.hidden\)saveIfPending\(\);else checkTourIdle\(\)/);
+ assert.match(html,/if\(document\.hidden\)saveIfPending\(\);else resumeTournee\(\)/);
+});
+
+test('V98: écriture navigateur non confirmée en relecture = sauvegarde non garantie',async()=>{
+ const f=await fixture({readBackFails:true});
+ await assert.rejects(f.flush(),/pas confirmé l’enregistrement chiffré/);
+ assert.equal(f.writes(),1);
+ assert.equal(f.elements['tour-save-strip'].dataset.state,'error');
+ assert.equal(f.sandbox.secureSavedGen,0,'uncommitted generation must not advance');
+ assert.equal(f.elements['tour-save-retry'].hidden,false);
 });

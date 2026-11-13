@@ -71,3 +71,49 @@ test('V89: checklist terrain limite les essais aux données fictives sans nettoy
  assert.match(guide,/Exporter une sauvegarde complète JSON/);
  assert.doesNotMatch(guide,/Effacer l'historique Safari pour réinitialiser/);
 });
+
+
+test('V98: retour iPhone après échec de stockage relance une sauvegarde seulement si nécessaire',async()=>{
+ const f=await fixture();
+ let blocked=true;
+ f.context.flush=async()=>{
+  if(blocked)throw Error('QuotaExceeded');
+  f.context.secureSavedGen=f.context.secureGen;
+ };
+ f.document.hidden=true;
+ f.events.get('visibilitychange')();
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(f.failures(),1);
+ assert.equal(f.context.secureSavedGen,1);
+ blocked=false;
+ f.document.hidden=false;
+ f.windowEvents.get('pageshow')();
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(f.context.secureSavedGen,2);
+ assert.equal(f.checks(),1);
+ f.windowEvents.get('focus')();
+ assert.equal(f.checks(),2);
+ assert.equal(f.failures(),1);
+});
+
+test('V98: retour après échec encore actif ne déclare jamais une sauvegarde réussie',async()=>{
+ const f=await fixture();
+ f.context.flush=async()=>{throw Error('Ecriture impossible')};
+ f.document.hidden=false;
+ f.windowEvents.get('pageshow')();
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(f.context.secureSavedGen,1);
+ assert.equal(f.failures(),1);
+ assert.equal(f.checks(),1);
+});
+
+test('V98: iPhone et navigateur en ligne/hors ligne n imposent aucun nouveau code',async()=>{
+ const html=await read();
+ assert.match(html,/function resumeTournee\(\)/);
+ assert.match(html,/if\(secureKey&&secureGen!==secureSavedGen\)saveIfPending\(\)/);
+ assert.match(html,/window\.addEventListener\('pageshow',resumeTournee\)/);
+ assert.match(html,/window\.addEventListener\('focus',resumeTournee\)/);
+ assert.match(html,/localStorage\.getItem\(SECURE_KEY\)!==record/);
+ assert.doesNotMatch(html,/window\.addEventListener\('pageshow',\(\)=>location\.reload/);
+ assert.match(html,/id="tour-security-gate" hidden/);
+});

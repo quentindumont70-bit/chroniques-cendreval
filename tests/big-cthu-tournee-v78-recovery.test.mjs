@@ -74,8 +74,8 @@ test('V84: journal Absences partage le même coffre et survit au redémarrage iP
 
 test('V84: reprise via pageshow ou focus contrôle immédiatement la session sans extension du délai',async()=>{
  const {html}=await cryptoFixture();
- assert.match(html,/window\.addEventListener\('pageshow',\(\)=>\{if\(secureBooted\)checkTourIdle\(\)\}\)/);
- assert.match(html,/window\.addEventListener\('focus',\(\)=>\{if\(secureBooted\)checkTourIdle\(\)\}\)/);
+ assert.match(html,/window\.addEventListener\('pageshow',resumeTournee\)/);
+ assert.match(html,/window\.addEventListener\('focus',resumeTournee\)/);
  assert.match(html,/if\(elapsed>=IDLE_LOCK_MS\)\{if\(secureKey&&secureGen!==secureSavedGen\)flush\(\)\.catch\(saveFailure\);return\}/);
- assert.match(html,/if\(document\.hidden\)saveIfPending\(\);else checkTourIdle\(\)/);
+ assert.match(html,/if\(document\.hidden\)saveIfPending\(\);else resumeTournee\(\)/);
 });
