@@ -18,7 +18,7 @@ function fixture(html,{fail=false,initial=null}={}){
   Date,JSON,Map,Array,
  };
  runInNewContext(html.slice(start,end)+
-  '\nthis.readJournal=absenceRead;this.dateOK=absenceDateOK;this.saveJournal=absenceSave;this.listPatients=absencePatients;',
+  '\nthis.readJournal=absenceRead;this.dateOK=absenceDateOK;this.saveJournal=absenceSave;this.listPatients=absencePatients;this.amendRecord=absenceAmendRecord;this.cancelRecord=absenceCancelRecord;',
   context,{timeout:1000});
  return {context,state,elements,saves:()=>saves,setFail:v=>{shouldFail=v}};
 }
@@ -69,4 +69,46 @@ test('V83: formulaires et historique isolés, aucun appel réseau ou écriture T
  assert.match(html,/await flush\(\)/);
  assert.match(html,/un seul coffre/i);
  assert.doesNotMatch(html.slice(html.indexOf('// V83 :'),html.indexOf('const IDLE_LOCK_MS=')),/fetch\(|XMLHttpRequest|WebSocket|localStorage\.(?:setItem|removeItem)|topaze\.fr/i);
+});
+
+test('V85: correction auditée préserve le signalement et l ancien motif/observation',async()=>{
+ const f=fixture(await source());
+ const original=event();
+ const revised=f.context.amendRecord(original,{day:'2026-11-12',reason:'Soin non réalisé',note:'Correction fictive'},'2026-11-13T19:00:00.000Z');
+ assert.equal(revised.day,'2026-11-12');
+ assert.equal(revised.reason,'Soin non réalisé');
+ assert.equal(revised.note,'Correction fictive');
+ assert.equal(revised.history.length,2);
+ assert.equal(revised.history[1].before.reason,'Patient absent');
+ assert.equal(revised.history[1].before.note,'Exemple fictif');
+ assert.equal(original.history.length,1);
+ assert.equal(original.reason,'Patient absent');
+ assert.equal(await f.context.saveJournal([revised],[original]),true);
+ assert.equal(f.context.readJournal().length,1);
+});
+
+test('V85: annulation non destructive et impossibilité de corriger un signalement annulé',async()=>{
+ const f=fixture(await source());
+ const original=event();
+ const cancelled=f.context.cancelRecord(original,'2026-11-13T19:10:00.000Z');
+ assert.equal(cancelled.cancelled,true);
+ assert.equal(cancelled.sync,'Sans suite');
+ assert.equal(cancelled.history.length,2);
+ assert.equal(cancelled.id,original.id);
+ assert.equal(f.context.cancelRecord(cancelled,'2026-11-13T19:11:00.000Z'),cancelled);
+ assert.throws(()=>f.context.amendRecord(cancelled,{day:'2026-11-13',reason:'Autre',note:''},'now'),/annulé/);
+ assert.equal(await f.context.saveJournal([cancelled],[original]),true);
+ assert.equal(f.context.readJournal()[0].cancelled,true);
+});
+
+test('V85: refuse une correction invalide et conserve la trace sans effacement',async()=>{
+ const f=fixture(await source());
+ const original=event();
+ assert.throws(()=>f.context.amendRecord(original,{day:'mauvaise-date',reason:'Autre',note:''},'now'),/invalide/);
+ assert.throws(()=>f.context.amendRecord(original,{day:'2026-11-13',reason:'Autre',note:'x'.repeat(201)},'now'),/invalide/);
+ assert.equal(f.context.amendRecord(original,{day:original.day,reason:original.reason,note:original.note},'now'),original);
+ const html=await source();
+ assert.match(html,/Corriger ou annuler ce signalement/);
+ assert.match(html,/Annuler ce signalement \(historique conservé\)/);
+ assert.doesNotMatch(html.slice(html.indexOf('// V83 :'),html.indexOf('const IDLE_LOCK_MS=')),/TOUR_STORE\.removeItem\(ABSENCE_KEY\)/);
 });
