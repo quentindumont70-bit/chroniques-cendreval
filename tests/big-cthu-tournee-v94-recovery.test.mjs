@@ -24,7 +24,7 @@ async function fixture({initial=empty,encrypted=false,portable=false,password=''
   document:{getElementById:id=>elements[id]},localStorage:{getItem:key=>local.get(key)??null},
   isEncryptedVaultRecord:x=>!!x.cipher,
   decryptRecord:async()=>{decrypts++;return filled},
-  fillFromBackup:()=>filled,validVaultState:x=>!!x&&Array.isArray(JSON.parse(x.tidel_Pl||'null')),
+  fillFromBackup:()=>filled,validVaultState:x=>{try{return !!x&&Array.isArray(JSON.parse(x.tidel_Pl||'null'))}catch(e){return false}},
   ensureVaultSaved:async()=>{flushes++;if(fail)throw Error('Storage full')},
   saveFailure:()=>statuses.push('error'),saveStatus:(type,message)=>statuses.push(type+':'+message),
   report:message=>errors.push(message),
