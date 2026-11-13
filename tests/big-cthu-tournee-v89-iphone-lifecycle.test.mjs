@@ -18,7 +18,8 @@ async function fixture(){
   secureKey:{},secureGen:2,secureSavedGen:1,secureBooted:true,
   flush:async()=>{writes++;context.secureSavedGen=context.secureGen},
   saveFailure:()=>{failures++},
-  checkTourIdle:()=>{checks++}
+  checkTourIdle:()=>{checks++},
+  autoOpenTournee:async()=>false
  };
  runInNewContext(html.slice(start,end),context,{timeout:1000});
  return {context,document,events,windowEvents,writes:()=>writes,failures:()=>failures,checks:()=>checks};
