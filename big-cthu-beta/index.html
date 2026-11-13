@@ -66,7 +66,7 @@ function renderFavorites(){
  if(!favoriteIds.length){const note=document.createElement('p');note.className='muted';note.textContent='Aucun favori : sélectionne une tentacule pour commencer.';root.append(note)}
  const select=$('#favoriteSelect');select.replaceChildren();
  for(const item of favoriteCatalog.filter(x=>!favoriteIds.includes(x[0]))){const option=document.createElement('option');option.value=item[0];option.textContent=item[1];select.append(option)}
- $('#favoriteAdd').disabled=select.options.length===0;
+ $('#favoriteAdd').disabled=select.children.length===0;
 }
 $('#favoriteAdd').addEventListener('click',()=>{
  const id=$('#favoriteSelect').value;
