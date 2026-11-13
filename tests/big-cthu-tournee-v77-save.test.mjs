@@ -51,7 +51,7 @@ test('V77: verrouillage refuse la fermeture tant que la sauvegarde échoue',asyn
 
 test('V77: ouverture de coffre existant ne réécrit pas inutilement son contenu',async()=>{
  const html=await read();
- assert.match(html,/if\(!full\)\{secureGen\+\+;await flush\(\)\}launch\(\)/);
+ assert.match(html,/if\(!full\)\{if\(importedEncrypted\)localStorage\.setItem\(SECURE_KEY,JSON\.stringify\(importedEncrypted\)\);else\{secureGen\+\+;await flush\(\)\}\}launch\(\)/);
  assert.match(html,/id="tour-save-strip"/);
  assert.match(html,/id="tour-lock"/);
  assert.match(html,/id="tour-save-retry"/);
