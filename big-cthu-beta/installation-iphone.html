@@ -73,6 +73,15 @@ button:focus-visible,a:focus-visible{outline:3px solid #9cf1e0;outline-offset:3p
 </ol>
 <p><strong>Ne supprime aucun stockage, raccourci ou fichier de sauvegarde</strong> durant les essais. Une fermeture forcée d'iOS ne garantit pas la fin d'une sauvegarde en cours ; cette checklist n'est pas une validation pour usage clinique.</p>
 </section>
+<section class="box"><h2>Test hors ligne après fermeture — uniquement avec des exemples fictifs</h2>
+<ol class="steps">
+<li>En connexion, ouvre une fois Big Cthu puis Tournée complète dans <strong>le même contexte</strong> (Safari ou l'icône installée). Laisse la page terminer son chargement.</li>
+<li>Ajoute une modification fictive, constate la confirmation d'enregistrement local, puis quitte complètement l'application.</li>
+<li>Désactive temporairement le Wi-Fi et les données mobiles, rouvre la même icône et vérifie que Tournée s'affiche sans code supplémentaire et que le journal fictif est présent.</li>
+<li>Rétablis la connexion, rouvre Tournée et confirme qu'aucun signalement fictif n'a disparu ni été dupliqué.</li>
+</ol>
+<p class="muted">Le cache hors ligne peut être vidé par iOS, notamment si le stockage est faible : aucun fonctionnement hors ligne n'est garanti après purge par le système. Une page disponible hors ligne ne prouve pas à elle seule que toutes les modifications locales ont été enregistrées. Ne supprime pas les sauvegardes ni les anciennes icônes pendant l'essai.</p>
+</section>
 <section class="box"><h2>Réseau, mises à jour et autonomie</h2>
 <p id="offlineState" class="status" role="status" aria-live="polite">État du réseau à déterminer.</p>
 <p><strong>Essai hors ligne sans données réelles :</strong> ouvre d'abord Tournée complète en ligne une fois afin que son cache public puisse s'installer, puis passe en mode avion et réouvre l'application sur des exemples inventés. Le bandeau « Hors ligne · stockage local » indique uniquement l'état réseau : vérifie aussi que Tournée s'affiche et que le test de sauvegarde réussit. Ne vide jamais le stockage Safari pour cet essai.</p>
