@@ -38,7 +38,7 @@ test('Tournée complète : import JSON interdit si un coffre local chiffré exis
  const {html}=await fixture();
  assert.match(html,/if\(fileMode\)\{\s*if\(full\|\|previous\)throw Error/);
  assert.match(html,/un nouvel import pourrait écraser tes dossiers/);
- assert.match(html,/SECURE_KEY='bigcthu_tournee_full_encrypted_v1'/);
+ assert.match(html,/ORIGINAL_KEY='bigcthu_tournee_full_encrypted_v1'/);
  assert.match(html,/AES-GCM/);
  assert.match(html,/PBKDF2/);
  assert.match(html,/n'est pas un hébergement HDS certifié/);
