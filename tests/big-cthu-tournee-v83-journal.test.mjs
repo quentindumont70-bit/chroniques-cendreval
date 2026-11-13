@@ -18,7 +18,7 @@ function fixture(html,{fail=false,initial=null}={}){
   Date,JSON,Map,Array,
  };
  runInNewContext(html.slice(start,end)+
-  '\nthis.readJournal=absenceRead;this.dateOK=absenceDateOK;this.saveJournal=absenceSave;this.listPatients=absencePatients;this.amendRecord=absenceAmendRecord;this.cancelRecord=absenceCancelRecord;',
+  '\nthis.readJournal=absenceRead;this.dateOK=absenceDateOK;this.saveJournal=absenceSave;this.listPatients=absencePatients;this.amendRecord=absenceAmendRecord;this.cancelRecord=absenceCancelRecord;this.summarizeJournal=absenceSummary;this.hasDuplicate=absenceDuplicate;',
   context,{timeout:1000});
  return {context,state,elements,saves:()=>saves,setFail:v=>{shouldFail=v}};
 }
@@ -111,4 +111,40 @@ test('V85: refuse une correction invalide et conserve la trace sans effacement',
  assert.match(html,/Corriger ou annuler ce signalement/);
  assert.match(html,/Annuler ce signalement \(historique conservé\)/);
  assert.doesNotMatch(html.slice(html.indexOf('// V83 :'),html.indexOf('const IDLE_LOCK_MS=')),/TOUR_STORE\.removeItem\(ABSENCE_KEY\)/);
+});
+
+
+test('V87: récapitulatif exclut les signalements annulés du rapprochement',async()=>{
+ const f=fixture(await source());
+ const base=event('a');
+ const cancelled=f.context.cancelRecord({...event('b'),reason:'Soin non réalisé',sync:'À rapprocher'},'2026-11-13T19:00:00.000Z');
+ const verified={...event('c'),reason:'Horaire modifié',sync:'Vérifié localement'};
+ const stats=f.context.summarizeJournal([base,cancelled,verified]);
+ assert.equal(stats.total,3);
+ assert.equal(stats.active,2);
+ assert.equal(stats.cancelled,1);
+ assert.equal(stats.toReview,1);
+ assert.equal(stats.reasons['Patient absent'],1);
+ assert.equal(stats.reasons['Soin non réalisé'],0);
+ assert.equal(stats.reasons['Horaire modifié'],1);
+});
+
+test('V87: signalement répété est détecté, sans confondre deux motifs et sans bloquer un événement annulé',async()=>{
+ const f=fixture(await source());
+ const base=event('a'),cancelled=f.context.cancelRecord(event('b'),'2026-11-13T19:00:00.000Z');
+ assert.equal(f.context.hasDuplicate([base],{patientId:'synthetic-1',day:'2026-11-13',reason:'Patient absent'}),true);
+ assert.equal(f.context.hasDuplicate([base],{patientId:'synthetic-1',day:'2026-11-13',reason:'Soin non réalisé'}),false);
+ assert.equal(f.context.hasDuplicate([cancelled],{patientId:'synthetic-1',day:'2026-11-13',reason:'Patient absent'}),false);
+ assert.equal(f.context.hasDuplicate([base],{patientId:'synthetic-1',day:'2026-11-14',reason:'Patient absent'}),false);
+});
+
+test('V87: filtres par période et annulation accessibles et aucun changement aux actes ni à Topaze',async()=>{
+ const html=await source();
+ assert.match(html,/id="ap-filter-cancelled"/);
+ assert.match(html,/id="ap-breakdown"/);
+ assert.match(html,/filters\.cancelled==='all'/);
+ assert.match(html,/signalements annulés sont exclus des totaux actifs/);
+ assert.match(html,/absenceDuplicate\(rows,\{patientId,day,reason\}\)/);
+ const journalCode=html.slice(html.indexOf('// V83 :'),html.indexOf('const IDLE_LOCK_MS='));
+ assert.doesNotMatch(journalCode,/fetch\(|XMLHttpRequest|WebSocket|localStorage\.(?:setItem|removeItem)|topaze\.fr/i);
 });

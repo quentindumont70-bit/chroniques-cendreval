@@ -479,9 +479,12 @@ body.tournee-locked #tour-save-strip{display:none}
 <label>Du<input id="ap-from" type="date"></label><label>Au<input id="ap-to" type="date"></label>
 <label>Motif<select id="ap-filter-reason"><option value="">Tous les motifs</option><option>Patient absent</option><option>Soin non réalisé</option><option>Horaire modifié</option><option>Autre</option></select></label>
 <label>Rapprochement<select id="ap-filter-state"><option value="">Tous les états</option><option>À rapprocher</option><option>Vérifié localement</option><option>Sans suite</option></select></label>
+<label>Signalements<select id="ap-filter-cancelled"><option value="active">Actifs uniquement</option><option value="all">Tous, y compris annulés</option><option value="cancelled">Annulés uniquement</option></select></label>
 </div>
 <p id="ap-status" role="status" aria-live="polite"></p>
 <p id="ap-summary" aria-live="polite"></p>
+<p id="ap-breakdown" aria-live="polite"></p>
+<p><small>Récapitulatif local pour préparer un rapprochement manuel. Aucune facture créée, aucune donnée transmise à Topaze. Les signalements annulés sont exclus des totaux actifs.</small></p>
 <div id="ap-events"></div>
 </div>
 </section>
@@ -1705,6 +1708,8 @@ function absencePatients(){
  catch(e){return []}
 }
 function absenceDateOK(day){return /^\d{4}-\d{2}-\d{2}$/.test(day)&&!Number.isNaN(Date.parse(day+'T12:00:00Z'))}
+function absenceSummary(rows){const active=rows.filter(x=>!x.cancelled);return {total:rows.length,active:active.length,cancelled:rows.length-active.length,toReview:active.filter(x=>x.sync==='À rapprocher').length,reasons:Object.fromEntries(ABSENCE_REASONS.map(reason=>[reason,active.filter(x=>x.reason===reason).length]))}}
+function absenceDuplicate(rows,{patientId,day,reason}){return rows.some(x=>!x.cancelled&&x.patientId===patientId&&x.day===day&&x.reason===reason)}
 function absenceRender(){
  const rows=absenceRead();if(!rows)return;
  const patients=absencePatients(), names=new Map(patients.map(p=>[p.id,p.n]));
@@ -1712,9 +1717,13 @@ function absenceRender(){
  const blank=document.createElement('option');blank.value='';blank.textContent='Choisir un patient';select.append(blank);
  for(const p of patients){const o=document.createElement('option');o.value=p.id;o.textContent=p.n;select.append(o)}
  if(patients.some(x=>x.id===selected))select.value=selected;
- const filters={from:ap('ap-from').value,to:ap('ap-to').value,reason:ap('ap-filter-reason').value,sync:ap('ap-filter-state').value};
- const filtered=rows.filter(x=>(!filters.from||x.day>=filters.from)&&(!filters.to||x.day<=filters.to)&&(!filters.reason||x.reason===filters.reason)&&(!filters.sync||x.sync===filters.sync)&&(!filters.from||!filters.to||filters.from<=filters.to));
- ap('ap-summary').textContent=filtered.length+' événement(s), dont '+filtered.filter(x=>x.sync==='À rapprocher').length+' à rapprocher. Total dans le coffre : '+rows.length+'.';
+ const filters={from:ap('ap-from').value,to:ap('ap-to').value,reason:ap('ap-filter-reason').value,sync:ap('ap-filter-state').value,cancelled:ap('ap-filter-cancelled').value};
+ const period=rows.filter(x=>(!filters.from||x.day>=filters.from)&&(!filters.to||x.day<=filters.to)&&(!filters.from||!filters.to||filters.from<=filters.to));
+ const scoped=period.filter(x=>(!filters.reason||x.reason===filters.reason)&&(!filters.sync||x.sync===filters.sync));
+ const counts=absenceSummary(scoped);
+ const filtered=scoped.filter(x=>filters.cancelled==='all'||(filters.cancelled==='cancelled'?!!x.cancelled:!x.cancelled));
+ ap('ap-summary').textContent=counts.active+' actif(s), '+counts.cancelled+' annulé(s), dont '+counts.toReview+' à rapprocher. '+filtered.length+' affiché(s) · '+rows.length+' au coffre.';
+ ap('ap-breakdown').textContent=ABSENCE_REASONS.map(reason=>reason+' : '+counts.reasons[reason]).join(' · ');
  const host=ap('ap-events');host.replaceChildren();
  for(const x of filtered.slice().reverse()){
   const box=document.createElement('article');box.className='ap-entry';
@@ -1794,13 +1803,14 @@ ap('tour-absence-open').addEventListener('click',()=>{
  absenceRender();noteTourActivity();
 });
 ap('ap-close').addEventListener('click',()=>{ap('tour-absence-panel').hidden=true;noteTourActivity()});
-for(const id of ['ap-from','ap-to','ap-filter-reason','ap-filter-state'])ap(id).addEventListener('change',absenceRender);
+for(const id of ['ap-from','ap-to','ap-filter-reason','ap-filter-state','ap-filter-cancelled'])ap(id).addEventListener('change',absenceRender);
 ap('ap-form').addEventListener('submit',async e=>{
  e.preventDefault();
  const rows=absenceRead();if(!rows)return;
  const day=ap('ap-day').value,patientId=ap('ap-patient').value,reason=ap('ap-reason').value,note=ap('ap-note').value.trim();
  if(!absenceDateOK(day)||!ABSENCE_REASONS.includes(reason)||note.length>200||!absencePatients().some(p=>p.id===patientId)){ap('ap-status').textContent='Saisie invalide, aucun changement.';return}
  if(rows.length>=500){ap('ap-status').textContent='Journal plein (500 événements), aucun changement.';return}
+ if(absenceDuplicate(rows,{patientId,day,reason})&&!confirm('Un signalement actif avec ce motif existe déjà pour cette personne et cette date. Ajouter tout de même un autre événement ?')){ap('ap-status').textContent='Doublon possible : ajout annulé, aucun changement.';return}
  const event={id:crypto.randomUUID(),patientId,day,reason,note,sync:'À rapprocher',history:[{at:new Date().toISOString(),action:'Signalement ajouté'}]};
  if(await absenceSave([...rows,event],rows)){ap('ap-note').value='';absenceRender()}
 });
