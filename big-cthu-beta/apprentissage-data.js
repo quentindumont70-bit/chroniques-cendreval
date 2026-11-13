@@ -1,6 +1,6 @@
-/* Cours et quiz originaux Big Cthu : accès libre, ressources externes créditées. */
+/* Contenus pédagogiques originaux, libre accès. Liens vers les sources officielles sans reproduction de leurs supports. */
 window.BIG_CTHU_LEARNING_DATA={
-  "version": 2,
+  "version": 3,
   "courses": [
     {
       "id": "fr-a1",
@@ -673,6 +673,594 @@ window.BIG_CTHU_LEARNING_DATA={
           "Le budget aide à rendre visibles les entrées et sorties attendues."
         ]
       ]
+    },
+    {
+      "id": "cp-sons",
+      "title": "CP — syllabes et sons",
+      "domain": "Scolaire",
+      "level": "CP",
+      "desc": "Une notion d'entraînement de Français pour la classe de CP.",
+      "lesson": "Un mot peut se découper oralement en syllabes : « tapis » se dit ta-pis, soit deux syllabes. Une syllabe peut commencer par une consonne suivie d’une voyelle, mais ce n’est pas obligatoire. En lecture, on distingue le nom des lettres des sons qu’elles produisent. Entendre les sons d’un mot aide à apprendre à lire.",
+      "source": "https://eduscol.education.gouv.fr/4503/francais",
+      "license": "Cours et questions originaux Big Cthu ; initiation, non exhaustive ; référence Éduscol",
+      "questions": [
+        [
+          "Combien de syllabes entend-on dans « tapis » ?",
+          [
+            "Une",
+            "Deux",
+            "Trois"
+          ],
+          1,
+          "On prononce ta-pis : deux syllabes."
+        ],
+        [
+          "Dans « moto », quelle est la première syllabe ?",
+          [
+            "mo",
+            "to",
+            "mot"
+          ],
+          0,
+          "On découpe mo-to."
+        ],
+        [
+          "Dans l’apprentissage de la lecture, on associe souvent :",
+          [
+            "Des lettres et des sons",
+            "Des couleurs et des nombres",
+            "Des mois et des saisons"
+          ],
+          0,
+          "Le lien entre graphèmes et phonèmes aide au décodage."
+        ]
+      ],
+      "curriculum": {
+        "class": "CP",
+        "cycle": "Cycle 2",
+        "subject": "Français",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "ce1-nombres",
+      "title": "CE1 — doubles et moitiés",
+      "domain": "Scolaire",
+      "level": "CE1",
+      "desc": "Une notion d'entraînement de Mathématiques pour la classe de CE1.",
+      "lesson": "Le double d’un nombre, c’est ce nombre ajouté à lui-même : le double de 7 vaut 14. La moitié d’un nombre pair correspond à un partage en deux parts égales : la moitié de 18 vaut 9. Le double et la moitié permettent de vérifier des calculs simples.",
+      "source": "https://eduscol.education.gouv.fr/4509/mathematiques",
+      "license": "Cours et questions originaux Big Cthu ; initiation, non exhaustive ; référence Éduscol",
+      "questions": [
+        [
+          "Le double de 8 vaut :",
+          [
+            "12",
+            "16",
+            "18"
+          ],
+          1,
+          "8 + 8 = 16."
+        ],
+        [
+          "La moitié de 20 vaut :",
+          [
+            "10",
+            "12",
+            "5"
+          ],
+          0,
+          "20 partagé en deux parts égales donne 10."
+        ],
+        [
+          "Quel nombre a pour double 14 ?",
+          [
+            "6",
+            "7",
+            "28"
+          ],
+          1,
+          "7 + 7 = 14."
+        ]
+      ],
+      "curriculum": {
+        "class": "CE1",
+        "cycle": "Cycle 2",
+        "subject": "Mathématiques",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "ce2-multiplication",
+      "title": "CE2 — multiplication et partage",
+      "domain": "Scolaire",
+      "level": "CE2",
+      "desc": "Une notion d'entraînement de Mathématiques pour la classe de CE2.",
+      "lesson": "Une multiplication permet de calculer une somme répétée : 4 × 3 correspond à 4 groupes de 3, soit 12. Une division exacte cherche combien de groupes égaux on peut faire. Par exemple, 15 objets partagés entre 3 personnes donnent 5 objets à chacune.",
+      "source": "https://eduscol.education.gouv.fr/4509/mathematiques",
+      "license": "Cours et questions originaux Big Cthu ; initiation, non exhaustive ; référence Éduscol",
+      "questions": [
+        [
+          "Quatre paquets de 6 billes contiennent :",
+          [
+            "10 billes",
+            "24 billes",
+            "46 billes"
+          ],
+          1,
+          "4 × 6 = 24."
+        ],
+        [
+          "18 objets partagés entre 3 personnes : chacun en reçoit :",
+          [
+            "5",
+            "6",
+            "9"
+          ],
+          1,
+          "18 ÷ 3 = 6."
+        ],
+        [
+          "5 × 3 est égal à :",
+          [
+            "5 + 3",
+            "3 + 3 + 3 + 3 + 3",
+            "5 − 3"
+          ],
+          1,
+          "Multiplier 5 par 3 correspond à cinq groupes de trois."
+        ]
+      ],
+      "curriculum": {
+        "class": "CE2",
+        "cycle": "Cycle 2",
+        "subject": "Mathématiques",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "cm1-grammaire",
+      "title": "CM1 — sujet et verbe",
+      "domain": "Scolaire",
+      "level": "CM1",
+      "desc": "Une notion d'entraînement de Français pour la classe de CM1.",
+      "lesson": "Dans une phrase simple, le verbe exprime souvent une action ou un état. Le sujet indique de qui ou de quoi on parle et commande généralement l’accord du verbe. Dans « Les enfants jouent », « les enfants » est le sujet et « jouent » est le verbe. Le sujet peut être un groupe nominal ou un pronom.",
+      "source": "https://eduscol.education.gouv.fr/4503/francais",
+      "license": "Cours et questions originaux Big Cthu ; initiation, non exhaustive ; référence Éduscol",
+      "questions": [
+        [
+          "Dans « Le chat dort », quel est le verbe ?",
+          [
+            "Le",
+            "chat",
+            "dort"
+          ],
+          2,
+          "« Dort » est le verbe conjugué."
+        ],
+        [
+          "Dans « Elles chantent », le sujet est :",
+          [
+            "Elles",
+            "chantent",
+            "elles chantent"
+          ],
+          0,
+          "Le pronom « elles » commande la conjugaison."
+        ],
+        [
+          "Quelle forme convient : « Les oiseaux … » ?",
+          [
+            "chante",
+            "chantent",
+            "chantes"
+          ],
+          1,
+          "Sujet pluriel : « Les oiseaux chantent »."
+        ]
+      ],
+      "curriculum": {
+        "class": "CM1",
+        "cycle": "Cycle 3",
+        "subject": "Français",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "cm2-decimaux",
+      "title": "CM2 — nombres décimaux",
+      "domain": "Scolaire",
+      "level": "CM2",
+      "desc": "Une notion d'entraînement de Mathématiques pour la classe de CM2.",
+      "lesson": "Dans un nombre décimal, la virgule sépare la partie entière de la partie décimale. Un dixième vaut 0,1 et un centième 0,01. Pour comparer 2,50 et 2,5, on peut ajouter un zéro à droite sans changer la valeur. Aligner les virgules aide à additionner les nombres décimaux.",
+      "source": "https://eduscol.education.gouv.fr/4509/mathematiques",
+      "license": "Cours et questions originaux Big Cthu ; initiation, non exhaustive ; référence Éduscol",
+      "questions": [
+        [
+          "0,3 correspond à :",
+          [
+            "Trois dixièmes",
+            "Trois centaines",
+            "Trente unités"
+          ],
+          0,
+          "3/10 = 0,3."
+        ],
+        [
+          "2,50 est :",
+          [
+            "Plus grand que 2,5",
+            "Égal à 2,5",
+            "Plus petit que 2,5"
+          ],
+          1,
+          "Un zéro final après la virgule ne change pas la valeur."
+        ],
+        [
+          "1,2 + 0,3 vaut :",
+          [
+            "1,5",
+            "4,2",
+            "0,15"
+          ],
+          0,
+          "Douze dixièmes plus trois dixièmes donnent quinze dixièmes."
+        ]
+      ],
+      "curriculum": {
+        "class": "CM2",
+        "cycle": "Cycle 3",
+        "subject": "Mathématiques",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "6e-geometrie",
+      "title": "6e — périmètre et aire",
+      "domain": "Scolaire",
+      "level": "6e",
+      "desc": "Une notion d'entraînement de Mathématiques pour la classe de 6e.",
+      "lesson": "Le périmètre mesure la longueur du contour d’une figure, en unités de longueur. L’aire mesure la surface qu’elle occupe, en unités carrées. Pour un rectangle de longueur L et largeur l : périmètre = 2 × (L + l), aire = L × l. Les unités sont indispensables.",
+      "source": "https://eduscol.education.gouv.fr/4509/mathematiques",
+      "license": "Cours et questions originaux Big Cthu ; initiation, non exhaustive ; référence Éduscol",
+      "questions": [
+        [
+          "Un rectangle de 5 cm par 3 cm a une aire de :",
+          [
+            "8 cm²",
+            "15 cm²",
+            "16 cm²"
+          ],
+          1,
+          "5 × 3 = 15 cm²."
+        ],
+        [
+          "Son périmètre est de :",
+          [
+            "15 cm",
+            "8 cm",
+            "16 cm"
+          ],
+          2,
+          "2 × (5 + 3) = 16 cm."
+        ],
+        [
+          "L’unité adaptée pour une aire est :",
+          [
+            "Le mètre",
+            "Le mètre carré",
+            "Le kilogramme"
+          ],
+          1,
+          "Une surface s’exprime en m², cm², etc."
+        ]
+      ],
+      "curriculum": {
+        "class": "6e",
+        "cycle": "Cycle 3",
+        "subject": "Mathématiques",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "5e-relatifs",
+      "title": "5e — nombres relatifs",
+      "domain": "Scolaire",
+      "level": "5e",
+      "desc": "Une notion d'entraînement de Mathématiques pour la classe de 5e.",
+      "lesson": "Un nombre négatif est inférieur à zéro ; il peut représenter une température sous zéro ou une dette. Sur une droite graduée, plus un nombre est à droite, plus il est grand : −2 est supérieur à −5. Ajouter un nombre négatif revient à diminuer la valeur d’autant.",
+      "source": "https://eduscol.education.gouv.fr/4509/mathematiques",
+      "license": "Cours et questions originaux Big Cthu ; initiation, non exhaustive ; référence Éduscol",
+      "questions": [
+        [
+          "Quel nombre est le plus grand ?",
+          [
+            "−5",
+            "−2",
+            "−8"
+          ],
+          1,
+          "−2 est plus proche de zéro et plus à droite."
+        ],
+        [
+          "−3 + 7 vaut :",
+          [
+            "4",
+            "−10",
+            "10"
+          ],
+          0,
+          "En partant de −3 et avançant de 7, on atteint 4."
+        ],
+        [
+          "La température passe de 2 °C à −1 °C : elle baisse de :",
+          [
+            "1 °C",
+            "3 °C",
+            "−3 °C"
+          ],
+          1,
+          "2 à 0 : 2 degrés, puis encore 1 degré."
+        ]
+      ],
+      "curriculum": {
+        "class": "5e",
+        "cycle": "Cycle 4",
+        "subject": "Mathématiques",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "4e-stylistique",
+      "title": "4e — figures de style",
+      "domain": "Scolaire",
+      "level": "4e",
+      "desc": "Une notion d'entraînement de Français pour la classe de 4e.",
+      "lesson": "Une comparaison rapproche deux éléments à l’aide d’un outil comme « comme ». Une métaphore rapproche deux éléments sans outil de comparaison explicite. Une personnification attribue des comportements humains à une chose ou à un animal. Il faut interpréter le contexte avant de nommer une figure.",
+      "source": "https://eduscol.education.gouv.fr/4503/francais",
+      "license": "Cours et questions originaux Big Cthu ; initiation, non exhaustive ; référence Éduscol",
+      "questions": [
+        [
+          "« Rapide comme l’éclair » est :",
+          [
+            "Une comparaison",
+            "Une personnification",
+            "Une énumération"
+          ],
+          0,
+          "Le mot « comme » introduit le rapprochement."
+        ],
+        [
+          "« Cette ville est une fourmilière » est :",
+          [
+            "Une comparaison",
+            "Une métaphore",
+            "Une négation"
+          ],
+          1,
+          "La ville est assimilée à une fourmilière sans « comme »."
+        ],
+        [
+          "« Le vent chuchote » peut être :",
+          [
+            "Une personnification",
+            "Une multiplication",
+            "Une définition"
+          ],
+          0,
+          "Le vent reçoit une action humaine."
+        ]
+      ],
+      "curriculum": {
+        "class": "4e",
+        "cycle": "Cycle 4",
+        "subject": "Français",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "3e-pythagore",
+      "title": "3e — théorème de Pythagore",
+      "domain": "Scolaire",
+      "level": "3e",
+      "desc": "Une notion d'entraînement de Mathématiques pour la classe de 3e.",
+      "lesson": "Dans un triangle rectangle, le carré de la longueur de l’hypoténuse est égal à la somme des carrés des deux autres côtés. Si les deux côtés de l’angle droit valent 3 et 4, l’hypoténuse vaut 5, car 3² + 4² = 25. Le théorème ne s’emploie directement que si le triangle est rectangle.",
+      "source": "https://eduscol.education.gouv.fr/4509/mathematiques",
+      "license": "Cours et questions originaux Big Cthu ; initiation, non exhaustive ; référence Éduscol",
+      "questions": [
+        [
+          "Dans un triangle rectangle, l’hypoténuse est :",
+          [
+            "Le côté opposé à l’angle droit",
+            "Toujours le côté vertical",
+            "Le plus petit côté"
+          ],
+          0,
+          "Elle est en face de l’angle droit."
+        ],
+        [
+          "Deux côtés perpendiculaires de 3 et 4 unités donnent une hypoténuse de :",
+          [
+            "5",
+            "7",
+            "12"
+          ],
+          0,
+          "3² + 4² = 25, d’où √25 = 5."
+        ],
+        [
+          "Le théorème s’utilise directement dans :",
+          [
+            "Tous les triangles",
+            "Les triangles rectangles",
+            "Tous les quadrilatères"
+          ],
+          1,
+          "La relation est caractéristique du triangle rectangle."
+        ]
+      ],
+      "curriculum": {
+        "class": "3e",
+        "cycle": "Cycle 4",
+        "subject": "Mathématiques",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "2nde-affines",
+      "title": "Seconde — fonctions affines",
+      "domain": "Scolaire",
+      "level": "2nde",
+      "desc": "Une notion d'entraînement de Mathématiques pour la classe de 2nde.",
+      "lesson": "Une fonction affine s’écrit f(x) = ax + b. Son graphique est une droite : a est le coefficient directeur et b l’ordonnée à l’origine. Pour f(x) = 2x + 3, f(4) = 11. Lorsque a est positif, la fonction est croissante ; lorsqu’il est négatif, elle est décroissante.",
+      "source": "https://eduscol.education.gouv.fr/4509/mathematiques",
+      "license": "Cours et questions originaux Big Cthu ; initiation, non exhaustive ; référence Éduscol",
+      "questions": [
+        [
+          "Pour f(x) = 2x + 3, f(4) vaut :",
+          [
+            "8",
+            "11",
+            "14"
+          ],
+          1,
+          "2 × 4 + 3 = 11."
+        ],
+        [
+          "Dans f(x) = −3x + 2, le coefficient directeur est :",
+          [
+            "2",
+            "−3",
+            "−1"
+          ],
+          1,
+          "Le coefficient de x est −3."
+        ],
+        [
+          "Une fonction affine de coefficient directeur positif est :",
+          [
+            "Croissante",
+            "Toujours constante",
+            "Toujours négative"
+          ],
+          0,
+          "Le sens de variation dépend du signe de a."
+        ]
+      ],
+      "curriculum": {
+        "class": "2nde",
+        "cycle": "Lycée",
+        "subject": "Mathématiques",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "1re-argument",
+      "title": "Première — organiser une argumentation",
+      "domain": "Scolaire",
+      "level": "1re",
+      "desc": "Une notion d'entraînement de Français pour la classe de 1re.",
+      "lesson": "Une argumentation présente une thèse, des arguments et des exemples. Chaque paragraphe peut annoncer une idée, l’expliquer puis l’illustrer. Une concession reconnaît une objection sans nécessairement abandonner la thèse. Des connecteurs logiques comme « cependant », « donc » ou « en effet » rendent le raisonnement plus clair.",
+      "source": "https://eduscol.education.gouv.fr/4503/francais",
+      "license": "Cours et questions originaux Big Cthu ; initiation, non exhaustive ; référence Éduscol",
+      "questions": [
+        [
+          "La thèse d’un texte argumentatif est :",
+          [
+            "L’idée défendue",
+            "La date de publication",
+            "Le nombre de paragraphes"
+          ],
+          0,
+          "La thèse indique la position soutenue."
+        ],
+        [
+          "« Cependant » introduit souvent :",
+          [
+            "Une opposition ou nuance",
+            "Une addition exacte",
+            "Une date"
+          ],
+          0,
+          "Ce connecteur marque un contraste."
+        ],
+        [
+          "Un exemple sert généralement à :",
+          [
+            "Remplacer toute preuve",
+            "Illustrer un argument",
+            "Supprimer la thèse"
+          ],
+          1,
+          "L’exemple concrétise une idée."
+        ]
+      ],
+      "curriculum": {
+        "class": "1re",
+        "cycle": "Lycée",
+        "subject": "Français",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "term-probas",
+      "title": "Terminale — probabilités conditionnelles",
+      "domain": "Scolaire",
+      "level": "Terminale",
+      "desc": "Une notion d'entraînement de Mathématiques pour la classe de Terminale.",
+      "lesson": "La probabilité de A sachant B, notée P(A|B), décrit la chance que A se produise lorsque B est déjà réalisé. Si P(B) > 0 : P(A|B) = P(A∩B) / P(B). Par exemple, si P(B) = 0,4 et P(A∩B) = 0,1, alors P(A|B) = 0,25. Il ne faut pas confondre P(A|B) et P(B|A).",
+      "source": "https://eduscol.education.gouv.fr/4509/mathematiques",
+      "license": "Cours et questions originaux Big Cthu ; initiation, non exhaustive ; référence Éduscol",
+      "questions": [
+        [
+          "Si P(B)=0,5 et P(A∩B)=0,2, P(A|B) vaut :",
+          [
+            "0,1",
+            "0,4",
+            "2,5"
+          ],
+          1,
+          "0,2 / 0,5 = 0,4."
+        ],
+        [
+          "La notation P(A|B) signifie :",
+          [
+            "Probabilité de A sachant B",
+            "Probabilité de B sachant A",
+            "Probabilité de A ou B obligatoirement"
+          ],
+          0,
+          "B est la condition connue."
+        ],
+        [
+          "La formule P(A|B)=P(A∩B)/P(B) suppose :",
+          [
+            "P(B)>0",
+            "P(B)=0",
+            "P(A)=1"
+          ],
+          0,
+          "On ne divise pas par zéro."
+        ]
+      ],
+      "curriculum": {
+        "class": "Terminale",
+        "cycle": "Lycée",
+        "subject": "Mathématiques",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
     }
   ],
   "resources": [
