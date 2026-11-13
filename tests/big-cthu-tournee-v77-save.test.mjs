@@ -69,7 +69,7 @@ test('V79: évite les écritures répétées du coffre déjà enregistré',async
 
 test('V79: sauvegarde en arrière-plan seulement si modifications non encore persistées',async()=>{
  const html=await read();
- assert.match(html,/document\.addEventListener\('visibilitychange',\(\)=>\{if\(document\.hidden\)saveIfPending\(\)\}\)/);
+ assert.match(html,/document\.addEventListener\('visibilitychange',\(\)=>\{if\(document\.hidden\)saveIfPending\(\);else checkTourIdle\(\)\}\)/);
  assert.match(html,/window\.addEventListener\('pagehide',saveIfPending\)/);
  assert.match(html,/secureGen!==secureSavedGen/);
  assert.match(html,/secureSavedGen=last/);
