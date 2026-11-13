@@ -74,7 +74,7 @@ test('V86: export télécharge uniquement le coffre chiffré et pas un dump en c
  assert.match(code,/new Blob\(\[stored\]/);
  assert.match(code,/tournee-coffre-chiffre-/);
  assert.doesNotMatch(code,/JSON\.stringify\(secureState\)|tidel_Pl|patient\.n/);
- assert.match(html,/ancien export JSON classique ne l'inclut pas/);
+ assert.match(html,/Pour transférer ce journal sur un autre appareil sans code/);
 });
 
 test('V86: export et verrouillage attendent toutes les écritures en cours',async()=>{
@@ -93,7 +93,7 @@ test('V86: export et verrouillage attendent toutes les écritures en cours',asyn
 
 test('V86: guide iPhone distingue coffre intégral chiffré, JSON classique et données locales',async()=>{
  const guide=await readFile(new URL('../big-cthu-beta/installation-iphone.html',import.meta.url),'utf8');
- assert.match(guide,/Exporter le coffre chiffré/);
+ assert.match(guide,/Exporter une sauvegarde complète JSON/);
  assert.match(guide,/Le JSON classique de Tournée n’inclut pas ce journal/);
  assert.match(guide,/avant<\/strong> de supprimer un ancien raccourci/);
  assert.match(guide,/Coffre général/);
