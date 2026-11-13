@@ -171,7 +171,7 @@ test('V96: recherche reste locale et ne se retrouve pas dans export manuel',asyn
  const html=await source();
  assert.match(html,/id="ap-search" type="search"/);
  assert.match(html,/id="ap-sort"/);
- assert.match(html,/ap\('ap-search'\)\.addEventListener\('input',absenceRender\)/);
+ assert.match(html,/ap\('ap-search'\)\.addEventListener\('input',absenceFiltersChanged\)/);
  assert.match(html,/const filtered=absenceSearchAndSort\(stateFiltered/);
  const code=html.slice(html.indexOf('function absenceFold('),html.indexOf('function absencePeriodReport('));
  assert.doesNotMatch(code,/TOUR_STORE|localStorage|fetch\(|XMLHttpRequest|WebSocket/);
