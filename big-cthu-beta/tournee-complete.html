@@ -1839,7 +1839,7 @@ async function flush(){
   }while(last!==secureGen);
   secureSavedGen=last;
   saveStatus('saved','Données chiffrées enregistrées sur cet appareil.');
- })().catch(e=>{saveFailure();throw e}).finally(()=>{secureActive=null});
+ })().catch(e=>{saveFailure(e);throw e}).finally(()=>{secureActive=null});
  return secureActive;
 }
 async function ensureVaultSaved(){
