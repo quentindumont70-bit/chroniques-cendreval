@@ -408,3 +408,45 @@ test('Consommations: cannot lose a meter reading on failed local write', async (
   assert.equal(JSON.parse(c.memory.get(key)).length, 1);
   assert.ok(c.alerts.length >= 2);
 });
+
+test('Cockpit: accès rapides persistants et isolation des données métier', async () => {
+  const h=await boot('index.html');
+  const key='big-cthu-v2-favorites-v1';
+  assert.equal(h.get('favoriteLinks').children.length,3);
+  assert.equal(h.get('favoriteLinks').children[0].children[0].href,'./tournee.html');
+  h.get('favoriteSelect').value='voyages';
+  await h.get('favoriteAdd').fire('click');
+  assert.deepEqual(JSON.parse(h.memory.get(key)),['tour','agenda','budget','voyages']);
+  assert.equal(h.get('favoriteLinks').children.length,4);
+  assert.equal(h.memory.has('tidel_Pl'),false,'Favoris ne touchent pas au stockage clinique');
+  const fresh=await boot('index.html',{[key]:h.memory.get(key)});
+  assert.equal(fresh.get('favoriteLinks').children.length,4);
+  assert.equal(fresh.get('favoriteLinks').children[3].children[0].href,'./voyages.html');
+  const remove=fresh.get('favoriteLinks').children[3].children[1];
+  await remove.fire('click');
+  assert.equal(JSON.parse(fresh.memory.get(key)).includes('voyages'),false);
+});
+
+test('Cockpit: échec de stockage conserve les favoris visibles', async () => {
+  const h=await boot('index.html');
+  h.setFull(true);
+  h.get('favoriteSelect').value='cantine';
+  await h.get('favoriteAdd').fire('click');
+  assert.equal(h.get('favoriteLinks').children.length,3);
+  assert.match(h.get('favoriteStatus').textContent,/impossible/);
+  assert.equal(h.memory.has('big-cthu-v2-favorites-v1'),false);
+});
+
+test('Tournée: les deux versions locales restent distinctes et sans promesse de synchronisation', async () => {
+  const base=new URL('../big-cthu-beta/',import.meta.url);
+  const [home,original,complete]=await Promise.all(['index.html','tournee.html','tournee-complete.html'].map(x=>readFile(new URL(x,base),'utf8')));
+  assert.match(home,/b\.href='\.\/tournee\.html'/);
+  assert.match(home,/\['tourfull','Tournée complète \(chiffrée\)','tournee-complete\.html'\]/);
+  for(const code of [original,complete]){
+    assert.match(code,/Aucune synchronisation automatique entre appareils/);
+    assert.doesNotMatch(code,/se synchroniseront au retour du réseau/);
+  }
+  assert.match(complete,/AES-GCM/);
+  assert.match(complete,/id="tour-import"/);
+  assert.match(original,/function importAll\(/);
+});
