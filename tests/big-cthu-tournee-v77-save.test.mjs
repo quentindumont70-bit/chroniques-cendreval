@@ -13,7 +13,7 @@ async function fixture({fail=false}={}){
  let writes=0,reloads=0,shouldFail=fail;
  const sandbox={
   document:{hidden:false,getElementById:id=>elements[id],addEventListener(){}},
-  localStorage:{setItem(){if(shouldFail)throw Error('QuotaExceeded');writes++}},
+  localStorage:{setItem(k,v){if(shouldFail)throw Error('QuotaExceeded');this.persisted=v;writes++},getItem(){return this.persisted??null}},
   crypto:{getRandomValues(arr){return arr.fill(1)},subtle:{encrypt:async()=>new Uint8Array([1,2,3])}},
   setTimeout:()=>1,clearTimeout:()=>{},TextEncoder,Uint8Array,JSON,
   SECURE_KEY:'test-encrypted-only',secureKey:'fake-key',secureBooted:false,secureSalt:new Uint8Array(16),secureGen:1,secureSavedGen:0,secureActive:null,secureTimer:0,secureState:{tidel_Pl:'[]'},
