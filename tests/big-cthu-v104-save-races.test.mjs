@@ -87,5 +87,5 @@ test('V104: chiffrement local et relecture restent sans requête réseau ni verr
  const pipeline=html.slice(start,end);
  assert.doesNotMatch(pipeline,/fetch\(|XMLHttpRequest|WebSocket|location\.reload/);
  assert.match(html,/id="tour-security-gate" hidden/);
- assert.match(html,/window\.addEventListener\('pageshow',resumeTournee\\)/);
+ assert.match(html,/window\.addEventListener\('pageshow',resumeTournee\)/);
 });
