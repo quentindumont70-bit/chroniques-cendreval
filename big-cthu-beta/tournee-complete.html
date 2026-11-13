@@ -1790,6 +1790,8 @@ document.getElementById('tour-saved-status').textContent=localStorage.getItem(SE
 function saveIfPending(){if(secureKey&&secureGen!==secureSavedGen)flush().catch(saveFailure)}
 document.addEventListener('visibilitychange',()=>{if(document.hidden)saveIfPending();else checkTourIdle()});
 window.addEventListener('pagehide',saveIfPending);
+window.addEventListener('pageshow',()=>{if(secureBooted)checkTourIdle()});
+window.addEventListener('focus',()=>{if(secureBooted)checkTourIdle()});
 </script>
 </body>
 </html>
