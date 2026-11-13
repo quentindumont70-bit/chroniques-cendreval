@@ -37,7 +37,7 @@ async function setup({corrupt=false,wrongSalt=false,remember=true,original=true}
    if(mode==='readwrite'){writes++;keyStore.set(name,value);return name}
    reads++;return keyStore.get(name)
   },
-  launch:()=>{launches++}
+  launch:()=>{launches++;elements['tour-security-gate'].hidden=true}
  };
  const start=html.indexOf('function rememberDeviceKey(key,salt){'),end=html.indexOf('function fillFromBackup(d){',start);
  assert.ok(start>=0&&end>start);
