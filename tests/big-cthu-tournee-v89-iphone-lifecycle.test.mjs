@@ -117,3 +117,41 @@ test('V98: iPhone et navigateur en ligne/hors ligne n imposent aucun nouveau cod
  assert.doesNotMatch(html,/window\.addEventListener\('pageshow',\(\)=>location\.reload/);
  assert.match(html,/id="tour-security-gate" hidden/);
 });
+
+
+test('V103: freeze iPhone tente la sauvegarde avant suspension sans réinitialiser la session',async()=>{
+ const f=await fixture();
+ assert.equal(typeof f.events.get('freeze'),'function');
+ f.events.get('freeze')();
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(f.writes(),1);
+ assert.equal(f.checks(),0);
+ f.windowEvents.get('pagehide')();
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(f.writes(),1,'pagehide ne répète pas une génération déjà sauvée');
+});
+
+test('V103: blur tente une écriture uniquement si des modifications restent en attente',async()=>{
+ const f=await fixture();
+ assert.equal(typeof f.windowEvents.get('blur'),'function');
+ f.context.secureGen=f.context.secureSavedGen;
+ f.windowEvents.get('blur')();
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(f.writes(),0);
+ f.context.secureGen++;
+ f.windowEvents.get('blur')();
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(f.writes(),1);
+ f.windowEvents.get('blur')();
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(f.writes(),1);
+});
+
+test('V103: un échec sur freeze garde la génération non sauvée pour une reprise ultérieure',async()=>{
+ const f=await fixture();
+ f.context.flush=async()=>{throw Error('Storage unavailable')};
+ f.events.get('freeze')();
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(f.context.secureSavedGen,1);
+ assert.equal(f.failures(),1);
+});
