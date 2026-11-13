@@ -38,7 +38,7 @@ test('V77: si le navigateur refuse le coffre, erreur persistante et essai possib
  assert.equal(f.elements['tour-save-retry'].hidden,true);
 });
 
-test('V77: verrouillage refuse la fermeture tant que la sauvegarde échoue',async()=>{
+test('V92: bouton Sauvegarder conserve la session même si l écriture échoue',async()=>{
  const f=await fixture({fail:true});
  await f.elements['tour-lock'].click();
  assert.equal(f.reloads(),0);
@@ -46,7 +46,8 @@ test('V77: verrouillage refuse la fermeture tant que la sauvegarde échoue',asyn
  assert.equal(f.elements['tour-save-strip'].dataset.state,'error');
  f.setFail(false);
  await f.elements['tour-lock'].click();
- assert.equal(f.reloads(),1);
+ assert.equal(f.reloads(),0);
+ assert.equal(f.elements['tour-lock'].textContent,'Sauvegarder');
 });
 
 test('V77: ouverture de coffre existant ne réécrit pas inutilement son contenu',async()=>{
@@ -76,16 +77,16 @@ test('V79: sauvegarde en arrière-plan seulement si modifications non encore per
  assert.match(html,/if\(secureSavedGen===secureGen\)return/);
 });
 
-test('V80: 15 minutes sans interaction provoquent une sauvegarde avant verrouillage',async()=>{
+test('V92: après 15 minutes, sauvegarde sans écran de verrouillage',async()=>{
  const f=await fixture();
  f.sandbox.setIdleTest(Date.now()-16*60*1000);
  f.sandbox.checkTourIdleTest();
  await new Promise(resolve=>setImmediate(resolve));
- assert.equal(f.reloads(),1);
+ assert.equal(f.reloads(),0);
  assert.equal(f.writes(),1);
 });
 
-test('V80: ne verrouille pas si la sauvegarde échoue, même après inactivité',async()=>{
+test('V92: un échec de sauvegarde en inactivité n impose pas de verrouillage',async()=>{
  const f=await fixture({fail:true});
  f.sandbox.setIdleTest(Date.now()-16*60*1000);
  f.sandbox.checkTourIdleTest();
@@ -104,6 +105,7 @@ test('V80: une interaction remet à zéro le délai et un retour iPhone vérifie
  assert.equal(f.reloads(),0);
  const html=await read();
  assert.match(html,/const IDLE_LOCK_MS=15\*60\*1000/);
+ assert.doesNotMatch(html,/if\(elapsed>=IDLE_LOCK_MS\)\{lockTourSafely\(\)/);
  assert.match(html,/for\(const event of \['pointerdown','keydown','input'\]\)/);
  assert.match(html,/if\(document\.hidden\)saveIfPending\(\);else checkTourIdle\(\)/);
 });
