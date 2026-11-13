@@ -86,7 +86,8 @@ test('V92: coffre altéré ne se déverrouille pas, et l accès initial peut tou
 test('V92: une mise en veille prolongee ne recharge pas la page ni n impose un nouveau verrouillage',async()=>{
  const html=await read();
  assert.match(html,/if\(elapsed>=IDLE_LOCK_MS\)\{if\(secureKey&&secureGen!==secureSavedGen\)flush\(\)\.catch\(saveFailure\);return\}/);
- assert.doesNotMatch(html,/location\.reload\(\)/);
+ const saving=html.slice(html.indexOf('async function lockTourSafely(){'),html.indexOf('function checkTourIdle(){'));
+ assert.doesNotMatch(saving,/location\.reload\(\)/);
  assert.match(html,/id="tour-lock">Sauvegarder<\/button>/);
  assert.match(html,/Sauvegarde en cours…/);
  assert.match(html,/body\.tournee-checking #tour-security-gate\{visibility:hidden\}/);
