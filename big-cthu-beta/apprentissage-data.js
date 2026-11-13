@@ -1,6 +1,6 @@
-/* Contenus pédagogiques originaux, libre accès. Liens vers les sources officielles sans reproduction de leurs supports. */
+/* Cours et quiz originaux Big Cthu : accès gratuit, références externes créditées sans reproduction d'épreuves officielles. */
 window.BIG_CTHU_LEARNING_DATA={
-  "version": 3,
+  "version": 4,
   "courses": [
     {
       "id": "fr-a1",
@@ -252,7 +252,12 @@ window.BIG_CTHU_LEARNING_DATA={
           1,
           "L'arrêt dépend des circonstances, mais la priorité doit être respectée."
         ]
-      ]
+      ],
+      "route": {
+        "theme": "Intersections",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
     },
     {
       "id": "dev-web",
@@ -1258,6 +1263,429 @@ window.BIG_CTHU_LEARNING_DATA={
         "class": "Terminale",
         "cycle": "Lycée",
         "subject": "Mathématiques",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "route-panneaux",
+      "title": "Code de la route — panneaux et intersections",
+      "domain": "Permis",
+      "level": "Entraînement non officiel",
+      "desc": "Réviser les situations : signalisation.",
+      "lesson": "La signalisation avertit, prescrit ou indique une information utile. Un panneau STOP impose un arrêt complet avant de céder le passage, même si la route semble dégagée. Un panneau « Cédez le passage » impose de laisser passer les usagers prioritaires, avec arrêt si nécessaire. La signalisation sur place prévaut lorsqu'elle fixe une règle particulière.",
+      "source": "https://www.onisr.securite-routiere.gouv.fr/politique-de-securite-routiere/code-de-la-route",
+      "license": "Cours et QCM originaux Big Cthu, non officiels ; sources ONISR et Sécurité routière",
+      "questions": [
+        [
+          "À un STOP, même si personne n'arrive, je dois :",
+          [
+            "Simplement ralentir",
+            "M'arrêter complètement",
+            "Klaxonner puis passer"
+          ],
+          1,
+          "Le STOP impose l'arrêt complet."
+        ],
+        [
+          "Un panneau « Cédez le passage » signifie :",
+          [
+            "Priorité absolue pour moi",
+            "Je laisse passer les véhicules prioritaires",
+            "Arrêt obligatoire dans tous les cas"
+          ],
+          1,
+          "L'arrêt n'est nécessaire que pour respecter la priorité."
+        ],
+        [
+          "Face à un panneau de limitation de vitesse sur la voie, je dois :",
+          [
+            "Respecter la limitation indiquée",
+            "Appliquer toujours la limite générale même si différente",
+            "Ignorer le panneau"
+          ],
+          0,
+          "La signalisation peut fixer une limitation locale."
+        ]
+      ],
+      "route": {
+        "theme": "Signalisation",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "route-distances",
+      "title": "Code de la route — distances de sécurité",
+      "domain": "Permis",
+      "level": "Entraînement non officiel",
+      "desc": "Réviser les situations : distances.",
+      "lesson": "Le conducteur garde une distance suffisante avec le véhicule précédent. Une méthode de repérage consiste à compter au moins deux secondes entre son passage devant un point fixe et le sien. À 90 km/h, soit environ 25 m/s, deux secondes représentent environ 50 mètres. Pluie, faible adhérence ou visibilité réduite justifient une prudence accrue.",
+      "source": "https://www.onisr.securite-routiere.gouv.fr/politique-de-securite-routiere/code-de-la-route",
+      "license": "Cours et QCM originaux Big Cthu, non officiels ; sources ONISR et Sécurité routière",
+      "questions": [
+        [
+          "Le repère temporel minimal de sécurité entre deux véhicules est généralement :",
+          [
+            "0,5 seconde",
+            "2 secondes",
+            "10 secondes"
+          ],
+          1,
+          "La règle des deux secondes aide à évaluer l'intervalle minimal."
+        ],
+        [
+          "À 90 km/h, on parcourt environ en deux secondes :",
+          [
+            "5 mètres",
+            "50 mètres",
+            "500 mètres"
+          ],
+          1,
+          "90 km/h ≈ 25 m/s ; en 2 s, environ 50 m."
+        ],
+        [
+          "Sur chaussée très humide, je dois :",
+          [
+            "Augmenter la prudence et adapter vitesse/distance",
+            "Rester systématiquement au plus près",
+            "Freiner brutalement sans raison"
+          ],
+          0,
+          "L'adhérence peut être diminuée."
+        ]
+      ],
+      "route": {
+        "theme": "Distances",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "route-vitesse",
+      "title": "Code de la route — vitesse adaptée",
+      "domain": "Permis",
+      "level": "Entraînement non officiel",
+      "desc": "Réviser les situations : vitesse.",
+      "lesson": "Une vitesse réglementaire est un plafond à ne pas dépasser, et non une vitesse à atteindre en toutes circonstances. Même sous cette limite, le conducteur doit ralentir si la visibilité, les usagers ou la météo l'exigent. Plus la vitesse augmente, plus la distance parcourue pendant le temps de réaction est élevée et plus l'arrêt du véhicule peut nécessiter de distance.",
+      "source": "https://www.onisr.securite-routiere.gouv.fr/politique-de-securite-routiere/code-de-la-route",
+      "license": "Cours et QCM originaux Big Cthu, non officiels ; sources ONISR et Sécurité routière",
+      "questions": [
+        [
+          "Une limitation affichée à 70 km/h signifie :",
+          [
+            "Rouler toujours exactement à 70",
+            "Ne pas dépasser 70 et ralentir si nécessaire",
+            "On peut dépasser pour rattraper le temps perdu"
+          ],
+          1,
+          "La vitesse maximale n'est pas une obligation d'allure."
+        ],
+        [
+          "Quand la visibilité se réduit fortement :",
+          [
+            "J'adapte ma vitesse vers le bas",
+            "J'accélère",
+            "J'éteins toutes mes lumières"
+          ],
+          0,
+          "Il faut pouvoir réagir aux dangers dans la zone visible."
+        ],
+        [
+          "À temps de réaction égal, augmenter sa vitesse :",
+          [
+            "Diminue la distance de réaction",
+            "Augmente la distance de réaction",
+            "N'a aucun effet"
+          ],
+          1,
+          "On parcourt davantage de mètres avant de réagir."
+        ]
+      ],
+      "route": {
+        "theme": "Vitesse",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "route-telephone",
+      "title": "Code de la route — téléphone et attention",
+      "domain": "Permis",
+      "level": "Entraînement non officiel",
+      "desc": "Réviser les situations : attention.",
+      "lesson": "Tenir un téléphone en main pendant la conduite est interdit. Les écrans et messages détournent l'attention de la circulation, augmentent le temps de réaction et réduisent la perception des dangers. Préparer son itinéraire avant le départ et s'arrêter dans un endroit autorisé pour traiter un message constituent des comportements plus sûrs.",
+      "source": "https://www.onisr.securite-routiere.gouv.fr/politique-de-securite-routiere/code-de-la-route",
+      "license": "Cours et QCM originaux Big Cthu, non officiels ; sources ONISR et Sécurité routière",
+      "questions": [
+        [
+          "Un message arrive pendant que je conduis :",
+          [
+            "Je le lis rapidement",
+            "Je reporte sa lecture jusqu'à un arrêt sûr",
+            "Je l'envoie en roulant"
+          ],
+          1,
+          "Un regard détourné peut suffire à créer un danger."
+        ],
+        [
+          "Conduire avec un téléphone tenu en main est :",
+          [
+            "Autorisé si le trafic est lent",
+            "Interdit",
+            "Obligatoire pour le GPS"
+          ],
+          1,
+          "Le téléphone tenu en main est interdit en circulation."
+        ],
+        [
+          "Avant de démarrer un trajet, il vaut mieux :",
+          [
+            "Préparer le GPS et les réglages nécessaires",
+            "Programmer son GPS au milieu d'un carrefour",
+            "Écrire des SMS"
+          ],
+          0,
+          "La préparation réduit les distractions pendant la conduite."
+        ]
+      ],
+      "route": {
+        "theme": "Attention",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "route-usagers",
+      "title": "Code de la route — piétons et cyclistes",
+      "domain": "Permis",
+      "level": "Entraînement non officiel",
+      "desc": "Réviser les situations : usagers vulnérables.",
+      "lesson": "Les piétons et cyclistes sont moins protégés en cas de choc. À l'approche d'un passage piéton, le conducteur surveille les personnes qui traversent ou manifestent l'intention de traverser et leur cède le passage selon les règles applicables. Avant un changement de direction ou l'ouverture d'une portière, il vérifie aussi la présence de cyclistes et de deux-roues.",
+      "source": "https://www.onisr.securite-routiere.gouv.fr/politique-de-securite-routiere/code-de-la-route",
+      "license": "Cours et QCM originaux Big Cthu, non officiels ; sources ONISR et Sécurité routière",
+      "questions": [
+        [
+          "À l'approche d'un passage piéton occupé, je dois :",
+          [
+            "Céder le passage au piéton",
+            "Accélérer pour passer avant lui",
+            "Faire signe au piéton de s'arrêter"
+          ],
+          0,
+          "Le piéton qui traverse est prioritaire."
+        ],
+        [
+          "Avant d'ouvrir ma portière côté circulation :",
+          [
+            "Je vérifie la présence de cyclistes et autres usagers",
+            "J'ouvre sans regarder",
+            "Je pousse la portière rapidement"
+          ],
+          0,
+          "L'ouverture d'une portière peut mettre un cycliste en danger."
+        ],
+        [
+          "Avant de tourner à droite en ville :",
+          [
+            "Je vérifie les angles morts et les usagers proches",
+            "Je regarde uniquement devant",
+            "Je m'en remets aux autres usagers"
+          ],
+          0,
+          "Des cyclistes ou piétons peuvent se trouver à proximité."
+        ]
+      ],
+      "route": {
+        "theme": "Usagers vulnérables",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "route-fatigue",
+      "title": "Code de la route — fatigue et vigilance",
+      "domain": "Permis",
+      "level": "Entraînement non officiel",
+      "desc": "Réviser les situations : vigilance.",
+      "lesson": "La fatigue réduit l'attention et augmente le risque de somnolence. Bâillements répétés, difficultés à garder les yeux ouverts ou changements de trajectoire sont des signaux d'alerte. La conduite doit alors être interrompue dès qu'un arrêt sûr est possible. Une vraie pause et le repos sont essentiels : ouvrir la fenêtre ou monter le son ne remplace pas le sommeil.",
+      "source": "https://www.onisr.securite-routiere.gouv.fr/politique-de-securite-routiere/code-de-la-route",
+      "license": "Cours et QCM originaux Big Cthu, non officiels ; sources ONISR et Sécurité routière",
+      "questions": [
+        [
+          "Je lutte pour garder les yeux ouverts en voiture :",
+          [
+            "Je m'arrête dès que possible en sécurité",
+            "Je monte la musique et continue coûte que coûte",
+            "J'accélère pour arriver plus vite"
+          ],
+          0,
+          "La somnolence impose de s'arrêter en sécurité."
+        ],
+        [
+          "Ouvrir la fenêtre remplace-t-il un vrai repos ?",
+          [
+            "Oui, systématiquement",
+            "Non",
+            "Seulement la nuit"
+          ],
+          1,
+          "La ventilation ne fait pas disparaître le manque de sommeil."
+        ],
+        [
+          "Une trajectoire qui dérive peut indiquer :",
+          [
+            "Un manque de vigilance",
+            "Que tout va bien",
+            "Une vitesse trop basse obligatoirement"
+          ],
+          0,
+          "La fatigue peut entraîner une perte de maîtrise."
+        ]
+      ],
+      "route": {
+        "theme": "Vigilance",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "route-ceinture",
+      "title": "Code de la route — protection des occupants",
+      "domain": "Permis",
+      "level": "Entraînement non officiel",
+      "desc": "Réviser les situations : protection.",
+      "lesson": "La ceinture de sécurité retient les occupants lors d'un choc. Conducteur et passagers doivent respecter les obligations de port de la ceinture, avec un dispositif adapté à la morphologie des enfants. Avant de partir, chacun vérifie sa ceinture et le bon positionnement de son siège. Les airbags complètent les protections mais ne remplacent pas la ceinture.",
+      "source": "https://www.onisr.securite-routiere.gouv.fr/politique-de-securite-routiere/code-de-la-route",
+      "license": "Cours et QCM originaux Big Cthu, non officiels ; sources ONISR et Sécurité routière",
+      "questions": [
+        [
+          "Un passager adulte assis à l'arrière doit généralement :",
+          [
+            "Attacher sa ceinture",
+            "La laisser libre",
+            "La porter seulement sur autoroute"
+          ],
+          0,
+          "Le port de la ceinture concerne les places équipées."
+        ],
+        [
+          "Un airbag :",
+          [
+            "Remplace toujours la ceinture",
+            "Complète la ceinture",
+            "Évite tout risque de blessure"
+          ],
+          1,
+          "L'airbag et la ceinture jouent des rôles complémentaires."
+        ],
+        [
+          "Pour un jeune enfant, on utilise :",
+          [
+            "Une retenue adaptée à son âge et à sa morphologie",
+            "La ceinture adulte à tout âge sans adaptation",
+            "Aucune retenue"
+          ],
+          0,
+          "Le système de retenue doit être adapté."
+        ]
+      ],
+      "route": {
+        "theme": "Protection",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "route-alcool",
+      "title": "Code de la route — alcool et substances",
+      "domain": "Permis",
+      "level": "Entraînement non officiel",
+      "desc": "Réviser les situations : risques.",
+      "lesson": "L'alcool et les substances psychoactives peuvent altérer la perception, le jugement et les réflexes. L'impression subjective de pouvoir conduire n'est pas une preuve d'aptitude. Le plus sûr reste de prévoir une personne sobre pour conduire ou un autre moyen de retour. Les règles légales et seuils peuvent évoluer : toujours consulter les sources officielles à jour.",
+      "source": "https://www.onisr.securite-routiere.gouv.fr/politique-de-securite-routiere/code-de-la-route",
+      "license": "Cours et QCM originaux Big Cthu, non officiels ; sources ONISR et Sécurité routière",
+      "questions": [
+        [
+          "Après avoir bu, je me sens très bien. Cela garantit-il mon aptitude ?",
+          [
+            "Oui",
+            "Non",
+            "Seulement si je connais la route"
+          ],
+          1,
+          "La sensation subjective ne suffit pas à évaluer les capacités."
+        ],
+        [
+          "Pour une soirée, une bonne décision est de :",
+          [
+            "Prévoir à l'avance un conducteur sobre",
+            "Choisir le conducteur le plus fatigué",
+            "Improviser après avoir bu"
+          ],
+          0,
+          "Anticiper le retour réduit le risque."
+        ],
+        [
+          "Les substances qui altèrent les réflexes peuvent :",
+          [
+            "Augmenter le risque d'accident",
+            "Améliorer toutes les réactions",
+            "Supprimer la nécessité de regarder"
+          ],
+          0,
+          "La vigilance et la prise de décision peuvent être diminuées."
+        ]
+      ],
+      "route": {
+        "theme": "Risques",
+        "reviewedAt": "2026-11-13",
+        "status": "initiation"
+      }
+    },
+    {
+      "id": "route-meteo",
+      "title": "Code de la route — pluie et visibilité",
+      "domain": "Permis",
+      "level": "Entraînement non officiel",
+      "desc": "Réviser les situations : météo.",
+      "lesson": "Pluie, brouillard, verglas et nuit modifient l'adhérence ou la visibilité. La conduite doit tenir compte de ces facteurs : réduire l'allure, anticiper, conserver une distance suffisante et employer un éclairage adapté selon la réglementation. Sur une chaussée glissante, les manœuvres brusques de freinage ou de volant augmentent le risque de perdre le contrôle.",
+      "source": "https://www.onisr.securite-routiere.gouv.fr/politique-de-securite-routiere/code-de-la-route",
+      "license": "Cours et QCM originaux Big Cthu, non officiels ; sources ONISR et Sécurité routière",
+      "questions": [
+        [
+          "En cas de brouillard dense, je dois surtout :",
+          [
+            "Adapter ma vitesse à la visibilité",
+            "Rouler à la limite maximale sans exception",
+            "Coller le véhicule devant"
+          ],
+          0,
+          "Le conducteur doit pouvoir réagir dans la zone visible."
+        ],
+        [
+          "Sur une chaussée verglacée, une conduite prudente consiste à :",
+          [
+            "Éviter les gestes brusques",
+            "Freiner brusquement à chaque virage",
+            "Accélérer franchement"
+          ],
+          0,
+          "La faible adhérence demande des actions progressives."
+        ],
+        [
+          "Quand il pleut, la distance d'arrêt peut :",
+          [
+            "Augmenter",
+            "Toujours diminuer",
+            "Ne jamais varier"
+          ],
+          0,
+          "L'adhérence peut être moins bonne, donc le freinage plus long."
+        ]
+      ],
+      "route": {
+        "theme": "Météo",
         "reviewedAt": "2026-11-13",
         "status": "initiation"
       }
