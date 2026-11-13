@@ -21,7 +21,7 @@ if (allowed.length !== assetNames.length + 1) {
   throw new Error('Big Cthu: duplicate paths in service worker assets');
 }
 for (const name of allowed) {
-  if (basename(name) !== name || !/^[a-z0-9][a-z0-9.-]*\.(?:html|js|svg|webmanifest)$/.test(name)) {
+  if (basename(name) !== name || !/^[a-z0-9][a-z0-9.-]*\.(?:html|js|svg|png|webmanifest)$/.test(name)) {
     throw new Error('Big Cthu: disallowed asset name: ' + name);
   }
 }
