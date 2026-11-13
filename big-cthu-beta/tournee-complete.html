@@ -1665,7 +1665,7 @@ function absenceRead(){
   const raw=TOUR_STORE.getItem(ABSENCE_KEY);
   const rows=raw?JSON.parse(raw):[];
   if(!Array.isArray(rows)||rows.length>500)throw Error('Journal invalide');
-  if(!rows.every(x=>x&&typeof x.id==='string'&&typeof x.patientId==='string'&&typeof x.day==='string'&&ABSENCE_REASONS.includes(x.reason)&&ABSENCE_STATES.includes(x.sync)&&Array.isArray(x.history)))throw Error('Journal invalide');
+  if(!rows.every(x=>x&&typeof x.id==='string'&&typeof x.patientId==='string'&&typeof x.day==='string'&&ABSENCE_REASONS.includes(x.reason)&&ABSENCE_STATES.includes(x.sync)&&Array.isArray(x.history)&&(x.cancelled===undefined||typeof x.cancelled==='boolean')))throw Error('Journal invalide');
   return rows;
  }catch(e){ap('ap-status').textContent='Journal illisible. Aucun élément n’a été écrasé. Conserve ton coffre.';return null}
 }
@@ -1689,16 +1689,58 @@ function absenceRender(){
  for(const x of filtered.slice().reverse()){
   const box=document.createElement('article');box.className='ap-entry';
   const title=document.createElement('strong');title.textContent=x.day+' · '+(names.get(x.patientId)||'Patient introuvable')+' · '+x.reason;box.append(title);
-  const note=document.createElement('p');note.textContent=x.note||'Sans observation';box.append(note);
+  const note=document.createElement('p');note.textContent=(x.cancelled?'[ANNULÉ] · ':'')+(x.note||'Sans observation');box.append(note);
   const label=document.createElement('label');label.textContent='État de rapprochement manuel';
   const state=document.createElement('select');state.setAttribute('aria-label','État pour '+x.day);
   for(const v of ABSENCE_STATES){const opt=document.createElement('option');opt.value=v;opt.textContent=v;state.append(opt)}
-  state.value=x.sync;state.addEventListener('change',()=>absenceUpdate(x.id,state.value));label.append(state);box.append(label);
+  state.value=x.sync;state.disabled=!!x.cancelled;state.addEventListener('change',()=>absenceUpdate(x.id,state.value));label.append(state);box.append(label);
+  if(!x.cancelled){
+   const edit=document.createElement('details'),editTitle=document.createElement('summary');editTitle.textContent='Corriger ou annuler ce signalement';edit.append(editTitle);
+   const dateInput=document.createElement('input');dateInput.type='date';dateInput.value=x.day;dateInput.setAttribute('aria-label','Date corrigée');
+   const reasonInput=document.createElement('select');reasonInput.setAttribute('aria-label','Motif corrigé');
+   for(const value of ABSENCE_REASONS){const o=document.createElement('option');o.value=value;o.textContent=value;reasonInput.append(o)}
+   reasonInput.value=x.reason;
+   const noteInput=document.createElement('input');noteInput.maxLength=200;noteInput.value=x.note||'';noteInput.setAttribute('aria-label','Observation corrigée');
+   const saveButton=document.createElement('button');saveButton.type='button';saveButton.textContent='Enregistrer la correction';
+   saveButton.addEventListener('click',()=>absenceCorrect(x.id,{day:dateInput.value,reason:reasonInput.value,note:noteInput.value.trim()}));
+   const cancelButton=document.createElement('button');cancelButton.type='button';cancelButton.textContent='Annuler ce signalement (historique conservé)';
+   cancelButton.addEventListener('click',()=>{if(confirm('Annuler ce signalement sans supprimer son historique ?'))absenceCancel(x.id)});
+   edit.append(dateInput,reasonInput,noteInput,saveButton,cancelButton);box.append(edit);
+  }
   const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='Historique ('+x.history.length+')';details.append(summary);
-  for(const item of x.history){const line=document.createElement('div');line.className='ap-history';line.textContent=item.at+' · '+item.action;details.append(line)}
+  for(const item of x.history){const line=document.createElement('div');line.className='ap-history';line.textContent=item.at+' · '+item.action+(item.before?' · Avant : '+JSON.stringify(item.before):'');details.append(line)}
   box.append(details);host.append(box);
  }
 }
+
+function absenceAmendRecord(event,change,at){
+ if(event.cancelled)throw Error('Signalement déjà annulé');
+ const note=typeof change.note==='string'?change.note.trim():'';
+ if(!absenceDateOK(change.day)||!ABSENCE_REASONS.includes(change.reason)||note.length>200)throw Error('Correction invalide');
+ if(event.day===change.day&&event.reason===change.reason&&event.note===note)return event;
+ const before={day:event.day,reason:event.reason,note:event.note||''};
+ const after={day:change.day,reason:change.reason,note};
+ return {...event,...after,history:[...event.history.slice(-48),{at,action:'Correction du signalement',before,after}]};
+}
+function absenceCancelRecord(event,at){
+ if(event.cancelled)return event;
+ return {...event,cancelled:true,sync:'Sans suite',history:[...event.history.slice(-48),{at,action:'Signalement annulé (historique conservé)'}]};
+}
+async function absenceCorrect(id,change){
+ const rows=absenceRead();if(!rows)return;
+ const current=rows.find(x=>x.id===id);if(!current)return;
+ let revised;
+ try{revised=absenceAmendRecord(current,change,new Date().toISOString())}catch(e){ap('ap-status').textContent=e.message;return}
+ if(revised===current)return;
+ await absenceSave(rows.map(x=>x.id===id?revised:x),rows);absenceRender();
+}
+async function absenceCancel(id){
+ const rows=absenceRead();if(!rows)return;
+ const current=rows.find(x=>x.id===id);if(!current||current.cancelled)return;
+ const revised=absenceCancelRecord(current,new Date().toISOString());
+ await absenceSave(rows.map(x=>x.id===id?revised:x),rows);absenceRender();
+}
+
 async function absenceSave(rows,previous){
  if(rows.length>500)throw Error('Limite de 500 événements atteinte');
  TOUR_STORE.setItem(ABSENCE_KEY,JSON.stringify(rows));
@@ -1712,13 +1754,13 @@ async function absenceSave(rows,previous){
 async function absenceUpdate(id,next){
  if(!ABSENCE_STATES.includes(next))return;
  const rows=absenceRead();if(!rows)return;
- const event=rows.find(x=>x.id===id);if(!event||event.sync===next)return;
+ const event=rows.find(x=>x.id===id);if(!event||event.cancelled||event.sync===next)return;
  const copy=rows.map(x=>x.id===id?{...x,sync:next,history:[...x.history.slice(-48),{at:new Date().toISOString(),action:'Rapprochement : '+next}]}:x);
  await absenceSave(copy,rows);absenceRender();
 }
 ap('tour-absence-open').addEventListener('click',()=>{
  ap('tour-absence-panel').hidden=false;
- ap('ap-day').value=new Date().toLocaleDateString('en-CA');
+ const now=new Date();ap('ap-day').value=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
  absenceRender();noteTourActivity();
 });
 ap('ap-close').addEventListener('click',()=>{ap('tour-absence-panel').hidden=true;noteTourActivity()});
