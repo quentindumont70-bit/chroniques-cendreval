@@ -413,7 +413,7 @@ test('Cockpit: accès rapides persistants et isolation des données métier', as
   const h=await boot('index.html');
   const key='big-cthu-v2-favorites-v1';
   assert.equal(h.get('favoriteLinks').children.length,3);
-  assert.equal(h.get('favoriteLinks').children[0].children[0].href,'./tournee.html');
+  assert.equal(h.get('favoriteLinks').children[0].children[0].href,'./tournee-complete.html');
   h.get('favoriteSelect').value='voyages';
   await h.get('favoriteAdd').fire('click');
   assert.deepEqual(JSON.parse(h.memory.get(key)),['tour','agenda','budget','voyages']);
@@ -440,8 +440,8 @@ test('Cockpit: échec de stockage conserve les favoris visibles', async () => {
 test('Tournée: les deux versions locales restent distinctes et sans promesse de synchronisation', async () => {
   const base=new URL('../big-cthu-beta/',import.meta.url);
   const [home,original,complete]=await Promise.all(['index.html','tournee.html','tournee-complete.html'].map(x=>readFile(new URL(x,base),'utf8')));
-  assert.match(home,/b\.href='\.\/tournee\.html'/);
-  assert.match(home,/\['tourfull','Tournée complète \(chiffrée\)','tournee-complete\.html'\]/);
+   assert.match(home,/b\.href='\.\/tournee-complete\.html'/);
+   assert.match(home,/\['tour','Tournée \(chiffrée\)','tournee-complete\.html'\]/);
   for(const code of [original,complete]){
     assert.match(code,/Aucune synchronisation automatique entre appareils/);
     assert.doesNotMatch(code,/se synchroniseront au retour du réseau/);
@@ -471,14 +471,15 @@ test('Coffre V25: sauvegarde les favoris, conserve les versions antérieures et 
  assert.doesNotMatch(html,/stage\(.*tidel_/);
 });
 
-test('Cockpit: Tournée a deux entrées explicites sans import de données au clic',async()=>{
+test('Cockpit: un accès principal sécurisé et une passerelle pour exporter l ancienne version',async()=>{
  const html=await readFile(new URL('../big-cthu-beta/index.html',import.meta.url),'utf8');
- const original=html.match(/<a href="\.\/tournee\.html" id="openTourneeCurrent">([\s\S]*?)<\/a>/);
+ const legacy=html.match(/<a href="\.\/tournee\.html" id="tourneeLegacyExport"[^>]*>([\s\S]*?)<\/a>/);
  const secure=html.match(/<a href="\.\/tournee-complete\.html" id="openTourneeSecure">([\s\S]*?)<\/a>/);
- assert.ok(original,'Tournée actuelle must have a direct link');
- assert.ok(secure,'Tournée chiffrée must have a separate direct link');
- assert.match(original[1],/Tournée actuelle/);
- assert.match(secure[1],/coffre local chiffré/);
- assert.match(html,/ni transfert ni synchronisation automatique/);
+ assert.ok(legacy,'Ancienne version accessible pour exporter');
+ assert.ok(secure,'Tournée chiffrée est le seul accès principal');
+ assert.doesNotMatch(html,/id="openTourneeCurrent"/);
+ assert.match(legacy[1],/exporter/);
+ assert.match(secure[1],/Version complète chiffrée/);
+ assert.match(html,/Aucun transfert automatique/);
  assert.doesNotMatch(html,/autoImportTournee|syncTourneePatients/);
 });
