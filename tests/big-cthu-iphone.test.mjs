@@ -40,14 +40,15 @@ test('iPhone: les principales tentacules portent le même manifeste et activent 
   assert.match(source,/src="\.\/mobile-boot\.js" defer/,page);
  }
  const boot=await read('mobile-boot.js');
- assert.match(boot,/serviceWorker\.register\('\.\/sw\.js'\)/);
+ assert.match(boot,/worker\.register\('\.\/sw\.js'\)/);
 });
 
 test('iPhone: le service worker contient les ressources publiques requises',async()=>{
  const sw=await read('sw.js');
  assert.match(sw,/public-v2-v57/);
  assert.match(sw,/ignoreSearch:true/);
- const names=[...sw.matchAll(/'\.\/([^']+)'/g)].map(x=>x[1]);
+ const assets=sw.match(/const ASSETS=\[([\s\S]*?)\];/)[1];
+ const names=[...assets.matchAll(/'\.\/([^']+)'/g)].map(x=>x[1]);
  assert.equal(names.length,new Set(names).size);
  for(const name of ['index.html','installation-iphone.html','mobile-boot.js','sauvegardes.html','voyages.html','cantine.html','manifest.webmanifest','icon.svg']){
   assert.ok(names.includes(name),name+' missing');
