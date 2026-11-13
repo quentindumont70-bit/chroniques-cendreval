@@ -5,12 +5,12 @@ import { runInNewContext } from 'node:vm';
 
 // Browser-less smoke tests for the public, dummy-data-only Big Cthu beta.
 // The fake localStorage deliberately throws to simulate a full/private browser.
-async function boot(page) {
+async function boot(page, initial = {}) {
   const html = await readFile(new URL('../big-cthu-beta/' + page, import.meta.url), 'utf8');
   const source = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
   assert.ok(source, page + ' must have a script');
   const nodes = new Map();
-  const memory = new Map();
+  const memory = new Map(Object.entries(initial));
   const alerts = [];
   let full = false, failedKey = null, seq = 0;
   const windowEvents = {}, navigator = { onLine: true };
@@ -36,6 +36,7 @@ async function boot(page) {
     createElement: node,
     getElementById: get,
     querySelector: (s) => get(s.startsWith('#') ? s.slice(1) : s),
+    querySelectorAll() { return []; },
     addEventListener() {},
   };
   get('filter').value = 'all';
@@ -323,4 +324,65 @@ test('Dépenses Maison: do not alter the ledger if a write is refused', async ()
   await card.children.at(-1).fire('click');
   assert.equal(JSON.parse(d.memory.get(key)).length, 1);
   assert.ok(d.alerts.length >= 2);
+});
+
+test('Registre Maison: preserve records after quota errors and deduplicate historical IDs', async () => {
+  const key = 'big-cthu-v2-house-register-v1';
+  const old = { id: 'existing', kind: 'history', title: 'Travaux antérieurs', category: 'Maison', note: '', reference: '', unit: '', date: '2026-10-01', cost: 50, reading: 0 };
+  const m = await boot('registre-maison.html', { [key]: JSON.stringify([old]) });
+  assert.equal(m.get('list').children.length, 1);
+  const del = m.get('list').children[0].children.at(-1);
+  m.setFull(true);
+  await del.fire('click');
+  assert.equal(JSON.parse(m.memory.get(key)).length, 1);
+  m.setFull(false);
+  const file = { size: 300, text: async () => JSON.stringify({ hist: [
+    { id: 'repeat', type: 'Toiture', date: '2026-10-01', cout: 12 },
+    { id: 'repeat', type: 'Toiture', date: '2026-10-01', cout: 12 },
+  ] }) };
+  await m.get('file').fire('change', { target: { files: [file] } });
+  assert.match(m.get('preview').textContent, /1 nouvelle/);
+  assert.ok(m.alerts.length >= 1);
+});
+
+test('Contrats: reject phantom add/delete when storage is full', async () => {
+  const c = await boot('contrats.html');
+  const key = 'big-cthu-v2-contracts-v1';
+  c.get('title').value = 'Contrat fictif';
+  c.get('category').value = 'Assurance';
+  c.get('provider').value = '';
+  c.get('due').value = '2026-12-01';
+  c.get('amount').value = '35';
+  c.get('status').value = 'Actif';
+  c.get('notes').value = '';
+  c.setFull(true);
+  await c.get('form').fire('submit');
+  assert.equal(c.memory.has(key), false);
+  c.setFull(false);
+  await c.get('form').fire('submit');
+  assert.equal(JSON.parse(c.memory.get(key)).length, 1);
+  c.setFull(true);
+  await c.get('list').children[0].children.at(-1).fire('click');
+  assert.equal(JSON.parse(c.memory.get(key)).length, 1);
+  assert.ok(c.alerts.length >= 2);
+});
+
+test('Consommations: cannot lose a meter reading on failed local write', async () => {
+  const c = await boot('consommations.html');
+  const key = 'big-cthu-v2-meter-trends-v1';
+  c.get('meter').value = 'Électricité';
+  c.get('date').value = '2026-12-01';
+  c.get('reading').value = '234';
+  c.get('unit').value = 'kWh';
+  c.get('note').value = '';
+  c.setFull(true);
+  await c.get('form').fire('submit');
+  assert.equal(c.memory.has(key), false);
+  c.setFull(false);
+  await c.get('form').fire('submit');
+  assert.equal(JSON.parse(c.memory.get(key)).length, 1);
+  c.setFull(true);
+  await c.get('list').children[0].children.at(-1).fire('click');
+  assert.equal(JSON.parse(c.memory.get(key)).length, 1);
+  assert.ok(c.alerts.length >= 2);
 });
