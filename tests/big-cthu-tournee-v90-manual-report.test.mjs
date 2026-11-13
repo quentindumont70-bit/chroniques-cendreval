@@ -35,8 +35,8 @@ test('V90: regroupement journalier et semaines commençant le lundi en UTC',asyn
  assert.equal(context.week('2026-11-16'),'2026-11-16');
  assert.equal(context.week('mauvais'), '');
  const grouped=context.report(rows);
- assert.deepEqual(grouped.daily.map(([date,value])=>[date,value.total]),[['2026-11-09',1],['2026-11-10',2],['2026-11-17',1]]);
- assert.deepEqual(grouped.weekly.map(([date,value])=>[date,value.total]),[['2026-11-09',3],['2026-11-16',1]]);
+ assert.deepEqual(JSON.parse(JSON.stringify(grouped.daily.map(([date,value])=>[date,value.total]))),[['2026-11-09',1],['2026-11-10',2],['2026-11-17',1]]);
+ assert.deepEqual(JSON.parse(JSON.stringify(grouped.weekly.map(([date,value])=>[date,value.total]))),[['2026-11-09',3],['2026-11-16',1]]);
  assert.equal(grouped.weekly[0][1].toReview,2);
  assert.equal(grouped.daily[1][1].reasons['Soin non réalisé'],1);
 });
