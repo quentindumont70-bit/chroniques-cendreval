@@ -15,6 +15,7 @@ async function fixture(){
   ap:id=>elements[id],
   absenceQuickRange:(today,mode)=>mode==='review'?{from:'',to:''}:{from:today,to:today},
   absenceRender:()=>{renders++},
+  absenceFiltersChanged:()=>{renders++},
   noteTourActivity:()=>{activities++}
  };
  runInNewContext(html.slice(begin,end)+'\nthis.quickSet=absenceSetQuickRange;',ctx,{timeout:1000});
