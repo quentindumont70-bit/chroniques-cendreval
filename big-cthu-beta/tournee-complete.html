@@ -496,7 +496,7 @@ body.tournee-locked #tour-save-strip{display:none}
 <button type="submit">Enregistrer au coffre</button>
 </form>
 <h3>Historique et filtres</h3>
-<div class="ap-shortcuts" id="ap-shortcuts" role="group" aria-label="Période du journal"><button type="button" id="ap-today">Aujourd’hui</button><button type="button" id="ap-week">Cette semaine</button><button type="button" id="ap-review">À rapprocher (0)</button><button type="button" id="ap-clear">Effacer les filtres</button></div>
+<div class="ap-shortcuts" id="ap-shortcuts" role="group" aria-label="Période du journal"><button type="button" id="ap-today">Aujourd’hui</button><button type="button" id="ap-week">Cette semaine</button><button type="button" id="ap-7days">7 derniers jours</button><button type="button" id="ap-30days">30 derniers jours</button><button type="button" id="ap-review">À rapprocher (0)</button><button type="button" id="ap-clear">Effacer les filtres</button></div>
 <div class="ap-grid">
 <label>Du<input id="ap-from" type="date"></label><label>Au<input id="ap-to" type="date"></label>
 <label>Motif<select id="ap-filter-reason"><option value="">Tous les motifs</option><option>Patient absent</option><option>Soin non réalisé</option><option>Horaire modifié</option><option>Autre</option></select></label>
@@ -1943,6 +1943,11 @@ function absenceWeekStart(day){
 function absenceQuickRange(today,mode){
  if(!absenceDateOK(today))return {from:'',to:''};
  if(mode==='today')return {from:today,to:today};
+ if(mode==='7days'||mode==='30days'){
+  const first=new Date(today+'T12:00:00Z');
+  first.setUTCDate(first.getUTCDate()-(mode==='7days'?6:29));
+  return {from:first.toISOString().slice(0,10),to:today};
+ }
  if(mode==='week'){
   const from=absenceWeekStart(today),sunday=new Date(from+'T12:00:00Z');
   sunday.setUTCDate(sunday.getUTCDate()+6);
@@ -2144,7 +2149,7 @@ function absenceSetQuickRange(mode){
  }
  absenceFiltersChanged();noteTourActivity();
 }
-for(const [button,mode] of [['ap-today','today'],['ap-week','week'],['ap-review','review'],['ap-clear','clear']]){
+for(const [button,mode] of [['ap-today','today'],['ap-week','week'],['ap-7days','7days'],['ap-30days','30days'],['ap-review','review'],['ap-clear','clear']]){
  ap(button).addEventListener('click',()=>absenceSetQuickRange(mode));
 }
 ap('ap-copy-summary').addEventListener('click',async()=>{
