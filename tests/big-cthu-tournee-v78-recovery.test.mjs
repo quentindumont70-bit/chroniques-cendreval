@@ -53,3 +53,28 @@ test('V78: refus de migration automatique sur coffre existant',async()=>{
  assert.match(html,/if\(!full\)\{secureGen\+\+;await flush\(\)\}launch\(\)/);
  assert.match(html,/await flush\(\);location\.reload\(\)/);
 });
+
+
+test('V84: journal Absences partage le même coffre et survit au redémarrage iPhone',async()=>{
+ const {encrypt,decrypt}=await cryptoFixture();
+ const entries=[{
+  id:'fictif-change-1',patientId:'fiction-a',day:'2026-11-13',
+  reason:'Patient absent',note:'Test fictif',sync:'À rapprocher',
+  history:[{at:'2026-11-13T18:00:00.000Z',action:'Signalement fictif'}]
+ }];
+ const original={...dummy(),tidel_absences_journal_v1:JSON.stringify(entries)};
+ const record=await encrypt(original,phrase);
+ assert.doesNotMatch(record,/Patient absent|Test fictif|fiction-a/,'no plaintext in encrypted record');
+ const restored=await decrypt(record,phrase);
+ assert.equal(restored.tidel_Pl,original.tidel_Pl);
+ assert.deepEqual(JSON.parse(restored.tidel_absences_journal_v1),entries);
+ await assert.rejects(decrypt(record,phrase+'-wrong'));
+});
+
+test('V84: reprise via pageshow ou focus contrôle immédiatement la session sans extension du délai',async()=>{
+ const {html}=await cryptoFixture();
+ assert.match(html,/window\.addEventListener\('pageshow',\(\)=>\{if\(secureBooted\)checkTourIdle\(\)\}\)/);
+ assert.match(html,/window\.addEventListener\('focus',\(\)=>\{if\(secureBooted\)checkTourIdle\(\)\}\)/);
+ assert.match(html,/if\(elapsed>=IDLE_LOCK_MS\)\{lockTourSafely\(\);return\}/);
+ assert.match(html,/if\(document\.hidden\)saveIfPending\(\);else checkTourIdle\(\)/);
+});
