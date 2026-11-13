@@ -92,7 +92,7 @@ test('V94: accès direct et récupération volontaire accessibles sans écran de
 
 test('V95: sauvegarde JSON complète sans code conserve journal et suivi fictifs',async()=>{
  const f=await fixture();
- const state={tidel_Pl:JSON.stringify([{id:'fictif-1',n:'EXEMPLE FICTIF',a:'Rue imaginaire'}]),tidel_absences_journal_v1:JSON.stringify([{id:'evt-fictif',reason:'Patient absent'}]),tidel_done_2026_11_13:'["fictif-1"]'};
+ const state={tidel_Pl:JSON.stringify([{id:'fictif-1',n:'EXEMPLE FICTIF',a:'Rue imaginaire'}]),tidel_absences_journal_v1:JSON.stringify([{id:'evt-fictif',patientId:'fictif-1',day:'2026-11-13',reason:'Patient absent',sync:'À rapprocher',history:[{at:'2026-11-13T09:00:00Z',action:'Signalement fictif'}]}]),tidel_done_2026_11_13:'["fictif-1"]'};
  const file=f.ctx.serializePortable(state);
  assert.match(file,/bigcthu-tournee-complete-portable-v1/);
  assert.match(file,/evt-fictif/,'portable export is deliberately readable, warn the user');
