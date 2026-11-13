@@ -51,6 +51,28 @@ function splitPercentages(amount,values){
  for(let i=0;i<leftover;i++)result[parts[i].person]++;
  return result;
 }
+function logAccountChange(trip,event){
+ const existing=trip.accountHistory||[];
+ if(!Array.isArray(existing)||existing.length>=500)throw Error('Historique plein : exporte ton Coffre avant de poursuivre');
+ return {...trip,accountHistory:[...existing,{...event,at:new Date().toISOString()}]};
+}
+function removeExpenseWithHistory(trip,id){
+ const x=trip?.expenses?.find(e=>e.id===id);
+ if(!x)throw Error('Dépense introuvable');
+ const next={...trip,expenses:trip.expenses.filter(e=>e.id!==id)};
+ return logAccountChange(next,{type:'expense-delete',expenseId:id,before:x.title,after:'',cents:x.cents});
+}
+function addReimbursementWithHistory(trip,record){
+ if(!record||!Number.isSafeInteger(record.cents)||record.cents<=0||!(trip.people||[]).includes(record.from)||!(trip.people||[]).includes(record.to)||record.from===record.to)throw Error('Remboursement invalide');
+ const next={...trip,reimbursements:[...(trip.reimbursements||[]),record]};
+ return logAccountChange(next,{type:'reimbursement-add',expenseId:record.id,before:record.from,after:record.to,cents:record.cents});
+}
+function removeReimbursementWithHistory(trip,id){
+ const record=(trip.reimbursements||[]).find(x=>x.id===id);
+ if(!record)throw Error('Remboursement introuvable');
+ const next={...trip,reimbursements:trip.reimbursements.filter(x=>x.id!==id)};
+ return logAccountChange(next,{type:'reimbursement-cancel',expenseId:id,before:record.from,after:record.to,cents:record.cents});
+}
 function updateExpenseDetails(trip,id,title,date){
  const name=String(title??'').trim();
  if(!name||name.length>90)throw Error('Libellé invalide');
@@ -58,7 +80,9 @@ function updateExpenseDetails(trip,id,title,date){
  if(day&&!/^\d{4}-\d{2}-\d{2}$/.test(day))throw Error('Date invalide');
  if(day&&new Date(day+'T12:00:00Z').toISOString().slice(0,10)!==day)throw Error('Date invalide');
  if(!trip?.expenses?.some(x=>x.id===id))throw Error('Dépense introuvable');
- return {...trip,expenses:trip.expenses.map(x=>x.id===id?{...x,title:name,date:day}:x)};
+ const previous=trip.expenses.find(x=>x.id===id);
+ if(previous.title===name&&(previous.date||'')===day)return trip;
+ return logAccountChange({...trip,expenses:trip.expenses.map(x=>x.id===id?{...x,title:name,date:day}:x)},{type:'expense-edit',expenseId:id,before:previous.title+' · '+(previous.date||'sans date'),after:name+' · '+(day||'sans date'),cents:previous.cents});
 }
 function balances(trip){
  const people=trip?.people||[];
@@ -155,7 +179,7 @@ function windowForTrip(start,end,today){
  const startToday=new Date(today+'T12:00:00Z'),last=new Date(startToday.getTime()+15*86400000).toISOString().slice(0,10);
  return {available:start<=last&&end>=today,from:start<today?today:start,to:end>last?last:end,complete:start>=today&&end<=last,horizon:last};
 }
-const api={cents,budgetProgress,updateExpenseDetails,packingChecklist,packingText,splitEqual,splitAmounts,splitPercentages,balances,transfers,exportTripCsv,packing,windowForTrip};
+const api={logAccountChange,removeExpenseWithHistory,addReimbursementWithHistory,removeReimbursementWithHistory,cents,budgetProgress,updateExpenseDetails,packingChecklist,packingText,splitEqual,splitAmounts,splitPercentages,balances,transfers,exportTripCsv,packing,windowForTrip};
 if(typeof module==='object'&&module.exports)module.exports=api;
 else root.BigCthuVoyages=api;
 })(typeof window!=='undefined'?window:{});

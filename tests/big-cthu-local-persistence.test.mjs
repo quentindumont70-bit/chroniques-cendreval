@@ -461,12 +461,12 @@ test('Coffre V25: compte les favoris du cockpit sans accéder aux données Tourn
 });
 test('Coffre V25: sauvegarde les favoris, conserve les versions antérieures et protège la restauration',async()=>{
  const html=await readFile(new URL('../big-cthu-beta/sauvegardes.html',import.meta.url),'utf8');
- assert.match(html,/Schéma V25/);
- assert.match(html,/version:25/);
+ assert.match(html,/Schéma V26/);
+ assert.match(html,/version:26/);
  assert.match(html,/if\(data.version>=25\)/);
  assert.match(html,/validFavorites\(data.favorites\)/);
  assert.match(html,/data.favorites=readFavorites\(\)/);
  assert.match(html,/stage\(FAVORITES,staged.favorites\)/);
- assert.match(html,/20,21,22,23,24,25/);
+ assert.match(html,/20,21,22,23,24,25,26/);
  assert.doesNotMatch(html,/stage\(.*tidel_/);
 });
