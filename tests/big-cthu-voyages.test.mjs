@@ -54,3 +54,35 @@ test('Voyages: tous les fichiers déclarés dans le cache public existent et son
  assert.match(page,/geocoding-api\.open-meteo\.com/);
  assert.match(page,/forecast_days:'16'/);
 });
+
+test('Voyages: parts en euros exactes et refus des erreurs de saisie',()=>{
+ assert.deepEqual({...C.splitAmounts(1550,{Alice:'10,00',Bob:'5.50'})},{Alice:1000,Bob:550});
+ assert.throws(()=>C.splitAmounts(1550,{Alice:'10',Bob:'5.49'}),/égal/);
+ assert.throws(()=>C.splitAmounts(1550,{Alice:'10.999',Bob:'4.501'}));
+ assert.throws(()=>C.splitAmounts(1550,{Alice:'10',Bob:'-5'}));
+});
+test('Voyages: pourcentages précis avec centimes arrondis sans perte',()=>{
+ assert.deepEqual({...C.splitPercentages(100,{Alice:'33.33',Bob:'33.33',Chloe:'33.34'})},{Alice:33,Bob:33,Chloe:34});
+ assert.deepEqual({...C.splitPercentages(1,{Alice:'50',Bob:'50'})},{Alice:1,Bob:0});
+ assert.throws(()=>C.splitPercentages(100,{Alice:'49.99',Bob:'50'}),/100 %/);
+ assert.throws(()=>C.splitPercentages(100,{Alice:'50',Bob:'55'}),/100 %/);
+});
+test('Voyages: remboursements partiels ne modifient pas les dépenses du séjour',()=>{
+ const trip={people:['Alice','Bob'],expenses:[{cents:3000,payer:'Alice',shares:{Alice:1500,Bob:1500}}],reimbursements:[{id:'r1',from:'Bob',to:'Alice',cents:600}]};
+ assert.deepEqual({...C.balances(trip)},{Alice:900,Bob:-900});
+ assert.deepEqual(JSON.parse(JSON.stringify(C.transfers(C.balances(trip)))),[{from:'Bob',to:'Alice',cents:900}]);
+ assert.equal(trip.expenses.length,1);
+ assert.equal(C.balances({...trip,reimbursements:[]}).Alice,1500);
+ assert.throws(()=>C.balances({...trip,reimbursements:[{from:'Chloe',to:'Alice',cents:600}]}),/Remboursement/);
+});
+test('Voyages: nouvelle interface étapes et paiements reste liée au coffre',async()=>{
+ const root=new URL('../big-cthu-beta/',import.meta.url);
+ const [page,backup,sw]=await Promise.all(['voyages.html','sauvegardes.html','sw.js'].map(f=>readFile(new URL(f,root),'utf8')));
+ for(const id of ['splitMode','beneficiaries','reimbursements','stepForm','steps']){
+   assert.match(page,new RegExp('id="'+id+'"'));
+ }
+ assert.match(backup,/Schéma V21/);
+ assert.match(backup,/if\(t\.steps!==undefined/);
+ assert.match(backup,/if\(t\.reimbursements!==undefined/);
+ assert.match(sw,/voyages-core\.js/);
+});

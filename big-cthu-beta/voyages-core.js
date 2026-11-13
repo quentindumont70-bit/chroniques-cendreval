@@ -15,6 +15,35 @@ function splitEqual(amount,people){
  const quotient=Math.floor(amount/people.length),extra=amount%people.length;
  return Object.fromEntries(people.map((p,i)=>[p,quotient+(i<extra?1:0)]));
 }
+function splitAmounts(amount,values){
+ if(!Number.isSafeInteger(amount)||amount<=0||!values||typeof values!=='object'||Array.isArray(values)||!Object.keys(values).length)throw Error('Parts invalides');
+ const result={};
+ for(const [person,value] of Object.entries(values)){
+  const str=String(value).trim().replace(',','.');
+  if(!/^\d{1,9}(?:\.\d{1,2})?$/.test(str))throw Error('Montant incorrect pour '+person);
+  const [euros,sub='']=str.split('.');
+  result[person]=Number(euros)*100+Number(sub.padEnd(2,'0'));
+ }
+ if(Object.values(result).reduce((a,b)=>a+b,0)!==amount)throw Error('La somme des parts doit égaler la dépense');
+ return result;
+}
+function splitPercentages(amount,values){
+ if(!Number.isSafeInteger(amount)||amount<=0||!values||typeof values!=='object'||Array.isArray(values)||!Object.keys(values).length)throw Error('Pourcentages invalides');
+ const parts=Object.entries(values).map(([person,value],i)=>{
+  const str=String(value).trim().replace(',','.');
+  if(!/^\d{1,3}(?:\.\d{1,2})?$/.test(str))throw Error('Pourcentage incorrect pour '+person);
+  const [unit,decimal='']=str.split('.');
+  const basis=Number(unit)*100+Number(decimal.padEnd(2,'0'));
+  if(basis>10000)throw Error('Pourcentage supérieur à 100 %');
+  return {person,basis,index:i,exact:amount*basis/10000};
+ });
+ if(parts.reduce((n,p)=>n+p.basis,0)!==10000)throw Error('La somme des pourcentages doit faire 100 %');
+ const result=Object.fromEntries(parts.map(p=>[p.person,Math.floor(p.exact)]));
+ const leftover=amount-Object.values(result).reduce((a,b)=>a+b,0);
+ parts.sort((a,b)=>(b.exact-Math.floor(b.exact))-(a.exact-Math.floor(a.exact))||a.index-b.index);
+ for(let i=0;i<leftover;i++)result[parts[i].person]++;
+ return result;
+}
 function balances(trip){
  const people=trip?.people||[];
  if(!Array.isArray(people)||new Set(people).size!==people.length||!people.every(p=>typeof p==='string'&&p.length>0))throw Error('Participants invalides');
@@ -25,6 +54,11 @@ function balances(trip){
   if(Object.keys(shares).some(p=>!Object.hasOwn(result,p))||Object.values(shares).some(v=>!Number.isSafeInteger(v)||v<0)||Object.values(shares).reduce((a,v)=>a+v,0)!==x.cents)throw Error('Parts incorrectes');
   result[x.payer]+=x.cents;
   for(const [p,v] of Object.entries(shares))result[p]-=v;
+ }
+ for(const payment of trip.reimbursements||[]){
+  if(!payment||!Number.isSafeInteger(payment.cents)||payment.cents<=0||payment.cents>MAX||!Object.hasOwn(result,payment.from)||!Object.hasOwn(result,payment.to)||payment.from===payment.to)throw Error('Remboursement invalide');
+  result[payment.from]+=payment.cents;
+  result[payment.to]-=payment.cents;
  }
  if(Object.values(result).reduce((a,v)=>a+v,0)!==0)throw Error('Soldes incohérents');
  return result;
@@ -61,7 +95,7 @@ function windowForTrip(start,end,today){
  const startToday=new Date(today+'T12:00:00Z'),last=new Date(startToday.getTime()+15*86400000).toISOString().slice(0,10);
  return {available:start<=last&&end>=today,from:start<today?today:start,to:end>last?last:end,complete:start>=today&&end<=last,horizon:last};
 }
-const api={cents,splitEqual,balances,transfers,packing,windowForTrip};
+const api={cents,splitEqual,splitAmounts,splitPercentages,balances,transfers,packing,windowForTrip};
 if(typeof module==='object'&&module.exports)module.exports=api;
 else root.BigCthuVoyages=api;
 })(typeof window!=='undefined'?window:{});
