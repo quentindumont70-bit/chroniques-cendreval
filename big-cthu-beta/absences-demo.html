@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#211b36">
+<title>Absences & modifications · Démonstration fictive</title>
+<style>
+:root{color-scheme:dark;font:16px/1.5 system-ui,-apple-system,sans-serif;background:#100e22;color:#f5efff}
+*{box-sizing:border-box}body{margin:0}main{max-width:920px;margin:auto;padding:20px 15px 75px}a{color:#b4f1e5}
+h1{font-size:clamp(26px,5vw,38px);line-height:1.15}h2{font-size:20px}
+.notice{padding:15px;border:1px solid #bb8e5a;border-radius:14px;background:#382b27;color:#ffe5be;margin:20px 0}
+.card{background:#211b36;border:1px solid #554971;border-radius:16px;padding:16px;margin:13px 0}
+.filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+label{display:block;font-size:13px;font-weight:700}input,select{width:100%;min-height:44px;margin-top:5px;background:#130f23;color:#fff;border:1px solid #8879ab;border-radius:9px;padding:9px;font:inherit}
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.stat{background:#2d2642;padding:12px;border-radius:10px;text-align:center}.stat b{display:block;font-size:23px}
+.item{border-top:1px solid #54476b;padding:13px 0}.item:first-child{border-top:0}
+.top{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap}.pill{font-size:12px;background:#294943;color:#e0fff8;padding:4px 9px;border-radius:999px}
+summary{cursor:pointer;min-height:40px;padding:8px 0}
+button{min-height:44px;border-radius:10px;border:1px solid #7463a4;background:#393052;color:#fff;padding:9px 13px;font:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #c7ffeb;outline-offset:2px}
+small{color:#cfc3e0}
+@media(max-width:690px){.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style></head>
+<body><main><a href="./index.html">← Big Cthu</a>
+<h1>Absences & modifications</h1>
+<p>Démonstration des filtres, du récapitulatif et de l'historique, avant intégration à Tournée.</p>
+<div class="notice" role="alert"><strong>BAC À SABLE — DONNÉES 100 % FICTIVES</strong><div>Aucun dossier patient, aucune importation, aucune écriture locale, aucune synchronisation avec Topaze. Les statuts sont de simples exemples et ne reflètent pas une facturation réelle.</div></div>
+<section class="card" aria-label="Filtres"><h2>Filtrer les modifications</h2><div class="filters">
+<label for="from">Du <input id="from" type="date"></label>
+<label for="to">Au <input id="to" type="date"></label>
+<label for="reason">Motif <select id="reason"><option value="">Tous les motifs</option></select></label>
+<label for="sync">Rapprochement <select id="sync"><option value="">Tous les états</option></select></label>
+</div><div style="margin-top:12px"><button id="reset" type="button">Réinitialiser les filtres</button></div></section>
+<section class="card"><h2>Récapitulatif fictif</h2><div class="stats" id="stats" aria-live="polite"></div></section>
+<section class="card"><h2>Historique fictif</h2><p id="count" aria-live="polite"></p><div id="events"></div></section>
+<p><small>Prototype autonome : les événements affichés sont intégrés au code source de démonstration et ne sont jamais enregistrés. L'étape suivante sera une spécification de rapprochement avec Topaze, sans accès automatique à de vrais dossiers.</small></p>
+</main>
+<script type="module">
+import {SAMPLE_CHANGES,REASONS,SYNC_STATES,filterChanges,summary} from './absences-demo-core.js';
+const $=id=>document.getElementById(id);
+for(const [id,values] of [['reason',REASONS],['sync',SYNC_STATES]])for(const value of values){const o=document.createElement('option');o.value=value;o.textContent=value;$(id).append(o)}
+function element(tag,content,className){const el=document.createElement(tag);el.textContent=content;if(className)el.className=className;return el}
+function render(){
+ const rows=filterChanges(SAMPLE_CHANGES,{from:$('from').value,to:$('to').value,reason:$('reason').value,sync:$('sync').value});
+ const t=summary(rows);$('stats').replaceChildren();
+ for(const [title,value] of [['Événements',t.total],['Absences',t.absences],['Soins non réalisés',t.soins],['Horaires modifiés',t.horaires],['À rapprocher',t.aRapprocher]]){const c=element('div','', 'stat');c.append(element('b',String(value)),element('small',title));$('stats').append(c)}
+ $('count').textContent=rows.length+' événement(s) fictif(s)';$('events').replaceChildren();
+ if(!rows.length)$('events').append(element('p','Aucun exemple dans cette sélection.'));
+ for(const row of rows){const article=element('article','', 'item');const top=element('div','', 'top');top.append(element('strong',row.alias+' · '+row.day),element('span',row.sync,'pill'));article.append(top,element('p',row.reason+' — '+row.note));const details=element('details','');details.append(element('summary','Historique ('+row.history.length+')'));for(const h of row.history)details.append(element('div',h.at+' · '+h.action));article.append(details);$('events').append(article)}
+}
+for(const id of ['from','to','reason','sync'])$(id).addEventListener('change',render);
+$('reset').addEventListener('click',()=>{for(const id of ['from','to','reason','sync'])$(id).value='';render()});
+render();
+</script></body></html>
