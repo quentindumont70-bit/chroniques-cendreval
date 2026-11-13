@@ -10,6 +10,13 @@ function cents(value){
   if(!Number.isSafeInteger(n)||n<=0||n>MAX)throw Error('Montant hors limites');
   return n;
 }
+function budgetProgress(trip){
+ const budget=trip.budgetCents??0;
+ if(!Number.isSafeInteger(budget)||budget<0||budget>100000000)throw Error('Budget prévisionnel invalide');
+ const spent=(trip.expenses||[]).reduce((sum,x)=>sum+x.cents,0);
+ if(!Number.isSafeInteger(spent)||spent<0)throw Error('Dépenses incohérentes');
+ return {budget,spent,remaining:budget-spent,percent:budget>0?Math.round(spent*100/budget):null};
+}
 function splitEqual(amount,people){
  if(!Number.isSafeInteger(amount)||amount<=0||!Array.isArray(people)||!people.length||new Set(people).size!==people.length)throw Error('Répartition invalide');
  const quotient=Math.floor(amount/people.length),extra=amount%people.length;
@@ -122,7 +129,7 @@ function windowForTrip(start,end,today){
  const startToday=new Date(today+'T12:00:00Z'),last=new Date(startToday.getTime()+15*86400000).toISOString().slice(0,10);
  return {available:start<=last&&end>=today,from:start<today?today:start,to:end>last?last:end,complete:start>=today&&end<=last,horizon:last};
 }
-const api={cents,splitEqual,splitAmounts,splitPercentages,balances,transfers,exportTripCsv,packing,windowForTrip};
+const api={cents,budgetProgress,splitEqual,splitAmounts,splitPercentages,balances,transfers,exportTripCsv,packing,windowForTrip};
 if(typeof module==='object'&&module.exports)module.exports=api;
 else root.BigCthuVoyages=api;
 })(typeof window!=='undefined'?window:{});

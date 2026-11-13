@@ -81,7 +81,7 @@ test('Voyages: nouvelle interface étapes et paiements reste liée au coffre',as
  for(const id of ['splitMode','beneficiaries','reimbursements','stepForm','steps']){
    assert.match(page,new RegExp('id="'+id+'"'));
  }
- assert.match(backup,/Schéma V23/);
+ assert.match(backup,/Schéma V24/);
  assert.match(backup,/if\(t\.steps!==undefined/);
  assert.match(backup,/if\(t\.reimbursements!==undefined/);
  assert.match(sw,/voyages-core\.js/);
@@ -110,7 +110,7 @@ test('Voyages: valises personnalisées et migration Coffre présentes dans la b�
  assert.match(page,/packedByPerson/);
  assert.match(backup,/t\.packedByPerson!==undefined/);
  assert.match(backup,/t\.activities!==undefined/);
- assert.match(backup,/Schéma V23/);
+ assert.match(backup,/Schéma V24/);
  assert.match(sw,/const CACHE='big-cthu-public-v2-v\d+'/);
 });
 
@@ -136,6 +136,24 @@ test('Voyages: la page conserve les dates facultatives et un export CSV local',a
  assert.match(page,/id="expenseDate"/);
  assert.match(page,/id="exportTrip"/);
  assert.match(page,/String\.fromCharCode\(0xFEFF\)/);
- assert.match(backup,/Schéma V23/);
+ assert.match(backup,/Schéma V24/);
  assert.match(backup,/p\.date===undefined\|\|travelDate\(p\.date\)/);
+});
+
+test('Voyages: budget propre au séjour et progression sans compter deux fois les remboursements',()=>{
+ const trip={people:['Alice','Bob'],budgetCents:10000,expenses:[{id:'test',cents:12500,payer:'Alice',shares:{Alice:6250,Bob:6250}}],reimbursements:[{id:'rep',from:'Bob',to:'Alice',cents:2000}]};
+ assert.deepEqual({...C.budgetProgress(trip)},{budget:10000,spent:12500,remaining:-2500,percent:125});
+ assert.deepEqual({...C.budgetProgress({...trip,budgetCents:0})},{budget:0,spent:12500,remaining:-12500,percent:null});
+ assert.deepEqual({...C.budgetProgress({...trip,expenses:[]})},{budget:10000,spent:0,remaining:10000,percent:0});
+ assert.throws(()=>C.budgetProgress({...trip,budgetCents:-1}),/Budget/);
+});
+test('Voyages: formulaire du budget et Coffre V24 compatibles avec les anciens séjours',async()=>{
+ const base=new URL('../big-cthu-beta/',import.meta.url);
+ const [page,backup]=await Promise.all(['voyages.html','sauvegardes.html'].map(x=>readFile(new URL(x,base),'utf8')));
+ assert.match(page,/id="tripBudgetForm"/);
+ assert.match(page,/id="tripBudgetStatus"/);
+ assert.match(page,/budgetCents:0/);
+ assert.match(backup,/Schéma V24/);
+ assert.match(backup,/t\.budgetCents!==undefined/);
+ assert.match(backup,/20,21,22,23,24/);
 });
