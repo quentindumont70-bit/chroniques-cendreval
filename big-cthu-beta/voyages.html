@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#100e22"><title>Voyages · Big Cthu</title>
+<style>
+:root{font-family:system-ui,sans-serif;background:#100e22;color:#f8f4ff;color-scheme:dark}*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top right,#292c65,transparent 40%),#100e22}
+main{max-width:1150px;margin:auto;padding:19px 16px 80px}a{color:#baaaff}h1{font-size:clamp(30px,5vw,44px);margin:26px 0 10px}h2{font-size:21px;margin:0 0 12px}h3{font-size:16px;margin:18px 0 8px}p,small{line-height:1.55;color:#c5c0d5}
+.grid{display:grid;grid-template-columns:330px minmax(0,1fr);gap:18px;align-items:start}.card{padding:20px;border:1px solid #574a76;background:#211b37;border-radius:20px;margin:14px 0}
+label{display:grid;gap:7px;margin:11px 0;font-size:13px}input,select,textarea{font:inherit;width:100%;padding:11px 12px;border:1px solid #695d88;border-radius:10px;min-height:44px;color:#fff;background:#11152b}
+textarea{min-height:70px;resize:vertical}button{font:inherit;color:white;background:#7a57cb;border:0;border-radius:11px;padding:11px 14px;min-height:42px;cursor:pointer}
+button.secondary{background:#332847;border:1px solid #675b8b}button.danger{background:#533047}button:disabled{opacity:.55;cursor:not-allowed}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #99f2db;outline-offset:3px}
+.row{display:flex;flex-wrap:wrap;gap:9px;align-items:center}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.notice{border:1px solid #38736d;background:#153533;border-radius:13px;padding:12px 14px;font-size:13px;line-height:1.6;color:#c1f5e9}
+.alert{border-color:#8f6554;background:#402d37;color:#ffe2ce}
+.entry{margin:9px 0;padding:12px;border:1px solid #504564;border-radius:13px;background:#29233e;overflow-wrap:anywhere}
+.entry strong{display:block}.entry small{display:block;margin-top:4px}
+.listButton{display:block;width:100%;text-align:left;margin:8px 0;background:#322945;border:1px solid #695d88}
+.listButton[aria-pressed=true]{border-color:#9be9d5;background:#294648}
+.check{display:flex;gap:10px;align-items:flex-start}.check input{width:18px;min-height:18px;margin:2px 0;accent-color:#80e4c4}
+.check label{margin:0;display:block}.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
+.stats{display:flex;flex-wrap:wrap;gap:8px}.stat{padding:10px 13px;background:#2d2842;border-radius:12px;min-width:125px}.stat strong{display:block;font-size:20px}
+#forecast p{margin:6px 0}.weatherDay{padding:10px 0;border-bottom:1px solid #403655}#packItems label{display:flex;align-items:center;gap:10px;margin:8px 0}#packItems input{width:19px;min-height:19px;accent-color:#80e4c4}
+hr{border:0;border-top:1px solid #4e4264;margin:20px 0}.foot{font-size:12px;color:#aaa4bb}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.card{padding:16px}.two{grid-template-columns:1fr}}
+</style></head><body><main>
+<a href="./index.html">← Big Cthu</a><h1>🧳 Voyages</h1>
+<p>Prépare tes séjours, partage les frais, consulte les prévisions disponibles et construis une valise adaptée.</p>
+<div class="notice">Séjours et dépenses enregistrés uniquement dans ce navigateur. Aucun document d'identité requis. La météo est facultative et demande un appel explicite au fournisseur externe Open-Meteo (destination et coordonnées transmises au fournisseur). Pour cette bêta personnelle non commerciale seulement ; <a href="https://open-meteo.com/en/terms" target="_blank" rel="noopener noreferrer">conditions du fournisseur</a>.</div>
+<div class="grid">
+<aside>
+<section class="card"><h2>Nouveau voyage</h2><form id="tripForm">
+<label>Nom du voyage<input id="tripName" required maxlength="90" placeholder="Week-end à la mer"></label>
+<label>Destination (ville)<input id="city" required maxlength="100" placeholder="Nice"></label>
+<div class="two"><label>Départ<input id="start" type="date" required></label><label>Retour<input id="end" type="date" required></label></div>
+<label>Voyageurs (pseudonymes séparés par des virgules)<input id="people" required maxlength="250" placeholder="Moi, Steph"></label>
+<label>Activité dominante<select id="activity"><option value="ville">Ville</option><option value="plage">Plage</option><option value="randonnee">Randonnée</option><option value="montagne">Montagne</option><option value="neige">Neige</option></select></label>
+<button type="submit">Créer le voyage</button></form></section>
+<section class="card"><h2>Mes voyages</h2><div id="tripList" aria-live="polite"></div></section>
+</aside>
+<section id="details" class="card" hidden>
+<div class="row" style="justify-content:space-between"><div><h2 id="tripTitle"></h2><small id="tripMeta"></small></div><button type="button" class="danger" id="deleteTrip">Supprimer le voyage</button></div>
+<div class="stats"><div class="stat"><strong id="tripDays"></strong><small>jours du séjour</small></div><div class="stat"><strong id="tripTotal"></strong><small>dépenses enregistrées</small></div><div class="stat"><strong id="tripPeople"></strong><small>participants</small></div></div>
+<hr><h2>💶 Dépenses partagées</h2><p>Première version : répartition égale entre tous ou les bénéficiaires choisis, avec calcul exact en centimes. Les parts personnalisées et les devises multiples suivront.</p>
+<form id="expenseForm"><div class="two"><label>Libellé<input id="expenseTitle" required maxlength="90" placeholder="Restaurant"></label><label>Montant (€)<input id="expenseAmount" type="number" required min="0.01" max="1000000" step="0.01"></label></div>
+<label>Payé par<select id="payer"></select></label><strong>Qui en profite ?</strong><div id="beneficiaries" class="split"></div>
+<button type="submit">Ajouter la dépense</button></form>
+<h3>Dépenses enregistrées</h3><div id="expenses" aria-live="polite"></div>
+<h3>Soldes et règlements proposés</h3><div id="balances"></div><div id="transfers"></div>
+<hr><h2>🌦️ Météo à destination</h2>
+<p class="foot">Prévisions affichées uniquement sur leur véritable horizon (jusqu’à 16 jours). Pour un séjour plus lointain, aucune fausse prévision : tu pourras revenir quand les dates seront disponibles.</p>
+<div class="row"><button type="button" id="searchWeather" class="secondary">Rechercher la ville pour la météo</button><button type="button" id="loadWeather" disabled>Afficher les prévisions</button></div>
+<div id="places" aria-live="polite"></div><div id="forecast" aria-live="polite"></div>
+<p class="foot">Données météo : <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a> (CC BY 4.0, attribution). Connexion nécessaire pour actualiser.</p>
+<hr><h2>🎒 Ma valise</h2><p>Suggestions génériques selon l’activité, complétées par les prévisions réellement disponibles. Tu peux tout cocher et ajouter tes propres éléments.</p>
+<div id="packItems"></div><form id="packForm" class="row"><input id="packExtra" maxlength="90" placeholder="Ajouter un objet à emporter" aria-label="Nouvel objet à emporter" style="flex:1"><button type="submit">Ajouter</button></form>
+</section>
+</div><p class="foot">Bêta de préparation de voyages · Aucun paiement ni transfert bancaire réalisé · Sauvegarde locale seulement, export général à intégrer au Coffre.</p>
+</main>
+<script src="./voyages-core.js"></script><script>
+(()=>{'use strict';
+const K='big-cthu-v2-trips-v1',C=window.BigCthuVoyages,$=id=>document.getElementById(id);
+let trips=[],selected=null,weather=new Map(),places=[];
+const elem=(tag,text)=>{const x=document.createElement(tag);if(text!==undefined)x.textContent=text;return x};
+const euro=n=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(n/100);
+const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+function validDate(v){return /^\d{4}-\d{2}-\d{2}$/.test(v)&&!Number.isNaN(Date.parse(v+'T12:00:00Z'))&&new Date(v+'T12:00:00Z').toISOString().slice(0,10)===v}
+function valid(t){return t&&typeof t.id==='string'&&t.id.length<=120&&typeof t.title==='string'&&t.title.trim().length>0&&t.title.length<=90&&typeof t.city==='string'&&t.city.length>0&&t.city.length<=100&&validDate(t.start)&&validDate(t.end)&&t.end>=t.start&&['plage','ville','randonnee','montagne','neige'].includes(t.activity)&&Array.isArray(t.people)&&t.people.length>=1&&t.people.length<=12&&t.people.every(p=>typeof p==='string'&&p.length>=1&&p.length<=40)&&new Set(t.people).size===t.people.length&&Array.isArray(t.expenses)&&t.expenses.length<=200&&Array.isArray(t.packed)&&t.packed.length<=100&&t.packed.every(p=>typeof p==='string'&&p.length<=90)&&Array.isArray(t.extra)&&t.extra.length<=100&&t.extra.every(p=>typeof p==='string'&&p.length<=90)}
+try{const source=JSON.parse(localStorage.getItem(K)||'[]');if(Array.isArray(source)){trips=source.filter(valid).filter(t=>{try{C.balances(t);return true}catch(e){return false}}).slice(0,50);selected=trips[0]?.id||null}}catch(e){}
+function save(next){try{localStorage.setItem(K,JSON.stringify(next));trips=next;return true}catch(e){alert('Enregistrement impossible. Aucune modification conservée. Vérifie le stockage local.');return false}}
+function current(){return trips.find(x=>x.id===selected)}
+function edit(fn){const old=current();if(!old)return;const newTrip=fn(old),next=trips.map(x=>x.id===old.id?newTrip:x);if(save(next))render()}
+function addItem(host,title,detail){const n=elem('div');n.className='entry';n.append(elem('strong',title),elem('small',detail));host.append(n);return n}
+function render(){
+ const list=$('tripList');list.replaceChildren();
+ for(const t of trips){const b=elem('button',t.title+' · '+t.city+' · '+t.start);b.className='listButton';b.type='button';b.setAttribute('aria-pressed',String(t.id===selected));b.addEventListener('click',()=>{selected=t.id;places=[];render()});list.append(b)}
+ if(!trips.length)list.append(elem('p','Aucun voyage. Commence par créer un séjour.'));
+ const t=current();$('details').hidden=!t;if(!t)return;
+ $('tripTitle').textContent=t.title+' · '+t.city;$('tripMeta').textContent=t.start+' → '+t.end;
+ const diff=(Date.parse(t.end+'T12:00:00Z')-Date.parse(t.start+'T12:00:00Z'))/86400000;
+ $('tripDays').textContent=diff+1;$('tripPeople').textContent=t.people.length;
+ $('tripTotal').textContent=euro(t.expenses.reduce((a,x)=>a+x.cents,0));
+ const payer=$('payer');payer.replaceChildren();for(const p of t.people){const opt=elem('option',p);opt.value=p;payer.append(opt)}
+ const selectedBeneficiaries=new Set(t.people);
+ const benef=$('beneficiaries');benef.replaceChildren();for(const p of t.people){const label=elem('label');label.className='check';const cb=elem('input');cb.type='checkbox';cb.checked=true;cb.value=p;label.append(cb,elem('span',p));benef.append(label)}
+ const ex=$('expenses');ex.replaceChildren();if(!t.expenses.length)ex.append(elem('p','Aucune dépense enregistrée.'));
+ for(const x of t.expenses){const entry=addItem(ex,x.title,euro(x.cents)+' · payé par '+x.payer+' · pour '+Object.keys(x.shares).join(', '));const del=elem('button','Supprimer');del.type='button';del.className='secondary';del.addEventListener('click',()=>{if(confirm('Supprimer cette dépense ?'))edit(y=>({...y,expenses:y.expenses.filter(i=>i.id!==x.id)}))});entry.append(del)}
+ const balance=C.balances(t);$('balances').replaceChildren();for(const [name,value] of Object.entries(balance))addItem($('balances'),name,value>0?'À recevoir : '+euro(value):value<0?'À payer : '+euro(-value):'À jour');
+ const trans=$('transfers');trans.replaceChildren();const movements=C.transfers(balance);if(!movements.length)trans.append(elem('p','Tout le monde est à jour.'));for(const m of movements)addItem(trans,m.from+' → '+m.to,euro(m.cents)+' à rembourser (suggestion)');
+ const w=weather.get(t.id);$('forecast').replaceChildren();
+ const range=C.windowForTrip(t.start,t.end,today());
+ if(!range.available)addItem($('forecast'),'Prévisions pas encore disponibles','Horizon actuel : jusqu’au '+range.horizon+'. La météo réelle ne peut pas être annoncée aussi tôt.');
+ else if(!w)addItem($('forecast'),'Prévisions disponibles à demander','Le service ne sera contacté qu’en cliquant sur les boutons météo.');
+ else{addItem($('forecast'),'Prévisions Open-Meteo reçues le '+w.updated,w.label+' · '+(range.complete?'ensemble du séjour':'partie seulement du séjour'));for(const d of w.days)addItem($('forecast'),d.date,d.min+' à '+d.max+' °C · risque de pluie '+d.rain+' %')}
+ $('places').replaceChildren();$('loadWeather').disabled=!(t.location&&range.available);
+ const pack=$('packItems');pack.replaceChildren();
+ const recommended=C.packing(t.activity,w?.days||[]);
+ for(const name of [...new Set([...recommended,...t.extra])]){const label=elem('label');const cb=elem('input');cb.type='checkbox';cb.checked=t.packed.includes(name);cb.addEventListener('change',()=>edit(y=>({...y,packed:cb.checked?[...new Set([...y.packed,name])]:y.packed.filter(p=>p!==name)})));const text=elem('span',name);if(cb.checked)text.style.textDecoration='line-through';label.append(cb,text);pack.append(label)}
+}
+$('tripForm').addEventListener('submit',e=>{e.preventDefault();if(trips.length>=50)return alert('Limite de 50 voyages atteinte');const people=$('people').value.split(',').map(s=>s.trim()).filter(Boolean);const trip={id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+'-'+Math.random(),title:$('tripName').value.trim(),city:$('city').value.trim(),start:$('start').value,end:$('end').value,activity:$('activity').value,people,expenses:[],extra:[],packed:[]};if(!valid(trip))return alert('Vérifie les dates et les voyageurs (12 maximum, pseudonymes différents).');if(save([...trips,trip])){selected=trip.id;$('tripForm').reset();render()}});
+$('deleteTrip').addEventListener('click',()=>{const t=current();if(!t||!confirm('Supprimer définitivement '+t.title+' et toutes ses dépenses ?'))return;if(save(trips.filter(x=>x.id!==t.id))){weather.delete(t.id);selected=trips[0]?.id||null;render()}});
+$('expenseForm').addEventListener('submit',e=>{e.preventDefault();const t=current();if(!t)return;if(t.expenses.length>=200)return alert('Limite de dépenses atteinte');try{const amount=C.cents($('expenseAmount').value);const members=[...$('beneficiaries').querySelectorAll('input:checked')].map(x=>x.value);if(!members.length)return alert('Choisis au moins un bénéficiaire');const x={id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+'-'+Math.random(),title:$('expenseTitle').value.trim(),cents:amount,payer:$('payer').value,shares:C.splitEqual(amount,members)};if(!x.title||x.title.length>90||!t.people.includes(x.payer))return alert('Dépense invalide');edit(y=>({...y,expenses:[...y.expenses,x]}));$('expenseForm').reset()}catch(err){alert(err.message)}});
+$('packForm').addEventListener('submit',e=>{e.preventDefault();const word=$('packExtra').value.trim(),t=current();if(!word||word.length>90||!t||t.extra.length>=100)return;edit(y=>({...y,extra:[...new Set([...y.extra,word])]}));$('packExtra').value=''});
+$('searchWeather').addEventListener('click',async()=>{const t=current();if(!t)return;const target=t.id;$('places').textContent='Recherche de destination…';try{const url='https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(t.city)+'&count=5&language=fr&format=json';const response=await fetch(url);if(!response.ok)throw Error('Service géographique indisponible');const out=await response.json();if(current()?.id!==target)return;const host=$('places');host.replaceChildren();const candidates=(out.results||[]).slice(0,5);if(!candidates.length){host.textContent='Ville non trouvée. Essaie le nom principal de la ville.';return}for(const x of candidates){const b=elem('button',[x.name,x.admin1,x.country].filter(Boolean).join(', '));b.type='button';b.className='secondary';b.addEventListener('click',()=>{edit(y=>({...y,location:{lat:x.latitude,lon:x.longitude,label:[x.name,x.country].filter(Boolean).join(', ')}}));$('places').textContent='Destination météo sélectionnée : '+x.name+', '+x.country});host.append(b)}}catch(err){$('places').textContent='Recherche impossible hors ligne ou fournisseur indisponible.'}});
+$('loadWeather').addEventListener('click',async()=>{const t=current();if(!t||!t.location)return;const target=t.id,range=C.windowForTrip(t.start,t.end,today());if(!range.available)return;const host=$('forecast');host.textContent='Actualisation des prévisions…';try{const params=new URLSearchParams({latitude:String(t.location.lat),longitude:String(t.location.lon),daily:'temperature_2m_max,temperature_2m_min,precipitation_probability_max',timezone:'auto',forecast_days:'16'});const response=await fetch('https://api.open-meteo.com/v1/forecast?'+params);if(!response.ok)throw Error('Météo indisponible');const data=await response.json();const daily=data.daily||{},days=[];for(let i=0;i<(daily.time||[]).length;i++){const date=daily.time[i];if(date<range.from||date>range.to)continue;const min=Number(daily.temperature_2m_min?.[i]),max=Number(daily.temperature_2m_max?.[i]),rain=Number(daily.precipitation_probability_max?.[i]);if([min,max,rain].every(Number.isFinite))days.push({date,min:Math.round(min),max:Math.round(max),rain:Math.round(rain)})}if(current()?.id!==target)return;weather.set(target,{days,label:t.location.label,updated:new Date().toLocaleString('fr-FR')});render()}catch(err){if(current()?.id===target)host.textContent='Prévisions momentanément indisponibles. Les listes et dépenses restent utilisables hors ligne.'}});
+render();
+})();
+</script></body></html>

@@ -1,0 +1,59 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#100e22">
+<title>Cantine et repas maison · Big Cthu</title>
+<style>
+:root{font-family:system-ui,sans-serif;color:#f6f3ff;background:#100e22;color-scheme:dark}*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 100% 0,#304958,transparent 42%),#100e22}
+main{max-width:1100px;margin:auto;padding:20px 16px 80px}a{color:#c0b6ff}
+h1{font-size:clamp(28px,5vw,42px);margin:25px 0 8px}h2{font-size:20px;margin:0 0 12px}h3{font-size:16px}p{color:#c5c0d5;line-height:1.6}
+.grid{display:grid;grid-template-columns:1fr 1.1fr;gap:16px;align-items:start}
+.card{background:#211c35;border:1px solid #55486c;border-radius:20px;padding:19px;margin:14px 0}
+label{display:grid;gap:7px;font-size:13px;margin:11px 0}input,select,textarea{font:inherit;background:#11152b;border:1px solid #68597c;border-radius:11px;color:#fff;min-height:44px;width:100%;padding:12px}
+button{font:inherit;background:#6e59c4;color:#fff;border:0;border-radius:11px;min-height:44px;padding:10px 13px;cursor:pointer}
+button.secondary{background:#312d4c;border:1px solid #655d86}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #a3f0d7;outline-offset:3px}
+.notice{border:1px solid #407569;background:#163832;color:#bdeedc;font-size:13px;padding:13px;border-radius:13px;line-height:1.6}
+.entry{border:1px solid #4b4465;background:#28223d;border-radius:12px;margin:10px 0;padding:12px;overflow-wrap:anywhere}.entry strong{display:block}.entry small{color:#d0c8da}.flex{display:flex;gap:9px;flex-wrap:wrap;margin-top:8px}
+#overview{font-size:13px}.foot{font-size:12px;color:#b2abc4}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.card{padding:15px}}
+</style></head><body><main>
+<a href="./repas.html">← Planificateur de repas</a><h1>🥕 Cantine & repas maison</h1>
+<p>Renseigne les menus proposés à midi, puis pioche des idées variées pour le dîner et ta liste de courses.</p>
+<div class="notice"><strong>Pour les familles.</strong> Le menu affiché par la cantine n'est pas forcément ce que l'enfant a mangé. Les suggestions ne sont ni une analyse nutritionnelle médicale, ni des prescriptions : adapte-les à l'appétit, aux goûts et aux allergies connues. Aucun nom d'enfant ou d'école n'est nécessaire. Les menus restent sur cet appareil.</div>
+<div class="grid">
+<section>
+<div class="card"><h2>Saisir un menu de cantine</h2><form id="form">
+<label>Date<input id="date" type="date" required></label>
+<label>Entrée<input id="entree" maxlength="130" placeholder="Ex. Salade de tomates"></label>
+<label>Plat principal<input id="plat" maxlength="130" placeholder="Ex. Poulet rôti"></label>
+<label>Accompagnement<input id="side" maxlength="130" placeholder="Ex. Riz et courgettes"></label>
+<label>Produit laitier ou alternative<input id="dairy" maxlength="130" placeholder="Ex. Fromage, yaourt…"></label>
+<label>Dessert<input id="dessert" maxlength="130" placeholder="Ex. Pomme"></label>
+<label>Ce qui a été réellement mangé<select id="consumed"><option value="inconnu">Je ne sais pas</option><option value="propose">Menu proposé, consommation non confirmée</option><option value="partiel">Une partie du menu</option><option value="oui">Ce menu a globalement été mangé</option></select></label>
+<button type="submit">Enregistrer le menu</button></form></div>
+<div class="card"><h2>Menus enregistrés</h2><div id="menus" aria-live="polite"></div></div>
+</section>
+<section><div class="card"><h2>💡 Compléter à la maison</h2><p id="overview">Sélectionne un menu pour recevoir quelques idées de dîner.</p><div id="ideas" aria-live="polite"></div></div>
+<div class="card"><h2>Comment utiliser ces idées ?</h2><p>Varier les aliments sur plusieurs jours et respecter l'appétit de chacun importe davantage que « rattraper » un déjeuner. Tu peux envoyer une idée dans ton planificateur de repas puis modifier les ingrédients et les portions.</p><a href="./repas.html">Ouvrir le planificateur et ma liste de courses</a></div></section>
+</div><p class="foot">Première version · saisie manuelle et suggestions qualitatives · import PDF/photo à venir après stabilisation du socle.</p>
+</main>
+<script src="./cantine-core.js"></script><script>
+(()=>{'use strict';const K='big-cthu-v2-canteen-v1',MEALS='big-cthu-v2-meals-v1',C=window.BigCthuCantine,$=id=>document.getElementById(id);
+let menus=[],selected=null;
+const today=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+const el=(tag,text)=>{const x=document.createElement(tag);if(text!==undefined)x.textContent=text;return x};
+const validDate=v=>/^\d{4}-\d\d-\d\d$/.test(v)&&!Number.isNaN(Date.parse(v+'T12:00:00Z'))&&new Date(v+'T12:00:00Z').toISOString().slice(0,10)===v;
+const valid=x=>x&&typeof x.id==='string'&&x.id.length<=120&&validDate(x.date)&&['entree','plat','side','dairy','dessert'].every(k=>typeof x[k]==='string'&&x[k].length<=130)&&['inconnu','propose','partiel','oui'].includes(x.consumed);
+try{const d=JSON.parse(localStorage.getItem(K)||'[]');if(Array.isArray(d))menus=d.filter(valid).slice(0,500).sort((a,b)=>b.date.localeCompare(a.date));selected=menus[0]?.id||null}catch(e){}
+function save(next){try{localStorage.setItem(K,JSON.stringify(next));menus=next;return true}catch(e){alert('Menu non enregistré. Vérifie l’espace de stockage de ce navigateur.');return false}}
+function row(host,title,text){const n=el('div');n.className='entry';n.append(el('strong',title),el('small',text));host.append(n);return n}
+function render(){const host=$('menus');host.replaceChildren();if(!menus.length)host.append(el('p','Aucun menu. Saisis ton premier déjeuner de cantine.'));
+ for(const menu of menus){const entry=row(host,menu.date,menu.plat||menu.entree||'Menu incomplet');const actions=el('div');actions.className='flex';const choose=el('button','Voir des idées');choose.type='button';choose.className='secondary';choose.addEventListener('click',()=>{selected=menu.id;render()});const remove=el('button','Supprimer');remove.type='button';remove.className='secondary';remove.addEventListener('click',()=>{if(!confirm('Supprimer ce menu de cantine ?'))return;if(save(menus.filter(x=>x.id!==menu.id))){if(selected===menu.id)selected=menus[0]?.id||null;render()}});actions.append(choose,remove);entry.append(actions)}
+ const chosen=menus.find(m=>m.id===selected),ideas=$('ideas');ideas.replaceChildren();if(!chosen){$('overview').textContent='Sélectionne un menu de cantine pour afficher les idées.';return}
+ const groups=C.analyse(chosen);const consumed=chosen.consumed==='oui'?'Ce menu est déclaré globalement mangé.':chosen.consumed==='partiel'?'Une partie du menu a été mangée : vérifie les préférences et l’appétit avant de planifier.':'On connaît le menu proposé, pas nécessairement ce qui a été mangé. Les idées restent générales.';
+ $('overview').textContent=chosen.date+' · '+consumed+' Suggestions de variété, sans jugement sur les quantités. ';
+ for(const proposal of C.ideas(chosen)){const entry=row(ideas,proposal.title,proposal.why);const action=el('button','Ajouter au dîner prévu');action.type='button';action.className='secondary';action.addEventListener('click',()=>{let current;try{current=JSON.parse(localStorage.getItem(MEALS)||'[]');if(!Array.isArray(current)||current.length>=1000)throw Error('Planning plein ou invalide');if(current.some(m=>m.date===chosen.date&&m.meal==='Dîner'&&m.recipe===proposal.title))return alert('Ce dîner est déjà prévu pour cette date.');const next={id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),date:chosen.date,meal:'Dîner',recipe:proposal.title,portions:'',ingredients:proposal.ingredients,status:'Prévu'};localStorage.setItem(MEALS,JSON.stringify([...current,next]));alert('Idée enregistrée dans le planificateur de repas. Vérifie les ingrédients et adapte-les à ta famille.')}catch(e){alert('Ajout impossible dans le planning. Aucune autre donnée modifiée.')}});entry.append(action)}
+}
+$('date').value=today();
+$('form').addEventListener('submit',e=>{e.preventDefault();if(menus.length>=500)return alert('Limite de 500 menus atteinte');const m={id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),date:$('date').value,entree:$('entree').value.trim(),plat:$('plat').value.trim(),side:$('side').value.trim(),dairy:$('dairy').value.trim(),dessert:$('dessert').value.trim(),consumed:$('consumed').value};if(!valid(m)||!['entree','plat','side','dairy','dessert'].some(k=>m[k]))return alert('Entre une date et au moins un élément du menu.');if(save([m,...menus].sort((a,b)=>b.date.localeCompare(a.date)))){selected=m.id;$('form').reset();$('date').value=today();render()}});
+render();
+})();
+</script></body></html>

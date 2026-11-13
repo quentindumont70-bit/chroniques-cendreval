@@ -329,7 +329,7 @@ test('Dépenses Maison: do not alter the ledger if a write is refused', async ()
 test('Cockpit: find tentacules without accents and respect current profile', async () => {
   const h = await boot('index.html');
   const lookup = h.get('tentacleSearch');
-  assert.match(h.get('tentacleCount').textContent, /17 tentacule/);
+  assert.equal(h.get('tentacleCount').textContent, h.get('tiles').children.length + ' tentacule(s) affichée(s)');
   lookup.value = 'musique';
   await lookup.fire('input');
   assert.equal(h.get('tiles').children.length, 1);
@@ -345,7 +345,7 @@ test('Cockpit: find tentacules without accents and respect current profile', asy
   assert.equal(h.get('tiles').children.length, 1);
   assert.match(h.get('tiles').children[0].textContent, /Aucune tentacule/);
   await h.get('tentacleReset').fire('click');
-  assert.match(h.get('tentacleCount').textContent, /17 tentacule/);
+  assert.equal(h.get('tentacleCount').textContent, h.get('tiles').children.length + ' tentacule(s) affichée(s)');
 });
 
 test('Registre Maison: preserve records after quota errors and deduplicate historical IDs', async () => {
