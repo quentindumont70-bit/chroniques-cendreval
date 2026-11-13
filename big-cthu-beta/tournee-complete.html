@@ -429,6 +429,8 @@ body:not(.tournee-locked) #tour-security-gate:not([hidden]){position:fixed;inset
 #tour-security-gate #tour-error{color:#ffc7c7;min-height:22px}
 #tour-save-strip{position:sticky;top:0;z-index:9999;padding:9px 14px;background:#173b36;color:#d9fff4;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;font:13px/1.45 system-ui,-apple-system,sans-serif}
 #tour-save-strip[data-state="error"]{background:#5c2531;color:#fff2f2}
+#tour-network-state{font-weight:700;font-size:12px;border:1px solid currentColor;border-radius:999px;padding:4px 9px}
+#tour-network-state[data-online="false"]{background:#45350e;color:#fff0b5}
 #tour-save-strip button{min-height:42px;padding:8px 12px;border:1px solid currentColor;border-radius:9px;background:transparent;color:inherit;font:inherit;font-weight:700;cursor:pointer}
 #tour-save-strip button[hidden]{display:none}
 body.tournee-locked #tour-save-strip{display:none}
@@ -477,7 +479,7 @@ body.tournee-locked #tour-save-strip{display:none}
 <p id="tour-error" role="status"></p>
 <p>Attention : le déverrouillage automatique signifie que toute personne ayant accès à ce navigateur peut ouvrir Tournée. Protège l'accès à ton iPhone. Si un coffre chiffré existe déjà, l'import d'un autre JSON est bloqué pour éviter son écrasement. Les données restent chiffrées dans ce navigateur, mais cette version web n'est pas un hébergement HDS certifié. Conserve ta sauvegarde d'origine et l'application historique pour les soins.</p>
 </section>
-<div id="tour-save-strip" role="status" aria-live="polite" data-state="saved"><span id="tour-save-text">Données chiffrées enregistrées sur cet appareil.</span><span><button type="button" id="tour-save-retry" hidden>Réessayer la sauvegarde</button> <button type="button" id="tour-vault-export">Copie chiffrée locale</button> <button type="button" id="tour-portable-export">Exporter une sauvegarde complète JSON</button> <button type="button" id="tour-absence-open">Absences &amp; modifications</button> <button type="button" id="tour-lock">Sauvegarder</button> <button type="button" id="tour-recovery-launch">Récupérer mes anciennes données</button></span></div>
+<div id="tour-save-strip" role="status" aria-live="polite" data-state="saved"><span id="tour-save-text">Données chiffrées enregistrées sur cet appareil.</span><span id="tour-network-state" aria-live="off" title="État réseau, indépendant de la sauvegarde locale">Connexion à déterminer</span><span><button type="button" id="tour-save-retry" hidden>Réessayer la sauvegarde</button> <button type="button" id="tour-vault-export">Copie chiffrée locale</button> <button type="button" id="tour-portable-export">Exporter une sauvegarde complète JSON</button> <button type="button" id="tour-absence-open">Absences &amp; modifications</button> <button type="button" id="tour-lock">Sauvegarder</button> <button type="button" id="tour-recovery-launch">Récupérer mes anciennes données</button></span></div>
 <section id="tour-absence-panel" hidden aria-label="Absences et modifications de Tournée">
 <div class="ap-inner">
 <div class="ap-closebar"><button id="ap-close" type="button">← Retour à Tournée</button><span class="ap-caption">Journal local chiffré</span></div>
@@ -2180,6 +2182,16 @@ document.getElementById('tour-recovery-launch').addEventListener('click',()=>{do
 document.getElementById('tour-recovery-close').addEventListener('click',()=>{document.getElementById('tour-security-gate').hidden=true});
 document.getElementById('tour-import').addEventListener('click',()=>login(true));
 document.getElementById('tour-saved-status').textContent=localStorage.getItem(SECURE_KEY)?'Une Tournée complète chiffrée est disponible. Utilise la même phrase secrète.':localStorage.getItem(PREVIOUS_KEY)?'✅ Ta sauvegarde chiffrée précédente est détectée. Utilise la même phrase secrète : les patients seront transférés dans l’application complète.':'Aucune sauvegarde locale détectée ici. Sélectionne ton fichier JSON.';
+function updateTourNetworkStatus(){
+ const tag=document.getElementById('tour-network-state');
+ if(!tag)return;
+ const online=navigator.onLine!==false;
+ tag.dataset.online=String(online);
+ tag.textContent=online?'Réseau disponible · stockage local':'Hors ligne · stockage local';
+}
+window.addEventListener('online',updateTourNetworkStatus);
+window.addEventListener('offline',updateTourNetworkStatus);
+updateTourNetworkStatus();
 function saveIfPending(){if(secureKey&&secureGen!==secureSavedGen)flush().catch(saveFailure)}
 function resumeTournee(){
  if(!secureBooted)return;
@@ -2192,5 +2204,6 @@ window.addEventListener('pageshow',resumeTournee);
 window.addEventListener('focus',resumeTournee);
 autoOpenTournee();
 </script>
+<script src="./mobile-boot.js" defer></script>
 </body>
 </html>
