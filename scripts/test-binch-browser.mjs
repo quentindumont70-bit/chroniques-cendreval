@@ -71,7 +71,8 @@ try{
     assert.equal(await page.locator('#binch-specs-pin').getAttribute('aria-pressed'),'true');
     checks++;
     await classControl.selectOption({label:'Druide'});
-    await page.locator('[data-spec-id="druid-feral"]').click();
+    await page.locator('[data-spec-id="druid-feral"]').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
+    await page.locator('[data-spec-id="druid-feral"]').click({timeout:8000});
     await page.locator('#binch-specs-level').fill('34');
     await page.locator('#binch-specs-level').dispatchEvent('change');
     assert.match(await page.locator('#binch-specs-route').innerText(),/25\s*\/\s*51/);
