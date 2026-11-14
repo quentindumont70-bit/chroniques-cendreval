@@ -102,5 +102,10 @@ local corruptBoot=allWidgets[#allWidgets]
 corruptBoot.scripts.OnEvent(corruptBoot,"PLAYER_LOGIN")
 local corrected=assert(widgets.GrimoireSyncMinimapButton,"fallback icon recovered")
 assert(math.abs(corrected.points.x)<81 and math.abs(corrected.points.y)<81,"invalid persisted coordinates safely clamped")
+assert(type(GrimoireSyncResetMinimap)=="function","reset command handler available")
+assert(GrimoireSyncResetMinimap()==true,"reset command succeeds")
+assert(GrimoireSyncDB.minimapPosition==nil,"reset clears saved minimap coordinates")
+local resetX,resetY=corrected:GetCenter()
+assert(resetX>40 and resetX<65 and resetY>40 and resetY<65,"reset returns to the standard top-right arc")
 
 print("GrimoireSync minimap Lua 5.1 smoke: reload, path, tooltip, drag, persistence OK")
