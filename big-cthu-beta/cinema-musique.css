@@ -94,3 +94,26 @@ body[data-cthu-area="musique"] :is(a,button,input,textarea):focus-visible{outlin
   -webkit-backdrop-filter:none;backdrop-filter:none;background-color:var(--studio-pane)
  }
 }
+
+/* V161 — concise inline next-action editor, no extra page or duplicated project. */
+body[data-cthu-area="musique"] .studio-edit{
+ display:grid;gap:11px;padding:14px;margin-top:7px;border-radius:14px;
+ border:1px solid var(--studio-border);background:var(--studio-pane);
+}
+body[data-cthu-area="musique"] .studio-edit label{
+ display:grid;gap:8px;color:var(--studio-muted);font-size:12px;font-weight:700;
+}
+body[data-cthu-area="musique"] .studio-edit-input{
+ width:100%;min-height:90px;max-height:240px;resize:vertical;
+ padding:12px;font:inherit;font-size:14px;line-height:1.5;
+ border:1px solid var(--studio-border);background:rgba(1,11,26,.68);
+ color:var(--studio-ink);border-radius:12px;
+}
+body[data-cthu-area="musique"] .studio-edit .project-actions button{min-height:46px}
+body[data-cthu-area="musique"] .studio-edit .project-actions button[type="submit"]{
+ background:var(--studio-accent);color:#08283e;font-weight:800;
+}
+html[data-cthu-theme="organic"] body[data-cthu-area="musique"] .studio-edit .project-actions button[type="submit"]{color:#28102c}
+body[data-cthu-area="musique"] .studio-edit-input:focus-visible{
+ outline:3px solid var(--studio-accent);outline-offset:3px;
+}
