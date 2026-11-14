@@ -36,7 +36,12 @@ assert.equal(themes.resolveOrNeutral('unknown'),themes.neutral);
 assert.equal(themes.resolveOrNeutral('__proto__'),themes.neutral);
 assert.ok(themes.neutral.crest&&themes.neutral.headline&&themes.neutral.signature);
 assert.equal(themes.findPair('Gobelin','Druide'),null);
-assert.match(html,/data-pair=neutral/);
+const tokens=readFileSync(new URL('../public/binch/da-tokens.css',import.meta.url),'utf8');
+assert.match(html,/<link rel="stylesheet" href="\.\/da-tokens\.css">/);
+for(const id of ['neutral',...expected.slice(1)])assert.ok(tokens.includes('#stage[data-pair='+id+']'),'missing external pair CSS '+id);
+assert.doesNotMatch(html,/#stage\[data-pair=troll-shaman\]/,'pair tokens must not be duplicated inline');
+assert.match(tokens,/--texture:/);
+assert.match(tokens,/--shape:/);
 assert.match(html,/id="neutral" aria-pressed="false"/);
 assert.match(html,/id==='neutral'\?themes\.neutral:themes\.resolve\(id\)/);
 
