@@ -38,6 +38,11 @@ function generate(input={}){
  if(professions.some(x=>/cuir|d[ée]pe[çc]/i.test(x))){
   add({id:'action:leather',title:'Dépeçage et Travail du cuir : préparer les recettes utiles',description:'Consulter les patrons, les réactifs et les prochaines améliorations de sac dans l’atelier.',level,priority:mode==='profession'?97:53,category:'Métier',page:'metiers',verified:true,origin:'Métier choisi dans le profil',confidence:'profil local'});
  }
+ const assignments=Array.isArray(input.guildTasks)?input.guildTasks.slice(0,30):[];
+ for(const task of assignments){
+  if(!task||typeof task.title!=='string'||!task.title.trim()||task.status==='done')continue;
+  add({id:'guild:'+clipped(task.id||task.title),title:'Guilde : '+task.title,description:'Mission inscrite dans le registre local de guilde, pas une confirmation Discord ni une tâche affectée automatiquement.',level,priority:task.priority==='urgent'?87:task.priority==='high'?65:32,category:'Guilde',page:'gm',origin:'Planificateur local GM',confidence:'entrée utilisateur',verified:true});
+ }
  const custom=Array.isArray(input.objectives)?input.objectives.slice(0,60):[];
  for(const o of custom){
   if(!o||o.done!==false||typeof o.title!=='string'||!o.title.trim())continue;
