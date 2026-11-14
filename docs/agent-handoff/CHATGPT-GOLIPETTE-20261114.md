@@ -155,3 +155,12 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - `scripts/test-grimoiresync-minimap.lua` simule l'enchaînement `OnDragStart` → `OnDragStop` → `OnClick` immédiat et vérifie **zéro `/reload`**, puis un clic ultérieur et **un seul `/reload`**.
 - **GitHub Actions 43622934433 : SUCCESS 4/4** (Lua 5.1, Node, Chromium desktop/mobile, Windows syntaxique). Simulation seulement : comportement exact de WoW Forever à confirmer dans le vrai client.
 - Lien de La Binch à chaque conclusion : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ (ne contient pas les modifications de notre PR non fusionnée).
+
+## Golipette — commande de secours et intégration sans écrasement (14 novembre)
+- Ajout de `/grimoire minimap reset` : remet immédiatement le livre sur la couronne par défaut et efface uniquement `GrimoireSyncDB.minimapPosition`. Le bouton reste déplaçable, le clic gauche /reload et clic droit chemin relatif sont inchangés.
+- Help `/grimoire` mis à jour et recette en jeu complétée dans `docs/agent-handoff/BINCH-BETA-TEST-TERRAIN.md`.
+- Tests Lua 5.1 enrichis : le reset rend le livre visible à son point par défaut et supprime le champ de position sans recalculer les quêtes/personnages ; le clic après glissement demeure protégé.
+- **Run 43623970831 : SUCCESS 4/4 jobs** (Node, Playwright Chromium desktop/mobile, Windows PowerShell syntaxe et Lua 5.1 incluant les mocks).
+- Préparation de fusion non destructive : comparaisons exactes sur `main`, `opencode-golipette` et notre branche pour `index.html`, `Minimap.lua`, `specs-guide.js/.css`, `command-center.js`, `ah-craft.js`, `ah-market.js` et `market-bridge.js`. Sur ces fichiers, `main` conserve le contenu de base, nos modifications se limitent aux fichiers ciblés ; l'index des specs d'OpenCode est déjà intégré dans notre branche. Les branches sont divergentes en nombre de commits : ne pas fusionner aveuglément, vérifier la base et les autres fichiers immédiatement avant toute PR de fusion.
+- **Pas de merge ni publication sur `main`**. Roadmaps Discord et direction artistique race/classe toujours différées selon priorité.
+- Site à fournir en conclusion : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ (version publique actuelle).
