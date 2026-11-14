@@ -103,3 +103,8 @@ jobs:
           done < "$addon/GrimoireSync.toc"
           test "$count" -eq 3 || { echo "Expected three Lua files, got $count"; exit 1; }
           echo "GrimoireSync: manifest and three Lua files passed preflight"
+      - name: Validate real Lua export against browser parser
+        shell: bash
+        run: |
+          set -euo pipefail
+          lua5.1 scripts/test-grimoiresync-mock.lua | node public/binch/test-grimoiresync-interop.cjs
