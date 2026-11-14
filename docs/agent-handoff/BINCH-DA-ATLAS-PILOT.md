@@ -45,3 +45,11 @@ PR artistique : https://github.com/quentindumont70-bit/chroniques-cendreval/pull
 - Aucune dépendance réseau, aucun accès aux données du joueur. Les objets sont utilisés uniquement dans le laboratoire, pas dans la Binch publique ni dans la PR fonctionnelle.
 - Tests de registre mis à jour : liste blanche des six thèmes, identifiants, alias accentués, refus des prototypes JS / paires inconnues, absence de lecture du stockage ou de trafic, et syntaxe du contrôleur HTML. **GitHub Actions run 43631810093 : SUCCESS.**
 - Prochains chantiers : tokens CSS externalisés, moteur de repli neutre, essais visuels mobiles et preuves de compatibilité Forever.
+
+## Golipette v0.4 — thème neutre et tokens isolés
+
+- `public/binch/da-themes.js` v0.4.0 fournit maintenant `neutral` et `resolveOrNeutral(id)`. `resolve(id)` conserve volontairement sa sémantique stricte (retour `null` pour toute identité inconnue), afin de ne jamais confondre **fallback graphique** et **preuve de jouabilité**.
+- Le laboratoire graphique dispose d'un bouton « Thème neutre » contrôlable et accessible (`aria-pressed`). Les six univers originaux restent sélectionnables, sans écraser le profil de jeu.
+- Les six styles explicites (cinq paires et un neutre, Tauren Druide conservant les tokens de base) sont extraits dans `public/binch/da-tokens.css`. La page HTML le charge par un lien local. Plus besoin de dupliquer les variations de palettes, géométries et textures dans l'HTML.
+- `scripts/test-binch-da-lab.mjs` vérifie les résolutions et rejets des identifiants, les alias, l'apparence neutre, la feuille de tokens et l'absence de lecture des données de joueur. Le workflow `binch-da-lab.yml` se déclenche sur les modifications du registre **et** des tokens.
+- **GitHub Actions 43632330104 : SUCCESS** (vérification statique du laboratoire). Pas encore de test visuel sur appareil réel, ni d'intégration à la page publique.
