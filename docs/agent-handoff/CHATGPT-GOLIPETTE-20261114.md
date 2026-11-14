@@ -142,3 +142,10 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - GitHub Actions **43621549749 : SUCCESS 4/4**, y compris `binch-addon` avec scénario Lua 5.1 minicarte ; autres jobs Chromium 42 tests, Node 60 assertions + 83 scripts statiques, PowerShell syntaxe valides.
 - Plan terrain `docs/agent-handoff/BINCH-BETA-TEST-TERRAIN.md` complété pour vérifier absence de `/reload` accidentel pendant le glisser et position persistante sur **vrai client WoW**, encore à réaliser.
 - Lien permanent de la Binch publique à fournir au terme des travaux : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ ; la PR brouillon n'est pas encore publiée.
+
+## Refonte next-gen par couple race × classe (14 novembre, priorité ultérieure)
+- Exigence utilisateur : après les travaux prioritaires et la bêta, mener une **refonte visuelle next-gen de très haute qualité**, minutieuse dans les détails, avec une **direction artistique unique à chaque combinaison de race et classe** (pas seulement changer la couleur).
+- Plan détaillé désormais dans `docs/agent-handoff/BINCH-DA-NEXT-GEN-RACE-CLASSE.md` : 10 chantiers (benchmark, matrice de compatibilité Forever, design system, moteur de thèmes combinatoires avec couche spécifique paire, assets originaux, accueil, modules, motion, UX mobile/accessibilité, QA visuelle/performance), 6 exemples de signatures, critères de qualité.
+- Les listes existantes comportent 8 races et 9 classes dans `index.html` ; **ne pas présumer que 72 combinaisons sont légales en jeu** sans vérification sur Forever. La matrice n'est pas encore validée. Réutiliser les thèmes déjà présents dans l'onboarding, sans dégrader les fonctionnalités.
+- **Aucune refonte réalisée ni déployée** dans ce lot ; son implémentation attend la stabilisation GrimoireSync/Windows/mobile/QA et l'intégration des autres branches. Le projet bot Discord reste dans sa roadmap distincte.
+- Lien public à rappeler : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ ; les changements non fusionnés n'y apparaissent pas.
