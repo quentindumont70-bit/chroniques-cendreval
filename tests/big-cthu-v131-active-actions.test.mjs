@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {runInNewContext} from 'node:vm';
 
 const read=name=>readFile(new URL('../big-cthu-beta/'+name,import.meta.url),'utf8');
-const K={tasks:'big-cthu-v2-demo-tasks',maison:'big-cthu-v2-maison-v1',musique:'big-cthu-v2-passions-v1',gaming:'big-cthu-v2-next-session-v1'};
+const K={captures:'big-cthu-v2-inbox-v1',tasks:'big-cthu-v2-demo-tasks',maison:'big-cthu-v2-maison-v1',musique:'big-cthu-v2-passions-v1',gaming:'big-cthu-v2-next-session-v1'};
 async function fixture(seed={}){
  const code=await read('active-pulse.js');
  const stored=new Map(Object.entries(seed)),queried=[];
@@ -79,4 +79,41 @@ test('V131: intégré au vrai cockpit, thèmes, mode hors ligne, Tournée isolé
  assert.match(sw,/big-cthu-public-v2-v\d+/);
  assert.doesNotMatch(code,/fetch\(|XMLHttpRequest|WebSocket|localStorage\.setItem|tidel_|Topaze/);
  assert.doesNotMatch(tournee,/active-pulse\.js/);
+});
+
+test('V145: les captures à traiter apparaissent sans écriture ni copie',async()=>{
+ const f=await fixture({
+  [K.captures]:JSON.stringify([
+   {id:'one',title:'Rappeler le plombier fictif',target:'inbox',status:'new'},
+   {id:'two',title:'RDV personnel fictif',target:'agenda',status:'new'},
+   {id:'three',title:'Déjà archivée',target:'inbox',status:'done'},
+   {id:'four',title:'Déjà envoyée',target:'task',status:'sent'}
+  ])
+ });
+ const items=f.collect().items;
+ assert.equal(items.length,2);
+ assert.deepEqual(items.map(x=>x.kind),['Captures','Captures']);
+ assert.deepEqual(items.map(x=>x.url),['./capture.html','./capture.html']);
+ assert.deepEqual(items.map(x=>x.next),['À traiter dans Capture','À envoyer vers Agenda']);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+ f.ctx.testRender();
+ const link=f.nodes.get('activePulseList').children[0];
+ assert.equal(link.href,'./capture.html');
+ assert.equal(link.children[1].textContent,'Rappeler le plombier fictif');
+});
+
+test('V145: captures invalides ou archives non affichées, aucun contenu injecté',async()=>{
+ const f=await fixture({
+  [K.captures]:JSON.stringify([
+   {id:'bad',title:'<img src=x onerror=alert(1)>',target:'inbox',status:'done'},
+   {id:'ok',title:'<img src=x onerror=alert(1)>',target:'inbox',status:'new'},
+   {id:'unknown',title:'A'.repeat(200),target:'inbox',status:'new'}
+  ])
+ });
+ f.ctx.testRender();
+ assert.equal(f.collect().items.length,1);
+ const card=f.nodes.get('activePulseList').children[0];
+ assert.equal(card.children[1].textContent,'<img src=x onerror=alert(1)>');
+ assert.equal(f.writes(),0);
 });
