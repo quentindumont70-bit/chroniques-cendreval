@@ -35,7 +35,7 @@ try{
   {name:'mobile-390',width:390,height:844,touch:true},
   {name:'desktop-1440',width:1440,height:900,touch:false}
  ];
- const failures=[],manifest=[];
+ const failures=[],manifest=[],contrastMeasurements=[];
  for(const device of devices){
   const ctx=await browser.newContext({viewport:{width:device.width,height:device.height},isMobile:device.touch,hasTouch:device.touch,reducedMotion:'reduce'});
   const page=await ctx.newPage(),errors=[];
@@ -65,6 +65,35 @@ try{
    if(geometry.scrollWidth>device.width+3||geometry.overflow.length)failures.push(device.name+'/'+id+' horizontal overflow '+JSON.stringify(geometry));
    if(geometry.buttonHeight<44||geometry.buttonWidth<44)failures.push(device.name+'/'+id+' primary action too small');
    if(!geometry.scene.includes('gradient')||!geometry.accent)failures.push(device.name+'/'+id+' missing scene/tokens');
+   // WCAG contrast for opaque interactive controls: calculate from rendered CSS colors,
+   // not from artistic palette guesses. Background scenery and translucent panels
+   // still require a separate visual/accessibility review.
+   const ratios=await page.evaluate(()=>{
+     function channels(css){
+       const m=css.match(/^rgba?\\(([^)]+)\\)$/);
+       if(!m)return null;
+       const a=m[1].split(/[\\s,\\/]+/).filter(Boolean).map(Number);
+       return a.length>=3?a:null;
+     }
+     function luminance(channels){
+       const linear=channels.slice(0,3).map(x=>{
+         const v=x/255;return v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2.4);
+       });
+       return linear[0]*0.2126+linear[1]*0.7152+linear[2]*0.0722;
+     }
+     return ['#primary','.choices button[aria-pressed="true"]','.choices button[data-choice]:not([aria-pressed="true"])'].map(selector=>{
+       const node=document.querySelector(selector);
+       if(!node)return {selector,error:'missing button'};
+       const styles=getComputedStyle(node),foreground=channels(styles.color),background=channels(styles.backgroundColor);
+       if(!foreground||!background||background[3]===0)return {selector,error:'missing opaque colors'};
+       const a=luminance(foreground),b=luminance(background);
+       return {selector,ratio:Number(((Math.max(a,b)+.05)/(Math.min(a,b)+.05)).toFixed(2)),foreground:styles.color,background:styles.backgroundColor};
+     });
+   });
+   for(const item of ratios){
+     contrastMeasurements.push({device:device.name,theme:id,...item});
+     if(item.error||item.ratio<4.5)failures.push(device.name+'/'+id+' contrast below 4.5: '+JSON.stringify(item));
+   }
    const shot=device.name+'-'+id+'.png';
    await page.screenshot({path:join(out,shot),fullPage:true,animations:'disabled'});
    manifest.push({device:device.name,theme:id,shot,viewport:geometry.viewport,scrollWidth:geometry.scrollWidth,accent:geometry.accent});
@@ -75,7 +104,7 @@ try{
   assert.deepEqual(errors,[],'browser errors on '+device.name);
   await ctx.close();
  }
- await writeFile(join(out,'manifest.json'),JSON.stringify({generatedAt:new Date().toISOString(),screenshots:manifest,failures},null,2));
+ await writeFile(join(out,'manifest.json'),JSON.stringify({generatedAt:new Date().toISOString(),screenshots:manifest,contrastMeasurements,failures},null,2));
  assert.deepEqual(failures,[],'visual layout smoke detected overflow/touch problems');
  console.log('La Binch DA browser visual: '+manifest.length+' captures, '+devices.length+' viewports, '+themes.length+' visual themes; zero overflow or page errors');
 }catch(e){console.error(e);process.exitCode=1;}
