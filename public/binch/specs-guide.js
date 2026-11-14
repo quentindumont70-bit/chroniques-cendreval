@@ -52,7 +52,9 @@ function render(){
  $('binch-specs-cards').innerHTML=guides.filter(x=>(state.filter||'all')==='all'||x.cls===state.filter).map(x=>'<button type="button" class="binch-spec-card'+(x.id===g.id?' active':'')+'" data-spec-id="'+x.id+'" aria-pressed="'+(x.id===g.id)+'"><span>'+esc(x.cls)+'</span><strong>'+esc(x.name)+'</strong><small>'+esc(x.role)+'</small></button>').join('');
  const route=$('binch-specs-route');
  if(g.id!=='druid-feral'){
-  route.innerHTML='<p class="binch-specs-sources">Ce profil possède un guide source et un calculateur Forever. Son ordre détaillé de talents n’est pas encore certifié dans La Binch : aucun rang fictif affiché.</p>';return;
+  route.innerHTML='<p class="binch-specs-sources">Ce profil possède un guide source et un calculateur Forever. Son ordre détaillé de talents n’est pas encore certifié dans La Binch : aucun rang fictif affiché.</p>';
+  $('binch-specs-pin-state').textContent=state.pinned?'Build épinglé dans le bandeau flottant.':'Bandeau non épinglé.';
+  renderPinned();return;
  }
  const pts=Math.max(0,lvl-9),n=nextPoint(lvl);
  const owned=build(lvl);
@@ -88,7 +90,7 @@ function mount(){
  $('binch-specs-pin').onclick=()=>{state.pinned=!state.pinned;persist();render()};
  $('binch-specs-pin-open').onclick=navigate;
  $('binch-specs-pin-close').onclick=()=>{state.pinned=false;persist();render()};
- document.addEventListener('grimoire:sync',render);window.addEventListener('storage',e=>{if(e.key===KEY){state=read();levelLocked=Number.isInteger(state.level);render()}else if(e.key==='grimoire.hub.v3'||e.key==='grimoire.bridge.last')render()});
+ document.addEventListener('grimoire:sync',render);window.addEventListener('storage',e=>{if(e.key===KEY){state=read();levelLocked=Number.isInteger(state.level)&&state.level>=10&&state.level<=60;render()}else if(e.key==='grimoire.hub.v3'||e.key==='grimoire.bridge.last')render()});
  render();return true;
 }
 function start(){if(mount())return;const app=document.getElementById('app');if(!app)return;const observer=new MutationObserver(()=>{if(mount())observer.disconnect()});observer.observe(app,{childList:true,subtree:true});setTimeout(()=>observer.disconnect(),15000)}
