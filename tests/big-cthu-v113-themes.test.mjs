@@ -95,7 +95,9 @@ test('V113: stockage bloqué ou valeur inattendue : aucune erreur et thème util
 
 test('V113: préchargement sans scintillement et styles respectueux du mouvement réduit',async()=>{
  const [home,css,sw]=await Promise.all(['index.html','cockpit-themes.css','sw.js'].map(read));
- assert.ok(home.indexOf("localStorage.getItem('big-cthu-cockpit-theme-v1')")<home.indexOf('href="./cockpit-themes.css"'));
+ assert.ok(home.indexOf('<script src="./cockpit-themes.js"></script>')<home.indexOf('</head>'),'theme is loaded before first body paint');
+ const js=await read('cockpit-themes.js');
+ assert.match(js,/apply\(stored\(\),false\)/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
  assert.match(css,/#cthuThemeMenu\[hidden\]/);
  assert.match(css,/--cthu-accent/);
