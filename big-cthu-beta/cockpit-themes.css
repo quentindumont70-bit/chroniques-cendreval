@@ -390,3 +390,14 @@ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) > .shell > .her
 .active-pulse-item strong{overflow-wrap:anywhere;font-size:14px}
 .active-pulse-next{font-size:13px;line-height:1.45;color:var(--cthu-sub);overflow-wrap:anywhere}
 @media(max-width:700px){.active-pulse-list{grid-template-columns:1fr}.active-pulse-item{min-height:66px}}
+
+/* V132 : une archive discrète, à la demande — aucun module historique supprimé. */
+.cthu-legacy-details{margin-bottom:20px}
+.cthu-legacy-details summary{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;cursor:pointer;min-height:48px;font-size:15px;font-weight:800;color:var(--cthu-accent);list-style:none}
+.cthu-legacy-details summary::-webkit-details-marker{display:none}
+.cthu-legacy-details summary:before{content:"▸";font-size:18px;margin-right:3px}
+.cthu-legacy-details[open] summary:before{content:"▾"}
+.cthu-legacy-details summary .muted{font-weight:450;font-size:12px}
+.cthu-legacy-details summary:focus-visible{outline:2px solid var(--cthu-accent);outline-offset:3px;border-radius:8px}
+.cthu-legacy-details #section{margin:15px 0;scroll-margin-top:30px}
+@media(max-width:640px){.cthu-legacy-details summary{align-items:flex-start;flex-direction:column;gap:4px}}
