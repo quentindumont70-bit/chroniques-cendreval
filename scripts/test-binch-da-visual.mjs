@@ -98,6 +98,14 @@ try{
    await page.screenshot({path:join(out,shot),fullPage:true,animations:'disabled'});
    manifest.push({device:device.name,theme:id,shot,viewport:geometry.viewport,scrollWidth:geometry.scrollWidth,accent:geometry.accent});
   }
+  // The art gallery must remain fully usable from a keyboard, even on touch-emulated viewports.
+  await page.locator('#neutral').focus();
+  await page.keyboard.press('Enter');
+  assert.equal(await page.locator('#stage').getAttribute('data-pair'),'neutral','Enter selects neutral theme');
+  await page.locator('[data-choice="troll-shaman"]').focus();
+  await page.keyboard.press('Space');
+  assert.equal(await page.locator('#stage').getAttribute('data-pair'),'troll-shaman','Space selects race-class theme');
+  assert.equal(await page.locator('[data-choice="troll-shaman"]').getAttribute('aria-pressed'),'true');
   await page.locator('#motion').click();
   assert.equal(await page.locator('#motion').getAttribute('aria-pressed'),'true');
   assert.equal(await page.locator('#stage').evaluate(el=>el.classList.contains('reduced')),true);
