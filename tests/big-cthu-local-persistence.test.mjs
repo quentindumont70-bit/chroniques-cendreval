@@ -116,7 +116,7 @@ test('Cockpit: reject invalid task imports before overwriting local tasks', asyn
   assert.match(h.alerts.at(-1), /Import impossible/);
 });
 
-test('Capture: a failed inbox write can be retried without duplicating the destination', async () => {
+test('Capture: initial write failure is retryable; automatic send stays idempotent', async () => {
   const box = await boot('capture.html');
   const inboxKey = 'big-cthu-v2-inbox-v1';
   const tasksKey = 'big-cthu-v2-demo-tasks';
@@ -127,19 +127,29 @@ test('Capture: a failed inbox write can be retried without duplicating the desti
   box.setFull(true);
   await box.get('form').fire('submit');
   assert.equal(box.memory.has(inboxKey), false);
+  assert.equal(box.memory.has(tasksKey), false);
   box.setFull(false);
   await box.get('form').fire('submit');
   assert.equal(JSON.parse(box.memory.get(inboxKey)).length, 1);
-  box.setFailedKey(inboxKey);
-  let send = box.get('list').children[0].children[1].children[0];
-  await send.fire('click');
-  assert.equal(JSON.parse(box.memory.get(tasksKey)).length, 1);
-  assert.equal(JSON.parse(box.memory.get(inboxKey))[0].status, 'new');
-  box.setFailedKey(null);
-  send = box.get('list').children[0].children[1].children[0];
-  await send.fire('click');
   assert.equal(JSON.parse(box.memory.get(tasksKey)).length, 1);
   assert.equal(JSON.parse(box.memory.get(inboxKey))[0].status, 'sent');
+
+  // Simulate a recovered pending inbox entry after a partially written send.
+  const pending = JSON.parse(box.memory.get(inboxKey));
+  pending[0].status = 'new';
+  const retry = await boot('capture.html', {
+    [inboxKey]: JSON.stringify(pending), [tasksKey]: box.memory.get(tasksKey),
+  });
+  retry.setFailedKey(inboxKey);
+  let send = retry.get('list').children[0].children[1].children[0];
+  await send.fire('click');
+  assert.equal(JSON.parse(retry.memory.get(tasksKey)).length, 1);
+  assert.equal(JSON.parse(retry.memory.get(inboxKey))[0].status, 'new');
+  retry.setFailedKey(null);
+  send = retry.get('list').children[0].children[1].children[0];
+  await send.fire('click');
+  assert.equal(JSON.parse(retry.memory.get(tasksKey)).length, 1);
+  assert.equal(JSON.parse(retry.memory.get(inboxKey))[0].status, 'sent');
 });
 
 test('Cockpit: report navigator connectivity without claiming cloud synchronization', async () => {
