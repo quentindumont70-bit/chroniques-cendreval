@@ -754,12 +754,13 @@ function importCharacter(snap){
  let completed=0;
  for(const id of snap.questIds){const discovery=FLAG_TO_DISCOVERY[id];if(discovery&&!done[discovery]){done[discovery]=true;completed++}}
  localStorage.setItem(doneKey,JSON.stringify(done));
- const last={name:next,realm:snap.realm,level:snap.level,zone:snap.zone,xp:snap.xp,xpMax:snap.xpMax,restedXP:snap.restedXP,questIds:snap.questIds.length,questLog:snap.questLog||[],questLogAPI:snap.questLogAPI||'unavailable',inventory:snap.inventory,equipment:snap.equipment,updated:new Date().toISOString(),completed};
+ const capturedAt=Number.isFinite(snap.timestamp)&&snap.timestamp>=946684800&&snap.timestamp<=Date.now()/1000+300?new Date(snap.timestamp*1000).toISOString():null;
+ const last={name:next,realm:snap.realm,level:snap.level,zone:snap.zone,xp:snap.xp,xpMax:snap.xpMax,restedXP:snap.restedXP,questIds:snap.questIds.length,questLog:snap.questLog||[],questLogAPI:snap.questLogAPI||'unavailable',inventory:snap.inventory,equipment:snap.equipment,capturedAt,updated:new Date().toISOString(),completed};
  last.bagQuestStep=BAG_CHAIN.reduce((a,[id,label])=>snap.questIds.includes(id)?label:a,'Pas encore détectée');
  last.questIdList=snap.questIds;
  localStorage.setItem('grimoire.bridge.last',JSON.stringify(last));
  const craftKey='grimoire.craft.v1';let craft={};try{craft=JSON.parse(localStorage.getItem(craftKey))||{}}catch{}craft.imports=craft.imports||{};craft.imports=Object.assign(craft.imports,{[next.trim().toLowerCase()+'-'+newRace+'-'+newClass]:{skills:snap.skills||{},updated:new Date().toISOString()}});localStorage.setItem(craftKey,JSON.stringify(craft));
- renderStatus('Profil importé : '+next+' · niveau '+snap.level+' · '+snap.zone+' · '+(snap.questLogAPI!=='unavailable'?(snap.questLog||[]).length+' quêtes actives identifiées':'journal de quêtes indisponible')+' · '+completed+' découverte(s) validée(s) · '+Object.keys(snap.skills||{}).length+' métiers.');
+ renderStatus('Profil importé : '+next+' · niveau '+snap.level+' · '+snap.zone+' · '+(snap.questLogAPI!=='unavailable'?(snap.questLog||[]).length+' quêtes actives identifiées':'journal de quêtes indisponible')+' · '+completed+' découverte(s) validée(s) · '+Object.keys(snap.skills||{}).length+' métiers.'+(capturedAt?(Date.now()-Date.parse(capturedAt)>86400000?' Attention : sauvegarde du jeu de plus de 24 h.':''):' Capture du jeu non datée.'));
  const name=$('pseudo'),level=$('level');if(name)name.value=next;if(level)level.value=snap.level;
  document.dispatchEvent(new CustomEvent('grimoire:sync',{detail:last}));
  // Original hub reads its own in-memory state and will reload it from localStorage at startup.
@@ -772,7 +773,7 @@ function mount(){
  const section=document.createElement('section');section.id='grimoire-bridge';section.className='panel section';
  section.innerHTML='<div class="eyebrow">Pont WoW → Carnet de route</div><h2>Importer mon personnage</h2><p>Import local du fichier <code>WTF/Account/.../SavedVariables/GrimoireSync.lua</code> après <code>/reload</code> ou déconnexion. Aucune donnée envoyée à un serveur. Sur Windows, sélectionner le fichier sauvegardé après <code>/reload</code>.</p><label for="grimoire-bridge-file" style="display:inline-block;cursor:pointer;padding:12px;border:1px solid var(--gold);border-radius:6px">Choisir GrimoireSync.lua</label><input type="file" id="grimoire-bridge-file" accept=".lua,.txt" style="position:absolute;width:1px;height:1px;opacity:0"><p id="grimoire-bridge-status" role="status" aria-live="polite" class="muted">Synchronisation manuelle sécurisée. L’état des quêtes non reconnues reste inchangé.</p><div id="grimoire-last-import" class="muted"></div><p class="muted">Le navigateur ne peut pas lire en permanence le dossier WoW sans ton autorisation ; cet import se fait à chaque nouvelle sauvegarde. Les quêtes compatibles sont validées par identifiant, jamais par simple niveau.</p>';
  const target=$('binch-sync-import-slot');if(target)target.append(section);else host.append(section);
- try{const last=JSON.parse(localStorage.getItem('grimoire.bridge.last'));if(last){$('grimoire-last-import').textContent='Dernier import : '+last.name+' · niveau '+last.level+' · '+(last.questIds||0)+' quêtes détectées · sac de couchage : '+(last.bagQuestStep||'Non détecté')}}catch{}
+ try{const last=JSON.parse(localStorage.getItem('grimoire.bridge.last'));if(last){$('grimoire-last-import').textContent='Dernier import : '+last.name+' · niveau '+last.level+' · '+(last.questIds||0)+' quêtes détectées · sac de couchage : '+(last.bagQuestStep||'Non détecté')+' · Capture du jeu : '+(last.capturedAt?new Date(last.capturedAt).toLocaleString('fr-FR'):'non datée')}}catch{}
  $('grimoire-bridge-file').addEventListener('change',async e=>{
   const file=e.target.files?.[0];if(!file)return;
   if(file.size>20*1024*1024){renderStatus('Fichier trop volumineux (20 Mo maximum).',true);return}
