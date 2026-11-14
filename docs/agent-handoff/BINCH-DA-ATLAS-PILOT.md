@@ -77,3 +77,11 @@ PR artistique : https://github.com/quentindumont70-bit/chroniques-cendreval/pull
 - Le workflow `.github/workflows/binch-da-lab.yml` lance à présent **deux jobs**, avec Playwright Chromium isolé et archivage des captures pendant 14 jours, y compris si une vérification échoue.
 - **GitHub Actions run 43633776347 : SUCCESS 2/2 jobs, 21 captures, zéro débordement et zéro erreur de page**. Les images sont disponibles dans les artefacts du run : https://github.com/quentindumont70-bit/chroniques-cendreval/actions/runs/43633776347.
 - Limites : ce passage confirme les dimensions, la navigation et l'absence de crash dans Chromium. Il ne certifie ni contraste WCAG, ni qualité esthétique manuellement revue, ni comportement exact sur appareils physiques. Les scènes restent de simples originaux procéduraux.
+
+## Golipette v0.8 — contraste mesuré dans Chromium
+
+- La recette `scripts/test-binch-da-visual.mjs` mesure maintenant les couleurs CSS réellement calculées des boutons opaques : action principale, sélection de thème active et sélection inactive, pour chacun des sept thèmes et trois dimensions de navigateur.
+- Le rapport enregistre `contrastMeasurements` dans `artifacts/binch-da-visual/manifest.json` avec la couleur du texte, le fond et le ratio calculé (luminance WCAG relative), et bloque la CI si le contraste descend sous **4,5:1**. Contrôles d'overflow, taille tactile minimale et capture 21 fois conservés.
+- **Run 43634282157 : SUCCESS 2/2 jobs** après correction du parsing CSS dans le script de test. Aucun contraste inférieur à 4,5:1 détecté dans les boutons testés.
+- La recette vérifie également les interactions clavier `Entrée` et `Espace` dans la galerie, à confirmer lors du prochain run.
+- **Périmètre honnête** : seuls les boutons opaques sont mesurés. Les textes sur fonds transparents, images et dégradés nécessitent une inspection visuelle/contraste plus approfondie ; ce travail ne prétend pas à une conformité WCAG globale ni à un test téléphone réel.
