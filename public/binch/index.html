@@ -747,6 +747,19 @@ function importCharacter(snap){
  const changed=before.trim().toLowerCase()!==next.trim().toLowerCase();
  // Do not accidentally switch characters or destroy a manually chosen profile.
  if(changed&&before&&before!=='Aventurier'&&!confirm('Importer le personnage '+next+' à la place de '+before+' ? Les états de quête restent séparés par personnage.')){renderStatus('Import annulé : le profil '+before+' est conservé.');return false;}
+ // Do not silently overwrite newer game capture with an older SavedVariables file.
+ // Compare only the same character and realm, using capture timestamps, never browser import timestamps.
+ let lastKnown={};try{lastKnown=JSON.parse(localStorage.getItem('grimoire.bridge.last'))||{}}catch{}
+ const incomingTime=Number(snap.timestamp);
+ const earlierTime=Date.parse(lastKnown.capturedAt||'');
+ const sameCharacter=String(lastKnown.name||'').trim().toLowerCase()===String(next||'').trim().toLowerCase()
+  &&String(lastKnown.realm||'').trim().toLowerCase()===String(snap.realm||'').trim().toLowerCase();
+ if(sameCharacter&&Number.isFinite(incomingTime)&&incomingTime>=946684800
+    &&Number.isFinite(earlierTime)&&incomingTime*1000<earlierTime-60000
+    &&!confirm('Attention : la sauvegarde WoW de '+next+' est plus ancienne que celle déjà importée. Remplacer les données récentes ?')){
+   renderStatus('Import annulé : sauvegarde plus ancienne refusée. Les données récentes sont conservées.');
+   return false;
+ }
  state.onboarded=true;state.race=newRace;state.classe=newClass;state.data={...prev,pseudo:next,level:String(snap.level),zone:snap.zone};
  localStorage.setItem(KEY,JSON.stringify(state));
  const doneKey='grimoire.discovery.done.v1.'+next.trim().toLowerCase()+'.'+newRace+'.'+newClass;
