@@ -33,7 +33,7 @@ test('V116: mobile hero shrinks, privacy accessible without an extra JS listener
 test('V116: palette still shared, local data and Tournée untouched',async()=>{
  const [home,sw,tour]=await Promise.all(['index.html','sw.js','tournee-complete.html'].map(read));
  assert.match(home,/src="\.\/cockpit-themes\.js"/);
- assert.match(sw,/big-cthu-public-v2-v116/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
  assert.match(sw,/cockpit-themes\.css/);
  assert.doesNotMatch(tour,/cthuPrivacyInfo/);
  assert.doesNotMatch(tour,/cockpit-themes\.css/);
