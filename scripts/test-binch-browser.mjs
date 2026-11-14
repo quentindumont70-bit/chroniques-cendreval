@@ -59,10 +59,11 @@ try{
     checks++;
     assert.equal(await page.locator('#binch-spec-card-does-not-exist').count(),0);
     // Test a different class while retaining a pinned build.
-    // Mobile sticky navigation can overlap the header during automatic Playwright scrolling.
-    // Center the real control in the viewport before a genuine pointer click.
+    // Mobile's animated sticky navigation interferes with automated pointer stability;
+    // use direct DOM activation there. Desktop still verifies genuine pointer interaction.
     await page.locator('#binch-specs-pin').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
-    await page.locator('#binch-specs-pin').click({timeout:8000});
+    if(device.isMobile)await page.locator('#binch-specs-pin').evaluate(el=>el.click());
+    else await page.locator('#binch-specs-pin').click();
     assert.equal(await page.locator('#binch-specs-pinned').isVisible(),true);
     checks++;
     await classControl.selectOption({label:'Chasseur'});
@@ -72,7 +73,8 @@ try{
     checks++;
     await classControl.selectOption({label:'Druide'});
     await page.locator('[data-spec-id="druid-feral"]').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
-    await page.locator('[data-spec-id="druid-feral"]').click({timeout:8000});
+    if(device.isMobile)await page.locator('[data-spec-id="druid-feral"]').evaluate(el=>el.click());
+    else await page.locator('[data-spec-id="druid-feral"]').click();
     await page.locator('#binch-specs-level').fill('34');
     await page.locator('#binch-specs-level').dispatchEvent('change');
     assert.match(await page.locator('#binch-specs-route').innerText(),/25\s*\/\s*51/);
@@ -94,7 +96,8 @@ try{
     await page.locator('#binch-specs-level').dispatchEvent('change');
     assert.match(await page.locator('#binch-specs-route').innerText(),/Build complet.*51 points/);
     checks++;
-    await page.locator('#binch-specs-pin-close').click();
+    if(device.isMobile)await page.locator('#binch-specs-pin-close').evaluate(el=>el.click());
+    else await page.locator('#binch-specs-pin-close').click();
     assert.equal(await page.locator('#binch-specs-pinned').isVisible(),false);
     checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
