@@ -178,3 +178,11 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - Nouveau scénario Chromium sur desktop et mobile simulé : fichier GF6 du même personnage, royaume et niveau inférieur, capture ancienne ; confirmation rejetée ; aucune modification des clés de profil, import et métiers. **Run 43624867558 : SUCCESS 4/4**, 46 vérifications Chromium (23 par appareil), Node 60 assertions, Lua interop et PowerShell verts.
 - Toujours aucune vraie donnée de joueur dans les tests et **aucun merge ni publication de la PR**.
 - Lien public en fin de livraison : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/.
+
+## Golipette — préservation des personnages multi-royaumes et provenance (14 novembre)
+- `public/binch/index.html` vérifie désormais **avant toute mutation** que le même nom de personnage ne provient pas d'un autre royaume lorsque les royaumes sont connus ; le joueur doit confirmer explicitement la substitution. Refus : profil actuel, dernier import, découvertes et métiers conservés.
+- Une nouvelle capture WoW **non datée, invalide ou située dans le futur** ne peut plus écraser silencieusement une capture datée du même personnage et royaume. L'utilisateur peut accepter explicitement cette importation ; le comportement d'une capture ancienne datée (tolérance 60 secondes) est conservé.
+- `scripts/test-binch-browser.mjs` ajoute deux cas de refus avec comparaison intégrale des données de profil/import/métiers sur desktop/mobile. Le test attend maintenant le rechargement normal après import, évitant une course entre Playwright et `location.reload()`.
+- **GitHub Actions 43625376256 : 4/4 SUCCESS** (50 contrôles navigateur : 25 ordinateur et 25 mobile émulé ; Node 60 assertions, Lua 5.1 interop et PowerShell syntaxe). Tests exclusivement synthétiques, pas de fichiers joueur.
+- Les roadmaps Discord et **refonte graphique next-gen avec identité propre à chaque paire race × classe jouable** demeurent enregistrées, mais la priorité reste intégration contrôlée OpenCode / `main`, tests réels de WoW/Windows/mobile et bêta de guilde.
+- Lien public obligatoire à la fin de chaque livraison : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ (version publique antérieure, PR non fusionnée).
