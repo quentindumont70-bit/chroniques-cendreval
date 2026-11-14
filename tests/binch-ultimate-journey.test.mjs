@@ -29,3 +29,12 @@ test('Ultimate: respect manual objective state and bound input',()=>{
  assert.ok(!p.actions.some(x=>x.id==='objective:done'));
  assert.equal(p.actions.length<=12,true);
 });
+
+test('Ultimate: real local guild duties are ranked but never marked as Discord-confirmed',()=>{
+ const p=generate({level:21,mode:'dungeon',guildTasks:[{id:'boss',title:'Préparer le groupe de donjon',priority:'urgent',status:'todo'},{id:'finished',title:'Raid terminé',priority:'urgent',status:'done'}]});
+ const task=p.actions.find(x=>x.id==='guild:boss');
+ assert.ok(task);
+ assert.equal(task.page,'gm');
+ assert.match(task.description,/pas une confirmation Discord/);
+ assert.equal(p.actions.some(x=>x.id==='guild:finished'),false);
+});
