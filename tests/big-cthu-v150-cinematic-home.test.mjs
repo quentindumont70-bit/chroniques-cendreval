@@ -60,7 +60,7 @@ test('V150: conserver le dock mobile et les accès officiels, sans anciennes maq
  assert.ok(start>0);
  const dock=html.slice(start,html.indexOf('</nav>',start));
  assert.equal((dock.match(/<a href=/g)||[]).length,4);
- for(const href of ['#activePulse','./tournee-complete.html','./maison.html','./sauvegardes.html'])
+ for(const href of ['#activePulse','./tournee-complete.html','./maison.html','./capture.html'])
   assert.ok(dock.includes('href="'+href+'"'),href);
  assert.match(html,/\.cthu-mobile-dock a\{display:grid;place-items:center/);
  assert.match(html,/body:not\(\[data-cthu-theme-tentacle="yes"\]\)/);

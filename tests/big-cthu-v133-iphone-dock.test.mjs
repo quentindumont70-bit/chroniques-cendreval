@@ -11,7 +11,7 @@ test('V133: quatre raccourcis locaux adaptés aux vrais gestes quotidiens',async
  assert.ok(start>0&&end>start);
  const dock=html.slice(start,end);
  assert.equal((dock.match(/<a href=/g)||[]).length,4);
- for(const href of ['#activePulse','./tournee-complete.html','./maison.html','./sauvegardes.html'])assert.ok(dock.includes('href="'+href+'"'),href);
+ for(const href of ['#activePulse','./tournee-complete.html','./maison.html','./capture.html'])assert.ok(dock.includes('href="'+href+'"'),href);
  assert.match(dock,/aria-label="Accès rapides iPhone"/);
  assert.match(html,/id="activePulse"/);
 });
