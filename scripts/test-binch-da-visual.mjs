@@ -211,12 +211,13 @@ try{
    assert.ok(result.buttons>=2&&result.syncButton,device.name+'/'+variant.name+' functional actions retained');
    assert.ok(result.background.includes('gradient'),device.name+'/'+variant.name+' hero background');
    if(result.scrollWidth>result.viewport+3)failures.push(device.name+'/'+variant.name+' real homepage overflow');
+   const shot=device.name+'-real-'+variant.name+'.png';
+   // Photograph the ACTUAL homepage before leaving it for sync navigation.
+   await page.screenshot({path:join(out,shot),fullPage:true,animations:'disabled'});
    if(variant.enabled){
     await page.locator('#binch-front .binch-front-buttons [data-binch-target="sync"]').first().click();
     await page.locator('#page-sync').waitFor({state:'visible',timeout:10000});
    }
-   const shot=device.name+'-real-'+variant.name+'.png';
-   await page.screenshot({path:join(out,shot),fullPage:true,animations:'disabled'});
    liveChecks.push({device:device.name,variant:variant.name,shot,...result});
    await ctx.close();
   }
