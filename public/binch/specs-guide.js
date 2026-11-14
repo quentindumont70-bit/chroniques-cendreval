@@ -83,7 +83,9 @@ function render(){
  $('binch-specs-cards').innerHTML=guides.filter(x=>(state.filter||'all')==='all'||x.cls===state.filter).map(x=>'<button type="button" class="binch-spec-card'+(x.id===g.id?' active':'')+'" data-spec-id="'+x.id+'" aria-pressed="'+(x.id===g.id)+'"><span>'+esc(x.cls)+'</span><strong>'+esc(x.name)+'</strong><small>'+esc(x.role)+'</small></button>').join('');
  const route=$('binch-specs-route');
  if(g.id!=='druid-feral'){
-  route.innerHTML='<p class="binch-specs-sources">Ce profil possède des guides sources et un calculateur Forever. Son ordre de talents détaillé n’est pas certifié point par point dans La Binch : aucun rang fictif affiché. Le parcours farouche ci-contre reste consultable en sélectionnant « Farouche — pex ».</p>';return;
+  route.innerHTML='<p class="binch-specs-sources">Ce profil possède des guides sources et un calculateur Forever. Son ordre de talents détaillé n’est pas certifié point par point dans La Binch : aucun rang fictif affiché. Le parcours farouche ci-contre reste consultable en sélectionnant « Farouche — pex ».</p>';
+  $('binch-specs-pin-state').textContent=state.pinned?'Build épinglé dans le bandeau flottant.':'Bandeau non épinglé.';
+  renderPinned();return;
  }
  const pts=points(lvl),n=nextPoint(lvl),steps=stepsAt(lvl);
  route.innerHTML='<div class="binch-specs-progress"><strong>'+pts+' / 51 points · niveau '+lvl+'</strong><span>'+(n?'Prochain point au niveau '+n.level+' : '+esc(n.name)+' ('+n.rank+'/'+n.max+')':'Build complet : 51 points au niveau 60')+'</span></div>'+
