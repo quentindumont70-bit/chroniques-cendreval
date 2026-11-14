@@ -169,8 +169,17 @@ try{
     assert.equal(profile.classe,'Druide','browser class preserved after import');
     assert.equal(profile.data.pseudo,'Golipette-QA','no character switch');
     checks++;
+    // Cockpit displays the date captured in game, NOT the recent import time.
+    await page.locator('#page-command').waitFor({state:'attached',timeout:10000});
+    await page.locator('#app nav.nav [data-page="command"]').evaluate(el=>el.click());
+    await page.waitForFunction(()=>document.querySelector('#binch-command-sync')?.textContent?.includes('Capture du jeu'));
+    const syncLabel=await page.locator('#binch-command-sync').innerText();
+    assert.match(syncLabel,/Capture du jeu.*2023/);
+    assert.match(syncLabel,/données du jeu de plus de 24 h/);
+    assert.equal(await page.locator('#binch-command-sync').getAttribute('data-fresh'),'no');
+    checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
-    console.log('Browser '+device.name+': 20 checks passed');
+    console.log('Browser '+device.name+': 21 checks passed');
     await context.close();
   }
   console.log('Browser Specs + AH + GrimoireSync: '+checks+' checks passed');
