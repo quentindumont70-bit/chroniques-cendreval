@@ -59,4 +59,4 @@ API de partage communautaire (si autorisée ; secrets côté serveur)
 
 ## Sources techniques à revisiter à l'implémentation
 
-Documentation officielle Discord : [Bots & Companion Apps](https://docs.discord.com/developers/topics/communities/communities), [Application Commands](https://docs.discord.com/developers/docs/interactions/slash-commands). Toujours vérifier les URLs et API actuelles avant le développement.
+Documentation officielle Discord : [Bots & Companion Apps](https://github.com/discord/discord-api-docs/blob/main/developers/platform/bots.mdx), [Application Commands](https://docs.discord.com/developers/docs/interactions/slash-commands). Toujours vérifier les URLs et API actuelles avant le développement.
