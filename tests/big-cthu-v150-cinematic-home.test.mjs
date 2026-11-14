@@ -36,6 +36,10 @@ test('V150: modules vivants et scripts existants présents, sans migration de do
   assert.ok(html.includes(key),key);
  assert.match(html,/function renderRadar\(\)/);
  assert.match(html,/function renderFavorites\(\)/);
+ assert.match(html,/id="cthuCinemaThemeName"/);
+ const selector=await read('cockpit-themes.js');
+ assert.match(selector,/return valid\(name\)\?name:'premium'/);
+ assert.match(selector,/cinemaLabel\.textContent=themes\[name\]/);
  assert.match(html,/renderProfile\(\);renderFavorites\(\);renderTasks\(\);renderRadar\(\);renderNetwork\(\)/);
  assert.match(html,/href="\.\/tournee-complete\.html"/);
  assert.match(html,/href="\.\/sauvegardes\.html"/);
