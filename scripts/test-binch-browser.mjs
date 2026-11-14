@@ -49,20 +49,6 @@ try{
     page.on('pageerror',e=>errors.push(e.message));
     await page.goto(base,{waitUntil:'domcontentloaded',timeout:30000});
     await page.locator('#binch-specs').waitFor({state:'attached',timeout:30000});
-    // Permanent first-page sync shortcut must invoke the real GrimoireSync file picker.
-    await page.locator('#app nav.nav [data-page="hub"]').evaluate(el=>el.click());
-    const quickImport=page.locator('#binch-front-sync-import');
-    await assertVisible(page,'#binch-front-sync',device.name+' homepage sync shortcut');
-    assert.match(await quickImport.innerText(),/Importer GrimoireSync.lua/);
-    const chooserPromise=page.waitForEvent('filechooser',{timeout:7000});
-    await quickImport.click({timeout:7000});
-    const chooser=await chooserPromise;
-    assert.equal(await chooser.element().getAttribute('id'),'grimoire-bridge-file','homepage uses existing validated importer');
-    await chooser.setFiles([]);
-    checks++;
-    await page.locator('#binch-front-sync-details').click({timeout:7000});
-    assert.equal(await page.locator('#page-sync').isVisible(),true,'homepage sync help opens sync section');
-    checks++;
     // Programmatic navigation is intentional: the mobile nav is collapsible.
     await page.locator('#app nav.nav [data-page="specs"]').evaluate(el=>el.click());
     await assertVisible(page,'#binch-specs',device.name+' Specs');
@@ -203,6 +189,20 @@ try{
     assert.match(sourceLabel,/Capture WoW.*2023.*à actualiser/,'home shows source game age');
     assert.match(await page.locator('#binch-front-tasks').textContent(),/Rafraîchir les données du jeu/,'home offers resync priority');
     checks++;
+    // Home quick importer delegates to the guarded file picker; no duplicate importer.
+    assert.equal(await page.locator('#binch-front-sync').count(),1,'permanent first-page sync panel');
+    const quickImport=page.locator('#binch-front-sync-import');
+    assert.match(await quickImport.innerText(),/Importer GrimoireSync.lua/);
+    const chooserPromise=page.waitForEvent('filechooser',{timeout:7000});
+    await quickImport.evaluate(el=>el.click());
+    const chooser=await chooserPromise;
+    assert.equal(await chooser.element().getAttribute('id'),'grimoire-bridge-file','homepage reuses existing importer');
+    await chooser.setFiles([]);
+    checks++;
+    await page.locator('#binch-front-sync-details').evaluate(el=>el.click());
+    assert.equal(await page.locator('#page-sync').isVisible(),true,'quick guide opens Synchronisation');
+    checks++;
+
     // An old same-character SavedVariables snapshot must need explicit consent.
     const beforeOld=await page.evaluate(()=>({
       profile:localStorage.getItem('grimoire.hub.v3'),
