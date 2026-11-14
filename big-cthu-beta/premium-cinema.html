@@ -329,6 +329,51 @@ footer p{line-height:1.6;max-width:900px;margin:0}
  .module:hover:before,.module:focus-visible:before{transform:none!important}
 }
 
+
+/* V124 — architecture de verrière, sceau alpin et socle de verre. */
+.topinner{border-radius:24px 24px 20px 20px}
+.topinner:after{content:"";position:absolute;z-index:-1;pointer-events:none;inset:0;border-radius:inherit;
+ background:linear-gradient(110deg,rgba(255,255,255,.08),transparent 31% 72%,rgba(255,220,174,.055));
+ box-shadow:inset 0 2px 0 rgba(255,255,255,.11),inset 0 -1px 0 rgba(255,213,158,.14)}
+.brandmark{position:relative;transform:rotate(-3deg);border-color:rgba(207,240,255,.7)}
+.brandmark:after{content:"";position:absolute;inset:4px;border-radius:11px;border:1px solid rgba(225,246,255,.24)}
+.brand strong{text-shadow:0 2px 17px rgba(162,221,255,.18)}
+.topbar:after{content:"";display:block;height:2px;max-width:calc(100% - 75px);margin:0 auto;
+ background:linear-gradient(90deg,transparent,rgba(245,219,175,.4) 20%,rgba(170,219,255,.48) 52%,rgba(245,219,175,.25) 78%,transparent);
+ filter:blur(.35px)}
+.hero{overflow:visible;isolation:isolate}
+.hero-content{overflow:hidden;border-radius:inherit}
+.hero:before{border-radius:inherit}
+.hero:after{border-radius:inherit}
+.hero-content:after{content:"";position:absolute;pointer-events:none;inset:16px;border-radius:18px;
+ border:1px solid rgba(255,255,255,.09);border-bottom-color:transparent;z-index:-1;
+ box-shadow:inset 0 1px rgba(255,255,255,.085)}
+.scene-stamp{position:absolute;top:35px;right:42px;display:flex;align-items:center;gap:11px;
+ font-size:10px;line-height:1.45;color:#e8f5ff;letter-spacing:.18em;font-weight:800;
+ text-shadow:0 2px 15px rgba(0,9,25,.8);opacity:.9}
+.scene-stamp__ring{width:44px;height:44px;display:grid;place-items:center;border-radius:50%;
+ border:1px solid rgba(225,240,255,.71);font-size:26px;font-weight:400;
+ box-shadow:inset 0 0 0 4px rgba(4,24,40,.31),0 0 24px rgba(134,221,255,.2)}
+.hero-bottom:after{content:"";flex:1;min-width:100px;border-bottom:1px solid rgba(223,242,255,.22);
+ align-self:center;transform:translateY(1px)}
+.section-head{position:relative}
+.section-head:after{content:"";position:absolute;left:0;right:0;bottom:-9px;height:1px;
+ background:linear-gradient(90deg,rgba(200,229,245,.55),rgba(200,229,245,.11) 75%,transparent)}
+.panel-grid{margin-top:28px}
+.module{box-shadow:0 19px 56px rgba(1,11,29,.44),inset 0 1px rgba(255,255,255,.2)}
+.module .open{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+ background:rgba(10,40,61,.53);border:1px solid rgba(205,236,255,.34);
+ -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+@media(max-width:760px){
+ .hero{overflow:hidden}
+ .scene-stamp{top:21px;right:20px;font-size:9px;gap:7px}
+ .scene-stamp__ring{width:33px;height:33px;font-size:20px}
+ .hero-content:after{inset:8px;border-radius:16px}
+ .hero-bottom:after{display:none}
+ .panel-grid{margin-top:23px}
+}
+@media(max-width:370px){.scene-stamp{top:17px;right:16px;font-size:8px}.scene-stamp__ring{width:28px;height:28px}}
+
 </style>
 </head>
 <body>
@@ -337,12 +382,13 @@ footer p{line-height:1.6;max-width:900px;margin:0}
   <div class="topinner">
    <a class="brand" href="./index.html" aria-label="Retour au cockpit officiel Big Cthu"><span class="brandmark"><span aria-hidden="true">🐙</span></span><span><strong>BIG CTHU</strong><small>COMMAND CENTER PREMIUM</small></span></a>
    <nav class="nav" aria-label="Navigation principale"><a class="current" href="#haut">⌂ Cockpit</a><a href="#modules">Priorités</a><a href="#focus">Mes projets</a><a href="./maison.html">Maison</a></nav>
-   <div class="header-right"><span class="preview-flag">Concept visuel</span><a class="pill" href="./index.html" title="Retour à l'application actuelle">↶ Actuel</a><span class="pill gold">✦ Premium</span></div>
+   <div class="header-right"><span class="preview-flag">Galerie visuelle</span><a class="pill" href="./index.html" title="Retour à l'application actuelle">↶ Actuel</a><span class="pill gold">✦ Premium</span></div>
   </div>
  </header>
  <main class="container" id="haut">
   <section class="hero" aria-labelledby="intro">
    <div class="hero-content">
+    <div class="scene-stamp" aria-hidden="true"><span class="scene-stamp__ring">✦</span><span>CRYSTAL<br>VISTA</span></div>
     <div class="eyebrow">UN LIEU AU-DESSUS DU BRUIT · BIG CTHU</div>
     <h1 id="intro">Ton monde.<br><em>Sous contrôle.</em></h1>
     <p class="subtitle">Un cockpit à la hauteur de tes ambitions. Ce qui mérite ton attention, sans l'encombrement du reste.</p>
