@@ -23,6 +23,9 @@ header small{color:#afc6b5}
 #stage{--accent:#94b76d;--accent2:#42644c;--gold:#e1bb79;--ink:#f6e9cf;--metal:#2a4135;--texture:repeating-linear-gradient(132deg,transparent 0 16px,#d0e7a50b 17px 18px);--crest:"✦";--line:#748c6a;--glow:#a2c78638;--shape:46% 54% 62% 38%;position:relative;overflow:hidden;border:1px solid var(--line);border-radius:17px;isolation:isolate;background:radial-gradient(circle at 77% 35%,var(--glow),transparent 42%),linear-gradient(135deg,#223025 0%,#0c1411 70%);box-shadow:0 30px 90px #0009}
 #stage[data-pair=troll-shaman]{--accent:#69cce0;--accent2:#326e7a;--gold:#d7ad6b;--metal:#213d43;--texture:repeating-linear-gradient(90deg,transparent 0 22px,#7cdae31a 24px 25px);--line:#417c84;--glow:#56d1e24b;--shape:62% 30% 57% 40%}
 #stage[data-pair=orc-warrior]{--accent:#f19857;--accent2:#6b3e27;--gold:#dbb88b;--metal:#3d2e2a;--texture:repeating-linear-gradient(145deg,transparent 0 15px,#ffb2820e 15px 17px);--line:#926b4f;--glow:#ee763b4b;--shape:22% 37% 35% 15%}
+#stage[data-pair=elf-druid]{--accent:#b9a5ff;--accent2:#52647a;--gold:#d7e2ca;--metal:#263448;--texture:repeating-radial-gradient(circle at 70% 40%,transparent 0 26px,#a6b7f017 27px 28px);--line:#8483ab;--glow:#b8a9ff37;--shape:52% 52% 35% 35%}
+#stage[data-pair=undead-warlock]{--accent:#c7a0fa;--accent2:#635078;--gold:#cfbca4;--metal:#2d2535;--texture:repeating-linear-gradient(0deg,transparent 0 18px,#b4a0ca10 19px 20px);--line:#745c81;--glow:#b26bd949;--shape:11% 11% 39% 39%}
+#stage[data-pair=gnome-mage]{--accent:#8de4ec;--accent2:#467e97;--gold:#e6c686;--metal:#1d3d4c;--texture:repeating-linear-gradient(90deg,transparent 0 19px,#a6eef414 20px 21px);--line:#5b92a1;--glow:#74e0e447;--shape:24% 24% 24% 24%}
 #stage::before{content:"";position:absolute;inset:0;background:var(--texture);pointer-events:none}
 #stage::after{content:"";position:absolute;width:470px;height:470px;right:-120px;top:-160px;border:1px solid var(--accent2);border-radius:50%;box-shadow:0 0 0 55px #ffffff04,0 0 0 105px #ffffff03;opacity:.7;pointer-events:none}
 .stage-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(255px,.72fr);position:relative;z-index:1}
@@ -62,11 +65,14 @@ footer a{color:#d9bc84}
 <body>
 <div class="layout">
 <header><div class="brand">✦ La Binch <small>· Atelier des mondes</small></div><small>Laboratoire graphique · prototype isolé · non publié</small></header>
-<p class="notice">Trois <strong>concepts artistiques originaux</strong> pour illustrer le moteur race × classe. Les combinaisons sont des études visuelles, <strong>pas une vérification de leur disponibilité sur WoW Forever</strong>. Aucun accès au jeu ni aucune donnée personnelle.</p>
+<p class="notice">Six <strong>concepts artistiques originaux</strong> pour illustrer le moteur race × classe. Les combinaisons sont des études visuelles, <strong>pas une vérification de leur disponibilité sur WoW Forever</strong>. Aucun accès au jeu ni aucune donnée personnelle.</p>
 <div class="choices" role="group" aria-label="Choisir une direction artistique">
 <button type="button" data-choice="tauren-druid" aria-pressed="true">Tauren · Druide</button>
 <button type="button" data-choice="troll-shaman" aria-pressed="false">Troll · Chaman</button>
 <button type="button" data-choice="orc-warrior" aria-pressed="false">Orc · Guerrier</button>
+<button type="button" data-choice="elf-druid" aria-pressed="false">Elfe · Druide</button>
+<button type="button" data-choice="undead-warlock" aria-pressed="false">Mort-vivant · Démoniste</button>
+<button type="button" data-choice="gnome-mage" aria-pressed="false">Gnome · Mage</button>
 <button type="button" id="motion" aria-pressed="false">Effets réduits : non</button>
 </div>
 <main id="stage" data-pair="tauren-druid" aria-live="polite">
@@ -88,7 +94,10 @@ footer a{color:#d9bc84}
 const concepts={
  'tauren-druid':{culture:'Cuir rituel · Racines ancestrales',headline:"L’appel des anciens",summary:'Sous les plaines, les racines murmurent. Ton grimoire épouse le bois sculpté, les griffes et les rites de métamorphose.',signature:'Cœur du Vivant',material:'Bois · cuir · jade',role:'Gardien des métamorphoses',goal:'Objectif épinglé : prochain talent de Farouche.',ornament:'✧',crest:'M32 54C8 40 10 18 32 9c22 9 24 31 0 45Zm0 0V17M20 34l12 8 12-8'},
  'troll-shaman':{culture:'Totems gravés · Éclairs turquoise',headline:'Le pacte des tempêtes',summary:'Les cordes des totems vibrent au rythme du ciel. Une géométrie rituelle et des éclairs contenus sculptent le grimoire.',signature:'Totem des Trois Orages',material:'Fibre · pierre · azur',role:'Médiateur des éléments',goal:'Objectif épinglé : rassembler les composants du prochain totem.',ornament:'⌁',crest:'M28 5 12 34h14l-4 25 31-36H36l7-18-15 0Z'},
- 'orc-warrior':{culture:'Fer noir · Rivets · Braises',headline:'Le serment du fer',summary:'Une armurerie de campagne gravée dans l’acier. Ici, les lignes de force et les entailles racontent la discipline du guerrier.',signature:'Marque du Siège',material:'Fer forgé · cuir · braises',role:'Sentinelle du front',goal:'Objectif épinglé : préparer l’équipement avant la prochaine expédition.',ornament:'✕',crest:'M10 12l44 40M54 12L10 52M16 13l-5 4 4 5M48 13l5 4-4 5M21 55l-6-6M43 55l6-6'}
+ 'orc-warrior':{culture:'Fer noir · Rivets · Braises',headline:'Le serment du fer',summary:'Une armurerie de campagne gravée dans l’acier. Ici, les lignes de force et les entailles racontent la discipline du guerrier.',signature:'Marque du Siège',material:'Fer forgé · cuir · braises',role:'Sentinelle du front',goal:'Objectif épinglé : préparer l’équipement avant la prochaine expédition.',ornament:'✕',crest:'M10 12l44 40M54 12L10 52M16 13l-5 4 4 5M48 13l5 4-4 5M21 55l-6-6M43 55l6-6'},
+ 'elf-druid':{culture:'Clair de lune · Verrières de feuilles',headline:'Les veilleurs du croissant',summary:'Un manuscrit de nuit bleutée. Les filigranes et les cercles lunaires dessinent une lecture plus silencieuse que les racines des plaines.',signature:'Croissant des Sentinelles',material:'Argent · verre · feuilles',role:'Veilleur des clairières',goal:'Objectif épinglé : méditer avant la prochaine métamorphose.',ornament:'☾',crest:'M43 9C20 15 20 49 43 55C16 57 6 33 18 17c7-9 16-11 25-8Z'},
+ 'undead-warlock':{culture:'Reliquaire · Encre obscure · Sceaux',headline:'Le livre des serments',summary:'Les reliquaires de cuivre terni veillent sur des pactes inscrits à l’encre. Une géométrie carrée et des fissures rituelles remplacent les ornements naturels.',signature:'Sceau du Pacte Voilé',material:'Encre · cuivre · violet',role:'Archiviste des pactes',goal:'Objectif épinglé : étudier le prochain rituel.',ornament:'♜',crest:'M16 16l16-9 16 9v31L32 56 16 47V16Zm16-9v49M16 16l16 11 16-11'},
+ 'gnome-mage':{culture:'Arcanotech · Cuivre poli · Cristal',headline:'L’atelier des étoiles',summary:'Des cadrans de précision, du verre gravé et un cristal azur : l’art de mesurer les sortilèges transforme le grimoire en console d’expérimentation.',signature:'Compas du Nexus',material:'Cuivre · cristal · verre',role:'Ingénieur des arcanes',goal:'Objectif épinglé : calibrer le prochain sort.',ornament:'◇',crest:'M32 7 57 32 32 57 7 32 32 7Zm0 11v28M18 32h28M24 24l16 16'}
 };
 const stage=document.getElementById('stage');
 function select(id){
