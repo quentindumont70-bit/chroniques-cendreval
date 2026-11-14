@@ -48,3 +48,29 @@ jobs:
         env:
           BINCH_PLAYWRIGHT_PATH: /tmp/binch-browser/node_modules/playwright/index.mjs
         run: node scripts/test-binch-browser.mjs
+
+  binch-windows:
+    name: Windows PowerShell installer syntax
+    runs-on: windows-2025
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse Windows installer and local companion without executing them
+        shell: powershell
+        run: |
+          $files = @(
+            'public/binch/Installer-La-Binch.ps1',
+            'public/binch/Compagnon-La-Binch.ps1'
+          )
+          foreach ($file in $files) {
+            if (-not (Test-Path -LiteralPath $file)) { throw "Missing: $file" }
+            $tokens = $null
+            $errors = $null
+            $full = (Resolve-Path -LiteralPath $file).Path
+            [void][System.Management.Automation.Language.Parser]::ParseFile($full, [ref]$tokens, [ref]$errors)
+            if ($errors.Count -gt 0) {
+              foreach ($error in $errors) { Write-Error "$file : $($error.Message)" }
+              throw "PowerShell syntax failed: $file"
+            }
+            Write-Host "PowerShell 5.1 syntax OK: $file"
+          }
