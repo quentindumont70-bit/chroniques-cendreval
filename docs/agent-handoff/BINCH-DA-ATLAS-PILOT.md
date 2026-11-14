@@ -53,3 +53,11 @@ PR artistique : https://github.com/quentindumont70-bit/chroniques-cendreval/pull
 - Les six styles explicites (cinq paires et un neutre, Tauren Druide conservant les tokens de base) sont extraits dans `public/binch/da-tokens.css`. La page HTML le charge par un lien local. Plus besoin de dupliquer les variations de palettes, géométries et textures dans l'HTML.
 - `scripts/test-binch-da-lab.mjs` vérifie les résolutions et rejets des identifiants, les alias, l'apparence neutre, la feuille de tokens et l'absence de lecture des données de joueur. Le workflow `binch-da-lab.yml` se déclenche sur les modifications du registre **et** des tokens.
 - **GitHub Actions 43632330104 : SUCCESS** (vérification statique du laboratoire). Pas encore de test visuel sur appareil réel, ni d'intégration à la page publique.
+
+## Golipette v0.5 — décors procéduraux originaux
+
+- Nouveau fichier `public/binch/da-scenes.css` : environnement CSS sans images externes, composé de cinq couches décoratives (ciel, astre, horizon géométrique, premier plan et brume) à `aria-hidden="true"`. La scénographie change selon chacune des six identités et le thème neutre ; les silhouettes reflètent notamment totems, fortifications, architectures obscures ou instruments d'atelier.
+- La maquette `da-lab.html` charge cette feuille et place les décors derrière les éléments interactifs. Aucun changement dans `main` ni dans la page publique.
+- Le style mobile atténue et réduit les fonds, afin de maintenir une bonne lisibilité des cartes et boutons. Les préférences de mouvement réduit sont prises en compte (aucune animation ajoutée).
+- Validation statique : `scripts/test-binch-da-lab.mjs` vérifie les cinq couches, les variantes, les règles mobile et mouvement réduit et l'absence d'assets externes. **CI graphique GitHub Actions 43632773097 : SUCCESS.** Des captures visuelles et essais sur téléphones réels restent nécessaires.
+- Prochains travaux : éclairage sculpté, composants et matériaux premium, galerie responsive, tests de contrastes et véritables essais de performance.
