@@ -43,6 +43,6 @@ test('V120: liens fonctionnels vers modules réels et publication strictement al
   assert.ok(source.includes('./'+module),'lien absent : '+module);
  }
  assert.match(sw,/'\.\/premium-cinema\.html'/);
- assert.match(sw,/big-cthu-public-v2-v121/);
+ assert.match(sw,/big-cthu-public-v2-v122/);
  assert.doesNotMatch(sw,/images\.unsplash\.com/,'les ressources tierces ne doivent pas être précachées dans le coffre local');
 });
