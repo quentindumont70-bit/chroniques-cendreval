@@ -371,3 +371,11 @@ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) > .shell > .her
  .ns-actions button{flex:1}
 }
 @media(prefers-reduced-motion:reduce){.ns-panel *{scroll-behavior:auto}}
+
+/* V127 — le cockpit doit presenter l'utile avant le catalogue complet. */
+.cthu-catalog-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:4px 0 13px}
+.cthu-catalog-toolbar .muted{margin:0;min-width:0}
+#cthuCatalogToggle{min-height:44px;border:1px solid var(--cthu-line);background:var(--cthu-surface);color:var(--cthu-accent);font-weight:750;white-space:normal}
+#cthuCatalogToggle:hover{box-shadow:0 0 14px var(--cthu-glow)}
+#cthuCatalogToggle:focus-visible{outline:2px solid var(--cthu-accent);outline-offset:3px}
+@media(max-width:600px){.cthu-catalog-toolbar{align-items:stretch}.cthu-catalog-toolbar #cthuCatalogToggle{width:100%}}
