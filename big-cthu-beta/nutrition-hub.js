@@ -38,6 +38,8 @@ function render(){
  if(!root)return;
  const now=dayLocal(new Date());
  const data=snapshot(now);
+ const attentionPanel=document.getElementById('nutritionAttention');
+ if(attentionPanel)attentionPanel.dataset.hasAlerts=data.attention.length?'true':data.warnings?'unknown':'false';
  for(const [id,value]of [['nh-stock-count',data.stock],['nh-recipes-count',data.recipes],['nh-meals-count',data.meals]]){
   const target=document.getElementById(id);if(target)target.textContent=String(value);
  }
