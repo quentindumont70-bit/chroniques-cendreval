@@ -52,10 +52,10 @@ test('V113: trois thèmes disponibles, accessibles, sans changer les modules du 
  assert.match(home,/id="tentacleSearch"/);
 });
 
-test('V113: défaut Organic, changement Premium instantané et choix conservé sur cet appareil',async()=>{
+test('V150: défaut Premium cinématographique, changement et choix conservé sur cet appareil',async()=>{
  const js=await read('cockpit-themes.js');
  const f=fixture(js);
- assert.equal(f.document.documentElement.dataset.cthuTheme,'organic');
+ assert.equal(f.document.documentElement.dataset.cthuTheme,'premium');
  f.toggle.handlers.click();
  assert.equal(f.menu.hidden,false);
  assert.equal(f.toggle.attrs['aria-expanded'],'true');
@@ -86,11 +86,11 @@ test('V113: mode Medical et menu fermable via Escape ou clic extérieur',async()
 test('V113: stockage bloqué ou valeur inattendue : aucune erreur et thème utilisable pour la session',async()=>{
  const js=await read('cockpit-themes.js');
  const f=fixture(js,{failStorage:true});
- assert.equal(f.document.documentElement.dataset.cthuTheme,'organic');
+ assert.equal(f.document.documentElement.dataset.cthuTheme,'premium');
  f.choices[2].handlers.click();
  assert.equal(f.document.documentElement.dataset.cthuTheme,'medical');
  assert.match(f.status.textContent,/stockage indisponible/);
- assert.equal(fixture(js,{initial:'../../unsafe'}).document.documentElement.dataset.cthuTheme,'organic');
+ assert.equal(fixture(js,{initial:'../../unsafe'}).document.documentElement.dataset.cthuTheme,'premium');
 });
 
 test('V113: préchargement sans scintillement et styles respectueux du mouvement réduit',async()=>{
