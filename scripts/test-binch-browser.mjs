@@ -204,6 +204,16 @@ try{
     await page.locator('#binch-front-sync-details').evaluate(el=>el.click());
     assert.equal(await page.locator('#page-sync').isVisible(),true,'quick guide opens Synchronisation');
     checks++;
+    // One-click path copy includes account placeholder; no real disk access.
+    await page.evaluate(()=>{
+      Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async value=>{window.__binchCopiedPath=value;}}});
+    });
+    await page.locator('#binch-front-sync-copy-path').evaluate(el=>el.click());
+    await page.waitForFunction(()=>Boolean(window.__binchCopiedPath));
+    const copiedPath=await page.evaluate(()=>window.__binchCopiedPath);
+    assert.equal(copiedPath,['WTF','Account','NOM_DU_COMPTE','SavedVariables','GrimoireSync.lua'].join(String.fromCharCode(92)));
+    assert.match(await page.locator('#binch-front-sync-message').textContent(),/NOM_DU_COMPTE/,'copy instructions are visible');
+    checks++;
 
     // An old same-character SavedVariables snapshot must need explicit consent.
     const beforeOld=await page.evaluate(()=>({
@@ -292,7 +302,7 @@ try{
     assert.doesNotMatch(await page.locator('#binch-front-tasks').textContent(),/Rafraîchir les données du jeu/,'unnecessary resync objective cleared');
     checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
-    console.log('Browser '+device.name+': 31 checks passed');
+    console.log('Browser '+device.name+': 32 checks passed');
     await context.close();
   }
   console.log('Browser Specs + AH + GrimoireSync: '+checks+' checks passed');
