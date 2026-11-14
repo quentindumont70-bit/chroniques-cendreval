@@ -63,6 +63,14 @@ assert.match(components,/#stage\.reduced/);
 assert.doesNotMatch(components,/(?:url\(|@import)/,'premium components must not fetch external content');
 
 
+const cinematic=readFileSync(new URL('../public/binch/da-cinema.css',import.meta.url),'utf8');
+assert.match(html,/<link rel="stylesheet" href="\.\/da-cinema\.css">/);
+assert.match(html,/id="cinema" aria-pressed="false"/);
+assert.match(html,/stage\.classList\.toggle\('cinematic'\)/);
+assert.match(cinematic,/#stage\.cinematic .hero/);
+assert.match(cinematic,/@media\(max-width:430px\)/);
+assert.match(cinematic,/@media\(prefers-reduced-motion:reduce\)/);
+assert.doesNotMatch(cinematic,/(?:url\(|@import)/,'cinematic mode must not fetch external assets');
 assert.match(html,/id="neutral" aria-pressed="false"/);
 assert.match(html,/id==='neutral'\?themes\.neutral:themes\.resolve\(id\)/);
 
