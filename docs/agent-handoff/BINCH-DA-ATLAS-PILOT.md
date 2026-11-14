@@ -85,3 +85,10 @@ PR artistique : https://github.com/quentindumont70-bit/chroniques-cendreval/pull
 - **Run 43634282157 : SUCCESS 2/2 jobs** après correction du parsing CSS dans le script de test. Aucun contraste inférieur à 4,5:1 détecté dans les boutons testés.
 - La recette vérifie également les interactions clavier `Entrée` et `Espace` dans la galerie, à confirmer lors du prochain run.
 - **Périmètre honnête** : seuls les boutons opaques sont mesurés. Les textes sur fonds transparents, images et dégradés nécessitent une inspection visuelle/contraste plus approfondie ; ce travail ne prétend pas à une conformité WCAG globale ni à un test téléphone réel.
+
+## Golipette v0.9 — mode cinématographique facultatif
+
+- Nouveau `public/binch/da-cinema.css` : scène plus profonde, astral plus visible, brouillard et horizons accentués, titre et panneaux de lecture rehaussés, reliefs adaptés aux thèmes. L'utilisateur peut activer ou désactiver le **mode cinématographique** depuis le labo avec un bouton `aria-pressed`.
+- Le mode normal reste intact. Le cinéma conserve les mesures mobile (430 et 820 px) et les règles `prefers-reduced-motion` ainsi que l'option « effets réduits ». Aucun contenu distant ni accès aux données joueur.
+- Les tests statiques couvrent la feuille cinéma et son activation ; la batterie Playwright compare les deux compositions pour les 7 thèmes × 3 écrans (360, 390 et 1440 px), soit **42 captures** archivées et test de débordement horizontal, boutons de 44 px, couleurs et erreurs JS. Les mesures WCAG des commandes opaques dans le mode standard restent en place.
+- **GitHub Actions 43634856557 : SUCCESS 2/2 jobs, 42 captures, zéro débordement et aucune erreur JavaScript**. À compléter par revue artistique manuelle, contrastes des textes sur dégradés et essais physiques avant tout déploiement.
