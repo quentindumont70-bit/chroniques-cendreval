@@ -30,3 +30,21 @@ jobs:
           node-version: '22'
       - name: Run Binch regression suite
         run: node scripts/test-binch-golipette.mjs
+
+  binch-browser:
+    name: Browser smoke — desktop and mobile
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated Playwright
+        run: |
+          npm install --prefix /tmp/binch-browser --no-save --no-package-lock --no-audit --no-fund playwright@1.58.2
+          /tmp/binch-browser/node_modules/.bin/playwright install --with-deps chromium
+      - name: Smoke test Specs in Chromium
+        env:
+          BINCH_PLAYWRIGHT_PATH: /tmp/binch-browser/node_modules/playwright/index.mjs
+        run: node scripts/test-binch-browser.mjs
