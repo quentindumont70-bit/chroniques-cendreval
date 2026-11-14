@@ -156,3 +156,91 @@ html[data-cthu-theme="premium"] .top{border-radius:15px}
  html[data-cthu-theme] .hero .symbol{animation:none!important}
  html[data-cthu-theme] .tile{transition:none!important}
 }
+
+
+/* V114 — même palette sur Maison, Budget et Passions : aucun changement métier. */
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .wrap,
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] main{
+ position:relative;isolation:isolate;
+}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] header{
+ min-height:55px;gap:10px;
+}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] header a,
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] main>a{
+ color:var(--cthu-accent);
+}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] p,
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .muted{
+ color:var(--cthu-sub)
+}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .lead,
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .hero{
+ background:var(--cthu-hero);
+ border:1px solid var(--cthu-line);
+ box-shadow:0 17px 44px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.06)
+}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .panel,
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .metric,
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .notice,
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .safe{
+ background:var(--cthu-surface);
+ border-color:var(--cthu-line);
+ box-shadow:0 8px 25px rgba(0,0,0,.12)
+}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .metric b,
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .label{
+ color:var(--cthu-accent)
+}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] a,
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .panel a{
+ color:var(--cthu-accent)
+}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .ghost,
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .tabs button{
+ background:var(--cthu-surface);
+ border-color:var(--cthu-line);
+ color:#f5f8ff
+}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .tabs button[aria-selected="true"]{
+ background:linear-gradient(120deg,var(--cthu-glow),var(--cthu-surface));
+ border-color:var(--cthu-accent);
+ color:#fff
+}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] input,
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] select,
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] textarea{
+ background:var(--cthu-deep);
+ border-color:var(--cthu-line);
+ color:#fff
+}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .cthu-theme-mini{
+ display:flex;justify-content:flex-end;min-width:0;margin:10px 0
+}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] header .cthu-theme-mini{
+ margin-left:auto;margin-block:0
+}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .cthu-theme-mini .pill{
+ background:var(--cthu-surface);border:1px solid var(--cthu-line);
+ color:var(--cthu-accent);border-radius:12px;padding:9px 13px
+}
+html[data-cthu-theme="premium"] body[data-cthu-theme-tentacle="yes"] h1{
+ text-shadow:0 5px 25px rgba(41,137,199,.16)
+}
+html[data-cthu-theme="organic"] body[data-cthu-theme-tentacle="yes"] h1{
+ text-shadow:0 5px 25px rgba(188,65,132,.22)
+}
+html[data-cthu-theme="medical"] body[data-cthu-theme-tentacle="yes"] h1{
+ text-shadow:0 5px 25px rgba(29,212,216,.2)
+}
+@media(max-width:620px){
+ html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .cthu-theme-mini{
+  margin:10px 0 14px
+ }
+ html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] header{
+  flex-wrap:wrap
+ }
+ html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] header .cthu-theme-mini{
+  margin-left:auto
+ }
+}

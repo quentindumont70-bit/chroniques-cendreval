@@ -28,8 +28,27 @@ function apply(name,persist){
  return true;
 }
 function setup(){
- const toggle=document.getElementById('cthuThemeToggle');
- const menu=document.getElementById('cthuThemeMenu');
+ let toggle=document.getElementById('cthuThemeToggle');
+ let menu=document.getElementById('cthuThemeMenu');
+ // En dehors du cockpit, monter un sélecteur local seulement dans les pages explicitement opt-in.
+ if((!toggle||!menu)&&document.body&&document.body.dataset.cthuThemeTentacle==='yes'){
+  const host=document.querySelector('header')||document.querySelector('main');
+  if(host){
+   const holder=document.createElement('div');
+   holder.className='cthu-theme-wrap cthu-theme-mini';
+   holder.innerHTML='<button class="pill" id="cthuThemeToggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="cthuThemeMenu">🎨 Apparence</button>'+
+    '<div id="cthuThemeMenu" role="group" aria-label="Choix du thème Big Cthu" hidden>'+
+    '<div class="cthu-theme-title">Un thème pour toutes les tentacules</div>'+
+    '<button type="button" class="cthu-theme-choice" data-cthu-choice="premium" data-theme="premium" aria-pressed="false"><span class="cthu-theme-swatch" aria-hidden="true"></span><span><strong>Command Center Premium</strong><small>Bleu nuit · élégance</small></span></button>'+
+    '<button type="button" class="cthu-theme-choice" data-cthu-choice="organic" data-theme="organic" aria-pressed="false"><span class="cthu-theme-swatch" aria-hidden="true"></span><span><strong>Dark Organic Luxury</strong><small>Violet · cuivre</small></span></button>'+
+    '<button type="button" class="cthu-theme-choice" data-cthu-choice="medical" data-theme="medical" aria-pressed="false"><span class="cthu-theme-swatch" aria-hidden="true"></span><span><strong>Futurist Medical Ops</strong><small>Cyan · précision</small></span></button>'+
+    '<span id="cthuThemeStatus" role="status">Préférence locale à cet appareil.</span></div>';
+   if(host.tagName==='MAIN')host.prepend(holder);
+   else host.append(holder);
+   toggle=document.getElementById('cthuThemeToggle');
+   menu=document.getElementById('cthuThemeMenu');
+  }
+ }
  if(!toggle||!menu)return;
  apply(stored(),false);
  const close=()=>{
