@@ -31,9 +31,12 @@ function estimate(recipe){
   const price=Number(v?.last);
   return {...x,price:Number.isSafeInteger(price)&&price>0?price:null,old:!Number.isFinite(age)||age<0||age>24*60*60*1000,source:v?.source||'',at:v?.observedAt||''};
  });
- const known=rows.every(x=>x.price!=null),cost=known?rows.reduce((n,x)=>n+x.price*x.qty,0):null;
- const output=priceOf(recipe.output),raw=Number(output?.last),sale=Number.isSafeInteger(raw)&&raw>0?raw:null,yieldCount=recipe.yield||1;
- const net=sale==null?null:Math.floor(sale*yieldCount*(1-fee/100));
+ const known=rows.every(x=>x.price!=null&&Number.isSafeInteger(x.qty)&&x.qty>0);
+ let cost=known?0:null;
+ if(known)for(const x of rows){const line=x.price*x.qty;if(!Number.isSafeInteger(line)||!Number.isSafeInteger(cost+line)){cost=null;break}cost+=line}
+ const output=priceOf(recipe.output),raw=Number(output?.last),sale=Number.isSafeInteger(raw)&&raw>0?raw:null,yieldCount=Number(recipe.yield);
+ const gross=sale!=null&&Number.isSafeInteger(yieldCount)&&yieldCount>0?sale*yieldCount:null;
+ const net=gross!=null&&Number.isSafeInteger(gross)?Math.floor(gross*(1-fee/100)):null;
  const margin=net!=null&&cost!=null?net-cost:null;
  const componentsNet=cost==null?null:Math.floor(cost*(1-fee/100));
  const advantage=net==null||componentsNet==null?null:net-componentsNet;
