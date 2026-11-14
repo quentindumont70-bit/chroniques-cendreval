@@ -96,8 +96,29 @@ try{
    }
    const shot=device.name+'-'+id+'.png';
    await page.screenshot({path:join(out,shot),fullPage:true,animations:'disabled'});
-   manifest.push({device:device.name,theme:id,shot,viewport:geometry.viewport,scrollWidth:geometry.scrollWidth,accent:geometry.accent});
+   manifest.push({device:device.name,theme:id,mode:'normal',shot,viewport:geometry.viewport,scrollWidth:geometry.scrollWidth,accent:geometry.accent});
   }
+  // Cinematic toggle must preserve theme identity, responsive layout and 44px actions.
+  await page.locator('#cinema').click();
+  assert.equal(await page.locator('#cinema').getAttribute('aria-pressed'),'true');
+  assert.equal(await page.locator('#stage').evaluate(el=>el.classList.contains('cinematic')),true);
+  for(const id of themes){
+    await page.locator(id==='neutral'?'#neutral':'[data-choice="'+id+'"]').click();
+    assert.equal(await page.locator('#stage').getAttribute('data-pair'),id);
+    const cine=await page.evaluate(()=>{
+      const primary=document.querySelector('#primary').getBoundingClientRect();
+      return {overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+3,
+        width:primary.width,height:primary.height,
+        background:getComputedStyle(document.querySelector('.hero')).backgroundImage};
+    });
+    if(cine.overflow||cine.width<44||cine.height<44||!cine.background.includes('gradient'))
+      failures.push(device.name+'/'+id+' cinematic layout '+JSON.stringify(cine));
+    const shot=device.name+'-'+id+'-cinema.png';
+    await page.screenshot({path:join(out,shot),fullPage:true,animations:'disabled'});
+    manifest.push({device:device.name,theme:id,mode:'cinema',shot});
+  }
+  await page.locator('#cinema').click();
+  assert.equal(await page.locator('#cinema').getAttribute('aria-pressed'),'false');
   // The art gallery must remain fully usable from a keyboard, even on touch-emulated viewports.
   await page.locator('#neutral').focus();
   await page.keyboard.press('Enter');
