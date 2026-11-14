@@ -53,6 +53,8 @@ function setup(){
   if(!menu.hidden&&!menu.contains(e.target)&&!toggle.contains(e.target))close();
  });
 }
+// Exécuté dans <head> avant le premier rendu, sans imposer de requête réseau.
+apply(stored(),false);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});
 else setup();
 })();
