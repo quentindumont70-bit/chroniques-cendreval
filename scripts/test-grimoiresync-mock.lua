@@ -54,4 +54,11 @@ assert(GrimoireSyncDB.characters[GrimoireSyncDB.lastCharacter].restedXP==600,"re
 assert(GrimoireSyncDB.xpStatus=="ok","XP status remains sourced")
 assert(questLogScans==scansBeforeXP,"XP event must not rescan quest log")
 assert(GrimoireSyncDB.payload:find(",2500,4000,600|P:",1,true),"GF6 payload refreshed with current XP")
+local resetCalls=0
+GrimoireSyncResetMinimap=function()resetCalls=resetCalls+1;return true end
+local scansBeforeReset=questLogScans
+SlashCmdList.GRIMOIRESYNC("minimap reset")
+assert(resetCalls==1,"minimap reset slash invokes UI recovery")
+assert(questLogScans==scansBeforeReset,"minimap reset does not rescan character data")
+assert(GrimoireSyncDB.payload:find(",2500,4000,600|P:",1,true),"minimap reset keeps profile payload")
 io.write(GrimoireSyncDB.payload, "\n")
