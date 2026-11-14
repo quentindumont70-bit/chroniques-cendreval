@@ -209,8 +209,44 @@ try{
     assert.deepEqual(afterOld,beforeOld,'declined older save cannot overwrite character or crafts');
     assert.match(await page.locator('#grimoire-bridge-status').textContent(),/sauvegarde plus ancienne refusée/);
     checks++;
+    // A timestamp-less file must not downgrade a previously dated capture.
+    let unknownPrompt=0;
+    page.once('dialog',async dialog=>{
+      unknownPrompt++;
+      assert.match(dialog.message(),/non datée/);
+      await dialog.dismiss();
+    });
+    const unknown=stale.replace(',1690000000,',',0,');
+    const rejectedUndated=await page.evaluate(payload=>window.BinchSync.importCharacter(window.BinchSync.parsePayload(payload)),unknown);
+    assert.equal(rejectedUndated,false,'undated save rejected after warning');
+    assert.equal(unknownPrompt,1,'one missing-capture-date warning');
+    const afterUndated=await page.evaluate(()=>({
+      profile:localStorage.getItem('grimoire.hub.v3'),
+      imported:localStorage.getItem('grimoire.bridge.last'),
+      crafting:localStorage.getItem('grimoire.craft.v1')
+    }));
+    assert.deepEqual(afterUndated,beforeOld,'undated save must not overwrite dated capture');
+    checks++;
+    // Same visible character name from another realm must not silently overwrite metadata.
+    let realmPrompt=0;
+    page.once('dialog',async dialog=>{
+      realmPrompt++;
+      assert.match(dialog.message(),/royaume/);
+      await dialog.dismiss();
+    });
+    const otherRealm=stale.replace('Golipette-QA,Forever,','Golipette-QA,AutreRoyaume,');
+    const rejectedRealm=await page.evaluate(payload=>window.BinchSync.importCharacter(window.BinchSync.parsePayload(payload)),otherRealm);
+    assert.equal(rejectedRealm,false,'same-name cross-realm import rejected after warning');
+    assert.equal(realmPrompt,1,'one realm-switch warning');
+    const afterRealm=await page.evaluate(()=>({
+      profile:localStorage.getItem('grimoire.hub.v3'),
+      imported:localStorage.getItem('grimoire.bridge.last'),
+      crafting:localStorage.getItem('grimoire.craft.v1')
+    }));
+    assert.deepEqual(afterRealm,beforeOld,'realm switch rejection preserves existing data');
+    checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
-    console.log('Browser '+device.name+': 23 checks passed');
+    console.log('Browser '+device.name+': 25 checks passed');
     await context.close();
   }
   console.log('Browser Specs + AH + GrimoireSync: '+checks+' checks passed');
