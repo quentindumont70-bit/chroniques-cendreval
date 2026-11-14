@@ -1,0 +1,7 @@
+/* La Binch DA pilot — isolated pair-specific graphic tokens. Art studies, not WoW Forever compatibility claims. */
+#stage[data-pair=neutral]{--accent:#d0bd91;--accent2:#686855;--gold:#e4c895;--ink:#f1e9d8;--metal:#31342e;--texture:repeating-linear-gradient(120deg,transparent 0 20px,#d4c4a20d 21px 22px);--line:#827861;--glow:#ccb68f22;--shape:30% 30% 30% 30%}
+#stage[data-pair=troll-shaman]{--accent:#69cce0;--accent2:#326e7a;--gold:#d7ad6b;--metal:#213d43;--texture:repeating-linear-gradient(90deg,transparent 0 22px,#7cdae31a 24px 25px);--line:#417c84;--glow:#56d1e24b;--shape:62% 30% 57% 40%}
+#stage[data-pair=orc-warrior]{--accent:#f19857;--accent2:#6b3e27;--gold:#dbb88b;--metal:#3d2e2a;--texture:repeating-linear-gradient(145deg,transparent 0 15px,#ffb2820e 15px 17px);--line:#926b4f;--glow:#ee763b4b;--shape:22% 37% 35% 15%}
+#stage[data-pair=elf-druid]{--accent:#b9a5ff;--accent2:#52647a;--gold:#d7e2ca;--metal:#263448;--texture:repeating-radial-gradient(circle at 70% 40%,transparent 0 26px,#a6b7f017 27px 28px);--line:#8483ab;--glow:#b8a9ff37;--shape:52% 52% 35% 35%}
+#stage[data-pair=undead-warlock]{--accent:#c7a0fa;--accent2:#635078;--gold:#cfbca4;--metal:#2d2535;--texture:repeating-linear-gradient(0deg,transparent 0 18px,#b4a0ca10 19px 20px);--line:#745c81;--glow:#b26bd949;--shape:11% 11% 39% 39%}
+#stage[data-pair=gnome-mage]{--accent:#8de4ec;--accent2:#467e97;--gold:#e6c686;--metal:#1d3d4c;--texture:repeating-linear-gradient(90deg,transparent 0 19px,#a6eef414 20px 21px);--line:#5b92a1;--glow:#74e0e447;--shape:24% 24% 24% 24%}
