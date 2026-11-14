@@ -459,3 +459,28 @@ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) > .shell > .her
 #radar .cthu-radar-link:focus-visible{outline:2px solid var(--cthu-accent);outline-offset:2px}
 #radar .cthu-radar-link::after{content:"›";font-size:20px;color:var(--cthu-accent)}
 @media(max-width:700px){#radar .cthu-radar-link{align-items:flex-start;flex-direction:column;min-height:54px}#radar .cthu-radar-link::after{display:none}}
+
+/* V144 — parcours Capture → Agenda → Radar → Coffre, sans recopier les données. */
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .cthu-daily-flow{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0;
+}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .cthu-daily-flow a{
+ display:flex;align-items:center;justify-content:center;text-align:center;
+ min-height:48px;padding:8px 9px;text-decoration:none;border-radius:12px;
+ border:1px solid var(--cthu-line);background:var(--cthu-surface);
+ color:var(--cthu-sub);font-weight:700;font-size:13px;
+}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .cthu-daily-flow a[aria-current="page"]{
+ border-color:var(--cthu-accent);color:var(--cthu-accent);
+ background:linear-gradient(115deg,var(--cthu-glow),var(--cthu-surface));
+}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .cthu-daily-flow a:hover{border-color:var(--cthu-accent)}
+html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .cthu-daily-flow a:focus-visible{
+ outline:2px solid var(--cthu-accent);outline-offset:3px
+}
+@media(max-width:520px){
+ html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .cthu-daily-flow{gap:4px}
+ html[data-cthu-theme] body[data-cthu-theme-tentacle="yes"] .cthu-daily-flow a{
+  min-height:52px;padding:8px 3px;font-size:11px
+ }
+}
