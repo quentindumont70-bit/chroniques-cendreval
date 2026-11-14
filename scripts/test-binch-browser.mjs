@@ -36,6 +36,15 @@ try{
   ]){
     const context=await browser.newContext({viewport:device.viewport,isMobile:!!device.isMobile,hasTouch:!!device.hasTouch});
     const page=await context.newPage();
+    // Each scenario starts with a synthetic, opted-in profile: test-only browser context.
+    await page.addInitScript(()=>{
+      if(!localStorage.getItem('grimoire.hub.v3')){
+        localStorage.setItem('grimoire.hub.v3',JSON.stringify({
+          step:2,onboarded:true,race:'Tauren',classe:'Druide',
+          jobs:['Minage','Ingénierie'],data:{pseudo:'Golipette-QA',level:'34'}
+        }));
+      }
+    });
     const errors=[];
     page.on('pageerror',e=>errors.push(e.message));
     await page.goto(base,{waitUntil:'domcontentloaded',timeout:30000});
