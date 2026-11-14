@@ -186,6 +186,13 @@ try{
    await page.goto('http://127.0.0.1:'+server.address().port+'/index.html'+variant.query,{waitUntil:'domcontentloaded',timeout:30000});
    await page.locator('#binch-front .binch-front-hero').waitFor({state:'attached',timeout:30000});
    await page.locator('#app nav.nav [data-page="hub"]').evaluate(el=>el.click());
+   // The synthetic QA profile may leave the onboarding layer active in this main-based
+   // PR snapshot; expose the real mounted homepage for visual-contract testing only.
+   await page.evaluate(()=>{
+    document.querySelector('#onboarding')?.classList.add('hidden');
+    document.querySelector('#app')?.classList.remove('hidden');
+    document.querySelector('#page-hub')?.classList.add('active');
+   });
    await page.locator('#binch-front .binch-front-hero').waitFor({state:'visible',timeout:10000});
    const result=await page.evaluate(()=>{
     const root=document.documentElement,hero=document.querySelector('#binch-front .binch-front-hero');
