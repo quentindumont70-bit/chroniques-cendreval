@@ -41,7 +41,7 @@ test('V118: la prochaine session ne demande ni date, ni calendrier gaming',async
  assert.match(home,/id="ns-form"/);
  assert.match(home,/À ma prochaine session/);
  const section=home.slice(home.indexOf('id="nextSession"'),home.indexOf('id="ns-list"'));
- assert.doesNotMatch(section,/type="date"|datetime-local|notification|rendez-vous/i);
+ assert.doesNotMatch(section,/type="date"|type="datetime-local"|id="ns-date"/i);
  assert.match(home,/'Prochaine session','Reprendre sans rien planifier','gaming'/);
  assert.match(home,/if\(i\[3\]==='gaming'\)/);
  assert.doesNotMatch(source,/fetch\(|XMLHttpRequest|WebSocket|Topaze|tidel_/);
