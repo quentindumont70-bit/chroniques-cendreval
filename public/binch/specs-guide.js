@@ -48,6 +48,8 @@ function render(){
  $('binch-specs-level').value=String(lvl);
  $('binch-specs-level-mode').textContent=levelLocked?'Niveau manuel':'Niveau du profil (ou 10 si absent)';
  $('binch-specs-selection').textContent=g.cls+' · '+g.name;
+ $('binch-specs-pin').textContent=state.pinned?'Retirer le build épinglé':'Épingler mon build';
+ $('binch-specs-pin').setAttribute('aria-pressed',String(!!state.pinned));
  $('binch-specs-summary').innerHTML='<h3>'+esc(g.name)+'</h3><p>'+esc(g.description)+'</p><p class="binch-specs-sources">Guides publics Forever, pas des valeurs lues en direct dans WoW. Mise à jour documentaire : novembre 2026. Vérifie le calculateur si un hotfix modifie les talents.</p><div class="binch-specs-links">'+links(g)+'</div>';
  $('binch-specs-cards').innerHTML=guides.filter(x=>(state.filter||'all')==='all'||x.cls===state.filter).map(x=>'<button type="button" class="binch-spec-card'+(x.id===g.id?' active':'')+'" data-spec-id="'+x.id+'" aria-pressed="'+(x.id===g.id)+'"><span>'+esc(x.cls)+'</span><strong>'+esc(x.name)+'</strong><small>'+esc(x.role)+'</small></button>').join('');
  const route=$('binch-specs-route');
@@ -84,7 +86,7 @@ function mount(){
  $('binch-specs-class').value=state.filter||'all';
  button.onclick=()=>{document.querySelectorAll('#app nav.nav button[data-page]').forEach(x=>x.classList.toggle('active',x===button));document.querySelectorAll('#app main .page').forEach(x=>x.classList.toggle('active',x===page));scrollTo({top:0,behavior:'auto'});render()};
  $('binch-specs-cards').onclick=e=>{const b=e.target.closest('[data-spec-id]');if(!b)return;state.id=b.dataset.specId;persist();render()};
- $('binch-specs-class').onchange=e=>{state.filter=e.target.value;persist();render()};
+ $('binch-specs-class').onchange=e=>{state.filter=e.target.value;if(state.filter!=='all'&&current().cls!==state.filter){const match=guides.find(x=>x.cls===state.filter);if(match)state.id=match.id}persist();render()};
  $('binch-specs-level').onchange=e=>{const n=Number(e.target.value);if(!Number.isInteger(n)||n<10||n>60){render();return}state.level=n;levelLocked=true;persist();render()};
  $('binch-specs-auto-level').onclick=()=>{delete state.level;levelLocked=false;persist();render()};
  $('binch-specs-pin').onclick=()=>{state.pinned=!state.pinned;persist();render()};
