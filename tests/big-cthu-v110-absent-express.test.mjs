@@ -33,7 +33,7 @@ test('V110: recherche du patient existant limitée à huit résultats et menu ta
 });
 
 async function absentFixture({legacy=false,limit=0}={}){
- const source=await read(),begin=source.indexOf('// V110 : une seule action terrain'),end=source.indexOf('async function absenceUpdate(',begin);
+ const source=await read(),begin=source.indexOf('// V111 : bloque un double appui'),end=source.indexOf('async function absenceUpdate(',begin);
  assert.ok(begin>=0&&end>begin);
  const storage=new Map();const initial=Array.from({length:limit},(_,i)=>({id:'old-'+i,patientId:'other',day:'2026-11-13',reason:'Autre',sync:'Sans suite',history:[]}));
  storage.set('tidel_absences_journal_v1',JSON.stringify(initial));
@@ -98,5 +98,5 @@ test('V110: la liste du jour et son journal utilisent le statut existant, sans c
  assert.match(source,/Absences du jour \(/);
  assert.match(source,/tourAbsenceJournalToday\(\)/);
  assert.match(source,/function absTog\(id\).*tourAbsenceChange\(id,day\)/);
- assert.doesNotMatch(source.slice(source.indexOf('// V110 : une seule action terrain'),source.indexOf('async function absenceUpdate(')),/fetch\(|XMLHttpRequest|WebSocket/);
+ assert.doesNotMatch(source.slice(source.indexOf('// V111 : bloque un double appui'),source.indexOf('async function absenceUpdate(')),/fetch\(|XMLHttpRequest|WebSocket/);
 });
