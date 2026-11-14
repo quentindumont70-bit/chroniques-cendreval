@@ -344,3 +344,30 @@ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) > .shell > .her
   margin-bottom:12px;
  }
 }
+
+
+/* V118 — un rappel de reprise, jamais une séance de jeu à planifier. */
+.ns-panel{margin-bottom:18px;scroll-margin-top:22px}
+.ns-form{display:grid;grid-template-columns:minmax(120px,1fr) minmax(200px,2fr) auto;align-items:end;gap:10px;margin:12px 0}
+.ns-form label{display:grid;gap:6px;color:var(--cthu-sub,#d0c7dd);font-weight:700;font-size:12px}
+.ns-form input{width:100%;min-width:0;min-height:44px;color:#fff;background:var(--cthu-deep,#130d24);border:1px solid var(--cthu-line,#5c527a);border-radius:12px;padding:10px 12px;font:inherit;font-size:14px}
+.ns-form .primary{min-height:44px}
+#ns-status[data-error="true"]{color:#ffb5ad!important}
+#ns-list{display:grid;gap:8px;margin-top:10px}
+.ns-item{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--cthu-line,#504369);border-radius:14px;padding:12px;background:rgba(255,255,255,.025)}
+.ns-item .ns-content{min-width:0;display:grid;gap:4px}
+.ns-item .ns-game-name{color:var(--cthu-accent,#b89bff);font-size:12px}
+.ns-item .ns-note{line-height:1.4;overflow-wrap:anywhere;font-size:14px}
+.ns-item.isdone .ns-note{text-decoration:line-through;color:var(--cthu-sub,#c9c4d9)}
+.ns-actions{display:flex;gap:7px;flex-shrink:0}
+.ns-actions button{border-radius:10px;border:1px solid var(--cthu-line,#61547a);color:#f5f3ff;background:var(--cthu-surface,#221935);padding:8px 10px;min-height:42px;font:inherit;font-size:12px;font-weight:700}
+.ns-actions button:focus-visible{outline:2px solid var(--cthu-accent,#b89bff);outline-offset:2px}
+.ns-actions .ns-remove{color:#ffb2af}
+@media(max-width:700px){
+ .ns-form{grid-template-columns:1fr;gap:9px}
+ .ns-form .primary{width:100%}
+ .ns-item{align-items:stretch;flex-direction:column}
+ .ns-actions{justify-content:flex-start}
+ .ns-actions button{flex:1}
+}
+@media(prefers-reduced-motion:reduce){.ns-panel *{scroll-behavior:auto}}
