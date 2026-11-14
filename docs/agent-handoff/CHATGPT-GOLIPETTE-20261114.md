@@ -216,3 +216,9 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - L'annonce est un message accessible (`role=status`, `aria-live=polite`), avec retour visuel sur l'état récent ; aucune logique d'import ou base de données supplémentaire.
 - Tests Playwright : nouvelle vérification de l'affichage d'ancienneté, de la remontée de refus et du statut « récent » après import puis rechargement. **Run 43627808156 : SUCCESS 5/5 jobs**, **62/62 contrôles navigateur** (31 desktop, 31 mobile émulé), plus Lua, Node, Windows PowerShell et garde anti-chevauchement de fichiers avec `main`.
 - Aucun merge ni déploiement. Site public actuel : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ (les ajouts ne seront visibles qu'après intégration).
+
+## Golipette — bouton Copier chemin WoW sur l'accueil (14 novembre)
+- Panneau de synchronisation de la première page enrichi d'un bouton **« Copier le chemin du fichier »**, sans quitter l'accueil. Copie le chemin **relatif** `WTF\Account\NOM_DU_COMPTE\SavedVariables\GrimoireSync.lua` (avec rappel explicite de remplacer NOM_DU_COMPTE) ; repli en fenêtre de copie si le presse-papiers est indisponible. N'essaie pas de retrouver un chemin absolu Windows, auquel le navigateur n'a pas accès.
+- Réutilisation du même importeur sécurisé, aucun traitement de données supplémentaire, aucun accès disque automatisé.
+- Vérifications Playwright sur Chromium desktop/mobile : copie effective du chemin, placeholder présent et statut d'instruction affiché. **Run GitHub Actions `43628266157` : SUCCESS 5/5**, **64/64 contrôles navigateur** (32 desktop + 32 mobile émulé), autres jobs Node, Lua 5.1, PowerShell et garde de conflits `main` verts.
+- PR #129 en brouillon, pas encore de publication sur https://quentindumont70-bit.github.io/chroniques-cendreval/binch/.
