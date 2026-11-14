@@ -9,7 +9,7 @@ Un compagnon Warcraft sur second écran, PC ou téléphone, qui répond sans dé
 
 | # | Chantier | État | Critère de fin |
 |---|---|---|---|
-| 1 | Interface immersive, thèmes par classe et race | Partiel : socle existant, confort mobile | 9 classes et toutes races ciblées avec paysages authentiques, cohérence visuelle, contrastes et mobile testés |
+| 1 | Interface immersive, thèmes par classe et race | **Nouveau code** : ornements, textures et cadres distincts pour les 9 classes, sans image panoramique nouvelle ni test visuel mobile | 9 classes et toutes races ciblées avec paysages authentiques, cohérence visuelle, contrastes et mobile testés |
 | 2 | Poste de commandement unifié | **Nouvelle intégration codée** : moteur `journey-engine.js`, panneau `ultimate-briefing.js` | Prochaine action calculée depuis un profil réellement sélectionné, lien effectif vers module, état source/fraîcheur explicite |
 | 3 | Atlas Azeroth : cartes et trajets | Partiel : cartes de quête du sac et atlas existant | Cartes authentiques, coordonnées confirmées, 20 quêtes incontournables jouables et points reliés à leurs pages |
 | 4 | Talents de toutes classes / builds sourcés | Partiel : 9 arbres, parcours druide farouche de pex, builds finaux druide | Chaque classe a des arbres vérifiés ; chaque recommandation a un build documenté, une date de build jeu et le bon niveau, aucun rang inventé |
@@ -21,7 +21,8 @@ Un compagnon Warcraft sur second écran, PC ou téléphone, qui répond sans dé
 | 10 | GM Hub collectif et partage sécurisé | Partiel : roster/planner locaux | Permissions et stockage partagé explicitement configurés, comptes/consentement, calendrier, tests multi-personnes et sauvegarde |
 
 **Modules livrés en code pendant cette passe** :
-- `public/binch/journey-engine.js` : règles communes et explicites de recommandations pour quêtes, talents, métiers, objectifs manuels et synchro.
+- `public/binch/journey-engine.js` : règles communes et explicites de recommandations pour quêtes, talents, métiers, objectifs manuels, missions de guilde locales et synchro, avec bonus de priorité uniquement pour une zone de quête explicitement documentée.
+- `public/binch/ultimate-identities.js` + CSS : neuf habillages de classe distincts (ornement, gravure, bordure, texture, ambiance) superposés aux fonds existants. Ce n'est **pas encore** la livraison des neuf panoramas d'images réels demandés : chantier visuel toujours ouvert.
 - `public/binch/ultimate-briefing.js` + CSS : section de page d'accueil, mode Équilibré / Solo / Donjons / Métiers, actions proposées et export JSON.
 - `public/binch/ultimate-session.js` + CSS : sessions de 30, 60 ou 120 minutes, checklist indépendante des quêtes WoW et programme copiable.
 - `public/binch/ultimate-quicknav.js` + CSS : recherche des rubriques réellement disponibles, raccourci Ctrl/⌘+K et favoris locaux.
