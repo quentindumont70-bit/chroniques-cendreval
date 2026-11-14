@@ -110,3 +110,12 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - GitHub Actions run `43619031657` : **SUCCESS 4/4** (Node 60 assertions ; Chromium 32 vérifications desktop/mobile ; GrimoireSync Lua 5.1 ; PowerShell Windows).
 - Réserve inchangée : simulation d'API WoW, pas de client WoW Forever réel ; test physique mobile/Windows à faire.
 - Demande permanente : chaque fin de lot doit proposer le lien direct de La Binch `https://quentindumont70-bit.github.io/chroniques-cendreval/binch/` (site public, ne montrant pas cette PR tant qu'elle n'est pas fusionnée).
+
+## Golipette — protection de profil et provenance des captures (14 novembre)
+- Nouveau scénario Chromium sur desktop et mobile : GF7 mal formé refusé, classe WoW non supportée (`DEATHKNIGHT`) refusée, changement vers le personnage fictif `Autre-QA` rejeté par consentement explicite. Pour chaque rejet, `grimoire.hub.v3` reste strictement inchangé et aucun `grimoire.bridge.last` n'est écrit.
+- Correctif utilisateur : après annulation d'un changement de personnage, le statut indique « Import annulé : le profil … est conservé » au lieu de laisser l'ancienne erreur affichée.
+- Import accepté : `grimoire.bridge.last.capturedAt` conserve désormais le **timestamp réel du fichier WoW** (date Unix issue du payload GF), distinct de `updated` (date de l'import). Dates manifestement absentes, hors plage ou futures signalées comme non datées. La page montre « Capture du jeu » et signale une capture de plus de 24 h.
+- Dernière exécution vérifiée : GitHub Actions `43619920699`, **4 jobs SUCCESS**, **40 contrôles Chromium** (20 desktop + 20 mobile), **60 assertions Node**, interop Lua→JS (15 assertions), 83 scripts statiques sans erreur, PowerShell et Lua 5.1 syntaxiquement conformes.
+- Les contrôles utilisent seulement des profils et SavedVariables fictifs. Aucune synchronisation temps réel ni installation Windows/jeu réelle revendiquée.
+- Chantier Discord conservé dans `docs/agent-handoff/BINCH-DISCORD-ROADMAP.md`, à exécuter après cette stabilisation, pas de connecteur créé.
+- **Consigne de livraison permanente : joindre le lien public de La Binch à chaque fin de lot** : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ . Ce site ne contient pas la PR brouillon avant fusion.
