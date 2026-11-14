@@ -16,11 +16,14 @@ self.addEventListener('fetch',event=>{
  // available offline, but never let its CDN failure block installation of the app.
  if(url.hostname==='images.unsplash.com'&&url.pathname===PUBLIC_ALPINE_PHOTO&&r.destination==='image'){
   event.respondWith((async()=>{
-   const gallery=await caches.open(PUBLIC_SCENERY_CACHE);
-   const hit=await gallery.match(r);
-   if(hit)return hit;
+   let gallery=null;
+   try{
+    gallery=await caches.open(PUBLIC_SCENERY_CACHE);
+    const hit=await gallery.match(r);
+    if(hit)return hit;
+   }catch(e){/* Safari private mode or quota errors must not hide an online photo */}
    const response=await fetch(r);
-   if(response.ok||response.type==='opaque'){
+   if(gallery&&(response.ok||response.type==='opaque')){
     try{await gallery.put(r,response.clone())}catch(e){/* storage quota: online photo still displays */}
    }
    return response;
