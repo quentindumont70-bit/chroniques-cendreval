@@ -214,6 +214,39 @@ try{
     assert.equal(copiedPath,['WTF','Account','NOM_DU_COMPTE','SavedVariables','GrimoireSync.lua'].join(String.fromCharCode(92)));
     assert.match(await page.locator('#binch-front-sync-message').textContent(),/NOM_DU_COMPTE/,'copy instructions are visible');
     checks++;
+    // Drop rejects unrelated file names without touching the current profile.
+    const beforeDrop=await page.evaluate(()=>({
+      profile:localStorage.getItem('grimoire.hub.v3'),
+      bridge:localStorage.getItem('grimoire.bridge.last')
+    }));
+    await page.evaluate(()=>{
+      const panel=document.querySelector('#binch-front-sync');
+      const data=new DataTransfer();
+      data.items.add(new File(['invalid'],'unrelated.txt',{type:'text/plain'}));
+      panel.dispatchEvent(new DragEvent('drop',{bubbles:true,cancelable:true,dataTransfer:data}));
+    });
+    assert.match(await page.locator('#binch-front-sync-message').textContent(),/uniquement le fichier GrimoireSync.lua/);
+    const afterWrongDrop=await page.evaluate(()=>({
+      profile:localStorage.getItem('grimoire.hub.v3'),
+      bridge:localStorage.getItem('grimoire.bridge.last')
+    }));
+    assert.deepEqual(afterWrongDrop,beforeDrop,'unrelated drop never changes saved character');
+    checks++;
+    // A named drop reaches the existing importer, including its normal parse errors.
+    await page.evaluate(()=>{
+      const panel=document.querySelector('#binch-front-sync');
+      const data=new DataTransfer();
+      data.items.add(new File(['GrimoireSyncDB = { ["payload"] = "GF7|C:Bad" }'],'GrimoireSync.lua',{type:'text/plain'}));
+      panel.dispatchEvent(new DragEvent('drop',{bubbles:true,cancelable:true,dataTransfer:data}));
+    });
+    await page.waitForFunction(()=>document.querySelector('#grimoire-bridge-status')?.textContent?.includes('Import impossible'));
+    assert.match(await page.locator('#binch-front-sync-message').textContent(),/Import impossible/,'drop reuses existing protected importer');
+    const afterMalformedDrop=await page.evaluate(()=>({
+      profile:localStorage.getItem('grimoire.hub.v3'),
+      bridge:localStorage.getItem('grimoire.bridge.last')
+    }));
+    assert.deepEqual(afterMalformedDrop,beforeDrop,'malformed drop never overwrites saved character');
+    checks++;
 
     // An old same-character SavedVariables snapshot must need explicit consent.
     const beforeOld=await page.evaluate(()=>({
@@ -302,7 +335,7 @@ try{
     assert.doesNotMatch(await page.locator('#binch-front-tasks').textContent(),/Rafraîchir les données du jeu/,'unnecessary resync objective cleared');
     checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
-    console.log('Browser '+device.name+': 32 checks passed');
+    console.log('Browser '+device.name+': 34 checks passed');
     await context.close();
   }
   console.log('Browser Specs + AH + GrimoireSync: '+checks+' checks passed');
