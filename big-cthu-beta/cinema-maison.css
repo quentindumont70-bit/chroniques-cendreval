@@ -124,3 +124,26 @@ body[data-cthu-area="maison"] :is(a,button,input,select,textarea,summary):focus-
   -webkit-backdrop-filter:none;backdrop-filter:none;background-color:var(--home-glass);
  }
 }
+
+/* V168 — no giant deadline widget when there are no deadlines or read errors. */
+body[data-cthu-area="maison"] .maison-pulse[data-has-items="false"]{
+ padding:15px 19px;
+ box-shadow:0 10px 27px rgba(0,8,22,.19);
+}
+body[data-cthu-area="maison"] .maison-pulse[data-has-items="false"] .maison-pulse-head h2{
+ font-size:20px;
+ margin:0;
+}
+body[data-cthu-area="maison"] .maison-pulse[data-has-items="false"] .maison-pulse-list,
+body[data-cthu-area="maison"] .maison-pulse[data-has-items="false"] > p.muted:not([role="status"]){
+ display:none;
+}
+body[data-cthu-area="maison"] .maison-pulse[data-has-items="false"] #maisonPulseCount{
+ margin:7px 0 0;
+}
+body[data-cthu-area="maison"] .maison-pulse[data-has-items="false"] #maisonPulseStatus{
+ margin:4px 0 0;
+}
+body[data-cthu-area="maison"] .maison-pulse[data-has-items="unknown"]{
+ border-color:var(--home-warm);
+}
