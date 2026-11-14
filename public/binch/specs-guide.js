@@ -56,6 +56,10 @@ const urlOK=u=>/^https:\/\/(www\.)?(icy-veins\.com|wowhead\.com|armorywowforever
 function read(){try{let v=JSON.parse(localStorage.getItem(KEY));return v&&typeof v==='object'?v:{}}catch{return {}}}
 let state=read();if(!guides.some(g=>g.id===state.id))state.id='druid-feral';
 if(state.filter!=='all'&&!guides.some(g=>g.cls===state.filter))state.filter='all';
+if(state.filter!=='all'&&currentGuideClassIsDifferent()){
+ const matching=guides.find(g=>g.cls===state.filter);if(matching)state.id=matching.id;
+}
+function currentGuideClassIsDifferent(){return guides.find(g=>g.id===state.id)?.cls!==state.filter}
 let levelLocked=Number.isInteger(state.level)&&state.level>=10&&state.level<=60;
 function importedLevel(){
  try{const p=JSON.parse(localStorage.getItem('grimoire.hub.v3'))||{},l=JSON.parse(localStorage.getItem('grimoire.bridge.last'))||{},n=String(p.data?.pseudo||'').trim().toLowerCase(),match=n&&n===String(l.name||'').trim().toLowerCase(),level=Number(match?l.level:p.data?.level);return Number.isInteger(level)?Math.max(10,Math.min(60,level)):10}catch{return 10}
