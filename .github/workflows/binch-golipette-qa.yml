@@ -103,6 +103,13 @@ jobs:
           done < "$addon/GrimoireSync.toc"
           test "$count" -eq 3 || { echo "Expected three Lua files, got $count"; exit 1; }
           echo "GrimoireSync: manifest and three Lua files passed preflight"
+          version="$(sed -n 's/^## Version: //p' "$addon/GrimoireSync.toc" | tr -d '\r')"
+          [[ "$version" =~ ^[0-9]+[.][0-9]+[.][0-9]+$ ]] || { echo "Invalid addon version: $version"; exit 1; }
+          installer=public/binch/Installer-La-Binch.ps1
+          grep -Fq "'Mise a jour reussie !' '$version'" "$installer" || { echo "Installer displays a mismatched addon version"; exit 1; }
+          escapedVersion="${version//./\\.}"
+          grep -Fq "## Version: $escapedVersion" "$installer" || { echo "Installer validates an obsolete addon version"; exit 1; }
+          echo "Windows installer and WoW addon both target GrimoireSync $version"
       - name: Validate real Lua export against browser parser
         shell: bash
         run: |
