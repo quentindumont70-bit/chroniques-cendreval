@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#02131b">
+<meta name="description" content="Big Cthu Futurist Medical Ops : véritable cockpit opérationnel, concept indépendant.">
+<title>Big Cthu — Futurist Medical Ops | Prévisualisation</title>
+<style>
+:root{color-scheme:dark;--cyan:#6cf2fc;--blue:#b5f6ff;--text:#e9fbff;--muted:#9fbdc8;--line:rgba(87,219,240,.37);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:#03131b;color:var(--text);min-height:100vh}
+a{color:inherit;text-decoration:none;touch-action:manipulation}
+a:focus-visible{outline:3px solid #85faff;outline-offset:4px}
+a:active{transform:scale(.985)}
+.ops{position:relative;isolation:isolate;min-height:100vh;overflow:clip}
+.ops:before{content:"";position:fixed;z-index:-2;pointer-events:none;inset:0;background:#062534 url("https://images.unsplash.com/photo-1648565726114-cfb73eb46340?auto=format&fit=crop&w=1800&q=83") center/cover no-repeat;filter:brightness(.5) saturate(1.15) hue-rotate(-13deg);transform:translateZ(0)}
+.ops:after{content:"";position:fixed;z-index:-1;pointer-events:none;inset:0;background:linear-gradient(95deg,rgba(0,12,22,.93) 0%,rgba(0,19,28,.71) 56%,rgba(0,21,31,.48)),linear-gradient(0deg,#03131b,transparent 66%);transform:translateZ(0)}
+.gridmesh{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.2;background-image:linear-gradient(rgba(86,236,249,.2) 1px,transparent 1px),linear-gradient(90deg,rgba(86,236,249,.2) 1px,transparent 1px);background-size:56px 56px;mask-image:linear-gradient(to bottom,black,transparent 95%)}
+.wrap{position:relative;z-index:1;width:min(1300px,calc(100% - 60px));margin:auto}
+.bar{padding-top:23px}
+.bar-main{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:76px;border:1px solid rgba(102,243,249,.46);padding:11px 18px;background:linear-gradient(106deg,rgba(3,30,42,.94),rgba(1,19,29,.87));clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px));box-shadow:inset 0 1px rgba(167,251,255,.19)}
+.brand{display:flex;align-items:center;gap:13px;min-width:0}
+.brand-symbol{display:grid;place-items:center;width:49px;height:49px;flex:none;border:1px solid #5de9fb;box-shadow:inset 0 0 19px #079eb859,0 0 22px #0cb4d13f;background:rgba(0,53,72,.64);font-size:28px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.brandname{font-size:22px;letter-spacing:.13em;font-weight:800}
+.brandtag{color:#85dce7;font-size:9px;letter-spacing:.21em;font-weight:700;margin-top:4px}
+.menu{display:flex;align-items:center;gap:10px}
+.menu a{font-size:12px;color:#bdd9e2;padding:12px 15px;border:1px solid transparent}
+.menu a.current{color:#b9fcff;border-color:#46dff4;background:#0750664d;box-shadow:0 0 18px #13b5da33}
+.back{border:1px solid #4dc9dd;background:#09354299;padding:11px 13px;font-size:12px;color:#ddf9ff;white-space:nowrap}
+.statusrail{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:9px 3px 18px;font-size:10px;letter-spacing:.11em;color:#9bdee7}
+.statusrail strong{color:#a9fafb;font-weight:800}
+.signal{display:inline-block;width:7px;height:7px;background:#69e9e9;box-shadow:0 0 15px #5dfafe;vertical-align:1px;margin-right:7px}
+.hero{position:relative;min-height:570px;display:grid;grid-template-columns:minmax(0,1fr) minmax(275px,360px);align-items:center;gap:24px;overflow:hidden;padding:60px 54px;border:1px solid rgba(105,236,252,.52);background:linear-gradient(115deg,rgba(1,23,36,.67),rgba(0,31,44,.12));clip-path:polygon(0 0,calc(100% - 43px) 0,100% 43px,100% 100%,43px 100%,0 calc(100% - 43px));box-shadow:inset 0 0 55px #13b9d014}
+.hero:before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(1,14,26,.91),rgba(0,21,33,.51) 64%,rgba(0,18,28,.37)),url("https://images.unsplash.com/photo-1648565726114-cfb73eb46340?auto=format&fit=crop&w=1700&q=84") center/cover no-repeat;filter:saturate(1.15)}
+.hero:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:-1;background:linear-gradient(0deg,rgba(0,7,16,.56),transparent 61%),linear-gradient(90deg,transparent 92%,rgba(61,232,255,.11))}
+.hero-copy{position:relative;z-index:2}
+.overline{color:#65e6f7;font-size:11px;letter-spacing:.3em;font-weight:800}
+.overline:before{content:"";display:inline-block;width:21px;height:2px;background:#5fe8ee;vertical-align:4px;margin-right:12px;box-shadow:0 0 12px #42e9f7}
+.hero h1{font-size:clamp(49px,5.3vw,79px);line-height:1.01;letter-spacing:-.048em;margin:26px 0 18px;font-weight:780;text-shadow:0 7px 35px rgba(0,7,17,.78)}
+.hero h1 em{font-style:normal;color:#76edf4;text-shadow:0 0 34px #0acbdb65}
+.hero p{max-width:450px;color:#ccedf2;font-size:16px;line-height:1.7;margin:0}
+.actionbar{display:flex;flex-wrap:wrap;gap:9px;margin-top:27px}
+.action{display:inline-flex;align-items:center;gap:10px;border:1px solid #55dff0;color:#c8faff;background:#0a3d4aa6;padding:13px 17px;font-size:12px;font-weight:800;box-shadow:inset 0 0 20px #1cdaf01b}
+.action.primary{background:linear-gradient(115deg,#90f7ff,#53cbdc);color:#002833;border-color:#d6feff}
+.scanner{display:grid;place-items:center;position:relative;height:337px;min-width:0}
+.scan-ring{position:absolute;width:302px;height:302px;border-radius:50%;border:1px solid rgba(77,234,252,.34);box-shadow:0 0 45px #08bfd624,inset 0 0 48px #0fc7db1c}
+.scan-ring.r2{width:252px;height:252px;border-style:dashed;border-color:#48e9f267}
+.scan-ring.r3{width:192px;height:192px;border:3px solid #64e4f38a;border-right-color:transparent;border-bottom-color:#26a7c044;transform:rotate(35deg)}
+.scan-core{position:relative;width:144px;height:144px;border-radius:50%;border:1px solid #57d6eb;display:grid;place-items:center;font-size:65px;background:radial-gradient(circle at center,#12677b75,#03222f 72%);box-shadow:0 0 38px #29d7e554,inset 0 0 45px #1bc9d347}
+.scan-core:before,.scan-core:after{content:"";position:absolute;background:#5ee7f5;box-shadow:0 0 12px #0cf3ff}
+.scan-core:before{height:1px;left:-28px;right:-28px}.scan-core:after{width:1px;top:-28px;bottom:-28px}
+.scan-label{position:absolute;bottom:0;text-align:center;color:#73dfea;letter-spacing:.2em;font-size:10px;font-weight:800}
+.hero-bottom{position:absolute;bottom:20px;left:54px;display:flex;gap:10px;flex-wrap:wrap;font-size:10px;color:#9fdee9;letter-spacing:.08em}
+.hero-bottom span{border-left:2px solid #67d8e8;padding:1px 12px}
+.section-title{display:flex;align-items:end;justify-content:space-between;gap:15px;margin:42px 0 20px}
+.section-title h2{font-size:28px;font-weight:800;letter-spacing:-.03em;margin:0}
+.section-title p{font-size:12px;color:#b1d1d8;margin:8px 0 0}
+.section-title a{font-size:12px;color:#84f2ff}
+.panels{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}
+.panel{position:relative;isolation:isolate;overflow:hidden;grid-column:span 4;min-height:213px;display:flex;flex-direction:column;justify-content:end;padding:25px;border:1px solid rgba(93,223,247,.38);background:linear-gradient(130deg,rgba(2,39,54,.81),rgba(1,18,31,.9));clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,22px 100%,0 calc(100% - 22px));box-shadow:inset 0 1px #bdfaff22;transition:border-color .2s,transform .2s}
+.panel:hover,.panel:focus-visible{transform:translateY(-3px);border-color:#8afaff}
+.panel:before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(0deg,rgba(0,14,27,.96),rgba(0,18,32,.28) 74%),var(--image,linear-gradient(135deg,#06374a,#091e30));background-size:cover;background-position:center;filter:saturate(.7) hue-rotate(8deg)}
+.panel:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(130deg,#57f9ff22,transparent 35%);pointer-events:none}
+.panel.wide{grid-column:span 6;min-height:235px}
+.panel .icon{position:absolute;top:22px;left:25px;width:47px;height:47px;display:grid;place-items:center;border:1px solid #70e8f47e;background:#06526775;font-size:24px}
+.panel h3{font-size:26px;font-weight:750;margin:0 0 8px;letter-spacing:-.02em;text-shadow:0 4px 15px #010e1d}
+.panel p{color:#b6dbe4;font-size:12px;line-height:1.55;margin:0}
+.panel .arrow{position:absolute;right:24px;bottom:25px;color:#93f6ff}
+.panel.official{--image:radial-gradient(circle at 78% 20%,#197386,#032737 63%)}
+.panel.home{--image:url("https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=77")}
+.panel.budget{--image:url("https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=850&q=77")}
+.panel.agenda{--image:url("https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=850&q=77")}
+.panel.sport{--image:url("https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=850&q=77")}
+.panel.creation{--image:url("https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=850&q=77")}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0 84px}
+.info{padding:25px;border:1px solid rgba(95,214,240,.35);background:rgba(1,25,37,.82);-webkit-backdrop-filter:blur(15px);backdrop-filter:blur(15px)}
+.info small{font-size:10px;letter-spacing:.19em;color:#7ceaf7}
+.info h3{margin:12px 0;font-size:23px}.info p{margin:0;font-size:13px;color:#b5d5df;line-height:1.65}
+.focus-link{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:21px;padding:15px 17px;border:1px solid #43c7de66;background:#05374870;color:#e4fbff;font-size:12px}
+footer{color:#a2c6d1;font-size:11px;line-height:1.75;border-top:1px solid #49deeb55;padding:25px 0 120px}
+footer a{color:#93f9ff;text-decoration:underline}
+.dock{display:none}
+@media(max-width:1000px){.menu{display:none}.hero{grid-template-columns:1fr minmax(200px,290px)}.scan-ring{width:260px;height:260px}.scan-ring.r2{width:215px;height:215px}.scan-ring.r3{width:162px;height:162px}.panel{grid-column:span 6}}
+@media(max-width:760px){
+ .wrap{width:calc(100% - 24px)}
+ .bar{padding-top:max(8px,env(safe-area-inset-top,0px))}
+ .bar-main{padding:8px 11px;min-height:62px}
+ .brand-symbol{width:41px;height:41px;font-size:23px}
+ .brandname{font-size:17px;letter-spacing:.07em}.brandtag{font-size:7px;letter-spacing:.06em}
+ .back{font-size:10px;padding:9px 10px}
+ .statusrail{margin:8px 3px 12px;font-size:8px;letter-spacing:.04em}
+ .statusrail span:last-child{display:none}
+ .ops:before{background-image:url("https://images.unsplash.com/photo-1648565726114-cfb73eb46340?auto=format&fit=crop&w=960&q=79");background-position:56% center;filter:brightness(.59) saturate(1.2)}
+ .hero{display:block;min-height:645px;padding:0 21px 40px;clip-path:polygon(0 0,calc(100% - 23px) 0,100% 23px,100% 100%,23px 100%,0 calc(100% - 23px))}
+ .hero:before{background-position:58% center}
+ .hero:after{background:linear-gradient(0deg,rgba(0,9,21,.94),rgba(0,14,24,.68) 45%,rgba(0,28,41,.11) 86%)}
+ .hero-copy{padding-top:267px}
+ .overline{font-size:9px;letter-spacing:.14em}
+ .hero h1{font-size:clamp(42px,11.2vw,60px);margin:14px 0}
+ .hero p{font-size:13px;line-height:1.55}
+ .actionbar{margin-top:20px;gap:8px}.action{font-size:11px;padding:11px 12px}
+ .scanner{position:absolute;right:8px;top:13px;height:160px;width:160px}
+ .scan-ring{width:156px;height:156px}
+ .scan-ring.r2{width:128px;height:128px}.scan-ring.r3{width:101px;height:101px;border-width:2px}
+ .scan-core{width:76px;height:76px;font-size:36px}
+ .scan-core:before{left:-12px;right:-12px}.scan-core:after{top:-12px;bottom:-12px}
+ .scan-label{font-size:7px;bottom:-2px}
+ .hero-bottom{bottom:14px;left:20px;font-size:8px}.hero-bottom span{padding:1px 6px}
+ .section-title{margin:31px 0 16px}.section-title h2{font-size:24px}.section-title p{font-size:11px}
+ .panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .panel,.panel.wide{grid-column:span 1;min-height:185px;padding:13px;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px))}
+ .panel.wide.official{grid-column:span 2;min-height:176px}
+ .panel .icon{top:13px;left:13px;width:41px;height:41px;font-size:21px}
+ .panel h3{font-size:clamp(20px,5.4vw,24px)}
+ .panel p{font-size:10px}.panel .arrow{right:11px;bottom:14px}
+ .info-grid{grid-template-columns:1fr;gap:11px;margin-bottom:32px}
+ .info{padding:20px}
+ .dock{position:fixed;bottom:calc(10px + env(safe-area-inset-bottom,0px));left:10px;right:10px;display:flex;align-items:center;justify-content:space-around;gap:5px;z-index:10;min-height:66px;background:rgba(1,29,42,.94);-webkit-backdrop-filter:blur(17px);backdrop-filter:blur(17px);border:1px solid #55ddeb9c;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));padding:8px}
+ .dock a{display:grid;justify-items:center;gap:4px;font-size:9px;color:#a7e5ee;min-width:49px}
+ .dock a span{font-size:19px}.dock a.active{color:white}
+ .dock a.center{min-width:50px;height:48px;border:1px solid #62ebf8;display:grid;place-items:center;background:#0b5466;box-shadow:inset 0 0 13px #53eafb44;transform:translateY(-6px);font-size:25px}
+}
+@media(max-width:365px){.hero h1{font-size:41px}.back{font-size:9px}.panel h3{font-size:19px}.brandtag{display:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important}}
+@media(prefers-reduced-transparency:reduce){.bar-main,.info,.dock{background:#062734;-webkit-backdrop-filter:none;backdrop-filter:none}}
+</style></head>
+<body><div class="ops"><div class="gridmesh" aria-hidden="true"></div>
+<header class="bar wrap"><div class="bar-main">
+ <a class="brand" href="./index.html" aria-label="Ouvrir le cockpit officiel Big Cthu"><span class="brand-symbol" aria-hidden="true">✚</span><span><div class="brandname">BIG CTHU</div><div class="brandtag">FUTURIST MEDICAL OPS</div></span></a>
+ <nav class="menu" aria-label="Navigation"><a class="current" href="#haut">POSTE DE CONTRÔLE</a><a href="#modules">MODULES</a><a href="#focus">OBJECTIFS</a><a href="./premium-cinema.html">PREMIUM</a><a href="./organic-cinema.html">ORGANIC</a></nav>
+ <a class="back" href="./organic-cinema.html">◈ Organic ↗</a>
+</div></header>
+<main class="wrap" id="haut">
+<div class="statusrail"><span><i class="signal"></i><strong>MODE VISUEL · DÉMONSTRATION</strong></span><span>AUCUN ACCÈS AUX DONNÉES · POSTE ISOLÉ</span></div>
+<section class="hero" aria-labelledby="ops-title">
+ <div class="hero-copy">
+  <div class="overline">INTERFACE OPÉRATIONNELLE · CTHU / 03</div>
+  <h1 id="ops-title">Mission<br><em>opérationnelle.</em></h1>
+  <p>Une précision d'instrumentation, une interface prête à agir. L’essentiel de ton quotidien, sans surcharge visuelle.</p>
+  <div class="actionbar"><a class="action primary" href="./tournee-complete.html">✚ Ouvrir Tournée</a><a class="action" href="#modules">◈ Voir les modules</a></div>
+ </div>
+ <div class="scanner" aria-hidden="true"><span class="scan-ring"></span><span class="scan-ring r2"></span><span class="scan-ring r3"></span><span class="scan-core">⚕</span><span class="scan-label">CTHU · INTERFACE VISUELLE</span></div>
+ <div class="hero-bottom" aria-hidden="true"><span>MODE LOCAL</span><span>PRÉVISUALISATION</span><span>AUCUN KPI SIMULÉ</span></div>
+</section>
+<section id="modules" aria-labelledby="ops-modules">
+ <div class="section-title"><div><h2 id="ops-modules">Accès opérationnels</h2><p>Modules réels, présentation instrumentée.</p></div><a href="./index.html">TOUS LES MODULES ↗</a></div>
+ <div class="panels">
+  <a class="panel official wide" href="./tournee-complete.html"><span class="icon" aria-hidden="true">🩺</span><h3>Tournée</h3><p>Application IDEL officielle · ouvrir sans modifier</p><span class="arrow" aria-hidden="true">↗</span></a>
+  <a class="panel home wide" href="./maison.html"><span class="icon" aria-hidden="true">⌂</span><h3>Maison</h3><p>Suivre travaux et équipements</p><span class="arrow" aria-hidden="true">↗</span></a>
+  <a class="panel budget" href="./budget.html"><span class="icon" aria-hidden="true">◈</span><h3>Budget</h3><p>Projets et organisation</p><span class="arrow" aria-hidden="true">↗</span></a>
+  <a class="panel agenda" href="./agenda.html"><span class="icon" aria-hidden="true">▦</span><h3>Agenda</h3><p>Échéances utiles</p><span class="arrow" aria-hidden="true">↗</span></a>
+  <a class="panel sport" href="./escalade.html"><span class="icon" aria-hidden="true">△</span><h3>Sport</h3><p>Escalade et pratique</p><span class="arrow" aria-hidden="true">↗</span></a>
+  <a class="panel creation" href="./passions.html"><span class="icon" aria-hidden="true">♫</span><h3>Passions</h3><p>Jeux et musique</p><span class="arrow" aria-hidden="true">↗</span></a>
+ </div>
+</section>
+<section class="info-grid" id="focus">
+ <article class="info"><small>OBJECTIF DISPONIBLE</small><h3>Prochaine session</h3><p>Un accès direct à tes rappels de jeu, sans faux calendrier.</p><a class="focus-link" href="./index.html#nextSession">Ouvrir mon prochain objectif <span aria-hidden="true">↗</span></a></article>
+ <article class="info"><small>SÉCURITÉ DE LA PRÉVISUALISATION</small><h3>Interface seulement</h3><p>Le décor, les modules et les instruments sont visuels. Aucun chiffre personnel inventé, aucune base patient lue, aucun transfert automatique.</p></article>
+</section>
+</main>
+<footer class="wrap">Concept Big Cthu Futurist Medical Ops. Décor technique issu d'un <a href="https://unsplash.com/photos/a-group-of-computer-servers-OcO6XQ-E2fk" target="_blank" rel="noopener noreferrer">visuel de serveurs d'Alex Pavor sur Unsplash</a>, sous licence Unsplash. Le décor distant nécessite Internet lors du premier chargement. Cette prévisualisation ne modifie pas Tournée ni les données enregistrées sur l'appareil.</footer>
+<nav class="dock" aria-label="Navigation mobile"><a class="active" href="#haut"><span aria-hidden="true">⌂</span>Cockpit</a><a href="#modules"><span aria-hidden="true">▦</span>Modules</a><a class="center" href="./index.html" aria-label="Accueil officiel">✚</a><a href="#focus"><span aria-hidden="true">◎</span>Focus</a><a href="./premium-cinema.html"><span aria-hidden="true">✦</span>Premium</a></nav>
+</div></body></html>
