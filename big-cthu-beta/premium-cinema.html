@@ -16,8 +16,11 @@ button{cursor:pointer}
 button:focus-visible,a:focus-visible{outline:3px solid var(--cyan);outline-offset:4px}
 button:active,a:active{transform:scale(.985)}
 ::selection{background:#268bc0;color:white}
-.page{position:relative;overflow:hidden;min-height:100vh;background:radial-gradient(ellipse at 70% 40%,#18334f 0,#071522 60%)}
-.page:before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(circle at 15% 18%,rgba(120,191,230,.08),transparent 30%),repeating-linear-gradient(115deg,transparent 0 130px,rgba(255,255,255,.009) 130px 131px)}
+.page{position:relative;isolation:isolate;overflow:clip;min-height:100vh;background:transparent}
+/* V121 : la montagne est le décor de TOUT le cockpit, pas une image prisonnière de la hero.
+   Un pseudo-élément fixé au viewport évite les bugs de background-attachment:fixed dans Safari iOS. */
+.page:before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:#102d43 url("https://images.unsplash.com/photo-1649401691853-6ecfa00f044e?auto=format&fit=crop&w=2100&q=85") center 46%/cover no-repeat;filter:saturate(.88) contrast(1.06) brightness(.84);transform:translateZ(0)}
+.page:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(1,13,25,.43) 0%,rgba(3,16,28,.39) 25%,rgba(3,16,29,.66) 69%,rgba(2,12,24,.82) 100%),radial-gradient(circle at 75% 20%,rgba(255,181,100,.17),transparent 33%);transform:translateZ(0)}
 .container{width:min(1360px,calc(100% - 72px));margin-inline:auto;position:relative;z-index:1}
 .topbar{position:relative;z-index:8;padding-top:25px}
 .topinner{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:68px;padding:10px 16px;border-radius:23px;border:1px solid rgba(210,238,255,.23);background:linear-gradient(155deg,rgba(4,22,43,.86),rgba(17,39,62,.69));box-shadow:0 22px 65px #0109127a,inset 0 1px rgba(255,255,255,.13);-webkit-backdrop-filter:blur(25px);backdrop-filter:blur(25px)}
@@ -34,10 +37,9 @@ button:active,a:active{transform:scale(.985)}
 .pill{min-height:42px;border:1px solid rgba(184,220,255,.3);background:rgba(21,43,65,.66);border-radius:999px;display:inline-flex;align-items:center;gap:7px;padding:9px 14px;font-size:12px;white-space:nowrap}
 .pill.gold{border-color:rgba(255,211,151,.36);color:#ffe0aa}
 .preview-flag{background:rgba(255,211,151,.11);color:#ffe1aa;border:1px solid rgba(255,211,151,.31);border-radius:999px;padding:6px 10px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
-.hero{position:relative;isolation:isolate;overflow:hidden;min-height:595px;margin-top:22px;border-radius:31px;border:1px solid rgba(198,221,239,.4);box-shadow:0 40px 100px rgba(0,4,12,.6),inset 0 1px rgba(255,255,255,.18);background:#102437}
-.hero-photo{position:absolute;inset:0;z-index:-3;width:100%;height:100%;object-fit:cover;object-position:center 47%;filter:saturate(.86) contrast(1.09) brightness(.84);transform:scale(1.01)}
-.hero:before{content:"";position:absolute;inset:0;z-index:-2;pointer-events:none;background:linear-gradient(90deg,rgba(2,13,26,.85) 0%,rgba(3,17,31,.62) 39%,rgba(1,16,31,.1) 82%),linear-gradient(0deg,#061523 0%,rgba(2,15,29,.21) 46%,rgba(6,15,27,.2) 100%)}
-.hero:after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 90% 34%,rgba(255,176,97,.24),transparent 30%),linear-gradient(180deg,rgba(13,33,49,.08),rgba(8,25,43,.19));box-shadow:inset 0 0 90px rgba(4,13,24,.35)}
+.hero{position:relative;isolation:isolate;overflow:hidden;min-height:595px;margin-top:22px;border-radius:31px;border:1px solid rgba(198,221,239,.4);box-shadow:0 40px 100px rgba(0,4,12,.48),inset 0 1px rgba(255,255,255,.19);background:linear-gradient(125deg,rgba(5,19,35,.37),rgba(14,39,60,.07));-webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px)}
+.hero:before{content:"";position:absolute;inset:0;z-index:-2;pointer-events:none;background:linear-gradient(90deg,rgba(2,13,26,.61) 0%,rgba(3,17,31,.29) 42%,rgba(1,16,31,.06) 85%),linear-gradient(0deg,rgba(3,17,31,.39) 0%,transparent 53%,rgba(6,15,27,.13) 100%)}
+.hero:after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 90% 34%,rgba(255,176,97,.13),transparent 34%);box-shadow:inset 0 0 100px rgba(4,13,24,.2)}
 .hero-content{position:relative;padding:81px 62px 34px;min-height:595px;display:flex;flex-direction:column;align-items:start}
 .eyebrow{display:flex;align-items:center;gap:9px;color:#dbedff;font-size:11px;letter-spacing:.25em;text-transform:uppercase;font-weight:800;text-shadow:0 2px 12px #03121e}
 .eyebrow:before{content:"";height:1px;width:28px;background:#ffd1a0;box-shadow:0 0 12px #ffd1a0}
@@ -60,9 +62,9 @@ button:active,a:active{transform:scale(.985)}
 .section-head p{margin:7px 0 0;color:#9cb5c8;font-size:13px}
 .section-head a{font-size:12px;color:#b9e4ff;white-space:nowrap}
 .panel-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:15px}
-.module{position:relative;isolation:isolate;overflow:hidden;min-height:215px;border-radius:23px;border:1px solid rgba(159,206,239,.24);background:linear-gradient(145deg,rgba(17,43,66,.83),rgba(7,26,43,.95));box-shadow:0 16px 40px rgba(0,9,21,.24),inset 0 1px rgba(255,255,255,.09);padding:25px;display:flex;flex-direction:column;justify-content:end;transition:transform .2s,border .2s,box-shadow .2s}
+.module{position:relative;isolation:isolate;overflow:hidden;min-height:215px;border-radius:23px;border:1px solid rgba(178,222,249,.32);background:linear-gradient(145deg,rgba(16,37,60,.69),rgba(7,25,45,.79));-webkit-backdrop-filter:blur(15px);backdrop-filter:blur(15px);box-shadow:0 16px 40px rgba(0,9,21,.24),inset 0 1px rgba(255,255,255,.09);padding:25px;display:flex;flex-direction:column;justify-content:end;transition:transform .2s,border .2s,box-shadow .2s}
 .module:hover{transform:translateY(-4px);border-color:rgba(136,212,255,.6);box-shadow:0 17px 45px rgba(0,13,27,.45),0 0 26px rgba(94,177,239,.1)}
-.module:before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(0deg,#061625 8%,rgba(3,17,31,.51) 57%,rgba(10,22,34,.21)),var(--image,linear-gradient(130deg,#152d46,#285577));background-size:cover;background-position:center;filter:saturate(.85)}
+.module:before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(0deg,rgba(3,17,31,.86) 4%,rgba(3,17,31,.32) 60%,rgba(10,22,34,.12)),var(--image,linear-gradient(130deg,rgba(21,45,70,.25),rgba(40,85,119,.2)));background-size:cover;background-position:center;filter:saturate(.84)}
 .module:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(150deg,rgba(166,206,242,.09),transparent 52%)}
 .module[data-span="3"]{grid-column:span 3}.module[data-span="4"]{grid-column:span 4}.module[data-span="6"]{grid-column:span 6}
 .module .module-icon{position:absolute;top:21px;left:24px;width:47px;height:47px;border-radius:15px;background:rgba(5,29,47,.54);border:1px solid rgba(170,215,250,.29);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);display:grid;place-items:center;font-size:25px;box-shadow:0 6px 16px #06132155}
@@ -78,7 +80,7 @@ button:active,a:active{transform:scale(.985)}
 .module.creation{--image:radial-gradient(circle at 84% 40%,#5b3d86,#122741 62%)}
 .module.passions{--image:radial-gradient(circle at 84% 20%,#176585,#112239 60%)}
 .lower{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;margin:28px 0 90px}
-.glass{border:1px solid var(--line);border-radius:24px;background:linear-gradient(125deg,rgba(16,42,64,.72),rgba(10,27,48,.82));box-shadow:0 16px 40px rgba(0,6,15,.25),inset 0 1px rgba(255,255,255,.06);padding:27px}
+.glass{border:1px solid var(--line);border-radius:24px;background:linear-gradient(125deg,rgba(16,42,64,.68),rgba(10,27,48,.77));-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 16px 40px rgba(0,6,15,.25),inset 0 1px rgba(255,255,255,.06);padding:27px}
 .glass small{font-weight:800;color:#97cbe9;letter-spacing:.12em;text-transform:uppercase;font-size:10px}
 .glass h3{margin:8px 0 8px;font-family:Georgia,"Times New Roman",serif;font-size:27px;font-weight:500}
 .glass p{margin:0;color:#b7cddd;font-size:13px;line-height:1.6}
@@ -103,8 +105,9 @@ footer p{line-height:1.6;max-width:900px;margin:0}
  .header-right{gap:5px}.header-right .pill{padding:8px 9px;min-height:39px;font-size:11px}
  .header-right .pill.gold{display:none}.preview-flag{display:none}
  .hero{margin-top:12px;min-height:640px;border-radius:23px}
- .hero-photo{object-position:62% 48%}
- .hero:before{background:linear-gradient(180deg,rgba(4,15,28,.14) 0%,rgba(3,15,28,.46) 28%,rgba(3,13,27,.82) 60%,#061523 100%),linear-gradient(90deg,rgba(1,17,32,.3),transparent 75%)}
+ .hero:before{background:linear-gradient(180deg,rgba(4,15,28,.12) 0%,rgba(3,15,28,.3) 31%,rgba(3,13,27,.73) 66%,rgba(4,15,28,.76) 100%),linear-gradient(90deg,rgba(1,17,32,.26),transparent 75%)}
+ .page:before{background-image:url("https://images.unsplash.com/photo-1649401691853-6ecfa00f044e?auto=format&fit=crop&w=960&q=82");background-position:58% 44%;filter:saturate(.91) contrast(1.02) brightness(.94)}
+ .page:after{background:linear-gradient(180deg,rgba(2,13,25,.3),rgba(2,13,25,.32) 25%,rgba(2,13,25,.68) 68%,rgba(2,13,25,.82))}
  .hero-content{padding:235px 22px 22px;min-height:640px}
  .eyebrow{font-size:9px;letter-spacing:.13em}
  .hero h1{font-size:clamp(36px,9vw,51px);margin:14px 0 7px;max-width:390px}
@@ -144,7 +147,6 @@ footer p{line-height:1.6;max-width:900px;margin:0}
  </header>
  <main class="container" id="haut">
   <section class="hero" aria-labelledby="intro">
-   <img class="hero-photo" src="https://images.unsplash.com/photo-1649401691853-6ecfa00f044e?auto=format&amp;fit=crop&amp;w=2100&amp;q=85" alt="Panorama photographique des sommets enneigés des Dolomites à la lumière du couchant" fetchpriority="high" decoding="async">
    <div class="hero-content">
     <div class="eyebrow">UN LIEU AU-DESSUS DU BRUIT · BIG CTHU</div>
     <h1 id="intro">Ton monde.<br><em>Sous contrôle.</em></h1>
@@ -157,7 +159,7 @@ footer p{line-height:1.6;max-width:900px;margin:0}
     </div>
    </div>
   </section>
-  <div class="captionbar"><span><b>PHOTOGRAPHIE RÉELLE</b> · Cimes enneigées au crépuscule, pas un dégradé CSS.</span><span>Concept séparé · ne modifie aucune donnée.</span></div>
+  <div class="captionbar"><span><b>PANORAMA CONTINU</b> · Les sommets restent derrière les panneaux pendant le défilement.</span><span>Prévisualisation séparée · aucune donnée modifiée.</span></div>
   <section id="modules" aria-labelledby="modules-title">
    <div class="section-head"><div><h2 id="modules-title">Accès immédiats</h2><p>Des portes sur ton quotidien. Pas une grille de logiciels.</p></div><a href="./index.html">Tous les tentacules ↗</a></div>
    <div class="panel-grid">
@@ -180,7 +182,7 @@ footer p{line-height:1.6;max-width:900px;margin:0}
    </article>
   </section>
  </main>
- <footer class="container"><p>Prévisualisation graphique Command Center Premium. La photo de montagne est une photographie de <a href="https://unsplash.com/photos/a-mountain-range-covered-in-snow-at-sunset-eRjTTJeUoO4" target="_blank" rel="noopener noreferrer">Fabrizio Lunardi sur Unsplash</a>, utilisée selon sa licence. L'image et les illustrations de cartes nécessitent une connexion : elles sont volontaires et séparées des données locales. Aucun dossier patient ni état de Tournée n'est chargé ici.</p></footer>
+ <footer class="container"><p>Prévisualisation graphique Command Center Premium V2. La vue alpine est une photographie de <a href="https://unsplash.com/photos/a-mountain-range-covered-in-snow-at-sunset-eRjTTJeUoO4" target="_blank" rel="noopener noreferrer">Fabrizio Lunardi sur Unsplash</a>, utilisée selon sa licence. L'image et les illustrations de cartes nécessitent une connexion : elles sont volontaires et séparées des données locales. Aucun dossier patient ni état de Tournée n'est chargé ici.</p></footer>
  <nav class="mobile-dock" aria-label="Accès rapide"><a class="active" href="#haut"><span aria-hidden="true">⌂</span>Cockpit</a><a href="#modules"><span aria-hidden="true">✧</span>Univers</a><a class="center" href="./index.html" aria-label="Ouvrir le cockpit officiel">🐙</a><a href="./agenda.html"><span aria-hidden="true">▦</span>Agenda</a><a href="#focus"><span aria-hidden="true">◉</span>Focus</a></nav>
 </div>
 </body></html>
