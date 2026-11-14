@@ -38,7 +38,7 @@ test('V125: reciprocal gallery access is explicit without replacing official coc
  assert.doesNotMatch(organic,/<script\b|indexedDB|localStorage|tidel_/i);
  assert.doesNotMatch(tour,/organic-cinema\.html/);
  assert.match(sw,/'\.\/organic-cinema\.html'/);
- assert.match(sw,/big-cthu-public-v2-v125/);
+ assert.match(sw,/big-cthu-public-v2-v126/);
  const list=sw.slice(sw.indexOf('const ASSETS=['),sw.indexOf('];',sw.indexOf('const ASSETS=['))+2);
  assert.doesNotMatch(list,/images\.unsplash\.com/);
 });
