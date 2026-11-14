@@ -110,3 +110,5 @@ jobs:
           lua5.1 scripts/test-grimoiresync-mock.lua | node public/binch/test-grimoiresync-interop.cjs
       - name: Verify Faith local assistant controls and opt-in with mocked WoW API
         run: lua5.1 scripts/test-grimoiresync-faith.lua
+      - name: Verify minimap reload and relative path dialog with mocked WoW API
+        run: lua5.1 scripts/test-grimoiresync-minimap.lua
