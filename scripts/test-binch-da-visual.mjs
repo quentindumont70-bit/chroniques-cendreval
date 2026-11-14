@@ -184,7 +184,9 @@ try{
    });
    const page=await ctx.newPage();
    await page.goto('http://127.0.0.1:'+server.address().port+'/index.html'+variant.query,{waitUntil:'domcontentloaded',timeout:30000});
-   await page.locator('#binch-front .binch-front-hero').waitFor({state:'visible',timeout:30000});
+   await page.locator('#binch-front .binch-front-hero').waitFor({state:'attached',timeout:30000});
+   await page.locator('#app nav.nav [data-page="hub"]').evaluate(el=>el.click());
+   await page.locator('#binch-front .binch-front-hero').waitFor({state:'visible',timeout:10000});
    const result=await page.evaluate(()=>{
     const root=document.documentElement,hero=document.querySelector('#binch-front .binch-front-hero');
     return {enabled:root.classList.contains('binch-da-preview'),
