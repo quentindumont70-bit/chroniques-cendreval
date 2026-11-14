@@ -69,3 +69,11 @@ PR artistique : https://github.com/quentindumont70-bit/chroniques-cendreval/pull
 - Le laboratoire `da-lab.html` charge cette feuille en dernier ; les données de jeu et les boutons de la maquette restent inchangés. Les styles intègrent les contraintes mobile 820/430 px et la réduction de mouvement.
 - Le workflow de l'atelier graphique et les tests contrôlent la présence de chaque thème, les principaux composants, le responsive, la réduction des animations et l'absence d'assets téléchargés. **GitHub Actions run 43633231415 : SUCCESS**.
 - Reste à valider le rendu en Chromium visuel et sur appareils physiques ; ce passage confirme les contrats statiques seulement.
+
+## Golipette v0.7 — galerie de captures Chromium
+
+- Script `scripts/test-binch-da-visual.mjs` : serveur HTTP local à port éphémère, profil Playwright vierge, Chromium réduit en mouvement, pour **7 thèmes × 3 vues (360×780, 390×844, 1440×900)**. La maquette n'utilise aucune donnée joueur.
+- Après sélection de chaque thème : vérification du bouton actif, de l'interface, de l'absence de débordement horizontal, de la largeur/hauteur des contrôles principaux (au moins 44 px), de la présence de décors et de tokens de thème. Capture plein écran dans `artifacts/binch-da-visual/` + `manifest.json` avec vue/thème/couleur/diagnostics.
+- Le workflow `.github/workflows/binch-da-lab.yml` lance à présent **deux jobs**, avec Playwright Chromium isolé et archivage des captures pendant 14 jours, y compris si une vérification échoue.
+- **GitHub Actions run 43633776347 : SUCCESS 2/2 jobs, 21 captures, zéro débordement et zéro erreur de page**. Les images sont disponibles dans les artefacts du run : https://github.com/quentindumont70-bit/chroniques-cendreval/actions/runs/43633776347.
+- Limites : ce passage confirme les dimensions, la navigation et l'absence de crash dans Chromium. Il ne certifie ni contraste WCAG, ni qualité esthétique manuellement revue, ni comportement exact sur appareils physiques. Les scènes restent de simples originaux procéduraux.
