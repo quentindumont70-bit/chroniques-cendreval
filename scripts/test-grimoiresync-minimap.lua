@@ -1,5 +1,5 @@
 -- GrimoireSync minimap UI and /reload integration in a synthetic WoW API.
-local widgets={}, allWidgets={}
+local widgets,allWidgets={},{}
 local function widget(name)
   local w={shown=true,scripts={}}
   for _,k in ipairs({"SetWidth","SetHeight","SetPoint","SetFrameStrata","SetFrameLevel","RegisterForClicks","SetAllPoints","SetTexture","SetVertexColor","SetText","EnableMouse","SetAutoFocus","SetFocus","ClearFocus","HighlightText"}) do w[k]=function()end end
