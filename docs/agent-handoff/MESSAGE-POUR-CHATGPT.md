@@ -1,5 +1,17 @@
 # MESSAGE POUR CHATGPT — passation OpenCode
 
+## Mise à jour ChatGPT — 14 novembre 2026 (travail directement sur opencode-golipette)
+
+- Branch maintenue sans fusion vers main.
+- `d552cd5` : ajout de `scripts/check-druid-corpus.mjs`, contrôle hors réseau des deux corpus Druide (builds + druid-other), champs, URLs de sources et unicité ; vérification des 54 fiches par lecture GitHub sans anomalie. **Node local non exécuté pendant cette passe.**
+- `c7d5ca8` : tests anti-régression ajoutés à `scripts/check-binch.mjs` pour le gestionnaire de sets, le montage de l'atelier craft et la source manuelle de la Bourse.
+- `91eb1fe` : `specs-guide.js` rafraîchit maintenant le bandeau épinglé et son état lorsque le profil sélectionné n'est **pas** Druide farouche (auparavant `return` trop tôt).
+- `85dbcc5` : cache `specs-guide.js?v=004` dans `index.html` ; conserver ce bump lors d'une future réconciliation avec main (ne pas écraser les scripts Faith).
+- `b0de8ea` : test de non-régression du bandeau dans `scripts/check-binch.mjs`.
+- **Reste à faire :** exécution Node et contrôle navigateur PC/mobile sur la branche ; réconciliation éventuelle avec main après revue. La version GitHub Pages qui suit main ne reçoit pas automatiquement ces commits.
+- **Chantiers suivants (10) :** (1) QA Node, (2) QA navigateur Specs, (3) guides leveling multiclasse *sourcés* sans ordre inventé, (4) tests pont Bourse en lecture seule, (5) clarification des consommateurs AH/craft, (6) tests de synchronisation import addon, (7) fiabilité des objectifs épinglés, (8) UX mobile, (9) préparation bêta frère/GM, (10) revue de fusion manuelle.
+- **Aucune dépense**, aucun merge, aucune modification de données de joueur.
+
 Dernière mise à jour : 2026-11-10 (après le lot corpus druid-other.json).
 Branche : `opencode-golipette` · HEAD : `e93eaf7` (corpus) + commit de passation (poussés
 sur `origin/opencode-golipette`).
