@@ -2131,11 +2131,13 @@ async function tourAbsenceChange(patientId,selectedDay){
  const wasAbsent=active||absSet(selectedDay).includes(patientId);
  const message=wasAbsent?'Annuler l’absence de '+person.n+' pour le '+selectedDay+' ? L’historique restera conservé.':'Confirmer l’absence de '+person.n+' pour le '+selectedDay+' ? Aucun soin ni facture Topaze ne sera modifié.';
  if(!confirm(message))return;
- if(!wasAbsent&&rows.length>=500){toast("Journal Absences plein (500 signalements). Aucun changement.");return}
+ if((!wasAbsent||!active)&&rows.length>=500){toast("Journal Absences plein (500 signalements). Aucun changement.");return}
  const at=new Date().toISOString();
  let updated=rows;
- if(wasAbsent){updated=rows.map(x=>x===active?absenceCancelRecord(x,at):x)}
- else updated=rows.concat({id:'absence-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),patientId,day:selectedDay,reason:'Patient absent',note:'Déclaré depuis la tournée',sync:'À rapprocher',history:[{at,action:'Absence déclarée depuis le passage'}]});
+ if(wasAbsent){
+  updated=active?rows.map(x=>x===active?absenceCancelRecord(x,at):x):
+   rows.concat({id:'absence-ancien-'+Date.now().toString(36),patientId,day:selectedDay,reason:'Patient absent',note:'Absence antérieure au journal',sync:'Sans suite',cancelled:true,history:[{at,action:'Absence provenant de la tournée avant le journal'},{at,action:'Annulation depuis la tournée'}]});
+ }else updated=rows.concat({id:'absence-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),patientId,day:selectedDay,reason:'Patient absent',note:'Déclaré depuis la tournée',sync:'À rapprocher',history:[{at,action:'Absence déclarée depuis le passage'}]});
  // Le badge, la liste et le journal utilisent le meme coffre local.
  // Les mutations sont preparees avant une unique validation chiffree.
  TOUR_STORE.setItem(ABSENCE_KEY,JSON.stringify(updated));
