@@ -185,8 +185,32 @@ try{
     assert.match(sourceLabel,/Capture WoW.*2023.*à actualiser/,'home shows source game age');
     assert.match(await page.locator('#binch-front-tasks').textContent(),/Rafraîchir les données du jeu/,'home offers resync priority');
     checks++;
+    // An old same-character SavedVariables snapshot must need explicit consent.
+    const beforeOld=await page.evaluate(()=>({
+      profile:localStorage.getItem('grimoire.hub.v3'),
+      imported:localStorage.getItem('grimoire.bridge.last'),
+      crafting:localStorage.getItem('grimoire.craft.v1')
+    }));
+    const stale='GF6|C:Golipette-QA,Forever,32,DRUID,Tauren,Horde,Les%20Tarides,100,1690000000,100,4000,0|P:Minage,80,150|Q:';
+    let oldPrompt=0;
+    page.once('dialog',async dialog=>{
+      oldPrompt++;
+      assert.match(dialog.message(),/plus ancienne/);
+      await dialog.dismiss();
+    });
+    const refused=await page.evaluate(payload=>window.BinchSync.importCharacter(window.BinchSync.parsePayload(payload)),stale);
+    assert.equal(refused,false,'older save refused after prompt dismissal');
+    assert.equal(oldPrompt,1,'only one downgrade warning');
+    const afterOld=await page.evaluate(()=>({
+      profile:localStorage.getItem('grimoire.hub.v3'),
+      imported:localStorage.getItem('grimoire.bridge.last'),
+      crafting:localStorage.getItem('grimoire.craft.v1')
+    }));
+    assert.deepEqual(afterOld,beforeOld,'declined older save cannot overwrite character or crafts');
+    assert.match(await page.locator('#grimoire-bridge-status').textContent(),/sauvegarde plus ancienne refusée/);
+    checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
-    console.log('Browser '+device.name+': 22 checks passed');
+    console.log('Browser '+device.name+': 23 checks passed');
     await context.close();
   }
   console.log('Browser Specs + AH + GrimoireSync: '+checks+' checks passed');
