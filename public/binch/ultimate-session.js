@@ -17,7 +17,7 @@ function render(){
  const pick=$('binch-session-duration');pick.value=String(state.duration);
  const count=rows.filter(x=>checked.has(x.id)).length;
  $('binch-session-progress').textContent=count+' / '+rows.length+' tâches cochées manuellement · '+state.duration+' minutes envisagées';
- list.innerHTML=rows.length?rows.map((x,i)=>'<label class="binch-session-check"><input type="checkbox" data-session-done="'+esc(x.id)+'" '+(checked.has(x.id)?'checked':'')+'><span><strong>'+esc(x.title)+'</strong><small>'+esc(x.category)+' · '+esc(x.origin||'source locale')+'</small></span><button type="button" data-session-open="'+esc(x.page)+'">Ouvrir</button></label>').join(''):'<p>Pas de mission accessible à planifier. Mets ton profil à jour.</p>';
+ list.innerHTML=rows.length?rows.map((x,i)=>'<article class="binch-session-check"><label><input type="checkbox" data-session-done="'+esc(x.id)+'" '+(checked.has(x.id)?'checked':'')+'><span><strong>'+esc(x.title)+'</strong><small>'+esc(x.category)+' · '+esc(x.origin||'source locale')+'</small></span></label><button type="button" data-session-open="'+esc(x.page)+'">Ouvrir</button></article>').join(''):'<p>Pas de mission accessible à planifier. Mets ton profil à jour.</p>';
 }
 function summary(){
  const plan=window.BinchUltimate?.getPlan(),list=tasks(),completed=new Set(state.checked);
