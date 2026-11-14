@@ -21,6 +21,7 @@ header small{color:#afc6b5}
 .choices button{background:#13241c;border:1px solid #597260;color:#e3dec9;border-radius:6px;min-height:48px;padding:9px 16px}
 .choices button[aria-pressed=true]{border-color:var(--gold);color:#fff3d2;background:#314633}
 #stage{--accent:#94b76d;--accent2:#42644c;--gold:#e1bb79;--ink:#f6e9cf;--metal:#2a4135;--texture:repeating-linear-gradient(132deg,transparent 0 16px,#d0e7a50b 17px 18px);--crest:"✦";--line:#748c6a;--glow:#a2c78638;--shape:46% 54% 62% 38%;position:relative;overflow:hidden;border:1px solid var(--line);border-radius:17px;isolation:isolate;background:radial-gradient(circle at 77% 35%,var(--glow),transparent 42%),linear-gradient(135deg,#223025 0%,#0c1411 70%);box-shadow:0 30px 90px #0009}
+#stage[data-pair=neutral]{--accent:#d0bd91;--accent2:#686855;--gold:#e4c895;--ink:#f1e9d8;--metal:#31342e;--texture:repeating-linear-gradient(120deg,transparent 0 20px,#d4c4a20d 21px 22px);--line:#827861;--glow:#ccb68f22;--shape:30% 30% 30% 30%}
 #stage[data-pair=troll-shaman]{--accent:#69cce0;--accent2:#326e7a;--gold:#d7ad6b;--metal:#213d43;--texture:repeating-linear-gradient(90deg,transparent 0 22px,#7cdae31a 24px 25px);--line:#417c84;--glow:#56d1e24b;--shape:62% 30% 57% 40%}
 #stage[data-pair=orc-warrior]{--accent:#f19857;--accent2:#6b3e27;--gold:#dbb88b;--metal:#3d2e2a;--texture:repeating-linear-gradient(145deg,transparent 0 15px,#ffb2820e 15px 17px);--line:#926b4f;--glow:#ee763b4b;--shape:22% 37% 35% 15%}
 #stage[data-pair=elf-druid]{--accent:#b9a5ff;--accent2:#52647a;--gold:#d7e2ca;--metal:#263448;--texture:repeating-radial-gradient(circle at 70% 40%,transparent 0 26px,#a6b7f017 27px 28px);--line:#8483ab;--glow:#b8a9ff37;--shape:52% 52% 35% 35%}
@@ -73,6 +74,7 @@ footer a{color:#d9bc84}
 <button type="button" data-choice="elf-druid" aria-pressed="false">Elfe · Druide</button>
 <button type="button" data-choice="undead-warlock" aria-pressed="false">Mort-vivant · Démoniste</button>
 <button type="button" data-choice="gnome-mage" aria-pressed="false">Gnome · Mage</button>
+<button type="button" id="neutral" aria-pressed="false">Thème neutre</button>
 <button type="button" id="motion" aria-pressed="false">Effets réduits : non</button>
 </div>
 <main id="stage" data-pair="tauren-druid" aria-live="polite">
@@ -96,14 +98,17 @@ const themes=window.BinchDaThemes;
 if(!themes)throw Error('Le registre des thèmes est indisponible');
 const stage=document.getElementById('stage');
 function select(id){
- const x=themes.resolve(id);
- if(!x)return;stage.dataset.pair=id;
+ const x=id==='neutral'?themes.neutral:themes.resolve(id);
+ if(!x)return;
+ stage.dataset.pair=id;
  for(const field of ['culture','headline','summary','signature','material','role','goal','ornament'])document.getElementById(field).textContent=x[field];
  document.querySelector('#crest path').setAttribute('d',x.crest);
  for(const button of document.querySelectorAll('[data-choice]'))button.setAttribute('aria-pressed',String(button.dataset.choice===id));
+ document.getElementById('neutral').setAttribute('aria-pressed',String(id==='neutral'));
  document.getElementById('status').textContent='Concept '+id.replace('-', ' · ')+' sélectionné. Prototype sans données du jeu.';
 }
 for(const button of document.querySelectorAll('[data-choice]'))button.addEventListener('click',()=>select(button.dataset.choice));
+document.getElementById('neutral').addEventListener('click',()=>select('neutral'));
 document.getElementById('motion').addEventListener('click',e=>{
  const enabled=stage.classList.toggle('reduced');e.currentTarget.setAttribute('aria-pressed',String(enabled));e.currentTarget.textContent='Effets réduits : '+(enabled?'oui':'non');
 });
