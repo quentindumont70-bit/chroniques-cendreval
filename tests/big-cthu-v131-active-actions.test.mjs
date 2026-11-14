@@ -134,7 +134,7 @@ test('V147: alertes de stock DLC/DDM à échéance proche sans duplication de do
  assert.equal(d.items.length,2);
  assert.deepEqual(d.items.map(x=>x.kind),['Stock','Stock']);
  assert.deepEqual(d.items.map(x=>x.url),['./garde-manger.html','./garde-manger.html']);
- assert.match(d.items[0].next,/DLC · Date dépassée/);
+ assert.match(d.items[0].next,/DLC · Date limite dépassée/);
  assert.match(d.items[1].next,/DDM · Échéance/);
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
@@ -216,4 +216,18 @@ test('V172: aucune fausse sérénité si une source locale est illisible',async(
  assert.match(f.nodes.get('activePulseList').children[0].textContent,/impossible de garantir/);
  assert.match(f.nodes.get('activePulseStatus').textContent,/illisibles/);
  assert.equal(f.writes(),0);
+});
+
+test('V173: une DLC proche est plus importante qu’une ancienne DDM, sans double base',async()=>{
+ const iso=delta=>{const d=new Date();d.setDate(d.getDate()+delta);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+ const f=await fixture({[K.pantry]:JSON.stringify([
+  {id:'ddm',name:'Pâtes fictives',kind:'DDM',date:iso(-6)},
+  {id:'dlc',name:'Yaourt fictif',kind:'DLC',date:iso(1)}
+ ])});
+ const entries=f.collect().items;
+ assert.equal(entries[0].title,'Yaourt fictif');
+ assert.equal(entries[1].title,'Pâtes fictives');
+ assert.match(entries[1].next,/DDM dépassée, qualité à vérifier/);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
 });

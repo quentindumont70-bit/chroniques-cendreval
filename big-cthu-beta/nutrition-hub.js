@@ -22,7 +22,7 @@ function snapshot(today){
  const until=new Date(today+'T12:00:00Z');until.setUTCDate(until.getUTCDate()+7);
  const end=until.toISOString().slice(0,10);
  const pantry=data.pantry.rows.filter(x=>x&&typeof x.name==='string'&&x.name.length<=90);
- const attention=pantry.filter(x=>dateOK(x.date)&&x.date<=end&&['DLC','DDM'].includes(x.kind)).sort((a,b)=>a.date.localeCompare(b.date));
+ const attention=pantry.filter(x=>dateOK(x.date)&&x.date<=end&&['DLC','DDM'].includes(x.kind)).sort((a,b)=>(a.kind==='DLC'?0:1)-(b.kind==='DLC'?0:1)||a.date.localeCompare(b.date));
  const recipes=data.recipes.rows.filter(x=>x&&typeof x.title==='string'&&x.title.length<=120);
  const meals=data.meals.rows.filter(x=>x&&typeof x.recipe==='string'&&x.recipe.length<=140&&x.status==='Prévu'&&dateOK(x.date)&&x.date>=today&&x.date<=end);
  return {stock:pantry.length,recipes:recipes.length,meals:meals.length,attention:attention.slice(0,6),hidden:Math.max(0,attention.length-6),warnings:Object.values(data).filter(x=>x.bad).length};
@@ -49,7 +49,7 @@ function render(){
   const link=node('a','','attention-item');
   link.href='./garde-manger.html';
   const name=node('strong',row.name);
-  const label=node('small',row.kind+' · '+row.date+(row.date<now?' · date dépassée':''));
+  const label=node('small',row.kind+' · '+row.date+(row.date<now?(row.kind==='DLC'?' · limite de consommation dépassée':' · durabilité minimale dépassée, qualité à vérifier'):''));
   link.append(name,label);
   if(row.date<now)link.classList.add('is-past');
   root.append(link);
