@@ -59,6 +59,7 @@ footer a{color:#d9bc84}
 <link rel="stylesheet" href="./da-tokens.css">
 <link rel="stylesheet" href="./da-scenes.css">
 <link rel="stylesheet" href="./da-components.css">
+<link rel="stylesheet" href="./da-cinema.css">
 </head>
 <body>
 <div class="layout">
@@ -72,6 +73,7 @@ footer a{color:#d9bc84}
 <button type="button" data-choice="undead-warlock" aria-pressed="false">Mort-vivant · Démoniste</button>
 <button type="button" data-choice="gnome-mage" aria-pressed="false">Gnome · Mage</button>
 <button type="button" id="neutral" aria-pressed="false">Thème neutre</button>
+<button type="button" id="cinema" aria-pressed="false">Mode cinématographique : non</button>
 <button type="button" id="motion" aria-pressed="false">Effets réduits : non</button>
 </div>
 <main id="stage" data-pair="tauren-druid" aria-live="polite">
@@ -107,6 +109,12 @@ function select(id){
 }
 for(const button of document.querySelectorAll('[data-choice]'))button.addEventListener('click',()=>select(button.dataset.choice));
 document.getElementById('neutral').addEventListener('click',()=>select('neutral'));
+document.getElementById('cinema').addEventListener('click',event=>{
+ const enabled=stage.classList.toggle('cinematic');
+ event.currentTarget.setAttribute('aria-pressed',String(enabled));
+ event.currentTarget.textContent='Mode cinématographique : '+(enabled?'oui':'non');
+ document.getElementById('status').textContent=enabled?'Composition cinématographique activée. Aperçu local uniquement.':'Composition normale activée. Aperçu local uniquement.';
+});
 document.getElementById('motion').addEventListener('click',e=>{
  const enabled=stage.classList.toggle('reduced');e.currentTarget.setAttribute('aria-pressed',String(enabled));e.currentTarget.textContent='Effets réduits : '+(enabled?'oui':'non');
 });
