@@ -95,7 +95,7 @@ function render(){
    card.append(form);input.focus();
   });
   const link=element('a','','Historique');link.href='./passions.html#musique';
-  actions.append(edit,done,link);card.append(actions);host.append(card);
+  actions.append(done,edit,link);card.append(actions);host.append(card);
  }
  if(current.length>20)host.append(element('p','muted','+'+(current.length-20)+' projets dans l’atelier complet.'));
 }
