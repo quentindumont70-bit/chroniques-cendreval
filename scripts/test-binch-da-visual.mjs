@@ -24,8 +24,8 @@ const close=()=>new Promise(r=>server.close(r));
 async function measureTextContrast(page){
  return page.evaluate(()=>{
   const rgb=(value)=>{
-   const match=value.match(/^rgba?\\(([^)]+)\\)$/);
-   return match?match[1].split(/[\\s,\\/]+/).filter(Boolean).map(Number):null;
+   const match=value.match(/^rgba?\(([^)]+)\)$/);
+   return match?match[1].split(/[\s,\/]+/).filter(Boolean).map(Number):null;
   };
   const luminance=(color)=>{
    const c=color.slice(0,3).map(x=>{const v=x/255;return v<=0.04045?v/12.92:((v+.055)/1.055)**2.4;});
