@@ -46,7 +46,7 @@ test('V129: distingue les dates dépassées sans déduire la sécurité alimenta
  assert.equal(x.attention[0].name,'Produit A');
  const page=await read('nutrition.html');
  assert.match(page,/Pour une DLC dépassée, ne consomme pas le produit/);
- assert.match(page,/Une DDM/);
+ assert.match(page,/une DDM/i);
 });
 
 test('V129: une donnée locale corrompue reste intacte et ne bloque pas les autres modules',async()=>{
