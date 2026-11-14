@@ -33,7 +33,7 @@ function reply(input,c){
   const engine=window.BinchJourneyEngine;
   if(!engine?.generate)return 'Le planificateur local est indisponible. Consulte ton Carnet de route et les incontournables.';
   const settings=read('binch.ultimate.briefing.v1.'+[p.data?.pseudo||'aventurier',p.race||'',p.classe||''].map(x=>encodeURIComponent(String(x).trim().toLocaleLowerCase('fr'))).join('.'),{});
-  const result=engine.generate({className:p.classe||'',race:p.race||'',level:c.level||Number(p.data?.level)||1,zone:c.zone||'',imported:c.same,mode:settings.mode||'balanced',discoveries:discovery,professions:jobs,completed:Array.isArray(settings.dismissed)?settings.dismissed:[]});
+  const result=engine.generate({className:p.classe||'',race:p.race||'',level:c.level||Number(p.data?.level)||1,zone:c.zone||'',imported:c.same,mode:settings.mode||'balanced',discoveries:discovery,professions:jobs,guildTasks:c.tasks,completed:Array.isArray(settings.dismissed)?settings.dismissed:[]});
   return result.next?'Selon le carnet de route local : '+result.next.title+'. '+result.next.description+' Rubrique à ouvrir : '+result.next.page+'. Source : '+(result.next.origin||'profil local')+'. '+result.notice:'Aucune prochaine étape sourcée ne ressort du profil. Consulte les incontournables et synchronise ton personnage.';
  }
 
