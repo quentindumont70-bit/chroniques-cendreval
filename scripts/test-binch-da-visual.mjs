@@ -20,6 +20,28 @@ const server=createServer(async(req,res)=>{
 });
 const open=()=>new Promise(r=>server.listen(0,'127.0.0.1',r));
 const close=()=>new Promise(r=>server.close(r));
+// Text is verified on actual opaque reading plates, not sampled against a guessed gradient.
+async function measureTextContrast(page){
+ return page.evaluate(()=>{
+  const rgb=(value)=>{
+   const match=value.match(/^rgba?\\(([^)]+)\\)$/);
+   return match?match[1].split(/[\\s,\\/]+/).filter(Boolean).map(Number):null;
+  };
+  const luminance=(color)=>{
+   const c=color.slice(0,3).map(x=>{const v=x/255;return v<=0.04045?v/12.92:((v+.055)/1.055)**2.4;});
+   return c[0]*.2126+c[1]*.7152+c[2]*.0722;
+  };
+  const selectors=['.hero h1','.hero p','.hero .eyebrow','.signature strong','aside h2','aside p','.module h3','.module p'];
+  return selectors.map(selector=>{
+   const element=document.querySelector('#stage '+selector);
+   if(!element)return {selector,error:'missing reading plate'};
+   const style=getComputedStyle(element),fg=rgb(style.color),bg=rgb(style.backgroundColor);
+   if(!fg||!bg||bg.length>3&&bg[3]<.999)return {selector,error:'reading plate must be opaque'};
+   const a=luminance(fg),b=luminance(bg);
+   return {selector,ratio:Number(((Math.max(a,b)+.05)/(Math.min(a,b)+.05)).toFixed(2))};
+  });
+ });
+}
 let browser;
 try{
  const modulePath=process.env.BINCH_PLAYWRIGHT_PATH;
@@ -94,6 +116,11 @@ try{
      contrastMeasurements.push({device:device.name,theme:id,...item});
      if(item.error||item.ratio<4.5)failures.push(device.name+'/'+id+' contrast below 4.5: '+JSON.stringify(item));
    }
+   const textRatios=await measureTextContrast(page);
+   for(const item of textRatios){
+    contrastMeasurements.push({device:device.name,theme:id,mode:'normal',kind:'text',...item});
+    if(item.error||item.ratio<4.5)failures.push(device.name+'/'+id+' reading contrast '+JSON.stringify(item));
+   }
    const shot=device.name+'-'+id+'.png';
    await page.screenshot({path:join(out,shot),fullPage:true,animations:'disabled'});
    manifest.push({device:device.name,theme:id,mode:'normal',shot,viewport:geometry.viewport,scrollWidth:geometry.scrollWidth,accent:geometry.accent});
@@ -113,6 +140,11 @@ try{
     });
     if(cine.overflow||cine.width<44||cine.height<44||!cine.background.includes('gradient'))
       failures.push(device.name+'/'+id+' cinematic layout '+JSON.stringify(cine));
+    const cinematicRatios=await measureTextContrast(page);
+    for(const item of cinematicRatios){
+     contrastMeasurements.push({device:device.name,theme:id,mode:'cinema',kind:'text',...item});
+     if(item.error||item.ratio<4.5)failures.push(device.name+'/'+id+' cinema reading contrast '+JSON.stringify(item));
+    }
     const shot=device.name+'-'+id+'-cinema.png';
     await page.screenshot({path:join(out,shot),fullPage:true,animations:'disabled'});
     manifest.push({device:device.name,theme:id,mode:'cinema',shot});
