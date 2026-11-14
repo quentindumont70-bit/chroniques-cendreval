@@ -35,6 +35,13 @@ boot:SetScript("OnEvent",function(self)
   local db=type(GrimoireSyncDB)=="table" and GrimoireSyncDB or {}
   local stored=type(db.minimapPosition)=="table" and db.minimapPosition or {}
   position(stored.x,stored.y)
+  -- Recovery if other minimap addons obscure the book. Callable from /grimoire minimap reset.
+  GrimoireSyncResetMinimap=function()
+    GrimoireSyncDB=type(GrimoireSyncDB)=="table" and GrimoireSyncDB or {}
+    GrimoireSyncDB.minimapPosition=nil
+    position(nil,nil)
+    return true
+  end
   button:SetMovable(true)
   button:EnableMouse(true)
   button:RegisterForDrag("LeftButton")
