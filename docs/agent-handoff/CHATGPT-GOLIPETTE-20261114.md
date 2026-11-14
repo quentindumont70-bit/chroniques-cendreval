@@ -81,3 +81,9 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - Job Windows `windows-2025` ajouté à la workflow PR : parseur PowerShell Windows 5.1 sur `Installer-La-Binch.ps1` et `Compagnon-La-Binch.ps1`, **sans exécution des scripts** et sans WoW installé.
 - GitHub Actions **43615472935 : SUCCESS sur les trois jobs** : Node 41 assertions + 83 scripts statiques ; Chromium desktop/mobile 28 vérifications ; syntaxe PowerShell 5.1 des deux fichiers OK.
 - Il reste expressément à valider le comportement de l'installateur sur un vrai PC Windows, ainsi que la compatibilité du Lua en jeu ; l'analyse syntaxique ne constitue pas ces validations.
+
+## Golipette mobile + pré-vol addon, 14 novembre
+- CSS Specs mobile : `scroll-margin-top/bottom` sur commandes, `scroll-margin-top` sur page et dégagement inférieur du panneau, pour limiter le masquage sous la navigation fixe. Cache CSS actualisé `specs-guide.css?v=005`. **Ergonomie tactile physique non certifiée** : le smoke utilise toujours des activations DOM pour quelques actions mobiles.
+- Nouveau job CI `binch-addon` sur Ubuntu 24.04 : `luac5.1 -p` sur les trois fichiers de `GrimoireSync.toc`, vérification des noms et de l'existence, **sans exécuter d'addon**.
+- Workflow GitHub Actions `43616735174` : **SUCCESS 4/4 jobs** — Node (41 assertions, 83 scripts contrôlés), Chromium (28 vérifications desktop/mobile), PowerShell 5.1 (2 scripts syntaxiquement valides) et Lua 5.1 (3 fichiers syntaxiquement valides).
+- Prochaine étape bloquante : installation sur Windows, test addon in-game et validation tactile sur téléphone ; ne pas déclarer ces validations accomplies.
