@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111712">
+<title>La Binch — laboratoire de direction artistique</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#09100e;color:#f8edda}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 82% 2%,#34514633,transparent 45%),#09100e}
+button{font:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid #f4dc9b;outline-offset:4px}
+.layout{max-width:1290px;margin:auto;padding:clamp(16px,3.5vw,42px)}
+header{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:28px}
+.brand{font-family:Georgia,serif;letter-spacing:.14em;text-transform:uppercase;font-size:1.3rem;color:#ebcc87}
+small,.eyebrow{font-size:.69rem;letter-spacing:.16em;font-weight:750;text-transform:uppercase}
+header small{color:#afc6b5}
+.notice{max-width:760px;margin:0 0 28px;line-height:1.6;color:#bfcbbf;font-size:.91rem}
+.choices{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:20px}
+.choices button{background:#13241c;border:1px solid #597260;color:#e3dec9;border-radius:6px;min-height:48px;padding:9px 16px}
+.choices button[aria-pressed=true]{border-color:var(--gold);color:#fff3d2;background:#314633}
+#stage{--accent:#94b76d;--accent2:#42644c;--gold:#e1bb79;--ink:#f6e9cf;--metal:#2a4135;--texture:repeating-linear-gradient(132deg,transparent 0 16px,#d0e7a50b 17px 18px);--crest:"✦";--line:#748c6a;--glow:#a2c78638;--shape:46% 54% 62% 38%;position:relative;overflow:hidden;border:1px solid var(--line);border-radius:17px;isolation:isolate;background:radial-gradient(circle at 77% 35%,var(--glow),transparent 42%),linear-gradient(135deg,#223025 0%,#0c1411 70%);box-shadow:0 30px 90px #0009}
+#stage[data-pair=troll-shaman]{--accent:#69cce0;--accent2:#326e7a;--gold:#d7ad6b;--metal:#213d43;--texture:repeating-linear-gradient(90deg,transparent 0 22px,#7cdae31a 24px 25px);--line:#417c84;--glow:#56d1e24b;--shape:62% 30% 57% 40%}
+#stage[data-pair=orc-warrior]{--accent:#f19857;--accent2:#6b3e27;--gold:#dbb88b;--metal:#3d2e2a;--texture:repeating-linear-gradient(145deg,transparent 0 15px,#ffb2820e 15px 17px);--line:#926b4f;--glow:#ee763b4b;--shape:22% 37% 35% 15%}
+#stage::before{content:"";position:absolute;inset:0;background:var(--texture);pointer-events:none}
+#stage::after{content:"";position:absolute;width:470px;height:470px;right:-120px;top:-160px;border:1px solid var(--accent2);border-radius:50%;box-shadow:0 0 0 55px #ffffff04,0 0 0 105px #ffffff03;opacity:.7;pointer-events:none}
+.stage-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(255px,.72fr);position:relative;z-index:1}
+.hero{padding:clamp(28px,6vw,78px);min-height:490px;display:flex;flex-direction:column;justify-content:space-between}
+.eyebrow{color:var(--gold)}
+.hero h1{font-family:Georgia,serif;font-size:clamp(2.6rem,6vw,5.8rem);line-height:.95;margin:24px 0 18px;max-width:650px;letter-spacing:-.036em;text-shadow:0 5px 30px #0009}
+.hero p{color:#d8dfd4;max-width:540px;line-height:1.7}
+.signature{display:flex;align-items:center;gap:16px;margin-top:25px}
+.sigil{position:relative;flex:none;display:grid;place-items:center;width:82px;height:82px;border:1px solid var(--accent);border-radius:var(--shape);background:linear-gradient(135deg,var(--metal),#111b17);font:3rem Georgia,serif;color:var(--accent);box-shadow:0 0 30px var(--glow)}
+.sigil svg{width:54px;height:54px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.signature strong{display:block;color:var(--ink);font-family:Georgia,serif;font-size:1.15rem}
+.signature span{font-size:.82rem;color:#bacabd}
+.actions{display:flex;gap:11px;flex-wrap:wrap;margin-top:32px}
+.actions button{padding:13px 20px;min-height:46px;border-radius:6px;border:1px solid var(--line);font-weight:750;background:var(--accent);color:#07140e}
+.actions button+button{background:#17231fdc;color:#f5e9d5}
+aside{margin:22px 22px 22px 0;padding:clamp(24px,3.5vw,45px);display:flex;flex-direction:column;justify-content:center;gap:20px;background:linear-gradient(150deg,#0a1411e0,var(--metal));border:1px solid #d9eacb25;border-radius:12px;box-shadow:inset 0 1px #ffffff1c}
+.ornament{width:130px;height:130px;align-self:center;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;box-shadow:0 0 0 12px #ffffff05,inset 0 0 0 10px #ffffff06;color:var(--accent);font:4rem Georgia,serif;transform:rotate(-12deg)}
+aside h2{font-family:Georgia,serif;font-size:1.6rem;margin:0;color:var(--ink)}
+.stat{display:grid;gap:8px}
+.stat strong{font-size:2.5rem;font-family:Georgia,serif;color:var(--accent)}
+.bar{height:6px;border-radius:9px;background:#0a120e;overflow:hidden}
+.bar i{display:block;width:57%;height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+aside p{margin:0;color:#d4d9cb;line-height:1.6;font-size:.86rem}
+.modules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:16px}
+.module{border:1px solid var(--line);border-radius:10px;padding:25px;background:linear-gradient(150deg,var(--metal),#0d1714);min-height:190px}
+.module h3{font-family:Georgia,serif;font-size:1.34rem;margin:13px 0}
+.module p{color:#cbd6ca;line-height:1.6;font-size:.87rem}
+.module .eyebrow{color:var(--accent)}
+footer{display:flex;gap:20px;flex-wrap:wrap;justify-content:space-between;margin:24px 0;color:#a9b9b0;font-size:.78rem}
+footer a{color:#d9bc84}
+#stage.reduced *,#stage.reduced *::before,#stage.reduced *::after{animation:none!important;transition:none!important}
+@media(prefers-reduced-motion:no-preference){.sigil{transition:border-radius .45s ease,transform .45s ease}.choices button,.actions button{transition:transform .18s ease}.choices button:hover,.actions button:hover{transform:translateY(-2px)}}
+@media(max-width:820px){.stage-grid{grid-template-columns:1fr}.hero{min-height:unset}aside{margin:0 18px 18px}.modules{grid-template-columns:1fr}.ornament{width:100px;height:100px;font-size:3.2rem}}
+@media(max-width:430px){.layout{padding:12px}.hero{padding:24px}.actions button{width:100%}header{margin-top:10px}.sigil{width:65px;height:65px}.sigil svg{width:42px;height:42px}}
+</style>
+</head>
+<body>
+<div class="layout">
+<header><div class="brand">✦ La Binch <small>· Atelier des mondes</small></div><small>Laboratoire graphique · prototype isolé · non publié</small></header>
+<p class="notice">Trois <strong>concepts artistiques originaux</strong> pour illustrer le moteur race × classe. Les combinaisons sont des études visuelles, <strong>pas une vérification de leur disponibilité sur WoW Forever</strong>. Aucun accès au jeu ni aucune donnée personnelle.</p>
+<div class="choices" role="group" aria-label="Choisir une direction artistique">
+<button type="button" data-choice="tauren-druid" aria-pressed="true">Tauren · Druide</button>
+<button type="button" data-choice="troll-shaman" aria-pressed="false">Troll · Chaman</button>
+<button type="button" data-choice="orc-warrior" aria-pressed="false">Orc · Guerrier</button>
+<button type="button" id="motion" aria-pressed="false">Effets réduits : non</button>
+</div>
+<main id="stage" data-pair="tauren-druid" aria-live="polite">
+<div class="stage-grid">
+<section class="hero" aria-label="Aperçu de l'accueil">
+<div><span class="eyebrow" id="culture">Cuir rituel · Racines ancestrales</span><h1 id="headline">L'appel des anciens</h1><p id="summary">Sous les plaines, les racines murmurent. Ton grimoire épouse le bois sculpté, les griffes et les rites de métamorphose.</p></div>
+<div><div class="signature"><div class="sigil" aria-hidden="true"><svg viewBox="0 0 64 64" id="crest"><path d="M32 54C8 40 10 18 32 9c22 9 24 31 0 45Zm0 0V17M20 34l12 8 12-8"/></svg></div><div><span class="eyebrow">Signature du personnage</span><strong id="signature">Cœur du Vivant</strong><span id="material">Bois · cuir · jade</span></div></div>
+<div class="actions"><button type="button" id="primary">Continuer mon voyage</button><button type="button" id="secondary">Synchronisation WoW</button></div></div>
+</section>
+<aside aria-label="Carte de progression fictive"><div class="ornament" aria-hidden="true" id="ornament">✧</div><span class="eyebrow">Ton aventure · Démonstration</span><h2 id="role">Gardien des métamorphoses</h2><div class="stat"><span>Niveau fictif</span><strong>34 <small>/ 60</small></strong><div class="bar"><i></i></div></div><p id="goal">Objectif épinglé : prochain talent de Farouche.</p></aside>
+</div>
+<div class="modules"><section class="module"><span class="eyebrow">Journal</span><h3>Quêtes & découvertes</h3><p>Les objectifs prioritaires restent au même endroit, quel que soit le thème.</p></section><section class="module"><span class="eyebrow">Maîtrise</span><h3>Talents & équipement</h3><p>Une surface lisible, une matière culturelle et un langage de classe distinct.</p></section><section class="module"><span class="eyebrow">Compagnon</span><h3>Faith & synchronisation</h3><p>Actions stables et accessibles ; les effets graphiques ne modifient jamais tes données.</p></section></div>
+</main>
+<footer><span id="status" role="status" aria-live="polite">Concept Tauren · Druide sélectionné.</span><span>Charte : contraste, tactile, 360 px, mouvement réduit</span></footer>
+</div>
+<script>
+(()=>{
+'use strict';
+const concepts={
+ 'tauren-druid':{culture:'Cuir rituel · Racines ancestrales',headline:"L’appel des anciens",summary:'Sous les plaines, les racines murmurent. Ton grimoire épouse le bois sculpté, les griffes et les rites de métamorphose.',signature:'Cœur du Vivant',material:'Bois · cuir · jade',role:'Gardien des métamorphoses',goal:'Objectif épinglé : prochain talent de Farouche.',ornament:'✧',crest:'M32 54C8 40 10 18 32 9c22 9 24 31 0 45Zm0 0V17M20 34l12 8 12-8'},
+ 'troll-shaman':{culture:'Totems gravés · Éclairs turquoise',headline:'Le pacte des tempêtes',summary:'Les cordes des totems vibrent au rythme du ciel. Une géométrie rituelle et des éclairs contenus sculptent le grimoire.',signature:'Totem des Trois Orages',material:'Fibre · pierre · azur',role:'Médiateur des éléments',goal:'Objectif épinglé : rassembler les composants du prochain totem.',ornament:'⌁',crest:'M28 5 12 34h14l-4 25 31-36H36l7-18-15 0Z'},
+ 'orc-warrior':{culture:'Fer noir · Rivets · Braises',headline:'Le serment du fer',summary:'Une armurerie de campagne gravée dans l’acier. Ici, les lignes de force et les entailles racontent la discipline du guerrier.',signature:'Marque du Siège',material:'Fer forgé · cuir · braises',role:'Sentinelle du front',goal:'Objectif épinglé : préparer l’équipement avant la prochaine expédition.',ornament:'✕',crest:'M10 12l44 40M54 12L10 52M16 13l-5 4 4 5M48 13l5 4-4 5M21 55l-6-6M43 55l6-6'}
+};
+const stage=document.getElementById('stage');
+function select(id){
+ if(!Object.hasOwn(concepts,id))return;
+ const x=concepts[id];stage.dataset.pair=id;
+ for(const field of ['culture','headline','summary','signature','material','role','goal','ornament'])document.getElementById(field).textContent=x[field];
+ document.querySelector('#crest path').setAttribute('d',x.crest);
+ for(const button of document.querySelectorAll('[data-choice]'))button.setAttribute('aria-pressed',String(button.dataset.choice===id));
+ document.getElementById('status').textContent='Concept '+id.replace('-', ' · ')+' sélectionné. Prototype sans données du jeu.';
+}
+for(const button of document.querySelectorAll('[data-choice]'))button.addEventListener('click',()=>select(button.dataset.choice));
+document.getElementById('motion').addEventListener('click',e=>{
+ const enabled=stage.classList.toggle('reduced');e.currentTarget.setAttribute('aria-pressed',String(enabled));e.currentTarget.textContent='Effets réduits : '+(enabled?'oui':'non');
+});
+for(const id of ['primary','secondary'])document.getElementById(id).addEventListener('click',()=>{document.getElementById('status').textContent='Aperçu graphique uniquement : aucune navigation ni import de données.'});
+})();
+</script>
+</body></html>
