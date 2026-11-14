@@ -40,5 +40,5 @@ test('V121: proof remains separate, no clinical data, real modules keep their li
  }
  assert.match(sw,/'\.\/premium-cinema\.html'/);
  assert.doesNotMatch(sw,/images\.unsplash\.com/);
- assert.match(sw,/big-cthu-public-v2-v121/);
+ assert.match(sw,/big-cthu-public-v2-v122/);
 });
