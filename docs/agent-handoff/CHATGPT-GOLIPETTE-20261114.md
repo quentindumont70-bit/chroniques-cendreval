@@ -149,3 +149,9 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - Les listes existantes comportent 8 races et 9 classes dans `index.html` ; **ne pas présumer que 72 combinaisons sont légales en jeu** sans vérification sur Forever. La matrice n'est pas encore validée. Réutiliser les thèmes déjà présents dans l'onboarding, sans dégrader les fonctionnalités.
 - **Aucune refonte réalisée ni déployée** dans ce lot ; son implémentation attend la stabilisation GrimoireSync/Windows/mobile/QA et l'intégration des autres branches. Le projet bot Discord reste dans sa roadmap distincte.
 - Lien public à rappeler : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ ; les changements non fusionnés n'y apparaissent pas.
+
+## Golipette — sécurité du glissement minicarte (14 novembre)
+- `Minimap.lua` distingue désormais une fin de glissement de la commande volontaire de rechargement : mémorisation du temps `OnDragStop`, annulation du `OnClick` gauche immédiatement consécutif (fenêtre de 350 ms), rétablissement des clics volontaires ultérieurs.
+- `scripts/test-grimoiresync-minimap.lua` simule l'enchaînement `OnDragStart` → `OnDragStop` → `OnClick` immédiat et vérifie **zéro `/reload`**, puis un clic ultérieur et **un seul `/reload`**.
+- **GitHub Actions 43622934433 : SUCCESS 4/4** (Lua 5.1, Node, Chromium desktop/mobile, Windows syntaxique). Simulation seulement : comportement exact de WoW Forever à confirmer dans le vrai client.
+- Lien de La Binch à chaque conclusion : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ (ne contient pas les modifications de notre PR non fusionnée).
