@@ -22,7 +22,7 @@ async function fixture(seeded={}){
   setItem(){writes++}
  },window:{addEventListener(){}},fetch(){network++}};
  assert.ok(code.endsWith('})();'),'real script closure intact');
- runInNewContext(code.slice(0,code.lastIndexOf('})();'))+'this.testAccess={collect,render};})();',ctx,{timeout:1200});
+ runInNewContext(code.slice(0,code.lastIndexOf('})();'))+'globalThis.testAccess={collect,render};})();',ctx,{timeout:1200});
  return {ctx,store,nodes,writes:()=>writes,network:()=>network,read:day=>JSON.parse(JSON.stringify(ctx.testAccess.collect(day)))};
 }
 
