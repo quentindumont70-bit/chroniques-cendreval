@@ -1,0 +1,82 @@
+// Visual regression smoke for the isolated La Binch art lab. Saves screenshots as CI artifacts.
+// Run: BINCH_PLAYWRIGHT_PATH=/tmp/binch-browser/node_modules/playwright/index.mjs node scripts/test-binch-da-visual.mjs
+import assert from 'node:assert/strict';
+import {createServer} from 'node:http';
+import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import {resolve,sep,extname,join} from 'node:path';
+
+const root=resolve('public/binch');
+const out=resolve('artifacts/binch-da-visual');
+const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8'};
+const server=createServer(async(req,res)=>{
+ try{
+  const url=new URL(req.url,'http://localhost');
+  const name=decodeURIComponent(url.pathname);
+  const full=resolve(root,'.'+name);
+  if(!full.startsWith(root+sep)){res.writeHead(403).end();return;}
+  const bytes=await readFile(full);
+  res.writeHead(200,{'content-type':mime[extname(full)]||'application/octet-stream','cache-control':'no-store'}).end(bytes);
+ }catch{res.writeHead(404).end('Not found');}
+});
+const open=()=>new Promise(r=>server.listen(0,'127.0.0.1',r));
+const close=()=>new Promise(r=>server.close(r));
+let browser;
+try{
+ const modulePath=process.env.BINCH_PLAYWRIGHT_PATH;
+ if(!modulePath)throw Error('BINCH_PLAYWRIGHT_PATH required');
+ const {chromium}=await import(modulePath);
+ await open();
+ await mkdir(out,{recursive:true});
+ browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+ const origin='http://127.0.0.1:'+server.address().port+'/da-lab.html';
+ const themes=['tauren-druid','troll-shaman','orc-warrior','elf-druid','undead-warlock','gnome-mage','neutral'];
+ const devices=[
+  {name:'mobile-360',width:360,height:780,touch:true},
+  {name:'mobile-390',width:390,height:844,touch:true},
+  {name:'desktop-1440',width:1440,height:900,touch:false}
+ ];
+ const failures=[],manifest=[];
+ for(const device of devices){
+  const ctx=await browser.newContext({viewport:{width:device.width,height:device.height},isMobile:device.touch,hasTouch:device.touch,reducedMotion:'reduce'});
+  const page=await ctx.newPage(),errors=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  page.on('request',req=>{if(!req.url().startsWith('http://127.0.0.1:'))errors.push('External request: '+req.url());});
+  await page.goto(origin,{waitUntil:'load'});
+  await assert.equal(await page.locator('[data-choice]').count(),6);
+  for(const id of themes){
+   const selector=id==='neutral'?'#neutral':'[data-choice="'+id+'"]';
+   await page.locator(selector).click();
+   assert.equal(await page.locator('#stage').getAttribute('data-pair'),id);
+   assert.equal(await page.locator(selector).getAttribute('aria-pressed'),'true');
+   assert.equal(await page.locator('#headline').isVisible(),true);
+   const geometry=await page.evaluate(()=>{
+    const screenWidth=document.documentElement.clientWidth;
+    const boxes=['.layout','#stage','.hero','aside','.modules','.choices'];
+    const overflow=boxes.filter(s=>{
+      const r=document.querySelector(s).getBoundingClientRect();
+      return r.right>screenWidth+3||r.left< -3;
+    });
+    const button=document.querySelector('#primary').getBoundingClientRect();
+    return {viewport:screenWidth,scrollWidth:document.documentElement.scrollWidth,overflow,
+      buttonWidth:button.width,buttonHeight:button.height,
+      scene:window.getComputedStyle(document.querySelector('.binch-da-scenery__orb')).backgroundImage,
+      accent:window.getComputedStyle(document.querySelector('#stage')).getPropertyValue('--accent').trim()};
+   });
+   if(geometry.scrollWidth>device.width+3||geometry.overflow.length)failures.push(device.name+'/'+id+' horizontal overflow '+JSON.stringify(geometry));
+   if(geometry.buttonHeight<44||geometry.buttonWidth<44)failures.push(device.name+'/'+id+' primary action too small');
+   if(!geometry.scene.includes('gradient')||!geometry.accent)failures.push(device.name+'/'+id+' missing scene/tokens');
+   const shot=device.name+'-'+id+'.png';
+   await page.screenshot({path:join(out,shot),fullPage:true,animations:'disabled'});
+   manifest.push({device:device.name,theme:id,shot,viewport:geometry.viewport,scrollWidth:geometry.scrollWidth,accent:geometry.accent});
+  }
+  await page.locator('#motion').click();
+  assert.equal(await page.locator('#motion').getAttribute('aria-pressed'),'true');
+  assert.equal(await page.locator('#stage').evaluate(el=>el.classList.contains('reduced')),true);
+  assert.deepEqual(errors,[],'browser errors on '+device.name);
+  await ctx.close();
+ }
+ await writeFile(join(out,'manifest.json'),JSON.stringify({generatedAt:new Date().toISOString(),screenshots:manifest,failures},null,2));
+ assert.deepEqual(failures,[],'visual layout smoke detected overflow/touch problems');
+ console.log('La Binch DA browser visual: '+manifest.length+' captures, '+devices.length+' viewports, '+themes.length+' visual themes; zero overflow or page errors');
+}catch(e){console.error(e);process.exitCode=1;}
+finally{if(browser)await browser.close();if(server.listening)await close();}
