@@ -747,16 +747,28 @@ function importCharacter(snap){
  const changed=before.trim().toLowerCase()!==next.trim().toLowerCase();
  // Do not accidentally switch characters or destroy a manually chosen profile.
  if(changed&&before&&before!=='Aventurier'&&!confirm('Importer le personnage '+next+' à la place de '+before+' ? Les états de quête restent séparés par personnage.')){renderStatus('Import annulé : le profil '+before+' est conservé.');return false;}
- // Do not silently overwrite newer game capture with an older SavedVariables file.
- // Compare only the same character and realm, using capture timestamps, never browser import timestamps.
+ // Protect both chronology and realm identity before any profile mutation.
+ // Same-name characters on different realms must not be silently conflated.
  let lastKnown={};try{lastKnown=JSON.parse(localStorage.getItem('grimoire.bridge.last'))||{}}catch{}
+ const normalized=v=>String(v||'').trim().toLowerCase();
+ const sameName=normalized(lastKnown.name)!==''&&normalized(lastKnown.name)===normalized(next);
+ const oldRealm=normalized(lastKnown.realm),newRealm=normalized(snap.realm);
+ if(sameName&&oldRealm&&newRealm&&oldRealm!==newRealm
+   &&!confirm('Attention : '+next+' vient du royaume '+snap.realm+' et non de '+lastKnown.realm+'. Changer de royaume et remplacer les données précédentes ?')){
+   renderStatus('Import annulé : royaume différent. Les données précédentes sont conservées.');
+   return false;
+ }
+ const sameCharacter=sameName&&oldRealm===newRealm;
  const incomingTime=Number(snap.timestamp);
  const earlierTime=Date.parse(lastKnown.capturedAt||'');
- const sameCharacter=String(lastKnown.name||'').trim().toLowerCase()===String(next||'').trim().toLowerCase()
-  &&String(lastKnown.realm||'').trim().toLowerCase()===String(snap.realm||'').trim().toLowerCase();
- if(sameCharacter&&Number.isFinite(incomingTime)&&incomingTime>=946684800
-    &&Number.isFinite(earlierTime)&&incomingTime*1000<earlierTime-60000
-    &&!confirm('Attention : la sauvegarde WoW de '+next+' est plus ancienne que celle déjà importée. Remplacer les données récentes ?')){
+ const incomingIsValid=Number.isFinite(incomingTime)&&incomingTime>=946684800&&incomingTime<=Date.now()/1000+300;
+ if(sameCharacter&&Number.isFinite(earlierTime)&&!incomingIsValid
+   &&!confirm('Attention : la nouvelle sauvegarde WoW de '+next+' est non datée ou sa date est invalide. Remplacer les données du jeu déjà datées ?')){
+   renderStatus('Import annulé : capture non datée refusée. Les données datées sont conservées.');
+   return false;
+ }
+ if(sameCharacter&&incomingIsValid&&Number.isFinite(earlierTime)&&incomingTime*1000<earlierTime-60000
+   &&!confirm('Attention : la sauvegarde WoW de '+next+' est plus ancienne que celle déjà importée. Remplacer les données récentes ?')){
    renderStatus('Import annulé : sauvegarde plus ancienne refusée. Les données récentes sont conservées.');
    return false;
  }
