@@ -249,8 +249,30 @@ try{
     }));
     assert.deepEqual(afterRealm,beforeOld,'realm switch rejection preserves existing data');
     checks++;
+    // A newer genuine game capture must still import normally after all declined guards.
+    const freshSeconds=Math.floor(Date.now()/1000)-45;
+    const freshPayload='GF6|C:Golipette-QA,Forever,35,DRUID,Tauren,Horde,Les%20Tarides,100,'+freshSeconds+',2900,4000,700|P:Minage,200,225|Q:79976';
+    const upgraded=await page.evaluate(payload=>window.BinchSync.importCharacter(window.BinchSync.parsePayload(payload)),freshPayload);
+    assert.equal(upgraded,true,'newer same-realm capture accepted without warnings');
+    const savedFresh=await page.evaluate(()=>({
+      profile:JSON.parse(localStorage.getItem('grimoire.hub.v3')),
+      bridge:JSON.parse(localStorage.getItem('grimoire.bridge.last')),
+      craft:JSON.parse(localStorage.getItem('grimoire.craft.v1'))
+    }));
+    assert.equal(savedFresh.profile.data.level,'35','fresh profile level applied');
+    assert.equal(savedFresh.bridge.xp,2900,'fresh XP applied');
+    assert.equal(savedFresh.bridge.restedXP,700,'fresh rested XP applied');
+    assert.equal(savedFresh.bridge.capturedAt,new Date(freshSeconds*1000).toISOString(),'new capture timestamp preserved');
+    assert.equal(savedFresh.craft.imports['golipette-qa-Tauren-Druide'].skills.Minage,200,'profession updates when legitimate capture accepted');
+    checks++;
+    await page.waitForEvent('load',{timeout:10000});
+    await page.locator('#app nav.nav [data-page="hub"]').evaluate(el=>el.click());
+    await page.waitForFunction(()=>document.querySelector('#binch-front-source')?.textContent?.includes('Capture WoW'));
+    assert.match(await page.locator('#binch-front-source').textContent(),/Capture WoW.*récente/,'recent game capture is recognized after page reload');
+    assert.doesNotMatch(await page.locator('#binch-front-tasks').textContent(),/Rafraîchir les données du jeu/,'unnecessary resync objective cleared');
+    checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
-    console.log('Browser '+device.name+': 25 checks passed');
+    console.log('Browser '+device.name+': 27 checks passed');
     await context.close();
   }
   console.log('Browser Specs + AH + GrimoireSync: '+checks+' checks passed');
