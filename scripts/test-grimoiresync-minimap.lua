@@ -89,4 +89,13 @@ assert(fresh.registered=="PLAYER_LOGIN","fresh boot registered")
 fresh.scripts.OnEvent(fresh,"PLAYER_LOGIN")
 local restored=assert(widgets.GrimoireSyncMinimapButton,"restored button")
 assert(math.abs(restored.points.y+80)<0.01,"stored position restored on login")
+-- Corrupted or obsolete coordinates must never strand the button off-screen.
+GrimoireSyncDB.minimapPosition={x=999999,y=0}
+widgets.GrimoireSyncMinimapButton=nil
+assert(loadfile("public/binch/addon/GrimoireSync/Minimap.lua"))()
+local corruptBoot=allWidgets[#allWidgets]
+corruptBoot.scripts.OnEvent(corruptBoot,"PLAYER_LOGIN")
+local corrected=assert(widgets.GrimoireSyncMinimapButton,"fallback icon recovered")
+assert(math.abs(corrected.points.x)<81 and math.abs(corrected.points.y)<81,"invalid persisted coordinates safely clamped")
+
 print("GrimoireSync minimap Lua 5.1 smoke: reload, path, tooltip, drag, persistence OK")
