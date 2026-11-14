@@ -48,8 +48,10 @@ test('V114: le sélecteur est monté sur une tentacule et partage la préférenc
  runInNewContext(js,{document:doc,localStorage:{getItem:k=>persisted.get(k)||null,setItem:(k,v)=>persisted.set(k,v)},Object},{timeout:1000});
  assert.equal(added,1);
  assert.equal(doc.documentElement.dataset.cthuTheme,'premium');
- assert.equal(toggle.attrs['aria-expanded'],'false');
+ toggle.listeners.click();
+ assert.equal(toggle.attrs['aria-expanded'],'true');
  choices[2].listeners.click();
+ assert.equal(toggle.attrs['aria-expanded'],'false');
  assert.equal(doc.documentElement.dataset.cthuTheme,'medical');
  assert.equal(persisted.get(key),'medical');
  assert.equal(persisted.size,1);
