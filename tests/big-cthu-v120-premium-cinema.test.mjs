@@ -6,11 +6,11 @@ const read=name=>readFile(new URL('../big-cthu-beta/'+name,import.meta.url),'utf
 
 test('V120: la prévisualisation Premium possède un véritable visuel photo, pas un faux fond CSS',async()=>{
  const source=await read('premium-cinema.html');
- assert.match(source,/<img class="hero-photo" src="https:\/\/images\.unsplash\.com\/photo-/);
- assert.match(source,/alt="Panorama photographique des sommets enneigés/);
- assert.match(source,/.hero-photo\{[^}]*object-fit:cover/);
+ assert.match(source,/\.page:before\{[^}]*images\.unsplash\.com\/photo-/);
+ assert.match(source,/background-position:58% 44%/);
+ assert.match(source,/\.page:before\{[^}]*position:fixed/);
  assert.match(source,/.hero:before\{[^}]*linear-gradient/);
- assert.match(source,/photo de montagne est une photographie/);
+ assert.match(source,/vue alpine est une photographie/);
  assert.match(source,/Fabrizio Lunardi sur Unsplash/);
 });
 
@@ -23,7 +23,7 @@ test('V120: interface véritablement recomposée, iPhone et desktop différenci�
  assert.match(source,/class="mobile-dock"/);
  assert.match(source,/@media\(max-width:760px\)/);
  assert.match(source,/prefers-reduced-motion:reduce/);
- assert.match(source,/fetchpriority="high"/);
+ assert.match(source,/background-image:url\("https:\/\/images\.unsplash\.com\/photo-/);
  assert.match(source,/class="lower"/);
 });
 
@@ -43,6 +43,6 @@ test('V120: liens fonctionnels vers modules réels et publication strictement al
   assert.ok(source.includes('./'+module),'lien absent : '+module);
  }
  assert.match(sw,/'\.\/premium-cinema\.html'/);
- assert.match(sw,/big-cthu-public-v2-v120/);
+ assert.match(sw,/big-cthu-public-v2-v121/);
  assert.doesNotMatch(sw,/images\.unsplash\.com/,'les ressources tierces ne doivent pas être précachées dans le coffre local');
 });
