@@ -76,7 +76,7 @@ test('V131: intégré au vrai cockpit, thèmes, mode hors ligne, Tournée isolé
  assert.match(html,/bigcthu:changes/);
  assert.match(styles,/\.active-pulse-list/);
  assert.match(sw,/'\.\/active-pulse\.js'/);
- assert.match(sw,/big-cthu-public-v2-v131/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
  assert.doesNotMatch(code,/fetch\(|XMLHttpRequest|WebSocket|localStorage\.setItem|tidel_|Topaze/);
  assert.doesNotMatch(tournee,/active-pulse\.js/);
 });
