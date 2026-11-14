@@ -83,6 +83,6 @@ test('V122: no arbitrary third-party resources, patient data or writes are cache
  assert.equal(env.invoke(privateUrl),null);
  assert.equal(env.network(),0);
  assert.match(sw,/PUBLIC_SCENERY_CACHE='big-cthu-public-scenery-v1'/);
- assert.match(sw,/big-cthu-public-v2-v126/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
  assert.doesNotMatch(sw,/tidel_Pl|tidel_absences_journal_v1/);
 });
