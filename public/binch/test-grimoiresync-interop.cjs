@@ -23,12 +23,13 @@ process.stdin.on('end',()=>{
  assert.equal(p.cls,'DRUID');
  assert.equal(p.faction,'Horde');
  assert.equal(p.zone,'Les Tarides');
- assert.equal(p.xp,2000);
+ assert.equal(p.xp,2500);
  assert.equal(p.xpMax,4000);
+ assert.equal(p.restedXP,600);
  assert.equal(p.skills.Minage,180);
  assert.ok(p.questIds.includes('79976'));
  assert.equal(p.questLog[0].title,'Stepping Stones');
  assert.equal(p.questLog[0].id,79192);
  assert.equal(p.questLogAPI,'GetQuestLogTitle');
- console.log('GrimoireSync real Lua -> browser parser: 14 assertions passed');
+ console.log('GrimoireSync real Lua -> browser parser: 15 assertions passed');
 });
