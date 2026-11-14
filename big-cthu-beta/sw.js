@@ -1,5 +1,5 @@
 /* Cache only this public prototype shell. Never cache clinical/UGAP/private data. */
-const CACHE='big-cthu-public-v2-v166';
+const CACHE='big-cthu-public-v2-v167';
 // Only the three public, cinematic background photographs can be stored after a successful first view.
 // Cross-origin images are cached separately from the app shell; no user information enters this cache.
 const PUBLIC_SCENERY_CACHE='big-cthu-public-scenery-v1';
