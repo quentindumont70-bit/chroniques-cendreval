@@ -334,8 +334,25 @@ try{
     assert.match(await page.locator('#binch-front-sync-message').textContent(),/Dernière capture du jeu récente/,'homepage sync panel confirms actual current capture');
     assert.doesNotMatch(await page.locator('#binch-front-tasks').textContent(),/Rafraîchir les données du jeu/,'unnecessary resync objective cleared');
     checks++;
+    // Positive drag/drop path: the same existing importer accepts a newer valid WoW file.
+    const droppedSeconds=Math.floor(Date.now()/1000)-3;
+    const dropped='GF6|C:Golipette-QA,Forever,36,DRUID,Tauren,Horde,Les%20Tarides,100,'+droppedSeconds+',3100,4000,650|P:Minage,205,225|Q:79976';
+    const dropReload=page.waitForEvent('load',{timeout:10000});
+    await page.evaluate(payload=>{
+      const data=new DataTransfer();
+      data.items.add(new File(['GrimoireSyncDB = { ["payload"] = "'+payload+'" }'],'GrimoireSync.lua',{type:'text/plain'}));
+      document.querySelector('#binch-front-sync').dispatchEvent(new DragEvent('drop',{bubbles:true,cancelable:true,dataTransfer:data}));
+    },dropped);
+    await dropReload;
+    const dropImported=await page.evaluate(()=>JSON.parse(localStorage.getItem('grimoire.bridge.last')));
+    assert.equal(dropImported.level,36,'dragged new game level imported');
+    assert.equal(dropImported.xp,3100,'dragged new XP imported');
+    assert.equal(dropImported.capturedAt,new Date(droppedSeconds*1000).toISOString(),'dragged source capture date preserved');
+    const dropProfile=await page.evaluate(()=>JSON.parse(localStorage.getItem('grimoire.hub.v3')));
+    assert.equal(dropProfile.data.level,'36','profile updated using original parser');
+    checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
-    console.log('Browser '+device.name+': 34 checks passed');
+    console.log('Browser '+device.name+': 35 checks passed');
     await context.close();
   }
   console.log('Browser Specs + AH + GrimoireSync: '+checks+' checks passed');
