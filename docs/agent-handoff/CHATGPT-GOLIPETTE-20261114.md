@@ -229,3 +229,10 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - **GitHub Actions 43628926590 : SUCCESS 5/5 jobs**, **68/68 tests Chromium** (34 desktop + 34 mobile émulé). Deux nouveaux scénarios par appareil : fichier non autorisé rejeté sans mutation du profil ; `GrimoireSync.lua` invalide transmis à l'importeur qui signale son erreur, données utilisateur synthétiques conservées.
 - Pas de fusion ni de déploiement ; essai réel dans WoW Forever et Windows toujours requis.
 - Site public actuel : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/.
+
+## Golipette — validation du glisser-déposer positif (14 novembre)
+- Un test Playwright de bout en bout glisse maintenant un **fichier GrimoireSync.lua GF6 valide et plus récent** sur le panneau d'accueil. Le vrai importeur déclenche le rechargement attendu ; les niveaux, XP et l'horodatage de capture sont ensuite vérifiés après redémarrage de la page.
+- Les scénarios précédents de rejet d'un nom de fichier incorrect et d'un payload GF7 non pris en charge restent conservés et prouvent l'absence de mutation dans ces cas.
+- **GitHub Actions 43629163302 : SUCCESS 5/5** — **70/70 vérifications Chromium** (35 ordinateur et 35 mobile émulé) ; Node 60 assertions, Lua 5.1, Windows PowerShell et protection d'intégration sur main verts.
+- Aucune action sur le vrai dossier de sauvegarde, pas de merge, pas de publication ; bêta réelle WoW Forever/Windows/téléphone à faire.
+- Site public actuel : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/.
