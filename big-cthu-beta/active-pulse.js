@@ -26,7 +26,7 @@ function collect(){
  const end=new Date(now);end.setDate(end.getDate()+7);
  const stop=[end.getFullYear(),String(end.getMonth()+1).padStart(2,'0'),String(end.getDate()).padStart(2,'0')].join('-');
  const results=[];
- let warnings=0;
+ let warnings=0,total=0;
  for(const source of SOURCES){
   const {rows,bad}=read(source.key);
   if(bad){warnings++;continue}
@@ -38,9 +38,10 @@ function collect(){
   if(source.kind==='Maison')selected=rows.filter(x=>x&&typeof x.name==='string'&&x.name.trim()&&x.name.length<=120&&['todo','doing'].includes(x.status)).sort((a,b)=>(a.status==='doing'?0:1)-(b.status==='doing'?0:1)).map(x=>({title:x.name,next:typeof x.notes==='string'?x.notes.slice(0,120):''}));
   if(source.kind==='Musique')selected=rows.filter(x=>x&&x.mode==='musique'&&['active','planned'].includes(x.status)&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).map(x=>({title:x.title,next:typeof x.note==='string'?x.note.slice(0,120):''}));
   if(source.kind==='Jeux')selected=rows.filter(x=>x&&x.done===false&&typeof x.game==='string'&&x.game.length<=60&&typeof x.text==='string'&&x.text.trim()&&x.text.length<=180).map(x=>({title:x.game,next:x.text}));
+  total+=selected.length;
   for(const item of selected.slice(0,source.limit))results.push({...item,kind:source.kind,url:source.url});
  }
- return {items:results,warnings};
+ return {items:results,warnings,total};
 }
 function node(tag,text,className){
  const x=document.createElement(tag);
@@ -50,11 +51,11 @@ function node(tag,text,className){
 }
 function render(){
  const root=$('activePulseList');if(!root)return;
- const {items,warnings}=collect();
+ const {items,warnings,total}=collect();
  root.replaceChildren();
- const count=$('activePulseCount');if(count)count.textContent=items.length+' actions retrouvées';
- const heroCount=$('cinemaPulseCount');if(heroCount)heroCount.textContent=items.length===0?'Aucune action en attente':items.length+' action'+(items.length>1?'s':'')+' à reprendre';
- if(!items.length)root.append(node('p','Aucune action en attente dans tes modules locaux. Tu peux simplement continuer ta journée.','muted'));
+ const count=$('activePulseCount');if(count)count.textContent=total===items.length?total+' actions retrouvées':total+' actions · '+items.length+' affichées';
+ const heroCount=$('cinemaPulseCount');if(heroCount)heroCount.textContent=total===0?(warnings?'Certaines actions indisponibles':'Aucune action en attente'):total+' action'+(total>1?'s':'')+' à reprendre';
+ if(!items.length)root.append(node('p',warnings?'Certaines données sont illisibles : impossible de garantir que tout est à jour.':'Aucune action en attente dans tes modules locaux. Tu peux simplement continuer ta journée.','muted'));
  for(const item of items){
   const link=node('a','','active-pulse-item');
   link.href=item.url;
