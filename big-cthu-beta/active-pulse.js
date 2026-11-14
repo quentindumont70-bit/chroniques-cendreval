@@ -2,6 +2,7 @@
 (function(){
 'use strict';
 const SOURCES=[
+ {key:'big-cthu-v2-inbox-v1',kind:'Captures',url:'./capture.html',limit:2},
  {key:'big-cthu-v2-demo-tasks',kind:'Priorités',url:'#priorities',limit:2},
  {key:'big-cthu-v2-maison-v1',kind:'Maison',url:'./maison.html',limit:2},
  {key:'big-cthu-v2-passions-v1',kind:'Musique',url:'./musique.html',limit:2},
@@ -24,6 +25,7 @@ function collect(){
   const {rows,bad}=read(source.key);
   if(bad){warnings++;continue}
   let selected=[];
+  if(source.kind==='Captures')selected=rows.filter(x=>x&&x.status==='new'&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140).map(x=>({title:x.title,next:x.target==='agenda'?'À envoyer vers Agenda':x.target==='task'?'À envoyer vers Priorités':'À traiter dans Capture'}));
   if(source.kind==='Priorités')selected=rows.filter(x=>x&&typeof x.text==='string'&&x.text.trim()&&x.text.length<=160&&!x.done).map(x=>({title:x.text,next:''}));
   if(source.kind==='Maison')selected=rows.filter(x=>x&&typeof x.name==='string'&&x.name.trim()&&x.name.length<=120&&['todo','doing'].includes(x.status)).sort((a,b)=>(a.status==='doing'?0:1)-(b.status==='doing'?0:1)).map(x=>({title:x.name,next:typeof x.notes==='string'?x.notes.slice(0,120):''}));
   if(source.kind==='Musique')selected=rows.filter(x=>x&&x.mode==='musique'&&['active','planned'].includes(x.status)&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).map(x=>({title:x.title,next:typeof x.note==='string'?x.note.slice(0,120):''}));
