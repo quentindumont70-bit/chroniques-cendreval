@@ -203,6 +203,32 @@ const lfg=read('lfg.js'),config=JSON.parse(read('lfg-cloud-config.json'));
 if(!lfg.includes('Mode local uniquement')||!lfg.includes('online'))fail('Le LFG ne distingue plus clairement les modes local et partagé');
 if(!config.supabaseUrl||!config.supabasePublishableKey)warnings.push('Le LFG collectif n’est PAS encore connecté (configuration Supabase vide).');
 if(!planner.includes('Prototype local non partagé'))warnings.push('Le Guild Planner doit être annoncé comme local.');
+// Régressions connues du 10 novembre : pas de sélecteur CSS passé au helper getElementById.
+// Et l'atelier AH doit pouvoir se monter même si market-board.js possède déjà la page.
+if(present('gear-sets.js')) {
+ const gear=read('gear-sets.js');
+ if(!gear.includes('document.getElementById(id)'))fail('Ensembles équipement : helper DOM inattendu.');
+ if(/\$\(\s*['"`]#binch-gear-set-/.test(gear))
+  fail('Ensembles équipement : ID préfixé par # avec getElementById.');
+ for(const id of ['binch-gear-set-form','binch-gear-set-selected','binch-gear-set-delete','binch-gear-set-copy']) {
+  if(!gear.includes("$('"+id+"')"))fail('Ensembles équipement : liaison DOM manquante '+id);
+ }
+}
+if(present('ah-craft.js')) {
+ const craft=read('ah-craft.js');
+ if(!craft.includes("else page.append(section)"))
+  fail('Atelier AH : montage de repli absent lorsque market-board.js possède la page.');
+ if(!craft.includes("$('binch-ah-craft-form').onsubmit"))
+  fail('Atelier AH : formulaire non connecté.');
+}
+if(present('market-board.js')) {
+ const board=read('market-board.js');
+ if(!board.includes("KEY='binch.market.v1'"))
+  fail('Bourse AH : clé canonique de relevés manuels modifiée.');
+ if(!board.includes('relevés manuels'))
+  fail('Bourse AH : l’origine manuelle des relevés n’est plus indiquée.');
+}
+
 for(const warning of warnings)console.warn('AVERTISSEMENT : '+warning);
 for(const error of errors)console.error('ERREUR : '+error);
 console.log('La Binch : '+scripts.length+' scripts analysés, '+errors.length+' erreur(s), '+warnings.length+' avertissement(s).');
