@@ -2,7 +2,7 @@
 ## Title: GrimoireSync
 ## Notes: Progression, metiers, quetes suivies et inventaire pour La Binch
 ## Author: WoW Forever Grimoire
-## Version: 0.9.0
+## Version: 0.9.1
 ## SavedVariables: GrimoireSyncDB
 Core.lua
 Minimap.lua
