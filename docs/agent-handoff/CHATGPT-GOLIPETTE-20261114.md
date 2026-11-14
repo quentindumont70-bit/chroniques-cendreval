@@ -61,3 +61,11 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - Premier passage GitHub Actions `43613414239` : échec **détecté** dans l'ancien test market-bridge, car le package racine `type:module` faisait retourner un objet vide au `require('./market-bridge.js')` d'un module UMD. **Code applicatif intact** ; réparation du harnais dans `test-market-bridge.cjs` par lecture du JS via vm.
 - Deuxième passage `43613528632` : **SUCCESS**, 4 scripts de régression (10 + 11 + 7 + 11 = 39 assertions) et contrôle statique du portail (83 scripts, 0 erreur, 1 avertissement LFG Supabase non configuré).
 - Vérifications en vrai Node, sur un checkout GitHub PR, désormais **confirmées**. Ce passage ne remplace toujours pas la QA navigateur ni l'essai en jeu.
+
+## QA Chromium réelle — 14 novembre, second lot
+- Script `scripts/test-binch-browser.mjs` ajouté : serveur HTTP éphémère en loopback, contexte vierge, profil *synthétique* `Golipette-QA` chargé dans localStorage. Aucun profil joueur ou service distant touché.
+- Workflow PR étendue avec job Chromium **Ubuntu 24.04** (Ubuntu 26.04 non supporté par Playwright 1.58.2). Dépendance Playwright installée uniquement sur runner, sans changement package.json/lockfile ni coût API.
+- Parcours desktop et mobile : sélection Mage puis Chasseur, épinglage, retour Druide farouche, niveau 34 (25/51 points et prochain point au 35), niveau 60 complet, conservation des choix après rechargement, désépinglage. Pas d'exception JS détectée pendant le parcours.
+- CI GitHub Actions **43615022569 : 2 jobs SUCCESS**, navigateur **24 vérifications sur 24**, Node **41 assertions** + contrôle statique 83 scripts et avertissement LFG connu.
+- **Limite UX** : sous viewport mobile, une partie des clics Playwright natifs a été interceptée par la navigation fixe/animation. Le test mobile emploie donc `el.click()` DOM pour quelques boutons, tout en vérifiant l'état fonctionnel. À tester manuellement sur téléphone avant une déclaration de validation tactile intégrale. Sur desktop les clics sont réels via Playwright.
+- Versions publiques intactes ; PR brouillon, aucun merge.
