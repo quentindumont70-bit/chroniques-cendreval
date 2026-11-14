@@ -401,3 +401,29 @@ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) > .shell > .her
 .cthu-legacy-details summary:focus-visible{outline:2px solid var(--cthu-accent);outline-offset:3px;border-radius:8px}
 .cthu-legacy-details #section{margin:15px 0;scroll-margin-top:30px}
 @media(max-width:640px){.cthu-legacy-details summary{align-items:flex-start;flex-direction:column;gap:4px}}
+
+/* V133 — navigation terrain au pouce sur iPhone, invisible sur grand écran. */
+.cthu-mobile-dock{display:none}
+@media(max-width:700px){
+ html[data-cthu-theme] .shell{padding-bottom:calc(114px + env(safe-area-inset-bottom,0px))}
+ .cthu-mobile-dock{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  position:fixed;left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px));
+  bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:39;gap:3px;
+  padding:6px;border-radius:19px;
+  border:1px solid var(--cthu-line,#554879);
+  background:var(--cthu-surface,rgba(14,19,35,.93));
+  -webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);
+  box-shadow:0 16px 45px rgba(0,0,0,.46)
+ }
+ .cthu-mobile-dock a{
+  min-height:52px;min-width:0;padding:5px 2px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;
+  text-decoration:none;color:#fff;font-size:10px;line-height:1.1;font-weight:750;text-align:center
+ }
+ .cthu-mobile-dock a span:first-child{font-size:20px}
+ .cthu-mobile-dock a:active{background:var(--cthu-glow)}
+ .cthu-mobile-dock a:focus-visible{outline:2px solid var(--cthu-accent);outline-offset:-1px}
+ #activePulse{scroll-margin-top:20px}
+}
+@media(prefers-reduced-motion:reduce){.cthu-mobile-dock a{transition:none!important}}
