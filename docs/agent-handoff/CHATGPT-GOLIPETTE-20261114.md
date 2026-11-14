@@ -69,3 +69,10 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - CI GitHub Actions **43615022569 : 2 jobs SUCCESS**, navigateur **24 vérifications sur 24**, Node **41 assertions** + contrôle statique 83 scripts et avertissement LFG connu.
 - **Limite UX** : sous viewport mobile, une partie des clics Playwright natifs a été interceptée par la navigation fixe/animation. Le test mobile emploie donc `el.click()` DOM pour quelques boutons, tout en vérifiant l'état fonctionnel. À tester manuellement sur téléphone avant une déclaration de validation tactile intégrale. Sur desktop les clics sont réels via Playwright.
 - Versions publiques intactes ; PR brouillon, aucun merge.
+
+## Extension du smoke navigateur : atelier AH
+- Job GitHub Actions **43615305690** : **SUCCESS sur les deux jobs**.
+- Chromium desktop **14/14** et mobile **14/14** = **28 vérifications**.
+- En complément de Specs : navigation vers la Bourse, présence réelle du formulaire de recette, création d'une recette synthétique et affichage explicite d'une estimation incomplète en absence de prix. Aucune cotation fabriquée.
+- Node : 41 assertions, contrôle statique : 83 scripts / 0 erreur / 1 avertissement LFG connu.
+- Restriction inchangée : bouton mobile testés en partie par activation DOM en raison du chevauchement de navigation sticky ; garder une QA tactile réelle avant publication.
