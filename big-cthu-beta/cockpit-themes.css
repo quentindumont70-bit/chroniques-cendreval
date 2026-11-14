@@ -280,3 +280,67 @@ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) > .shell > .her
   max-height:min(68dvh,520px);
  }
 }
+
+/* V116 — cockpit quotidien : les avertissements restent accessibles, sans occuper la moitié du premier écran. */
+.cthu-privacy-note{
+ padding:10px 14px;
+ border-radius:15px;
+ margin-bottom:12px;
+}
+.cthu-privacy-note summary{
+ cursor:pointer;
+ display:flex;
+ gap:8px;
+ justify-content:space-between;
+ align-items:center;
+ min-height:34px;
+ font-weight:700;
+ font-size:13px;
+ line-height:1.45;
+ color:var(--cthu-sub);
+ list-style:none;
+}
+.cthu-privacy-note summary::-webkit-details-marker{display:none}
+.cthu-privacy-note .cthu-privacy-action{
+ color:var(--cthu-accent);
+ font-size:12px;
+ white-space:nowrap;
+}
+.cthu-privacy-note .cthu-privacy-action:before{content:"Voir "}
+.cthu-privacy-note details[open] .cthu-privacy-action:before{content:"Masquer "}
+.cthu-privacy-note .cthu-privacy-body{
+ border-top:1px solid var(--cthu-line);
+ padding-top:12px;
+ margin-top:8px;
+ color:var(--cthu-sub);
+ font-size:13px;
+ line-height:1.6;
+}
+.cthu-privacy-note summary:focus-visible{
+ outline:2px solid var(--cthu-accent);
+ outline-offset:3px;
+ border-radius:8px;
+}
+@media(max-width:750px){
+ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) .hero{
+  min-height:0;
+  margin:14px 0 14px;
+  padding:20px;
+ }
+ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) .hero .symbol{
+  display:none;
+ }
+ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) .hero h1{
+  font-size:clamp(26px,7.5vw,34px);
+  letter-spacing:-.8px;
+  margin:9px 0;
+ }
+ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) .hero p{
+  font-size:14px;
+  line-height:1.5;
+  margin:8px 0 13px;
+ }
+ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) .cthu-privacy-note{
+  margin-bottom:12px;
+ }
+}
