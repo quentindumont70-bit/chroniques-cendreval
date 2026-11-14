@@ -2117,8 +2117,13 @@ async function absenceSave(rows,previous){
   return false;
  }
 }
+// V111 : bloque un double appui pendant la sauvegarde d'une absence.
+let tourAbsenceBusy=false;
 // V110 : une seule action terrain, reliee au coffre chiffre et au journal auditable.
 async function tourAbsenceChange(patientId,selectedDay){
+ if(tourAbsenceBusy)return;
+ tourAbsenceBusy=true;
+ try{
  const person=P.find(p=>p.id===patientId);
  if(!person||!onDate(person,selectedDay))return;
  const rows=absenceRead();if(!rows)return;
@@ -2145,6 +2150,7 @@ async function tourAbsenceChange(patientId,selectedDay){
   saveFailure(e);
   toast("Sauvegarde impossible : ne ferme pas Tournée. Réessaie la sauvegarde.");
  }
+ }finally{tourAbsenceBusy=false}
 }
 function tourAbsenceJournalToday(){
  const selectedDay=day;
