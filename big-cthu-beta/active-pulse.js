@@ -43,7 +43,7 @@ function render(){
  const {items,warnings}=collect();
  root.replaceChildren();
  const count=$('activePulseCount');if(count)count.textContent=items.length+' actions retrouvées';
- if(!items.length)root.append(node('p','muted','Aucune action en attente dans tes modules locaux. Tu peux simplement continuer ta journée.'));
+ if(!items.length)root.append(node('p','Aucune action en attente dans tes modules locaux. Tu peux simplement continuer ta journée.','muted'));
  for(const item of items){
   const link=node('a','','active-pulse-item');
   link.href=item.url;
