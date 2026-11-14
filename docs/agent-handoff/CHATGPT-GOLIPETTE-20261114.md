@@ -55,3 +55,9 @@ Branche de travail : `chatgpt-golipette-20261114`. PR en brouillon : https://git
 
 ## Commande de contrôle unique
 Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` : lance successivement 4 scripts de régression ciblés et `scripts/check-binch.mjs`, avec code de sortie non nul au moindre échec. Script créé sur cette branche mais pas exécuté sur un clone local (GitHub inaccessible en DNS depuis le conteneur).
+
+## CI réelle GitHub Actions — 14 novembre
+- Workflow ajoutée : `.github/workflows/binch-golipette-qa.yml` sur pull_request (branches fichiers Binch) ; Node.js 22, pas d'installation npm nécessaire, aucun déploiement.
+- Premier passage GitHub Actions `43613414239` : échec **détecté** dans l'ancien test market-bridge, car le package racine `type:module` faisait retourner un objet vide au `require('./market-bridge.js')` d'un module UMD. **Code applicatif intact** ; réparation du harnais dans `test-market-bridge.cjs` par lecture du JS via vm.
+- Deuxième passage `43613528632` : **SUCCESS**, 4 scripts de régression (10 + 11 + 7 + 11 = 39 assertions) et contrôle statique du portail (83 scripts, 0 erreur, 1 avertissement LFG Supabase non configuré).
+- Vérifications en vrai Node, sur un checkout GitHub PR, désormais **confirmées**. Ce passage ne remplace toujours pas la QA navigateur ni l'essai en jeu.
