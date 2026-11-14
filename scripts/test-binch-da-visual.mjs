@@ -70,9 +70,9 @@ try{
    // still require a separate visual/accessibility review.
    const ratios=await page.evaluate(()=>{
      function channels(css){
-       const m=css.match(/^rgba?\\(([^)]+)\\)$/);
+       const m=css.match(/^rgba?\(([^)]+)\)$/);
        if(!m)return null;
-       const a=m[1].split(/[\\s,\\/]+/).filter(Boolean).map(Number);
+       const a=m[1].split(/[\s,\/]+/).filter(Boolean).map(Number);
        return a.length>=3?a:null;
      }
      function luminance(channels){
