@@ -461,6 +461,9 @@ body.tournee-locked #tour-save-strip{display:none}
 #tour-absence-panel .ap-caption{font-size:13px;color:#d6cbe9}
 #tour-absence-panel .ap-shortcuts{display:flex;gap:9px;flex-wrap:wrap;margin:9px 0 14px}
 #tour-absence-panel .ap-shortcuts button{flex:1 1 130px}
+#qal{max-height:min(34vh,280px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;min-height:0}
+#qal .li{min-height:48px;display:flex;align-items:center;gap:8px}
+#pki:has(#qas){padding-bottom:max(16px,env(safe-area-inset-bottom,0px))}
 #tour-absence-panel #ap-topaze-note{white-space:pre-wrap;background:#151329;border:1px solid #655680;border-radius:12px;padding:12px;overflow-wrap:anywhere}
 @media(max-width:600px){#tour-absence-panel .ap-grid,#tour-absence-panel #ap-period-report{grid-template-columns:1fr}#tour-absence-panel .ap-inner{padding:13px}#tour-absence-panel button{width:100%}#tour-absence-panel .ap-closebar button{width:auto}#tour-absence-panel .ap-entry{padding:11px}}
 </style>
@@ -603,7 +606,7 @@ function viewTour(){
   ${p.all?`<div class="alg sm">⚠ Allergie : ${esc(p.all)}</div>`:""}${contTag(p)}${isAbs(p.id)?`<span class="tag ab">Absent</span>`:""}<div class="soin">${sx(p)}</div>${cChips(p.id,day)}${bdayTag(p)}${isNewToday(p)?`<span class="tag nw">Nouveau aujourd'hui</span>`:""}${exTag(p)}${ardTag(p)}${isn?`<span class="tag nx">À suivre</span>`:""}${memoTag(p)}${taskTags(p)}${recurTags(p)}${p.alerte?`<span class="tag">⚠ ${p.alerte}</span>`:""}${notes?`<div class="note-p">📝 ${esc(notes).slice(0,140)}${notes.length>140?"…":""}</div>`:""}</div></div>
   <div class="cact"><button onclick="cForm('${p.id}')">❤️ Const.</button><button onclick="absTog('${p.id}')">${isAbs(p.id)?"↺ Présent":"🚪 Absent"}</button><button onclick="ardQuick('${p.id}')">🧾 Ardoise</button><button onclick="noteQuick('${p.id}')">📝 Note</button></div><div class="cact"><button onclick="dayHour('${p.id}')">🕘 Horaire</button><button onclick="dayRemove('${p.id}')">✖ Pas ce jour</button><button onclick="EDIT=true;fiche('${p.id}');setTimeout(()=>editP('${p.id}'),50)">✏️ Fiche</button></div><button class="open" onclick="fiche('${p.id}')"><span>Accès, codes, photos</span><span>›</span></button></div></div>`;
  });
- h+=`<button class="btn" style="width:100%;justify-content:center;margin-top:10px" onclick="qaForm()">＋ Ajouter un passage</button>`;
+ h+=`${absDayList()}<button class="btn" style="width:100%;justify-content:center;margin-top:10px" onclick="qaForm()">＋ Ajouter un passage</button>`;
  if(L.length)h+=`<button class="btn ghost" style="width:100%;justify-content:center;margin-top:4px" onclick="shareDay()">📤 Partager la tournée du jour</button>`;
  if(!L.length)h+=`<div class="empty"><b>☕</b>Aucun passage ce jour</div>`;
  return h;
@@ -774,9 +777,13 @@ function qaForm(){const sh=document.getElementById("pki");
  <div class="acts"><button class="btn" style="flex:1;justify-content:center" onclick="qaNew()">Ajouter à ${rel(day).toLowerCase()}</button></div></details>
  <div class="acts" style="margin-top:10px"><button class="btn ghost" style="flex:1;justify-content:center" onclick="closePk();EDIT=true;editP()">📝 Fiche complète (accès, traitements, jours…)</button><button class="btn ghost" style="flex:1;justify-content:center" onclick="closePk()">Fermer</button></div>`;
  document.getElementById("pk").classList.add("on");qaFilter()}
-function qaFilter(){const k=(document.getElementById("qas").value||"").trim().toLowerCase(),box=document.getElementById("qal");if(!box)return;
- const L=P.filter(p=>!onDate(p,day)&&(!k||(p.n+" "+(p.a||"")).toLowerCase().includes(k))).sort((a,b)=>a.n<b.n?-1:1).slice(0,40);
- box.innerHTML=L.length?L.map(p=>`<button class="li" style="width:100%;text-align:left" onclick="qaPick('${p.id}')"><span class="av">${initials(p.n)}</span><span class="x"><div><b>${esc(p.n)}</b></div><div class="sub">${esc(p.a||"")}</div></span></button>`).join(""):`<div class="sub" style="margin:8px 0">Aucun patient à ajouter${k?" pour « "+esc(k)+" »":" : tous passent déjà ce jour"}.</div>`}
+function qaFilter(){
+ const input=document.getElementById("qas"),box=document.getElementById("qal");if(!input||!box)return;
+ const k=(input.value||"").trim().toLocaleLowerCase("fr");
+ if(k.length<2){box.innerHTML='<p class="sub" style="padding:10px 4px">Saisis au moins 2 caractères pour rechercher un patient déjà suivi.</p>';return}
+ const L=P.filter(p=>!onDate(p,day)&&(p.n+" "+(p.a||"")).toLocaleLowerCase("fr").includes(k)).sort((a,b)=>a.n.localeCompare(b.n,"fr")).slice(0,8);
+ box.innerHTML=L.length?L.map(p=>`<button class="li" type="button" style="width:100%;text-align:left" onclick="qaPick('${p.id}')"><span class="av">${initials(p.n)}</span><span class="x"><div><b>${esc(p.n)}</b></div><div class="sub">${esc(p.a||"")}</div></span></button>`).join(""):`<p class="sub" style="padding:10px 4px">Aucun patient disponible pour « ${esc(k)} ».</p>`;
+}
 async function qaSave(msg){await cfgSave(msg)}
 function qaHour(id,h){if(!h)return;const hx=hxGet();hx[id]=h;st.set("hx_"+day,hx)}
 function qaOrder(){const L=list(day),o=L.map((p,i)=>[p,i]).sort((a,b)=>{const x=mins(hOf(a[0])),y=mins(hOf(b[0]));return (x==null||y==null)?a[1]-b[1]:(x-y||a[1]-b[1])}).map(a=>a[0].id);st.set("ord_"+dkey(day),o)}
@@ -1109,7 +1116,12 @@ function isAbs(id){return absSet().includes(id)}
 function setAbs(id,on){const p=P.find(x=>x.id===id),k="abs_"+day;let A=absSet();A=on?(A.includes(id)?A:A.concat(id)):A.filter(x=>x!==id);st.set(k,A);
  const key="abs-"+day+"-"+id;let PB=pbGet();if(on){if(!PB.some(x=>x.k===key))PB=PB.concat({k:key,t:"Déclarer l'absence de "+p.n+" sur Topaze ("+short(day)+")",at:Date.now(),auto:1});qnSilent(id,"Absent")}else PB=PB.filter(x=>x.k!==key);st.set("pb",PB);render()}
 function qnSilent(pid,txt){const k="pn_"+pid,cur=st.get(k,"");st.set(k,(cur?cur+"\n":"")+short(day)+" "+hm()+" · "+txt)}
-function absTog(id){const on=!isAbs(id);setAbs(id,on);if(on)toastU("Absent · ajouté au pense-bête Topaze",()=>setAbs(id,false));else toast("Absence annulée")}
+function absTog(id){if(typeof tourAbsenceChange!=="function"){toast("Journal Absences indisponible : aucune modification.");return}return tourAbsenceChange(id,day)}
+function absDayList(){
+ const rows=P.filter(p=>onDate(p,day)&&isAbs(p.id));
+ const open=rows.length?rows.map(p=>`<div class="cact" style="align-items:center;justify-content:space-between"><span style="flex:1;min-width:0;overflow-wrap:anywhere">${esc(p.n)} · <b>Absent</b></span><button type="button" onclick="absTog('${p.id}')">↶ Annuler</button></div>`).join(""):'<p class="sub">Aucune absence signalée ce jour.</p>';
+ return `<details class="blk" style="margin:12px 0;padding:12px"><summary style="min-height:44px;cursor:pointer;font-weight:750">🚪 Absences du jour (${rows.length}) · consulter / annuler</summary>${open}<button type="button" class="btn ghost" style="width:100%;margin-top:8px" onclick="if(typeof tourAbsenceJournalToday==='function')tourAbsenceJournalToday()">Voir le journal et l’historique</button></details>`;
+}
 /* --- Pense-bête général --- */
 function pbGet(){return st.get("pb",[])}
 function pbAdd(){const i=document.getElementById("pbin"),v=i.value.trim();if(!v)return;st.set("pb",pbGet().concat({k:"pb"+Date.now().toString(36),t:v,at:Date.now()}));i.value="";render();setTimeout(()=>{const j=document.getElementById("pbin");j&&j.focus()},50)}
@@ -2104,6 +2116,45 @@ async function absenceSave(rows,previous){
   ap('ap-status').textContent='Sauvegarde chiffrée impossible : données non garanties. Ne ferme pas la page et utilise Réessayer.';
   return false;
  }
+}
+// V110 : une seule action terrain, reliee au coffre chiffre et au journal auditable.
+async function tourAbsenceChange(patientId,selectedDay){
+ const person=P.find(p=>p.id===patientId);
+ if(!person||!onDate(person,selectedDay))return;
+ const rows=absenceRead();if(!rows)return;
+ const active=rows.find(x=>x.patientId===patientId&&x.day===selectedDay&&x.reason==='Patient absent'&&!x.cancelled);
+ const wasAbsent=active||absSet(selectedDay).includes(patientId);
+ const message=wasAbsent?'Annuler l’absence de '+person.n+' pour le '+selectedDay+' ? L’historique restera conservé.':'Confirmer l’absence de '+person.n+' pour le '+selectedDay+' ? Aucun soin ni facture Topaze ne sera modifié.';
+ if(!confirm(message))return;
+ if(!wasAbsent&&rows.length>=500){toast("Journal Absences plein (500 signalements). Aucun changement.");return}
+ const at=new Date().toISOString();
+ let updated=rows;
+ if(wasAbsent){updated=rows.map(x=>x===active?absenceCancelRecord(x,at):x)}
+ else updated=rows.concat({id:'absence-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),patientId,day:selectedDay,reason:'Patient absent',note:'Déclaré depuis la tournée',sync:'À rapprocher',history:[{at,action:'Absence déclarée depuis le passage'}]});
+ // Le badge, la liste et le journal utilisent le meme coffre local.
+ // Les mutations sont preparees avant une unique validation chiffree.
+ TOUR_STORE.setItem(ABSENCE_KEY,JSON.stringify(updated));
+ const priorDay=day;
+ day=selectedDay;
+ setAbs(patientId,!wasAbsent);
+ day=priorDay;
+ try{
+  await flush();
+  toast(wasAbsent?'Absence annulée · historique conservé':'Absence enregistrée au coffre');
+ }catch(e){
+  saveFailure(e);
+  toast("Sauvegarde impossible : ne ferme pas Tournée. Réessaie la sauvegarde.");
+ }
+}
+function tourAbsenceJournalToday(){
+ const selectedDay=day;
+ ap('tour-absence-panel').hidden=false;
+ ap('ap-from').value=selectedDay;ap('ap-to').value=selectedDay;
+ ap('ap-filter-reason').value='Patient absent';
+ ap('ap-filter-state').value='';
+ ap('ap-filter-cancelled').value='all';
+ ap('ap-search').value='';
+ absenceFiltersChanged();
 }
 async function absenceUpdate(id,next){
  if(!ABSENCE_STATES.includes(next))return;
