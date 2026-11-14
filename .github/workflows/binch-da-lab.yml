@@ -1,0 +1,58 @@
+name: La Binch — DA pilot
+on:
+  pull_request:
+    paths:
+      - 'public/binch/da-lab.html'
+      - 'public/binch/da-themes.js'
+      - 'public/binch/da-tokens.css'
+      - 'public/binch/da-scenes.css'
+      - 'public/binch/da-components.css'
+      - 'public/binch/da-cinema.css'
+      - 'public/binch/da-legibility.css'
+      - 'public/binch/da-integration-preview.css'
+      - 'public/binch/da-integration-preview.js'
+      - 'public/binch/index.html'
+      - 'scripts/test-binch-da-lab.mjs'
+      - 'scripts/test-binch-da-visual.mjs'
+      - '.github/workflows/binch-da-lab.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  da-lab:
+    name: Original race-class design lab static checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate self-contained design preview
+        run: node scripts/test-binch-da-lab.mjs
+
+  visual-smoke:
+    name: Art direction — Chromium screenshot gallery
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated Playwright
+        run: |
+          npm install --prefix /tmp/binch-da-browser --no-save --no-package-lock --no-audit --no-fund playwright@1.58.2
+          /tmp/binch-da-browser/node_modules/.bin/playwright install --with-deps chromium
+      - name: Capture all themes and check mobile overflow
+        env:
+          BINCH_PLAYWRIGHT_PATH: /tmp/binch-da-browser/node_modules/playwright/index.mjs
+        run: node scripts/test-binch-da-visual.mjs
+      - name: Attach screenshot gallery even when checks fail
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: la-binch-da-visual
+          path: artifacts/binch-da-visual/
+          if-no-files-found: warn
+          retention-days: 14

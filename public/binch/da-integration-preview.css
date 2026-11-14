@@ -1,0 +1,28 @@
+/* La Binch visual bridge (experimental): ONLY enabled via ?da-preview=1.
+ * Never moves or replaces controls; preserves import and GrimoireSync behavior. */
+html.binch-da-preview{--binch-da-tint:#86ac87;--binch-da-glow:#90b99655;--binch-da-stone:#203b32;--binch-da-horizon:polygon(0 84%,9% 48%,17% 80%,28% 27%,40% 71%,53% 36%,65% 77%,77% 22%,87% 65%,100% 33%,100% 100%,0 100%)}
+html.binch-da-preview[data-binch-da-pair="troll-shaman"]{--binch-da-tint:#70dae8;--binch-da-glow:#76d9ed5c;--binch-da-stone:#1c4754;--binch-da-horizon:polygon(0 84%,13% 75%,16% 16%,20% 79%,36% 70%,40% 32%,45% 80%,62% 70%,68% 16%,74% 72%,92% 64%,100% 30%,100% 100%,0 100%)}
+html.binch-da-preview[data-binch-da-pair="orc-warrior"]{--binch-da-tint:#eaa26f;--binch-da-glow:#f5975259;--binch-da-stone:#49302a;--binch-da-horizon:polygon(0 84%,11% 62%,17% 69%,22% 24%,30% 71%,47% 76%,54% 17%,61% 56%,68% 41%,79% 72%,88% 35%,100% 77%,100% 100%,0 100%)}
+html.binch-da-preview[data-binch-da-pair="elf-druid"]{--binch-da-tint:#d0bfff;--binch-da-glow:#b7a9f757;--binch-da-stone:#27344a;--binch-da-horizon:polygon(0 82%,14% 54%,24% 76%,37% 29%,50% 73%,62% 44%,71% 79%,84% 26%,94% 67%,100% 55%,100% 100%,0 100%)}
+html.binch-da-preview[data-binch-da-pair="undead-warlock"]{--binch-da-tint:#c4a2e8;--binch-da-glow:#a675de55;--binch-da-stone:#36283d;--binch-da-horizon:polygon(0 80%,10% 79%,14% 20%,19% 77%,35% 72%,41% 14%,46% 77%,62% 70%,67% 18%,73% 74%,85% 64%,91% 22%,96% 72%,100% 68%,100% 100%,0 100%)}
+html.binch-da-preview[data-binch-da-pair="gnome-mage"]{--binch-da-tint:#98eaf4;--binch-da-glow:#83eaf659;--binch-da-stone:#1f4450;--binch-da-horizon:polygon(0 83%,9% 83%,9% 49%,20% 49%,20% 80%,35% 80%,35% 23%,48% 23%,48% 80%,62% 80%,62% 45%,74% 45%,74% 80%,88% 80%,88% 19%,94% 19%,94% 78%,100% 78%,100% 100%,0 100%)}
+html.binch-da-preview[data-binch-da-pair="neutral"]{--binch-da-tint:#d2c39f;--binch-da-glow:#c4b58b4b;--binch-da-stone:#46443a}
+html.binch-da-preview #binch-front .binch-front-hero{position:relative;isolation:isolate;overflow:hidden;min-height:410px;grid-template-columns:minmax(0,1.6fr) minmax(220px,.65fr);background:radial-gradient(circle at 82% 18%,var(--binch-da-glow),transparent 45%),linear-gradient(125deg,#0a1512 0%,#11241f 53%,#101a18 100%);border:1px solid var(--binch-da-tint);box-shadow:0 28px 85px #000b,inset 0 1px #ffffff25}
+html.binch-da-preview #binch-front .binch-front-hero::before{content:"";position:absolute;z-index:-1;inset:15% 0 0;background:linear-gradient(180deg,var(--binch-da-tint),var(--binch-da-stone) 86%);clip-path:var(--binch-da-horizon);opacity:.4;pointer-events:none}
+html.binch-da-preview #binch-front .binch-front-hero::after{content:"";position:absolute;z-index:-1;right:13%;top:4%;width:clamp(130px,17vw,245px);aspect-ratio:1;background:radial-gradient(circle at 40% 38%,#ffffff9c,var(--binch-da-tint) 31%,transparent 74%);filter:blur(7px);border-radius:50%;opacity:.35;pointer-events:none}
+html.binch-da-preview #binch-front .binch-front-copy{position:relative;z-index:2;align-self:center;padding:10px 0}
+html.binch-da-preview #binch-front .binch-front-kicker{color:#ebd8ad;text-shadow:0 1px 8px #000}
+html.binch-da-preview #binch-front .binch-front-person{padding:14px 18px;border-left:2px solid var(--binch-da-tint);background:#07120fe8;max-width:680px}
+html.binch-da-preview #binch-front .binch-front-intro{color:#d7e5dc}
+html.binch-da-preview #binch-front .binch-front-person h1{color:#f9f0da;text-shadow:0 3px 20px #000}
+html.binch-da-preview #binch-front .binch-front-emblem{border-color:var(--binch-da-tint);box-shadow:0 0 20px var(--binch-da-glow),inset 0 1px #ffffff33}
+html.binch-da-preview #binch-front .binch-front-stat{position:relative;z-index:2;padding:24px;border:1px solid #b4cdb04d;border-radius:8px;background:#091711ee;box-shadow:inset 0 1px #ffffff12,0 15px 35px #0009}
+html.binch-da-preview #binch-front .binch-front-number strong{color:var(--binch-da-tint)}
+html.binch-da-preview #binch-front .binch-front-buttons button{position:relative;z-index:3;min-height:46px;border-color:#8e977b;background:#0a1715;color:#fff0d2}
+html.binch-da-preview #binch-front .binch-front-buttons .binch-front-primary{background:#e8ca88;color:#1c190f;border-color:#ffe4a2}
+html.binch-da-preview #binch-front .binch-front-widget{border-color:#8d997944;background:linear-gradient(145deg,#16221e,#0d1613)}
+html.binch-da-preview #binch-front .binch-front-widget h3{color:#f0e4c8}
+html.binch-da-preview #binch-front .binch-front-widget button{min-height:44px}
+@media(max-width:820px){html.binch-da-preview #binch-front .binch-front-hero{min-height:unset;grid-template-columns:1fr}html.binch-da-preview #binch-front .binch-front-stat{margin-top:8px}html.binch-da-preview #binch-front .binch-front-hero::after{right:3%;opacity:.2}}
+@media(max-width:430px){html.binch-da-preview #binch-front .binch-front-hero{padding:18px}html.binch-da-preview #binch-front .binch-front-person{padding:12px;gap:10px}html.binch-da-preview #binch-front .binch-front-stat{padding:17px}html.binch-da-preview #binch-front .binch-front-buttons button{min-height:46px}}
+@media(prefers-reduced-motion:reduce){html.binch-da-preview #binch-front *{animation:none!important;transition:none!important}}
