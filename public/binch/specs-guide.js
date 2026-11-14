@@ -55,6 +55,7 @@ const guides=[
 const urlOK=u=>/^https:\/\/(www\.)?(icy-veins\.com|wowhead\.com|armorywowforever\.com|foreverspec\.com)\//.test(u);
 function read(){try{let v=JSON.parse(localStorage.getItem(KEY));return v&&typeof v==='object'?v:{}}catch{return {}}}
 let state=read();if(!guides.some(g=>g.id===state.id))state.id='druid-feral';
+if(state.filter&&state.filter!=='all'&&guides.some(g=>g.cls===state.filter)&&!guides.some(g=>g.id===state.id&&g.cls===state.filter))state.id=guides.find(g=>g.cls===state.filter).id;
 let levelLocked=Number.isInteger(state.level)&&state.level>=10&&state.level<=60;
 function importedLevel(){
  try{const p=JSON.parse(localStorage.getItem('grimoire.hub.v3'))||{},l=JSON.parse(localStorage.getItem('grimoire.bridge.last'))||{},n=String(p.data?.pseudo||'').trim().toLowerCase(),match=n&&n===String(l.name||'').trim().toLowerCase(),level=Number(match?l.level:p.data?.level);return Number.isInteger(level)?Math.max(10,Math.min(60,level)):10}catch{return 10}
@@ -116,7 +117,7 @@ function mount(){
  $('binch-specs-class').value=state.filter||'all';
  button.onclick=()=>{document.querySelectorAll('#app nav.nav button[data-page]').forEach(x=>x.classList.toggle('active',x===button));document.querySelectorAll('#app main .page').forEach(x=>x.classList.toggle('active',x===page));scrollTo({top:0,behavior:'auto'});render()};
  $('binch-specs-cards').onclick=e=>{const b=e.target.closest('[data-spec-id]');if(!b)return;state.id=b.dataset.specId;persist();render()};
- $('binch-specs-class').onchange=e=>{state.filter=e.target.value;persist();render()};
+ $('binch-specs-class').onchange=e=>{state.filter=e.target.value;const selected=current();if(state.filter!=='all'&&selected.cls!==state.filter){const first=guides.find(g=>g.cls===state.filter);if(first)state.id=first.id}persist();render()};
  $('binch-specs-level').onchange=e=>{const n=Number(e.target.value);if(!Number.isInteger(n)||n<10||n>60){render();return}state.level=n;levelLocked=true;persist();render()};
  $('binch-specs-auto-level').onclick=()=>{delete state.level;levelLocked=false;persist();render()};
  $('binch-specs-pin').onclick=()=>{state.pinned=!state.pinned;persist();render()};
