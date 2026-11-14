@@ -165,7 +165,51 @@ try{
   assert.deepEqual(errors,[],'browser errors on '+device.name);
   await ctx.close();
  }
- await writeFile(join(out,'manifest.json'),JSON.stringify({generatedAt:new Date().toISOString(),screenshots:manifest,contrastMeasurements,failures},null,2));
+ // Verify the REAL homepage in a synthetic, empty browser profile; the experiment
+ // must be opt-in, non-persistent and must leave existing navigation functional.
+ const liveChecks=[];
+ for(const device of [devices[1],devices[2]]){
+  for(const variant of [
+   {name:'normal',query:'',enabled:false,pair:null},
+   {name:'tauren',query:'?da-preview=1&da-pair=tauren-druid',enabled:true,pair:'tauren-druid'},
+   {name:'troll',query:'?da-preview=1&da-pair=troll-shaman',enabled:true,pair:'troll-shaman'},
+   {name:'fallback',query:'?da-preview=1&da-pair=not-a-real-pair',enabled:true,pair:'neutral'}
+  ]){
+   const ctx=await browser.newContext({viewport:{width:device.width,height:device.height},isMobile:device.touch,hasTouch:device.touch,reducedMotion:'reduce'});
+   await ctx.addInitScript(()=>{
+    localStorage.setItem('grimoire.hub.v3',JSON.stringify({
+     step:2,onboarded:true,race:'Tauren',classe:'Druide',
+     jobs:['Minage','Ingénierie'],data:{pseudo:'DA-QA',level:'34'}
+    }));
+   });
+   const page=await ctx.newPage();
+   await page.goto('http://127.0.0.1:'+server.address().port+'/index.html'+variant.query,{waitUntil:'domcontentloaded',timeout:30000});
+   await page.locator('#binch-front .binch-front-hero').waitFor({state:'visible',timeout:30000});
+   const result=await page.evaluate(()=>{
+    const root=document.documentElement,hero=document.querySelector('#binch-front .binch-front-hero');
+    return {enabled:root.classList.contains('binch-da-preview'),
+      pair:root.dataset.binchDaPair||null,
+      background:getComputedStyle(hero).backgroundImage,
+      scrollWidth:document.documentElement.scrollWidth,viewport:document.documentElement.clientWidth,
+      buttons:document.querySelectorAll('#binch-front .binch-front-buttons button').length,
+      syncButton:!!document.querySelector('#binch-front .binch-front-buttons [data-binch-target="sync"]')};
+   });
+   assert.equal(result.enabled,variant.enabled,device.name+'/'+variant.name+' opt-in');
+   assert.equal(result.pair,variant.pair,device.name+'/'+variant.name+' whitelist');
+   assert.ok(result.buttons>=2&&result.syncButton,device.name+'/'+variant.name+' functional actions retained');
+   assert.ok(result.background.includes('gradient'),device.name+'/'+variant.name+' hero background');
+   if(result.scrollWidth>result.viewport+3)failures.push(device.name+'/'+variant.name+' real homepage overflow');
+   if(variant.enabled){
+    await page.locator('#binch-front .binch-front-buttons [data-binch-target="sync"]').first().click();
+    await page.locator('#page-sync').waitFor({state:'visible',timeout:10000});
+   }
+   const shot=device.name+'-real-'+variant.name+'.png';
+   await page.screenshot({path:join(out,shot),fullPage:true,animations:'disabled'});
+   liveChecks.push({device:device.name,variant:variant.name,shot,...result});
+   await ctx.close();
+  }
+ }
+ await writeFile(join(out,'manifest.json'),JSON.stringify({generatedAt:new Date().toISOString(),screenshots:manifest,liveChecks,contrastMeasurements,failures},null,2));
  assert.deepEqual(failures,[],'visual layout smoke detected overflow/touch problems');
  console.log('La Binch DA browser visual: '+manifest.length+' captures, '+devices.length+' viewports, '+themes.length+' visual themes; zero overflow or page errors');
 }catch(e){console.error(e);process.exitCode=1;}
