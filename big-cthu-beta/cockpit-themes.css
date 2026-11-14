@@ -507,3 +507,24 @@ html[data-cthu-theme="premium"] body:not([data-cthu-theme-tentacle="yes"])>.shel
   background-image:linear-gradient(180deg,#102d43,#071522);
  }
 }
+
+/* V167 — one immediate Capture shortcut across the three daily-use tentacles.
+   No form or storage is duplicated: this is a local navigation link only. */
+body[data-cthu-area] header .cthu-fast-capture{
+ display:inline-flex;align-items:center;justify-content:center;gap:6px;
+ margin-left:auto;min-height:46px;padding:10px 15px;flex-shrink:0;
+ text-decoration:none;font-size:13px;font-weight:800;
+ color:var(--cthu-text,#fff);
+ border:1px solid var(--cthu-accent,#8de3ed);
+ background:rgba(7,28,46,.75);
+ border-radius:999px;box-shadow:0 5px 22px rgba(0,7,20,.24);
+}
+body[data-cthu-area] header .cthu-fast-capture:hover{
+ border-color:var(--cthu-accent,#8de3ed);background:rgba(30,75,95,.84);
+}
+body[data-cthu-area] header .cthu-fast-capture:focus-visible{
+ outline:3px solid var(--cthu-accent,#8de3ed);outline-offset:3px;
+}
+@media(max-width:650px){
+ body[data-cthu-area] header .cthu-fast-capture{min-height:48px;padding:10px 12px}
+}
