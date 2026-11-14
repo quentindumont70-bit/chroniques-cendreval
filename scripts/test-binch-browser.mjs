@@ -201,6 +201,13 @@ try{
     assert.equal(await chooser.element().getAttribute('id'),'grimoire-bridge-file','homepage reuses existing importer');
     await chooser.setFiles([]);
     checks++;
+    // The prominent hero action should never send users hunting through tabs.
+    const heroPicker=page.waitForEvent('filechooser',{timeout:7000});
+    await page.locator('#binch-front-hero-sync').evaluate(el=>el.click());
+    const heroChooser=await heroPicker;
+    assert.equal(await heroChooser.element().getAttribute('id'),'grimoire-bridge-file','hero sync also opens the existing file picker');
+    await heroChooser.setFiles([]);
+    checks++;
     await page.locator('#binch-front-sync-details').evaluate(el=>el.click());
     assert.equal(await page.locator('#page-sync').isVisible(),true,'quick guide opens Synchronisation');
     checks++;
@@ -352,7 +359,7 @@ try{
     assert.equal(dropProfile.data.level,'36','profile updated using original parser');
     checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
-    console.log('Browser '+device.name+': 35 checks passed');
+    console.log('Browser '+device.name+': 36 checks passed');
     await context.close();
   }
   console.log('Browser Specs + AH + GrimoireSync: '+checks+' checks passed');
