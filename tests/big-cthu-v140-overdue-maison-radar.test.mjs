@@ -61,9 +61,9 @@ test('V140: au maximum huit lignes, sans masquer toutes les échéances futures 
   $:()=>root,document:{createElement},Date,
   localStorage:{getItem:key=>JSON.stringify(key==='big-cthu-v2-maison-v1'?old:key==='big-cthu-v2-agenda-v1'?events:[])}
  },{timeout:1000});
- const displayed=nodes.filter(n=>n.tag==='div').flatMap(n=>n.children.map(x=>x.textContent)).join(' ');
+ const displayed=nodes.filter(n=>n.tag==='a').flatMap(n=>n.children.map(x=>x.textContent)).join(' ');
  assert.match(displayed,/Retard 6/);
  assert.match(displayed,/Futur 0/);
- assert.ok(nodes.filter(n=>n.tag==='div').length<=8);
+ assert.ok(nodes.filter(n=>n.tag==='a').length<=8);
  assert.match(nodes.at(-1).textContent,/autres échéances/);
 });
