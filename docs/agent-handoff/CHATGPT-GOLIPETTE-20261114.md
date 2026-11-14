@@ -222,3 +222,10 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - Réutilisation du même importeur sécurisé, aucun traitement de données supplémentaire, aucun accès disque automatisé.
 - Vérifications Playwright sur Chromium desktop/mobile : copie effective du chemin, placeholder présent et statut d'instruction affiché. **Run GitHub Actions `43628266157` : SUCCESS 5/5**, **64/64 contrôles navigateur** (32 desktop + 32 mobile émulé), autres jobs Node, Lua 5.1, PowerShell et garde de conflits `main` verts.
 - PR #129 en brouillon, pas encore de publication sur https://quentindumont70-bit.github.io/chroniques-cendreval/binch/.
+
+## Golipette — glisser-déposer de GrimoireSync.lua sur l'accueil (14 novembre)
+- L'accueil accepte maintenant le **glisser-déposer** d'un fichier nommé `GrimoireSync.lua` sur le panneau `#binch-front-sync` et le fait passer par le **seul importeur existant** `#grimoire-bridge-file`, via l'événement `change`. Aucune deuxième logique de décodage, aucun accès réseau ou lecture spontanée du disque.
+- Le panneau affiche une mise en évidence pendant le déplacement d'un fichier. Les noms différents ou dépôts multiples sont rejetés avant import ; les erreurs du parseur sont affichées par le système déjà présent, avec conservation de toutes les données en cas d'erreur.
+- **GitHub Actions 43628926590 : SUCCESS 5/5 jobs**, **68/68 tests Chromium** (34 desktop + 34 mobile émulé). Deux nouveaux scénarios par appareil : fichier non autorisé rejeté sans mutation du profil ; `GrimoireSync.lua` invalide transmis à l'importeur qui signale son erreur, données utilisateur synthétiques conservées.
+- Pas de fusion ni de déploiement ; essai réel dans WoW Forever et Windows toujours requis.
+- Site public actuel : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/.
