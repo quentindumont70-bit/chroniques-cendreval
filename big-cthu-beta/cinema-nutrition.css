@@ -1,0 +1,110 @@
+/* CINEMA 2.0 — Nutrition V159, visual layer only. */
+html[data-cthu-theme] body[data-cthu-area="nutrition"]{
+ --food-ink:#f1faff;--food-muted:#c4d8e7;--food-accent:#91dffe;
+ --food-warm:#ffd7a3;--food-line:rgba(161,221,250,.39);
+ --food-glow:rgba(102,204,249,.2);--food-glass:rgba(5,24,44,.81);
+ background:linear-gradient(125deg,rgba(3,12,24,.83),rgba(5,25,41,.82)),
+ url("https://images.unsplash.com/photo-1649401691853-6ecfa00f044e?auto=format&fit=crop&w=1800&q=78") center/cover fixed;
+ color:var(--food-ink)
+}
+html[data-cthu-theme="organic"] body[data-cthu-area="nutrition"]{
+ --food-ink:#fff2f5;--food-muted:#e0c9d9;--food-accent:#ffd0a0;
+ --food-warm:#f2acd8;--food-line:rgba(238,166,198,.4);
+ --food-glow:rgba(238,142,191,.23);--food-glass:rgba(38,12,40,.82);
+ background:linear-gradient(122deg,rgba(27,5,33,.88),rgba(39,13,44,.78)),
+ url("https://images.unsplash.com/photo-1523486230352-65ff5222cea4?auto=format&fit=crop&w=1800&q=78") center/cover fixed
+}
+html[data-cthu-theme="medical"] body[data-cthu-area="nutrition"]{
+ --food-ink:#e9fcff;--food-muted:#b9dce2;--food-accent:#7cf5ff;
+ --food-warm:#d2faff;--food-line:rgba(91,235,246,.44);
+ --food-glow:rgba(62,235,244,.19);--food-glass:rgba(0,25,39,.85);
+ background:linear-gradient(130deg,rgba(0,15,28,.88),rgba(0,34,45,.81)),
+ url("https://images.unsplash.com/photo-1648565726114-cfb73eb46340?auto=format&fit=crop&w=1800&q=78") center/cover fixed
+}
+body[data-cthu-area="nutrition"] main{max-width:1250px;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))}
+body[data-cthu-area="nutrition"] header{
+ border:1px solid var(--food-line);border-radius:20px;padding:14px 17px;
+ background:var(--food-glass);backdrop-filter:blur(17px);-webkit-backdrop-filter:blur(17px);
+ box-shadow:0 19px 50px #0005
+}
+body[data-cthu-area="nutrition"] header strong{color:var(--food-accent);letter-spacing:.05em}
+body[data-cthu-area="nutrition"] header .back{color:var(--food-ink);min-height:44px;display:inline-flex;align-items:center}
+body[data-cthu-area="nutrition"] .hero{
+ min-height:290px;position:relative;isolation:isolate;overflow:hidden;display:flex;
+ flex-direction:column;align-items:flex-start;justify-content:center;
+ padding:clamp(26px,4.5vw,53px);border:1px solid var(--food-line);border-radius:29px;
+ background:radial-gradient(ellipse at 93% 18%,var(--food-glow),transparent 50%),var(--food-glass);
+ backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+ box-shadow:0 30px 80px #0006,inset 0 1px rgba(255,255,255,.13)
+}
+body[data-cthu-area="nutrition"] .hero::after{
+ content:"";position:absolute;top:-80px;right:-70px;width:350px;height:350px;
+ border-radius:50%;border:1px solid var(--food-line);box-shadow:0 0 0 30px rgba(130,224,245,.03),
+ 0 0 0 69px rgba(130,224,245,.025);pointer-events:none;z-index:-1
+}
+body[data-cthu-area="nutrition"] .hero .eyebrow{color:var(--food-warm);letter-spacing:.18em}
+body[data-cthu-area="nutrition"] .hero h1{
+ font-family:Georgia,"Times New Roman",serif;font-size:clamp(40px,5.2vw,71px);
+ font-weight:500;letter-spacing:-.05em;line-height:1.06;color:var(--food-ink);
+ text-wrap:balance;text-shadow:0 7px 29px #0009;max-width:760px
+}
+body[data-cthu-area="nutrition"] .hero p{color:var(--food-muted);max-width:670px;line-height:1.6}
+body[data-cthu-area="nutrition"] .hub-grid{gap:17px}
+body[data-cthu-area="nutrition"] .panel{
+ border:1px solid var(--food-line);border-radius:22px;padding:clamp(18px,2.1vw,27px);
+ background:linear-gradient(135deg,var(--food-glass),rgba(4,20,37,.65));
+ backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);
+ box-shadow:0 20px 55px #0005,inset 0 1px rgba(255,255,255,.09);
+ color:var(--food-ink);position:relative;overflow:hidden
+}
+body[data-cthu-area="nutrition"] .hub-grid .panel::before{
+ content:"";position:absolute;top:0;left:0;right:0;height:2px;
+ background:linear-gradient(90deg,transparent,var(--food-warm),var(--food-accent),transparent)
+}
+body[data-cthu-area="nutrition"] .panel h2{
+ font-family:Georgia,"Times New Roman",serif;font-weight:500;
+ font-size:clamp(21px,2.4vw,29px);letter-spacing:-.03em;color:var(--food-ink)
+}
+body[data-cthu-area="nutrition"] .stat{
+ color:var(--food-accent);font-variant-numeric:tabular-nums;
+ font-family:Georgia,"Times New Roman",serif
+}
+body[data-cthu-area="nutrition"] .muted,
+body[data-cthu-area="nutrition"] .footer-note{color:var(--food-muted)}
+body[data-cthu-area="nutrition"] .hub-action,
+body[data-cthu-area="nutrition"] .hub-links a{
+ border:1px solid var(--food-line);border-radius:13px;min-height:46px;
+ color:var(--food-ink);background:var(--food-glass);
+ text-decoration:none;transition:transform .2s,border-color .2s
+}
+body[data-cthu-area="nutrition"] .attention{
+ border-color:var(--food-line);
+ background:linear-gradient(120deg,var(--food-glass),rgba(10,38,48,.72))
+}
+body[data-cthu-area="nutrition"] .attention-list > *{
+ border-color:var(--food-line);background:rgba(0,13,29,.3)
+}
+body[data-cthu-area="nutrition"] :is(a,button,input):focus-visible{
+ outline:3px solid var(--food-accent);outline-offset:3px
+}
+@media(hover:hover) and (pointer:fine){
+ body[data-cthu-area="nutrition"] .hub-action:hover,
+ body[data-cthu-area="nutrition"] .hub-links a:hover{transform:translateY(-2px);border-color:var(--food-accent)}
+}
+@media(max-width:850px){body[data-cthu-area="nutrition"] .hub-grid{grid-template-columns:1fr}}
+@media(max-width:760px){
+ body[data-cthu-area="nutrition"]{background-attachment:scroll}
+ body[data-cthu-area="nutrition"] header{padding:10px 13px}
+ body[data-cthu-area="nutrition"] .hero{min-height:250px;padding:23px}
+ body[data-cthu-area="nutrition"] .hero::after{width:220px;height:220px;right:-110px}
+ body[data-cthu-area="nutrition"] .panel{padding:18px}
+}
+@media(prefers-reduced-motion:reduce){
+ body[data-cthu-area="nutrition"] .hub-action,
+ body[data-cthu-area="nutrition"] .hub-links a{transition:none!important;transform:none!important}
+}
+@media(prefers-reduced-transparency:reduce){
+ body[data-cthu-area="nutrition"] :is(header,.hero,.panel){
+  -webkit-backdrop-filter:none;backdrop-filter:none;background-color:var(--food-glass)
+ }
+}
