@@ -186,3 +186,10 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - **GitHub Actions 43625376256 : 4/4 SUCCESS** (50 contrôles navigateur : 25 ordinateur et 25 mobile émulé ; Node 60 assertions, Lua 5.1 interop et PowerShell syntaxe). Tests exclusivement synthétiques, pas de fichiers joueur.
 - Les roadmaps Discord et **refonte graphique next-gen avec identité propre à chaque paire race × classe jouable** demeurent enregistrées, mais la priorité reste intégration contrôlée OpenCode / `main`, tests réels de WoW/Windows/mobile et bêta de guilde.
 - Lien public obligatoire à la fin de chaque livraison : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ (version publique antérieure, PR non fusionnée).
+
+## Golipette — succès des imports frais, anti-régression complète (14 novembre)
+- `scripts/test-binch-browser.mjs` vérifie désormais le **chemin positif d'un import WoW plus récent** après les refus d'import plus ancien, non daté et de royaume différent : personnage du bon royaume niveau 35, XP 2900/4000, repos 700, métier Minage 200, horodatage source exact.
+- Le nouveau test attend le **rechargement réel** de la page puis vérifie que l'accueil reconnaît le nouveau fichier comme « récent » et **retire** l'objectif de resynchronisation devenu inutile. C'est un contrôle du cycle complet import → sauvegarde locale → rechargement → affichage des priorités, avec données fictives uniquement.
+- Résultat vérifié GitHub Actions `43625907818` : **SUCCESS 4/4 jobs**, **54/54 contrôles navigateur** (27 desktop + 27 mobile émulé), Node 60 assertions et vérifications Lua/Windows vertes.
+- Prochaines contraintes : aucune fusion `main` sans revue des nouveaux commits divergents ; vrai WoW Forever, Windows et appareils physiques encore non testés. Les chantiers Discord et refonte next-gen race × classe restent planifiés.
+- Lien du site actuel à présenter à chaque fin de travaux : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ (non mis à jour tant que la PR est brouillon).
