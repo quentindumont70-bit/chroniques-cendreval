@@ -746,7 +746,7 @@ function importCharacter(snap){
  const prev=state.data||{},before=String(prev.pseudo||''),next=snap.name;
  const changed=before.trim().toLowerCase()!==next.trim().toLowerCase();
  // Do not accidentally switch characters or destroy a manually chosen profile.
- if(changed&&before&&before!=='Aventurier'&&!confirm('Importer le personnage '+next+' à la place de '+before+' ? Les états de quête restent séparés par personnage.'))return false;
+ if(changed&&before&&before!=='Aventurier'&&!confirm('Importer le personnage '+next+' à la place de '+before+' ? Les états de quête restent séparés par personnage.')){renderStatus('Import annulé : le profil '+before+' est conservé.');return false;}
  state.onboarded=true;state.race=newRace;state.classe=newClass;state.data={...prev,pseudo:next,level:String(snap.level),zone:snap.zone};
  localStorage.setItem(KEY,JSON.stringify(state));
  const doneKey='grimoire.discovery.done.v1.'+next.trim().toLowerCase()+'.'+newRace+'.'+newClass;
