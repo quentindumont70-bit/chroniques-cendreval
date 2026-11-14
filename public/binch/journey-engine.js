@@ -11,6 +11,7 @@ function generate(input={}){
  const clazz=clipped(input.className,45),race=clipped(input.race,45);
  const imported=input.imported===true;
  const mode=['balanced','solo','dungeon','profession'].includes(input.mode)?input.mode:'balanced';
+ const zone=clipped(input.zone,80).toLocaleLowerCase('fr');
  const done=new Set(Array.isArray(input.completed)?input.completed.map(x=>clipped(x,100)):[]);
  const discoveries=Array.isArray(input.discoveries)?input.discoveries.slice(0,MAX):[];
  const professions=Array.isArray(input.professions)?input.professions.map(x=>clipped(x,60)):[];
@@ -23,7 +24,7 @@ function generate(input={}){
  for(const d of discoveries){
   if(!d||typeof d!=='object'||!d.id||!d.title)continue;
   const min=Math.max(1,num(d.level,1));
-  add({id:'discovery:'+clipped(d.id),title:d.title,description:d.summary||d.reward,level:min,priority:d.priority,source:d.source,origin:d.sourceName||'Catalogue La Binch',category:d.category||'Quête',page:'discoveries',verified:d.verified,available:d.available!==false,confidence:'catalogue sourcé'});
+  add({id:'discovery:'+clipped(d.id),title:d.title,description:d.summary||d.reward,level:min,priority:d.priority,zone:d.zone||'',source:d.source,origin:d.sourceName||'Catalogue La Binch',category:d.category||'Quête',page:'discoveries',verified:d.verified,available:d.available!==false,confidence:'catalogue sourcé'});
  }
  // These explicit local actions never assert an in-game quest is done.
  if(imported){
@@ -52,6 +53,7 @@ function generate(input={}){
   if(x.category==='Donjon')n+=mode==='dungeon'?24:mode==='solo'?-15:0;
   if(x.category==='Métier')n+=mode==='profession'?18:0;
   if(x.category==='Quête'||x.category==='Secret majeur'||x.category==='Sac gratuit')n+=mode==='solo'?10:0;
+  if(zone&&x.zone&&x.zone.toLocaleLowerCase('fr')===zone)n+=14; // Only matches an explicit, sourced zone.
   if(!x.verified)n-=25;
   if(!x.available)n-=10;
   return Math.round(n);
@@ -61,7 +63,7 @@ function generate(input={}){
  deduped.sort((a,b)=>b.score-a.score||a.level-b.level||a.title.localeCompare(b.title,'fr'));
  const selected=deduped.slice(0,12);
  const next=selected.find(x=>x.when==='now')||selected[0]||null;
- return {profile:{level,className:clazz,race,mode,imported},next,actions:selected,sourceCount:discoveries.length,generatedAt:null,notice:'Ordre suggéré à partir du profil et des données disponibles. Pas de synchronisation WoW en direct ni de quêtes déclarées accomplies automatiquement.'};
+ return {profile:{level,className:clazz,race,mode,imported,zone},next,actions:selected,sourceCount:discoveries.length,generatedAt:null,notice:'Ordre suggéré à partir du profil et des données disponibles. Pas de synchronisation WoW en direct ni de quêtes déclarées accomplies automatiquement.'};
 }
 return {generate};
 });
