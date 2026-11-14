@@ -171,3 +171,10 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - Nouveau smoke navigateur Chromium qui valide l'alerte d'une capture de 2023 sur l'accueil après import fictif, avec action de resynchronisation. **GitHub Actions run `43624346751` : SUCCESS 4/4**, 44 vérifications Chromium desktop/mobile, Node 60 assertions, Lua et Windows conformes.
 - Aucune fusion ni publication sur `main` ; intégration OpenCode et terrain WoW restent prioritaires avant la bêta, puis Discord et refonte graphique race × classe.
 - Lien à fournir à chaque livraison : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ (version publique antérieure).
+
+## Golipette — garde-fou contre import rétrograde (14 novembre)
+- `importCharacter(snap)` dans `public/binch/index.html` compare maintenant les **dates de capture du jeu** lorsque le nom et royaume du fichier coïncident avec l'import déjà enregistré. Si la sauvegarde proposée est plus ancienne de plus de 60 secondes, demande une confirmation **avant toute mutation** de `grimoire.hub.v3`, `grimoire.bridge.last`, l'historique de découvertes et les valeurs métiers.
+- En cas de refus, l'interface affiche « Import annulé : sauvegarde plus ancienne refusée. Les données récentes sont conservées. ». Les autres personnages, captures sans horodatage exploitable et écarts de moins de 60 secondes ne reçoivent pas cette alerte particulière. Il reste possible de choisir explicitement un ancien fichier.
+- Nouveau scénario Chromium sur desktop et mobile simulé : fichier GF6 du même personnage, royaume et niveau inférieur, capture ancienne ; confirmation rejetée ; aucune modification des clés de profil, import et métiers. **Run 43624867558 : SUCCESS 4/4**, 46 vérifications Chromium (23 par appareil), Node 60 assertions, Lua interop et PowerShell verts.
+- Toujours aucune vraie donnée de joueur dans les tests et **aucun merge ni publication de la PR**.
+- Lien public en fin de livraison : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/.
