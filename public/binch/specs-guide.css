@@ -62,4 +62,6 @@
  #binch-specs :is(button,input,select,a){scroll-margin-top:110px;scroll-margin-bottom:95px}
  #binch-specs .binch-spec-card{scroll-margin-top:110px;scroll-margin-bottom:95px}
  #binch-specs{padding-bottom:75px}
+ /* An active pinned build must remain usable above the floating interface editor. */
+ #binch-specs-pinned:not([hidden]){z-index:2147483002}
 }
