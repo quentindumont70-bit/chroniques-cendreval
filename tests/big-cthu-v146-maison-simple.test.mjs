@@ -1,0 +1,31 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+const read=name=>readFile(new URL('../big-cthu-beta/'+name,import.meta.url),'utf8');
+test('V146: un intitulé suffit, autres champs facultatifs rangés sans perte',async()=>{
+ const html=await read('maison.html');
+ const start=html.indexOf('<form id="form" class="form">');
+ const end=html.indexOf('</form>',start);
+ assert.ok(start>0&&end>start);
+ const form=html.slice(start,end);
+ assert.match(form,/<input id="name"[^>]*required/);
+ assert.match(form,/<details class="maison-add-options" id="maisonAddOptions">/);
+ assert.match(form,/<summary>Options facultatives/);
+ assert.ok(form.indexOf('id="name"')<form.indexOf('<details class="maison-add-options"'));
+ for(const id of ['room','priority','amount','due','notes'])assert.ok(form.indexOf('id="'+id+'"')>form.indexOf('<details class="maison-add-options"'),id);
+ assert.ok(form.indexOf('id="notes"')<form.indexOf('</details>'));
+ assert.doesNotMatch(form,/<details[^>]+\sopen(?:\s|>)/);
+ assert.match(form,/<button class="btn" type="submit">Enregistrer le chantier<\/button>/);
+ assert.match(html,/amount=\$\('amount'\)\.value===''\?0:Number/);
+ assert.match(html,/priority:\$\('priority'\)\.value/);
+});
+test('V146: mêmes clés et flux de sauvegarde, sans impact Tournee',async()=>{
+ const [html,sw,tour]=await Promise.all(['maison.html','sw.js','tournee-complete.html'].map(read));
+ assert.match(html,/const KEY='big-cthu-v2-maison-v1'/);
+ assert.match(html,/localStorage\.setItem\(KEY,JSON\.stringify\(next\)\)/);
+ assert.match(html,/id="export"/);
+ assert.match(html,/id="import"/);
+ assert.match(sw,/big-cthu-public-v2-v146/);
+ assert.match(sw,/'\.\/maison\.html'/);
+ assert.doesNotMatch(tour,/maisonAddOptions/);
+});
