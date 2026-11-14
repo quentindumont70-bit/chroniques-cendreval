@@ -1,0 +1,18 @@
+/* Exact WoW zone map bitmaps linked from source; crop unused black texture margin. */
+.binch-bag-game-map{margin:16px 0;padding:14px;border:1px solid #6b7c59;border-radius:12px;background:#12221b}
+.binch-bag-game-map header strong{font:700 1.02rem Cinzel,Georgia,serif;color:#f4d7a3}
+.binch-bag-game-map header p{margin:5px 0 12px;font-size:.78rem}
+.binch-bag-map-tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+#binch-remember-bag .binch-bag-map-tabs button{flex:1 1 140px;background:#22342b;color:#e9d8b9;border:1px solid #687a60}
+#binch-remember-bag .binch-bag-map-tabs button[aria-selected=true]{background:#68543a;color:#fff0c5;border-color:#e7bc76}
+.binch-bag-map-figure{max-width:610px;margin:0 auto}
+.binch-bag-map-crop{aspect-ratio:978/650;position:relative;overflow:hidden;border:2px solid #967e54;background:#261d15;border-radius:9px}
+.binch-bag-map-crop img{display:block;width:100%;height:auto;max-width:none}
+#binch-bag-map-pin{position:absolute;transform:translate(-50%,-50%);width:32px;height:32px;display:grid;place-items:center;border-radius:50%;background:#371915eb;color:#ffed98;font-size:1.4rem;border:2px solid #ffda79;box-shadow:0 0 0 5px #311c1280,0 0 22px #fdd273;pointer-events:none}
+.binch-bag-map-figure figcaption{padding:10px 0;color:#ead9b3}
+.binch-bag-map-copy{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0}
+.binch-bag-map-copy code{color:#f3e0b0;border:1px solid #6d8060;padding:8px 10px;border-radius:7px;overflow-wrap:anywhere}
+.binch-bag-map-figure small{color:#b8c8b4;font-size:.71rem}
+.binch-bag-map-credit{margin:10px 0 0!important;font-size:.7rem!important}
+.binch-bag-map-credit a{color:#ecd096}
+@media(max-width:520px){.binch-bag-map-tabs{display:grid;grid-template-columns:1fr}.binch-bag-map-figure{width:100%}#binch-bag-map-pin{width:26px;height:26px;font-size:1rem}}
