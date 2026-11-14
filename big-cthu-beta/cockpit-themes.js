@@ -6,8 +6,8 @@ const themes={premium:'Command Center Premium',organic:'Dark Organic Luxury',med
 const root=document.documentElement;
 function valid(name){return Object.prototype.hasOwnProperty.call(themes,name)}
 function stored(){
- try{const name=localStorage.getItem(KEY);return valid(name)?name:'organic'}
- catch(e){return 'organic'}
+ try{const name=localStorage.getItem(KEY);return valid(name)?name:'premium'}
+ catch(e){return 'premium'}
 }
 function apply(name,persist){
  if(!valid(name))return false;
@@ -19,6 +19,8 @@ function apply(name,persist){
    if(status)status.textContent='Thème changé pour cette session ; stockage indisponible.';
   }
  }
+ const cinemaLabel=document.getElementById('cthuCinemaThemeName');
+ if(cinemaLabel)cinemaLabel.textContent=themes[name].toLocaleUpperCase('fr');
  const label=document.getElementById('cthuThemeCurrent');
  if(label)label.textContent=themes[name];
  document.querySelectorAll('[data-cthu-choice]').forEach(button=>{
