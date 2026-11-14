@@ -24,3 +24,12 @@
 @media(max-width:960px){.binch-tree-grid{grid-template-columns:1fr}.binch-tree-cells{grid-template-rows:repeat(7,64px);gap:8px;padding:12px;max-width:430px;margin:auto}.binch-tree-panel{padding:14px}.binch-tree-panel h4{font-size:1.02rem}#binch-specs .binch-tree-node{width:52px;height:52px}}
 @media(max-width:420px){.binch-tree-cells{grid-template-rows:repeat(7,58px)}#binch-specs .binch-tree-node{width:44px;height:44px}}
 @media(prefers-reduced-motion:reduce){.binch-tree-node{animation:none!important;transition:none!important}}
+
+/* Complete build preview: planned ranks remain visually distinct from current level. */
+#binch-spec-tree-visual .binch-tree-node.is-planned{filter:none;opacity:1;border-color:#82a8ce;box-shadow:0 0 9px #3883cf66}
+#binch-spec-tree-visual .binch-tree-node.is-planned span{color:#dbeeff;border-color:#82a8ce;background:#173049}
+#binch-spec-tree-visual .binch-tree-node.is-next{border-color:#f5d48e;box-shadow:0 0 0 2px #f2cd8c99,0 0 16px #f7c87899}
+.binch-tree-viewmode{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0}
+#binch-specs .binch-tree-viewmode button{flex:1;min-width:150px;min-height:41px;background:#1b2e30;color:#e0ebed;border:1px solid #658897;border-radius:9px}
+#binch-specs .binch-tree-viewmode button[aria-pressed="true"]{background:#46402e;color:#fff0c9;border-color:#e5bd73;box-shadow:inset 0 0 0 1px #b79353}
+#binch-specs .binch-tree-legend{font-size:.77rem;color:#bdd4d9;margin:4px 0 15px}
