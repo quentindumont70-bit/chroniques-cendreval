@@ -244,3 +244,39 @@ html[data-cthu-theme="medical"] body[data-cthu-theme-tentacle="yes"] h1{
   margin-left:auto
  }
 }
+
+/* V115 — Safari iPhone : le header est un contexte empilé au-dessus de la hero.
+   Un z-index sur le menu seul ne traverse pas le contexte crée par backdrop-filter. */
+html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) > .shell > .top{
+ position:relative;
+ z-index:100;
+ overflow:visible;
+}
+html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) > .shell > .hero{
+ position:relative;
+ z-index:0;
+}
+#cthuThemeMenu{
+ background:var(--cthu-deep);
+ max-height:min(70dvh,520px);
+ overflow-y:auto;
+ overscroll-behavior:contain;
+ -webkit-overflow-scrolling:touch;
+}
+@media(max-width:750px){
+ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) > .shell > .top{
+  align-items:flex-start;
+ }
+ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) > .shell > .top .brand{
+  min-width:0;
+  flex:1 1 130px;
+ }
+ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) > .shell > .top .brand .muted{
+  overflow-wrap:anywhere;
+ }
+ #cthuThemeMenu{
+  width:min(340px,calc(100vw - 32px));
+  right:0;
+  max-height:min(68dvh,520px);
+ }
+}
