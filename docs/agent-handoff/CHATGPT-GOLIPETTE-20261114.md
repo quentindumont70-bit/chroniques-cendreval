@@ -134,3 +134,11 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - Nouveau test Playwright (ordinateur et mobile émulé) après import GrimoireSync : ouverture du Poste de commandement et vérification que la date source fictive de 2023 et le statut `data-fresh=no` sont affichés. **Run 43621162724 : SUCCESS 4/4**, 42 vérifications navigateur (21 par appareil), 60 assertions Node et les contrôles Lua/Windows existants réussis.
 - Pas de connexion au jeu en direct ; données réelles utilisateur non touchées. La branche `main` et OpenCode restent isolées. La roadmap Discord demeure ultérieure.
 - **Lien du site à toujours afficher en fin de compte rendu** : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ (ne comporte pas ces correctifs tant que la PR n'est pas fusionnée).
+
+## Minicarte GrimoireSync déplaçable (14 novembre)
+- `public/binch/addon/GrimoireSync/Minimap.lua` : bouton draggable au clic gauche, placement sur la couronne de la minicarte (rayon ajusté à sa dimension), écriture de `GrimoireSyncDB.minimapPosition` au lâcher, restauration au prochain login. Validation des coordonnées chargées et limitation aux abords de la minicarte.
+- Anciennes actions conservées : clic gauche = `/reload`, clic droit = boîte avec chemin relatif de sauvegarde, infobulle enrichie avec geste de glisser.
+- `scripts/test-grimoiresync-minimap.lua` mis à jour : début/fin de glissement, bornage, remplacement de la position, persistance et restauration sur nouveau chargement ; test de clics et de boîte existant conservé.
+- GitHub Actions **43621549749 : SUCCESS 4/4**, y compris `binch-addon` avec scénario Lua 5.1 minicarte ; autres jobs Chromium 42 tests, Node 60 assertions + 83 scripts statiques, PowerShell syntaxe valides.
+- Plan terrain `docs/agent-handoff/BINCH-BETA-TEST-TERRAIN.md` complété pour vérifier absence de `/reload` accidentel pendant le glisser et position persistante sur **vrai client WoW**, encore à réaliser.
+- Lien permanent de la Binch publique à fournir au terme des travaux : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ ; la PR brouillon n'est pas encore publiée.
