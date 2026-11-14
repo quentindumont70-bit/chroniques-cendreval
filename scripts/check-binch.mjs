@@ -229,6 +229,17 @@ if(present('market-board.js')) {
   fail('Bourse AH : l’origine manuelle des relevés n’est plus indiquée.');
 }
 
+// Le bandeau Specs doit changer lorsqu'une spécialisation sans itinéraire certifié est choisie.
+if(present('specs-guide.js')) {
+ const specs=read('specs-guide.js');
+ const branch=specs.match(/if\(g\.id!=='druid-feral'\)\{([\s\S]*?)\n \}/)?.[1]||'';
+ if(!branch.includes('renderPinned();return;'))
+  fail('Specs : le bandeau épinglé reste périmé pour les autres classes.');
+ if(!branch.includes("'binch-specs-pin-state'"))
+  fail('Specs : statut d’épinglage non rafraîchi hors farouche.');
+ if(!portal.includes('./specs-guide.js?v=004'))
+  fail('Specs : cache non invalidé pour le correctif du bandeau.');
+}
 for(const warning of warnings)console.warn('AVERTISSEMENT : '+warning);
 for(const error of errors)console.error('ERREUR : '+error);
 console.log('La Binch : '+scripts.length+' scripts analysés, '+errors.length+' erreur(s), '+warnings.length+' avertissement(s).');
