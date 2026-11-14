@@ -149,6 +149,8 @@ try{
     checks++;
     const luaPayload='GF6|C:Golipette-QA,Forever,34,DRUID,Tauren,Horde,Les%20Tarides,100,1700000000,2000,4000,500|P:Minage,180,225|Q:79976|L:79192,Stepping%20Stones,0|LS:QuestLogAPI|I:6948,1,0,1,1,0,Pierre%20de%20foyer|E:|AH:Forever,Horde,1700000000,0|A:';
     const lua='GrimoireSyncDB = { ["payload"] = "'+luaPayload+'" }';
+    // The production import intentionally reloads after 300 ms. Await it before further assertions.
+    const syncReload=page.waitForEvent('load',{timeout:10000});
     await page.locator('#grimoire-bridge-file').setInputFiles({
       name:'GrimoireSync.lua',
       mimeType:'text/plain',
@@ -169,6 +171,8 @@ try{
     assert.equal(profile.classe,'Druide','browser class preserved after import');
     assert.equal(profile.data.pseudo,'Golipette-QA','no character switch');
     checks++;
+    await syncReload;
+    await page.locator('#grimoire-bridge-status').waitFor({state:'attached',timeout:10000});
     // Cockpit displays the date captured in game, NOT the recent import time.
     await page.locator('#page-command').waitFor({state:'attached',timeout:10000});
     await page.locator('#app nav.nav [data-page="command"]').evaluate(el=>el.click());
