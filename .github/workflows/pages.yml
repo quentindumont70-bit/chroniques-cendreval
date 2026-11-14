@@ -29,6 +29,8 @@ jobs:
       - run: npm run build:pages
       - name: Contrôles ciblés Big Cthu iPhone
         run: node --test tests/big-cthu-iphone.test.mjs
+      - name: Tests de la planification Ultimate
+        run: node --test tests/binch-ultimate-journey.test.mjs
       - name: Contrôles du portail La Binch
         continue-on-error: true
         run: node scripts/check-binch.mjs
