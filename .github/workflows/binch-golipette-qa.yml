@@ -129,8 +129,8 @@ jobs:
           set -euo pipefail
           git fetch --no-tags origin main:refs/remotes/origin/main
           common="$(git merge-base HEAD refs/remotes/origin/main)"
-          git diff --name-only "$common" HEAD -- public/binch/ > /tmp/binch-ours.txt
-          git diff --name-only "$common" refs/remotes/origin/main -- public/binch/ > /tmp/binch-upstream.txt
+          git diff --name-only "$common" HEAD -- public/binch/ scripts/check-binch.mjs scripts/test-binch-golipette.mjs scripts/test-binch-browser.mjs scripts/test-grimoiresync-mock.lua scripts/test-grimoiresync-faith.lua scripts/test-grimoiresync-minimap.lua .github/workflows/binch-golipette-qa.yml > /tmp/binch-ours.txt
+          git diff --name-only "$common" refs/remotes/origin/main -- public/binch/ scripts/check-binch.mjs scripts/test-binch-golipette.mjs scripts/test-binch-browser.mjs scripts/test-grimoiresync-mock.lua scripts/test-grimoiresync-faith.lua scripts/test-grimoiresync-minimap.lua .github/workflows/binch-golipette-qa.yml > /tmp/binch-upstream.txt
           comm -12 <(sort -u /tmp/binch-ours.txt) <(sort -u /tmp/binch-upstream.txt) > /tmp/binch-overlap.txt
           echo "Our Binch files changed:"
           cat /tmp/binch-ours.txt
@@ -141,4 +141,4 @@ jobs:
             cat /tmp/binch-overlap.txt
             exit 1
           fi
-          echo "No Binch path overlap with current main (not a substitute for merge review)."
+          echo "No overlapping Binch code/test/workflow paths with current main (not a substitute for merge review)."
