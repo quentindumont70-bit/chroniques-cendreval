@@ -236,3 +236,9 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - **GitHub Actions 43629163302 : SUCCESS 5/5** — **70/70 vérifications Chromium** (35 ordinateur et 35 mobile émulé) ; Node 60 assertions, Lua 5.1, Windows PowerShell et protection d'intégration sur main verts.
 - Aucune action sur le vrai dossier de sauvegarde, pas de merge, pas de publication ; bêta réelle WoW Forever/Windows/téléphone à faire.
 - Site public actuel : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/.
+
+## Golipette — bouton principal d'accueil relié au vrai importeur (14 novembre)
+- Le bouton de tête de l'accueil qui envoyait encore vers un onglet masqué ouvre maintenant **directement** le sélecteur du vrai fichier `GrimoireSync.lua`, en déléguant à `#binch-front-sync-import` puis au seul `#grimoire-bridge-file`. Il est libellé « Importer ma sauvegarde WoW ↻ ».
+- Le panneau sous le héros conserve son import direct, son guide, son bouton de copie de chemin et le glisser-déposer. Aucun double parseur, pas de lecture disque sans action utilisateur.
+- Nouveau test Chromium desktop/mobile : bouton du héros doit émettre un `filechooser` sur l'entrée `#grimoire-bridge-file`. **Run GitHub Actions 43629994139 : SUCCESS 5/5**, 72 tests navigateur (36 desktop + 36 mobile émulé), Node/Lua/Windows/anti-chevauchement réussis.
+- Ne pas fusionner `main` ni publier sans revue. Lien public actuel : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/.
