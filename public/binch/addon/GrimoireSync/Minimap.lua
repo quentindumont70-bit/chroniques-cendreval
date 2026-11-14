@@ -38,10 +38,13 @@ boot:SetScript("OnEvent",function(self)
   button:SetMovable(true)
   button:EnableMouse(true)
   button:RegisterForDrag("LeftButton")
+  -- Some WoW clients also dispatch OnClick when a drag ends. Never reload then.
+  local dragStopTime=nil
   button:SetScript("OnDragStart",function(self)
     self:StartMoving()
   end)
   button:SetScript("OnDragStop",function(self)
+    dragStopTime=type(GetTime)=="function" and GetTime() or nil
     self:StopMovingOrSizing()
     local x,y=self:GetCenter()
     local mx,my=Minimap:GetCenter()
@@ -111,6 +114,11 @@ boot:SetScript("OnEvent",function(self)
   button:SetScript("OnLeave",function()if GameTooltip then GameTooltip:Hide()end end)
   button:SetScript("OnClick",function(self,mouse)
     if mouse=="LeftButton" then
+      if dragStopTime and type(GetTime)=="function" then
+        local elapsed=GetTime()-dragStopTime
+        dragStopTime=nil
+        if elapsed>=0 and elapsed<0.35 then return end
+      end
       if type(ReloadUI)=="function" then ReloadUI()
       else print("|cffff7777La Binch|r : /reload indisponible sur ce client.") end
     else
