@@ -100,3 +100,25 @@ test('V110: la liste du jour et son journal utilisent le statut existant, sans c
  assert.match(source,/function absTog\(id\).*tourAbsenceChange\(id,day\)/);
  assert.doesNotMatch(source.slice(source.indexOf('// V111 : bloque un double appui'),source.indexOf('async function absenceUpdate(')),/fetch\(|XMLHttpRequest|WebSocket/);
 });
+
+test('V112: une absence ancienne annulee reste retracable dans le journal, meme sans evenement initial',async()=>{
+ const f=await absentFixture({legacy:true});
+ await f.ctx.toggle('test-person','2026-11-14');
+ assert.equal(f.confirmations(),1);
+ assert.deepEqual(f.actions,[false]);
+ assert.equal(f.writes(),1);
+ assert.equal(f.rows().length,1);
+ assert.equal(f.rows()[0].cancelled,true);
+ assert.equal(f.rows()[0].sync,'Sans suite');
+ assert.equal(f.rows()[0].history.length,2);
+ assert.match(f.rows()[0].history[0].action,/avant le journal/);
+});
+
+test('V112: si le journal est sature, une ancienne absence ne disparait jamais sans historique',async()=>{
+ const f=await absentFixture({legacy:true,limit:500});
+ await f.ctx.toggle('test-person','2026-11-14');
+ assert.equal(f.rows().length,500);
+ assert.equal(f.writes(),0);
+ assert.equal(f.actions.length,0);
+ assert.equal(f.flags.has('test-person'),true);
+});
