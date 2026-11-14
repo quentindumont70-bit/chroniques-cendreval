@@ -72,10 +72,10 @@ assert.match(cinematic,/@media\(max-width:430px\)/);
 assert.match(cinematic,/@media\(prefers-reduced-motion:reduce\)/);
 assert.doesNotMatch(cinematic,/(?:url\(|@import)/,'cinematic mode must not fetch external assets');
 const legibility=readFileSync(new URL('../public/binch/da-legibility.css',import.meta.url),'utf8');
-assert.match(html,/<link rel="stylesheet" href="\\.\\/da-legibility\\.css">/);
+assert.match(html,/<link rel="stylesheet" href="\.\/da-legibility\.css">/);
 for(const part of ['.hero h1','.hero p','aside h2','aside p','.module h3','.module p'])assert.ok(legibility.includes(part),'missing reading plate '+part);
-assert.match(legibility,/#stage\\.cinematic \\.hero p/);
-assert.doesNotMatch(legibility,/(?:url\\(|@import)/,'reading plates must remain local');
+assert.match(legibility,/#stage\.cinematic \.hero p/);
+assert.doesNotMatch(legibility,/(?:url\(|@import)/,'reading plates must remain local');
 assert.match(html,/id="neutral" aria-pressed="false"/);
 assert.match(html,/id==='neutral'\?themes\.neutral:themes\.resolve\(id\)/);
 
