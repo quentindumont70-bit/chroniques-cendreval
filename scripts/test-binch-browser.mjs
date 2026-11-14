@@ -59,8 +59,7 @@ try{
     checks++;
     assert.equal(await page.locator('#binch-spec-card-does-not-exist').count(),0);
     // Test a different class while retaining a pinned build.
-    // Mobile's animated sticky navigation interferes with automated pointer stability;
-    // use direct DOM activation there. Desktop still verifies genuine pointer interaction.
+    // Verify real browser pointer activation on desktop and mobile.
     await page.locator('#binch-specs-pin').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
     await page.locator('#binch-specs-pin').click({timeout:7000});
     assert.equal(await page.locator('#binch-specs-pinned').isVisible(),true);
@@ -72,8 +71,7 @@ try{
     checks++;
     await classControl.selectOption({label:'Druide'});
     await page.locator('[data-spec-id="druid-feral"]').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
-    if(device.isMobile)await page.locator('[data-spec-id="druid-feral"]').evaluate(el=>el.click());
-    else await page.locator('[data-spec-id="druid-feral"]').click();
+    await page.locator('[data-spec-id="druid-feral"]').click({timeout:7000});
     await page.locator('#binch-specs-level').fill('34');
     await page.locator('#binch-specs-level').dispatchEvent('change');
     assert.match(await page.locator('#binch-specs-route').innerText(),/25\s*\/\s*51/);
@@ -95,8 +93,7 @@ try{
     await page.locator('#binch-specs-level').dispatchEvent('change');
     assert.match(await page.locator('#binch-specs-route').innerText(),/Build complet.*51 points/);
     checks++;
-    if(device.isMobile)await page.locator('#binch-specs-pin-close').evaluate(el=>el.click());
-    else await page.locator('#binch-specs-pin-close').click();
+    await page.locator('#binch-specs-pin-close').click({timeout:7000});
     assert.equal(await page.locator('#binch-specs-pinned').isVisible(),false);
     checks++;
     // Smoke the AH craft workflow without injecting made-up market prices.
