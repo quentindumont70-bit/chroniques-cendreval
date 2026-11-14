@@ -44,5 +44,6 @@ test('V120: liens fonctionnels vers modules réels et publication strictement al
  }
  assert.match(sw,/'\.\/premium-cinema\.html'/);
  assert.match(sw,/big-cthu-public-v2-v122/);
- assert.doesNotMatch(sw.match(/const ASSETS=\\[([^;]+)\\];/)?.[1]||'',/images\\.unsplash\\.com/,'no third-party image included in the shell install list');
+ const shellList=sw.slice(sw.indexOf('const ASSETS=['),sw.indexOf('];',sw.indexOf('const ASSETS=['))+2);
+ assert.doesNotMatch(shellList,/images[.]unsplash[.]com/,'no third-party image in the mandatory shell list');
 });
