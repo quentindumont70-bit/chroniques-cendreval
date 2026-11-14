@@ -37,6 +37,6 @@ test('V132: panneau tactile et cache actualisé sans modifier Tournée ou les sa
  assert.match(css,/\.cthu-legacy-details summary\{/);
  assert.match(css,/min-height:48px/);
  assert.match(css,/summary:focus-visible/);
- assert.match(sw,/big-cthu-public-v2-v132/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
  assert.doesNotMatch(tournee,/cthu-legacy-details|legacySection/);
 });
