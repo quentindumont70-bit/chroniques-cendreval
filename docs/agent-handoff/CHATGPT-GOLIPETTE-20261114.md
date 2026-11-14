@@ -128,3 +128,9 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - Lien public permanent demandé pour chaque bilan : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ (ne contient pas les modifications de cette PR non fusionnée).
 
 - Recette de terrain mise à disposition : `docs/agent-handoff/BINCH-BETA-TEST-TERRAIN.md`, 10 étapes à réaliser par un vrai joueur sur téléphone, client WoW Forever et PC Windows ; aucune de ces étapes n'est déclarée passée.
+
+## Golipette — cockpit synchronisation, suite du 14 novembre
+- `public/binch/command-center.js` utilise désormais `grimoire.bridge.last.capturedAt` pour calculer la fraîcheur réelle de la capture en jeu ; `updated` reste visible séparément comme date d'import. Une capture vieille de plus de 24 heures déclenche une mention d'ancienneté, une capture non datée n'est pas présentée comme fraîche.
+- Nouveau test Playwright (ordinateur et mobile émulé) après import GrimoireSync : ouverture du Poste de commandement et vérification que la date source fictive de 2023 et le statut `data-fresh=no` sont affichés. **Run 43621162724 : SUCCESS 4/4**, 42 vérifications navigateur (21 par appareil), 60 assertions Node et les contrôles Lua/Windows existants réussis.
+- Pas de connexion au jeu en direct ; données réelles utilisateur non touchées. La branche `main` et OpenCode restent isolées. La roadmap Discord demeure ultérieure.
+- **Lien du site à toujours afficher en fin de compte rendu** : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ (ne comporte pas ces correctifs tant que la PR n'est pas fusionnée).
