@@ -30,7 +30,7 @@ function plan(){
  const p=read('grimoire.hub.v3',{}),id=identity(p);loadSettings(id);
  const sync=syncState(p),d=window.BinchDiscoveries?.recommendations?.()||[];
  const profileJobs=Array.isArray(p.jobs)?p.jobs:Array.isArray(p.metiers)?p.metiers:[];
- const input={className:p.classe||'',race:p.race||'',level:sync.level,imported:sync.match,mode,discoveries:d,professions:profileJobs,objectives:customObjectives(id),completed:dismissed};
+ const input={className:p.classe||'',race:p.race||'',level:sync.level,zone:sync.zone,imported:sync.match,mode,discoveries:d,professions:profileJobs,objectives:customObjectives(id),completed:dismissed};
  const result=window.BinchJourneyEngine?.generate(input);
  return result?{...result,sync,identity:id}:null;
 }
