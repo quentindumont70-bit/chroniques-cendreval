@@ -162,12 +162,15 @@ try{
     assert.equal(imported.questLog[0].title,'Stepping Stones','active quest imported');
     assert.equal(imported.inventory[0].id,6948,'bag item imported');
     checks++;
+    assert.equal(imported.capturedAt,'2023-11-14T22:13:20.000Z','game capture timestamp preserved');
+    assert.ok(Date.parse(imported.updated)>Date.parse(imported.capturedAt),'import time not misrepresented as game capture time');
+    checks++;
     const profile=await page.evaluate(()=>JSON.parse(localStorage.getItem('grimoire.hub.v3')));
     assert.equal(profile.classe,'Druide','browser class preserved after import');
     assert.equal(profile.data.pseudo,'Golipette-QA','no character switch');
     checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
-    console.log('Browser '+device.name+': 19 checks passed');
+    console.log('Browser '+device.name+': 20 checks passed');
     await context.close();
   }
   console.log('Browser Specs + AH + GrimoireSync: '+checks+' checks passed');
