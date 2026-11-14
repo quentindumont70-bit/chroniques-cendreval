@@ -51,15 +51,33 @@ function setup(){
  }
  if(!toggle||!menu)return;
  apply(stored(),false);
+ // V119 : garantir la visibilité complète du menu sur les iPhone étroits.
+ const placeMenu=()=>{
+  if(typeof window==='undefined'||!toggle.getBoundingClientRect||!menu.style)return;
+  const viewport=window.visualViewport?.width||window.innerWidth;
+  if(!Number.isFinite(viewport)||viewport<=0)return;
+  if(viewport>750){menu.style.left='';menu.style.right='';menu.style.width='';return}
+  const rect=toggle.getBoundingClientRect();
+  const margin=12;
+  const width=Math.min(340,Math.max(160,viewport-margin*2));
+  const left=Math.max(margin,Math.min(rect.right-width,viewport-width-margin));
+  menu.style.width=width+'px';
+  menu.style.left=(left-rect.left)+'px';
+  menu.style.right='auto';
+ };
  const close=()=>{
   menu.hidden=true;
   toggle.setAttribute('aria-expanded','false');
  };
  toggle.addEventListener('click',()=>{
   const open=menu.hidden;
+  if(open)placeMenu();
   menu.hidden=!open;
   toggle.setAttribute('aria-expanded',open?'true':'false');
  });
+ if(typeof window!=='undefined'&&window.addEventListener){
+  window.addEventListener('resize',()=>{if(!menu.hidden)placeMenu()});
+ }
  menu.querySelectorAll('[data-cthu-choice]').forEach(button=>{
   button.addEventListener('click',()=>{
    apply(button.dataset.cthuChoice,true);
