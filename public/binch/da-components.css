@@ -1,0 +1,33 @@
+/* La Binch — premium component language for the isolated art-direction lab.
+   All ornament is procedural CSS and decorative only. No third-party assets. */
+#stage{--da-etch:#e9d6a52c;--da-glint:#f5daa461;--da-frame-cut:13px;--da-rail:linear-gradient(90deg,transparent,var(--accent),transparent)}
+#stage[data-pair=troll-shaman]{--da-frame-cut:22px;--da-etch:#86e8df36;--da-glint:#8eeef299}
+#stage[data-pair=orc-warrior]{--da-frame-cut:5px;--da-etch:#ffa26b35;--da-glint:#f1ae7599}
+#stage[data-pair=elf-druid]{--da-frame-cut:28px;--da-etch:#c9c0ff3e;--da-glint:#d8c4ffb0}
+#stage[data-pair=undead-warlock]{--da-frame-cut:2px;--da-etch:#b08cce36;--da-glint:#b9a1ed99}
+#stage[data-pair=gnome-mage]{--da-frame-cut:11px;--da-etch:#a5e9f237;--da-glint:#a9f1edc0}
+#stage[data-pair=neutral]{--da-frame-cut:11px;--da-etch:#d7caa428;--da-glint:#e3d4a37a}
+#stage .hero{position:relative}
+#stage .hero::before{content:"";position:absolute;inset:17px;pointer-events:none;border-top:1px solid var(--da-etch);border-left:1px solid var(--da-etch);clip-path:polygon(0 0,100% 0,100% 6px,6px 6px,6px 100%,0 100%);opacity:.85}
+#stage .hero::after{content:"";position:absolute;width:84px;height:2px;left:clamp(28px,6vw,78px);top:23px;pointer-events:none;background:var(--da-glint);box-shadow:22px 0 18px var(--glow)}
+#stage .signature{position:relative;padding:14px 18px 14px 0;border-bottom:1px solid var(--da-etch)}
+#stage .signature::after{content:"";position:absolute;right:0;bottom:-1px;width:52px;height:1px;background:var(--accent)}
+#stage .sigil{isolation:isolate;outline:1px solid var(--da-etch);outline-offset:5px}
+#stage aside{position:relative;isolation:isolate;clip-path:polygon(var(--da-frame-cut) 0,100% 0,100% calc(100% - var(--da-frame-cut)),calc(100% - var(--da-frame-cut)) 100%,0 100%,0 var(--da-frame-cut))}
+#stage aside::before{content:"";position:absolute;inset:0;pointer-events:none;border:1px solid var(--da-etch);background:radial-gradient(ellipse at 50% -22%,var(--glow),transparent 58%);z-index:-1}
+#stage aside::after{content:"";position:absolute;inset:9px;pointer-events:none;border:1px solid var(--da-etch);opacity:.58}
+#stage .ornament{position:relative;background:radial-gradient(circle,var(--metal),#091310);outline:1px solid var(--da-etch);outline-offset:8px}
+#stage .ornament::before,#stage .ornament::after{content:"";position:absolute;pointer-events:none;border:1px solid var(--da-etch);inset:-16px;border-radius:50%;transform:rotate(45deg)}
+#stage .ornament::after{inset:-24px;opacity:.35}
+#stage .modules{position:relative;gap:15px;padding:0 1px 2px}
+#stage .module{position:relative;isolation:isolate;clip-path:polygon(var(--da-frame-cut) 0,100% 0,100% calc(100% - var(--da-frame-cut)),calc(100% - var(--da-frame-cut)) 100%,0 100%,0 var(--da-frame-cut));border:1px solid var(--da-etch);box-shadow:inset 0 1px var(--da-glint),0 12px 30px #0005}
+#stage .module::before{content:"";pointer-events:none;position:absolute;top:0;left:17px;right:17px;height:2px;background:var(--da-rail);opacity:.7}
+#stage .module::after{content:"";pointer-events:none;position:absolute;inset:auto 16px 15px auto;width:27px;height:27px;border-right:2px solid var(--accent);border-bottom:2px solid var(--accent);opacity:.5}
+#stage .module h3{color:var(--ink);text-shadow:0 2px 10px #0008}
+#stage .module .eyebrow{display:inline-block;border-bottom:1px solid var(--da-etch);padding-bottom:7px}
+#stage .actions button{box-shadow:inset 0 1px #ffffff44,0 5px 20px #0006}
+#stage .actions button+button{box-shadow:inset 0 1px var(--da-etch),0 5px 20px #0004}
+@media(max-width:820px){#stage .hero::before{inset:12px}#stage .hero::after{left:28px;top:17px}#stage .module{min-height:unset}}
+@media(max-width:430px){#stage .hero::after{left:24px}#stage aside::after{inset:7px}#stage .sigil{outline-offset:3px}}
+@media(prefers-reduced-motion:reduce){#stage .module,#stage .module::before,#stage .module::after{transition:none!important;animation:none!important}}
+#stage.reduced .module,#stage.reduced .module::before,#stage.reduced .module::after{transition:none!important;animation:none!important}
