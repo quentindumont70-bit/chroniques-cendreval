@@ -18,4 +18,6 @@ document.addEventListener('grimoire:sync',apply);
 window.addEventListener('storage',e=>{if(e.key===K)apply()});
 document.addEventListener('binch:profile-change',apply);
 window.addEventListener('focus',apply);
+document.addEventListener('click',e=>{if(e.target.closest('#onboarding'))setTimeout(apply,0)});
+document.addEventListener('change',e=>{if(e.target.closest('#app'))setTimeout(apply,0)});
 })();
