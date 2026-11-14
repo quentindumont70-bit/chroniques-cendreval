@@ -61,3 +61,11 @@ PR artistique : https://github.com/quentindumont70-bit/chroniques-cendreval/pull
 - Le style mobile atténue et réduit les fonds, afin de maintenir une bonne lisibilité des cartes et boutons. Les préférences de mouvement réduit sont prises en compte (aucune animation ajoutée).
 - Validation statique : `scripts/test-binch-da-lab.mjs` vérifie les cinq couches, les variantes, les règles mobile et mouvement réduit et l'absence d'assets externes. **CI graphique GitHub Actions 43632773097 : SUCCESS.** Des captures visuelles et essais sur téléphones réels restent nécessaires.
 - Prochains travaux : éclairage sculpté, composants et matériaux premium, galerie responsive, tests de contrastes et véritables essais de performance.
+
+## Golipette v0.6 — cartes et cadres premium
+
+- Ajout de `public/binch/da-components.css` : composants graphiques originaux pour le héros, les signatures et emblèmes, la carte de progression et les trois cartes de modules. Encadrements gravés, rails lumineux discrets, coins taillés, reliefs et ornementations CSS sans images distantes.
+- Chaque univers adapte également la géométrie des coins, l'éclairage et la matière au-delà de la palette, avec repli neutre.
+- Le laboratoire `da-lab.html` charge cette feuille en dernier ; les données de jeu et les boutons de la maquette restent inchangés. Les styles intègrent les contraintes mobile 820/430 px et la réduction de mouvement.
+- Le workflow de l'atelier graphique et les tests contrôlent la présence de chaque thème, les principaux composants, le responsive, la réduction des animations et l'absence d'assets téléchargés. **GitHub Actions run 43633231415 : SUCCESS**.
+- Reste à valider le rendu en Chromium visuel et sur appareils physiques ; ce passage confirme les contrats statiques seulement.
