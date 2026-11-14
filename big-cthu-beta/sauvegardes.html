@@ -3,6 +3,7 @@
 (()=>{'use strict';
 const spec=[
 {key:'big-cthu-v2-demo-tasks',field:'tasks',max:500,validate:x=>x&&typeof x.id==='string'&&typeof x.text==='string'&&x.text.length<=160&&typeof x.done==='boolean'},
+{key:'big-cthu-v2-next-session-v1',field:'nextSession',max:100,validate:x=>x&&typeof x.id==='string'&&x.id.length>0&&x.id.length<=80&&typeof x.game==='string'&&x.game.trim().length>0&&x.game.length<=60&&typeof x.text==='string'&&x.text.trim().length>0&&x.text.length<=180&&typeof x.done==='boolean'},
 {key:'big-cthu-v2-maison-v1',field:'jobs',max:1000,validate:x=>x&&typeof x.id==='string'&&typeof x.name==='string'&&x.name.length<=120&&['todo','doing','done'].includes(x.status)&&Number.isFinite(Number(x.amount))&&Number(x.amount)>=0&&Number(x.amount)<=100000000&&(!x.notes||String(x.notes).length<=1000)},
 {key:'big-cthu-v2-agenda-v1',field:'events',max:1000,validate:x=>x&&typeof x.id==='string'&&typeof x.title==='string'&&x.title.length<=120&&typeof x.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&['perso','maison','musique','sport','travail','autre'].includes(x.category)&&(!x.notes||String(x.notes).length<=800)},
 {key:'big-cthu-v2-inbox-v1',field:'captures',max:500,validate:x=>x&&typeof x.id==='string'&&typeof x.title==='string'&&x.title.length<=140&&['inbox','task','maison','agenda','nutrition','sport','musique','gaming'].includes(x.target)&&['new','sent','done'].includes(x.status)&&(!x.notes||String(x.notes).length<=1000)},

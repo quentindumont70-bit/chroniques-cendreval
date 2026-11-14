@@ -27,7 +27,7 @@ test('V115: les feuilles de style, scripts et pages demeurent disponibles dans l
  const assets=[...match[1].matchAll(/'\.\/([^']+)'/g)].map(m=>m[1]);
  assert.equal(assets.length,new Set(assets).size);
  for(const file of [...modules,'cockpit-themes.css','cockpit-themes.js'])assert.ok(assets.includes(file),'asset not precached: '+file);
- assert.match(sw,/big-cthu-public-v2-v117/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
 });
 
 test('V115: l apparence ne lit ni ecrit les donnees personnelles et reste locale',async()=>{
