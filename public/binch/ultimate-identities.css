@@ -1,0 +1,27 @@
+/* La Binch Ultimate — visual identities and ornate frames.
+   Every class has different ornament geometry, not simply a recolor.
+   Designed to sit above the existing visual backdrop. */
+:root{--bi-metal:#ad8651;--bi-light:#f1d6a2;--bi-ink:#163029;--bi-border:#947e50;--bi-ornament:"✦";--bi-aura:radial-gradient(circle at 90% 12%,#a58e5540,transparent 45%);--bi-engraving:repeating-linear-gradient(135deg,transparent 0 12px,#ffffff04 13px 14px)}
+html[data-binch-identity=druid]{--bi-metal:#c6904e;--bi-light:#f7d7a4;--bi-ink:#142d25;--bi-border:#718c56;--bi-ornament:"❧";--bi-aura:radial-gradient(ellipse at 90% 10%,#77aa5052,transparent 48%);--bi-engraving:repeating-radial-gradient(circle at 100% 0%,transparent 0 32px,#a3b7720e 33px 35px)}
+html[data-binch-identity=warrior]{--bi-metal:#c9a68c;--bi-light:#f1e0d4;--bi-ink:#283036;--bi-border:#a0a7ab;--bi-ornament:"⚔";--bi-aura:linear-gradient(123deg,#82939a33,transparent 50%);--bi-engraving:repeating-linear-gradient(30deg,transparent 0 17px,#b4bfc317 18px,transparent 19px 36px)}
+html[data-binch-identity=mage]{--bi-metal:#81c5ef;--bi-light:#e4f6ff;--bi-ink:#17253f;--bi-border:#5685aa;--bi-ornament:"✧";--bi-aura:radial-gradient(circle at 90% 5%,#4bb1ff56,transparent 47%);--bi-engraving:repeating-conic-gradient(from 0deg at 100% 0%,transparent 0deg 22deg,#79c5ef12 23deg 25deg)}
+html[data-binch-identity=priest]{--bi-metal:#efdaae;--bi-light:#fff6d8;--bi-ink:#29303c;--bi-border:#b1a18f;--bi-ornament:"✝";--bi-aura:radial-gradient(circle at 50% 0%,#f5d6a64a,transparent 52%);--bi-engraving:repeating-linear-gradient(90deg,transparent 0 34px,#fff6df10 35px 36px)}
+html[data-binch-identity=paladin]{--bi-metal:#e1a4be;--bi-light:#ffdae9;--bi-ink:#312534;--bi-border:#bc88a3;--bi-ornament:"✥";--bi-aura:radial-gradient(ellipse at 90% 8%,#f8bdd34e,transparent 52%);--bi-engraving:repeating-linear-gradient(45deg,transparent 0 23px,#f3b8d015 24px 25px)}
+html[data-binch-identity=rogue]{--bi-metal:#e5cc70;--bi-light:#faf0b3;--bi-ink:#25291d;--bi-border:#998e52;--bi-ornament:"◆";--bi-aura:linear-gradient(130deg,#d6c34729,transparent 58%);--bi-engraving:repeating-linear-gradient(125deg,transparent 0 11px,#dccd5810 12px 13px)}
+html[data-binch-identity=hunter]{--bi-metal:#a8c88b;--bi-light:#deefb7;--bi-ink:#1c3021;--bi-border:#738f5a;--bi-ornament:"➶";--bi-aura:radial-gradient(circle at 85% 5%,#74aa5044,transparent 48%);--bi-engraving:repeating-linear-gradient(155deg,transparent 0 28px,#b2d29512 29px 30px)}
+html[data-binch-identity=shaman]{--bi-metal:#7abfe0;--bi-light:#c5f2ff;--bi-ink:#1b3036;--bi-border:#6484a3;--bi-ornament:"✺";--bi-aura:radial-gradient(circle at 15% 10%,#62a5f050,transparent 46%),radial-gradient(circle at 90% 90%,#c0843c31,transparent 45%);--bi-engraving:repeating-linear-gradient(0deg,transparent 0 24px,#81c1e40e 25px 26px)}
+html[data-binch-identity=warlock]{--bi-metal:#a98bd0;--bi-light:#e1d3ff;--bi-ink:#231d31;--bi-border:#8161a0;--bi-ornament:"☽";--bi-aura:radial-gradient(circle at 90% 0%,#a156da50,transparent 50%);--bi-engraving:repeating-linear-gradient(70deg,transparent 0 24px,#a778cc12 25px 26px)}
+/* The home crown and the command room inherit the same class identity. */
+#page-hub .binch-front-hero,#page-hub #binch-ultimate-briefing,#page-command .binch-command{border-color:var(--bi-border)!important;background-image:var(--bi-aura),linear-gradient(142deg,var(--bi-ink),#091817)!important}
+#page-hub .binch-front-hero,#page-hub #binch-ultimate-briefing{box-shadow:inset 0 1px 0 #ffffff18,0 12px 45px #0006}
+#page-hub .binch-front-hero:after,#page-hub #binch-ultimate-briefing:after{content:var(--bi-ornament);position:absolute;top:12px;right:16px;font:700 clamp(1.6rem,3vw,2.5rem) Georgia,serif;color:var(--bi-metal);opacity:.28;pointer-events:none}
+#page-hub .binch-front-hero,#page-hub #binch-ultimate-briefing{position:relative;isolation:isolate}
+#page-hub .binch-front-hero:before,#page-hub #binch-ultimate-briefing:before{content:"";position:absolute;inset:7px;z-index:-1;pointer-events:none;border:1px solid color-mix(in srgb,var(--bi-metal) 42%,transparent);clip-path:polygon(0 0,calc(100% - 29px) 0,100% 29px,100% 100%,29px 100%,0 calc(100% - 29px));background:var(--bi-engraving);opacity:.58}
+#page-hub .binch-front-kicker,#page-hub #binch-ultimate-briefing .eyebrow{color:var(--bi-metal)}
+#page-hub #binch-ultimate-briefing h2,#page-hub #binch-ultimate-briefing h3{color:var(--bi-light)}
+#page-hub #binch-ultimate-briefing .binch-ultimate-recommendation{border-color:var(--bi-border);background:linear-gradient(145deg,color-mix(in srgb,var(--bi-ink) 85%,black),#0a1a17)}
+#page-hub #binch-ultimate-briefing .binch-ultimate-order{color:var(--bi-light)}
+#page-command .binch-command [class*=command-label]{border-color:var(--bi-border);color:var(--bi-light)}
+#app .nav button.active{border-color:var(--bi-metal);box-shadow:inset 0 -2px var(--bi-light),0 0 12px color-mix(in srgb,var(--bi-metal) 15%,transparent)}
+@media(prefers-reduced-motion:reduce){#page-hub .binch-front-hero,#page-hub #binch-ultimate-briefing{transition:none!important}}
+@media(max-width:590px){#page-hub .binch-front-hero:after,#page-hub #binch-ultimate-briefing:after{opacity:.15;right:7px}}
