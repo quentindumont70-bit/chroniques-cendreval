@@ -20,4 +20,10 @@ assert.equal(bridge.latestFor(horde,'barre de CUIVRE').store,'binch.ah.market.v1
 assert.equal(bridge.latestFor(horde,'Sulfuras'),null);
 assert.equal(legacy.prices.length,2,'read-only legacy ledger');
 assert.equal(ah.items.length,2,'read-only AH ledger');
-console.log('Market bridge: 8 assertions passed');
+const future=new Date(Date.now()+60*60*1000).toISOString();
+const futureOnly=bridge.snapshot({prices:[{item:'Fausse cotation',unit:500,time:future,realm:'Forever',faction:'Horde'}]}, {items:[]}, {realm:'Forever',faction:'Horde'});
+assert.equal(futureOnly.status,'empty','future legacy prices cannot be quoted');
+assert.equal(bridge.latestFor(futureOnly,'Fausse cotation'),null);
+const futureAH=bridge.snapshot({prices:[]}, {items:[{name:'Fausse cotation',last:500,observedAt:future,scope:'forever|Horde'}]}, {realm:'Forever',faction:'Horde'});
+assert.equal(futureAH.status,'empty','future AH prices cannot be quoted');
+console.log('Market bridge: 11 assertions passed');
