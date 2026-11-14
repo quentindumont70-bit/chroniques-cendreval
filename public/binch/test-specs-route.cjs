@@ -8,7 +8,7 @@ const vm=require('node:vm');
 const source=fs.readFileSync(path.join(__dirname,'specs-guide.js'),'utf8');
 const suffix=/\}\)\(\);\s*$/;
 assert.match(source,suffix,'Expected module wrapper');
-const testSource=source.replace(suffix,'window.__specsTest={SEQ,T,stepsAt,nextPoint,points};})();');
+const testSource=source.replace(suffix,'window.__specsTest={SEQ,T,stepsAt,nextPoint,points,state};})();');
 const window={};const document={readyState:'loading',addEventListener(){}};
 const localStorage={getItem:()=>null};
 vm.runInNewContext(testSource,{window,document,localStorage,Map,Set,Math,Number,JSON,String,Array,Object},{filename:'specs-guide.js'});
@@ -24,4 +24,20 @@ check(t.stepsAt(34).every(x=>x.owned<=x.max),'ranks never exceed max');
 check(t.stepsAt(60).some(x=>x.label.includes('29')&&x.label.includes('33')),'noncontiguous predator strikes remain visible');
 check(t.SEQ.every(key=>Boolean(t.T[key])),'all route talents defined');
 check(t.SEQ.filter(key=>key==='prestrikes').length===3,'predator strikes have three ranks');
+const restoredWindow={};
+vm.runInNewContext(testSource,{
+ window:restoredWindow,
+ document:{readyState:'loading',addEventListener(){}},
+ localStorage:{getItem:()=>JSON.stringify({id:'druid-feral',filter:'Mage'})},
+ Map,Set,Math,Number,JSON,String,Array,Object
+},{filename:'specs-guide.js'});
+check(restoredWindow.__specsTest.state.id==='mage-frost','restored class filter selects an available spec');
+const invalidWindow={};
+vm.runInNewContext(testSource,{
+ window:invalidWindow,
+ document:{readyState:'loading',addEventListener(){}},
+ localStorage:{getItem:()=>JSON.stringify({id:'druid-feral',filter:'Invalid class'})},
+ Map,Set,Math,Number,JSON,String,Array,Object
+},{filename:'specs-guide.js'});
+check(invalidWindow.__specsTest.state.filter==='all','invalid saved filter safely resets');
 console.log('Specs route: '+count+' assertions passed');
