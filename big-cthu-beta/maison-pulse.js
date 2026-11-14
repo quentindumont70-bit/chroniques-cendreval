@@ -48,6 +48,8 @@ function render(){
  if(!host)return;
  host.replaceChildren();
  const today=localDay(new Date()),data=collect(today);
+ const panel=$('maisonPulse');
+ if(panel)panel.dataset.hasItems=data.warnings?'unknown':data.total?'true':'false';
  const count=$('maisonPulseCount');
  if(count)count.textContent=data.total+' échéance(s) à suivre';
  if(!data.entries.length)host.append(node('p','muted','Aucune échéance de travaux ou d’entretien dans les 30 prochains jours.'));
@@ -62,7 +64,7 @@ function render(){
  }
  if(data.total>data.entries.length)host.append(node('p','muted','+'+(data.total-data.entries.length)+' autres échéances dans les modules Maison.'));
  const warning=$('maisonPulseStatus');
- if(warning)warning.textContent=data.warnings?'Certaines données locales sont illisibles. Aucun élément n’a été modifié.':'Lecture seule depuis les modules Maison de cet appareil.';
+ if(warning)warning.textContent=data.warnings?'Certaines données locales sont illisibles. Aucun élément n’a été modifié.':data.total?'Lecture seule depuis les modules Maison de cet appareil.':'Aucune échéance dans les 30 prochains jours.';
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render,{once:true});else render();
 window.addEventListener('pageshow',render);
