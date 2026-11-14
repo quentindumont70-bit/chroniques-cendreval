@@ -7,6 +7,7 @@ on:
       - 'public/binch/da-tokens.css'
       - 'public/binch/da-scenes.css'
       - 'public/binch/da-components.css'
+      - 'public/binch/da-cinema.css'
       - 'scripts/test-binch-da-lab.mjs'
       - 'scripts/test-binch-da-visual.mjs'
       - '.github/workflows/binch-da-lab.yml'
