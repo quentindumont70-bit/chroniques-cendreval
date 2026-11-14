@@ -59,9 +59,10 @@ try{
     checks++;
     assert.equal(await page.locator('#binch-spec-card-does-not-exist').count(),0);
     // Test a different class while retaining a pinned build.
-    // Verify real browser pointer activation on desktop and mobile.
+    // Verify actual touch events on mobile and real pointer clicks on desktop.
     await page.locator('#binch-specs-pin').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
-    await page.locator('#binch-specs-pin').click({timeout:7000});
+    if(device.isMobile)await page.locator('#binch-specs-pin').tap({timeout:7000});
+    else await page.locator('#binch-specs-pin').click({timeout:7000});
     assert.equal(await page.locator('#binch-specs-pinned').isVisible(),true);
     checks++;
     await classControl.selectOption({label:'Chasseur'});
@@ -71,7 +72,8 @@ try{
     checks++;
     await classControl.selectOption({label:'Druide'});
     await page.locator('[data-spec-id="druid-feral"]').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
-    await page.locator('[data-spec-id="druid-feral"]').click({timeout:7000});
+    if(device.isMobile)await page.locator('[data-spec-id="druid-feral"]').tap({timeout:7000});
+    else await page.locator('[data-spec-id="druid-feral"]').click({timeout:7000});
     await page.locator('#binch-specs-level').fill('34');
     await page.locator('#binch-specs-level').dispatchEvent('change');
     assert.match(await page.locator('#binch-specs-route').innerText(),/25\s*\/\s*51/);
@@ -93,7 +95,8 @@ try{
     await page.locator('#binch-specs-level').dispatchEvent('change');
     assert.match(await page.locator('#binch-specs-route').innerText(),/Build complet.*51 points/);
     checks++;
-    await page.locator('#binch-specs-pin-close').click({timeout:7000});
+    if(device.isMobile)await page.locator('#binch-specs-pin-close').tap({timeout:7000});
+    else await page.locator('#binch-specs-pin-close').click({timeout:7000});
     assert.equal(await page.locator('#binch-specs-pinned').isVisible(),false);
     checks++;
     // Smoke the AH craft workflow without injecting made-up market prices.
