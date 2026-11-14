@@ -178,8 +178,15 @@ try{
     assert.match(syncLabel,/données du jeu de plus de 24 h/);
     assert.equal(await page.locator('#binch-command-sync').getAttribute('data-fresh'),'no');
     checks++;
+    // Front page must not call a freshly imported but old game capture 'recent'.
+    await page.locator('#app nav.nav [data-page="hub"]').evaluate(el=>el.click());
+    await page.waitForFunction(()=>document.querySelector('#binch-front-source')?.textContent?.includes('Capture WoW'));
+    const sourceLabel=await page.locator('#binch-front-source').textContent();
+    assert.match(sourceLabel,/Capture WoW.*2023.*à actualiser/,'home shows source game age');
+    assert.match(await page.locator('#binch-front-tasks').textContent(),/Rafraîchir les données du jeu/,'home offers resync priority');
+    checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
-    console.log('Browser '+device.name+': 21 checks passed');
+    console.log('Browser '+device.name+': 22 checks passed');
     await context.close();
   }
   console.log('Browser Specs + AH + GrimoireSync: '+checks+' checks passed');
