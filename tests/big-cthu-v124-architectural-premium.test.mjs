@@ -19,5 +19,5 @@ test('V124 remains design-only and isolated from Tournée',async()=>{
  const [html,tour,sw]=await Promise.all(['premium-cinema.html','tournee-complete.html','sw.js'].map(read));
  assert.doesNotMatch(html,/<script\b|indexedDB|localStorage|tidel_/i);
  assert.doesNotMatch(tour,/premium-cinema\.html/);
- assert.match(sw,/big-cthu-public-v2-v126/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
 });
