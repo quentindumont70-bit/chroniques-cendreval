@@ -113,11 +113,33 @@ try{
     assert.match(await page.locator('#binch-ah-craft-list').innerText(),/Armure Golipette QA/);
     assert.match(await page.locator('#binch-ah-craft-list').innerText(),/incomplet|non renseigné/i);
     checks++;
+    // True GrimoireSync.lua upload in a blank, synthetic browser profile.
+    await page.locator('#app nav.nav [data-page="sync"]').evaluate(el=>el.click());
+    await page.locator('#grimoire-bridge-file').waitFor({state:'attached',timeout:10000});
+    const luaPayload='GF6|C:Golipette-QA,Forever,34,DRUID,Tauren,Horde,Les%20Tarides,100,1700000000,2000,4000,500|P:Minage,180,225|Q:79976|L:79192,Stepping%20Stones,0|LS:QuestLogAPI|I:6948,1,0,1,1,0,Pierre%20de%20foyer|E:|AH:Forever,Horde,1700000000,0|A:';
+    const lua='GrimoireSyncDB = { ["payload"] = "'+luaPayload+'" }';
+    await page.locator('#grimoire-bridge-file').setInputFiles({
+      name:'GrimoireSync.lua',
+      mimeType:'text/plain',
+      buffer:Buffer.from(lua,'utf8')
+    });
+    await page.waitForFunction(()=>{
+      try{return JSON.parse(localStorage.getItem('grimoire.bridge.last')||'{}').name==='Golipette-QA'}catch{return false}
+    },{timeout:8000});
+    const imported=await page.evaluate(()=>JSON.parse(localStorage.getItem('grimoire.bridge.last')));
+    assert.equal(imported.level,34,'GF6 level imported');
+    assert.equal(imported.questLog[0].title,'Stepping Stones','active quest imported');
+    assert.equal(imported.inventory[0].id,6948,'bag item imported');
+    checks++;
+    const profile=await page.evaluate(()=>JSON.parse(localStorage.getItem('grimoire.hub.v3')));
+    assert.equal(profile.classe,'Druide','browser class preserved after import');
+    assert.equal(profile.data.pseudo,'Golipette-QA','no character switch');
+    checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
-    console.log('Browser '+device.name+': 14 checks passed');
+    console.log('Browser '+device.name+': 16 checks passed');
     await context.close();
   }
-  console.log('Browser Specs + AH: '+checks+' checks passed');
+  console.log('Browser Specs + AH + GrimoireSync: '+checks+' checks passed');
 }catch(error){
   console.error(error);
   process.exitCode=1;
