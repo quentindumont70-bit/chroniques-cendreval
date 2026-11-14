@@ -52,6 +52,16 @@ assert.match(scenery,/@media\(max-width:820px\)/);
 assert.match(scenery,/@media\(prefers-reduced-motion:reduce\)/);
 assert.match(scenery,/#stage\.reduced/);
 assert.doesNotMatch(scenery,/(?:url\(|@import)/,'scenery must not fetch external content');
+const components=readFileSync(new URL('../public/binch/da-components.css',import.meta.url),'utf8');
+assert.match(html,/<link rel="stylesheet" href="\.\/da-components\.css">/);
+for(const id of ['neutral',...expected.slice(1)])assert.ok(components.includes('#stage[data-pair='+id+']'),'missing premium UI pair tokens '+id);
+for(const element of ['hero','signature','sigil','ornament','modules','module','actions'])assert.ok(components.includes('#stage .'+element),'missing premium component '+element);
+assert.match(components,/@media\(max-width:820px\)/);
+assert.match(components,/@media\(max-width:430px\)/);
+assert.match(components,/@media\(prefers-reduced-motion:reduce\)/);
+assert.match(components,/#stage\.reduced/);
+assert.doesNotMatch(components,/(?:url\(|@import)/,'premium components must not fetch external content');
+
 
 assert.match(html,/id="neutral" aria-pressed="false"/);
 assert.match(html,/id==='neutral'\?themes\.neutral:themes\.resolve\(id\)/);
