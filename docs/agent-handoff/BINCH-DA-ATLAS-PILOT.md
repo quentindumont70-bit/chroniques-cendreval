@@ -37,3 +37,11 @@ Avant intégration à la vraie Binch, construire **une matrice de compatibilité
 Le premier contrôle statique CI de la branche graphique et les six concepts passent. Cette branche est **séparée** du développement fonctionnel (#129) et ne doit ni le bloquer ni modifier `main` sans revue.
 
 PR artistique : https://github.com/quentindumont70-bit/chroniques-cendreval/pull/154
+
+## Golipette v0.3 — registre de thèmes réutilisable
+
+- Les six concepts, jusque-là définis directement dans la page HTML, sont extraits dans `public/binch/da-themes.js` (registre **versionné 0.3.0**, chargé localement). La maquette `da-lab.html` utilise dorénavant cette unique source de vérité.
+- API d'étude : `BinchDaThemes.pairs`, `resolve(id)`, `findPair(race,classe)`, `compatibility: 'unverified'`. Normalisation d'alias français/anglais, y compris les accents (« Mort-vivant », « Démoniste »). Les identifiants non approuvés renvoient **null**, sans inventer de compatibilité ou manipuler le profil.
+- Aucune dépendance réseau, aucun accès aux données du joueur. Les objets sont utilisés uniquement dans le laboratoire, pas dans la Binch publique ni dans la PR fonctionnelle.
+- Tests de registre mis à jour : liste blanche des six thèmes, identifiants, alias accentués, refus des prototypes JS / paires inconnues, absence de lecture du stockage ou de trafic, et syntaxe du contrôleur HTML. **GitHub Actions run 43631810093 : SUCCESS.**
+- Prochains chantiers : tokens CSS externalisés, moteur de repli neutre, essais visuels mobiles et preuves de compatibilité Forever.
