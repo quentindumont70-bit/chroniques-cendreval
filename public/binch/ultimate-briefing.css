@@ -1,0 +1,29 @@
+/* La Binch Ultimate — cross-module briefing, low-motion and responsive. */
+#binch-ultimate-briefing{background:radial-gradient(circle at 100% 0%,#c28d4435,transparent 47%),linear-gradient(135deg,#172723,#0b1719);border:1px solid #a8895a;border-radius:16px;padding:clamp(16px,2.7vw,26px);color:#f3ebd8;margin:17px 0}
+.binch-ultimate-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.binch-ultimate-head h2{font:700 clamp(1.25rem,2.4vw,1.75rem) Cinzel,Georgia,serif;color:#f0d49a;margin:6px 0}
+#binch-ultimate-level{font-size:.78rem;color:#bbc9c1;margin:5px 0}
+.binch-ultimate-head label{font-size:.72rem;color:#e0cb9c;display:grid;gap:5px;min-width:180px}
+#binch-ultimate-mode{border:1px solid #877753;border-radius:7px;background:#132823;color:#f4e7d0;padding:9px}
+.binch-ultimate-recommendation{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:20px;background:#182f29;border:1px solid #92794c;border-radius:12px;padding:18px;margin:17px 0}
+.binch-ultimate-recommendation h3{font:700 clamp(1.07rem,1.8vw,1.4rem) Cinzel,Georgia,serif;color:#ffe2a4;margin:6px 0}
+.binch-ultimate-recommendation p{font-size:.82rem;line-height:1.55;color:#d4dfd2;margin:6px 0}
+.binch-ultimate-recommendation small{font-size:.71rem;color:#bbd0c5}
+.binch-ultimate-category{display:inline-flex;letter-spacing:.09em;color:#ebc88c;text-transform:uppercase;font-size:.65rem;font-weight:800}
+#binch-ultimate-briefing button{border:1px solid #b2915f;background:#324a3e;color:#f7ddad;padding:9px 13px;border-radius:8px;cursor:pointer;min-height:39px}
+#binch-ultimate-briefing button:hover{background:#47634f}
+#binch-ultimate-briefing button:focus-visible,#binch-ultimate-mode:focus-visible{outline:3px solid #f4d7a0;outline-offset:2px}
+#binch-ultimate-briefing button:disabled{opacity:.4;cursor:default}
+.binch-ultimate-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.binch-ultimate-top h3{font:700 1.02rem Cinzel,Georgia,serif;color:#e9d09d;margin:0}
+.binch-ultimate-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+.binch-ultimate-task{display:flex;gap:9px;align-items:center;padding:10px;background:#0b1d1b;border:1px solid #536958;border-radius:9px;min-width:0}
+.binch-ultimate-order{font:700 1.18rem Cinzel,Georgia,serif;color:#d9b879;min-width:25px}
+.binch-ultimate-task>div{flex:1;min-width:0}
+.binch-ultimate-task strong{display:block;color:#f4e1b8;font-size:.78rem}
+.binch-ultimate-task small{display:block;color:#aebfb3;font-size:.68rem;line-height:1.45}
+#binch-ultimate-briefing .binch-ultimate-task button{padding:5px 8px;min-height:30px;font-size:.72rem}
+#binch-ultimate-status{font-size:.7rem;color:#aebdae;line-height:1.5}
+@media(max-width:800px){.binch-ultimate-actions{grid-template-columns:1fr}.binch-ultimate-recommendation{grid-template-columns:1fr;gap:10px}.binch-ultimate-recommendation>button{justify-self:start}}
+@media(max-width:480px){.binch-ultimate-head label{width:100%}.binch-ultimate-top button{width:100%}}
+@media(prefers-reduced-motion:reduce){#binch-ultimate-briefing *{animation:none!important;transition:none!important}}
