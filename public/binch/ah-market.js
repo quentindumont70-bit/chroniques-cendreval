@@ -32,6 +32,7 @@ function estimate(item){
  return {med,low,last,net,diff,points};
 }
 function validateRow(row,requireTimestamp=false){
+ if(!row||typeof row!=='object'||Array.isArray(row))return null;
  const name=clean(row.name||row.item||row.title||row.itemName,100);
  const numericPrice=row.priceCopper??row.unitPriceCopper??row.copper??null;
  const price=numericPrice!=null?Number(numericPrice):fromGold(row.priceGold??row.gold??row.price);
