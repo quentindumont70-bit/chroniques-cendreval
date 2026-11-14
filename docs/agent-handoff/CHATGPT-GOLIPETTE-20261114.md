@@ -201,3 +201,11 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - Run CI **43626677021 : SUCCESS 5/5 jobs**, 54/54 tests navigateur (27 desktop, 27 mobile émulé), 60 assertions Node, syntaxe PowerShell, Lua simulé et garde de réconciliation tous réussis.
 - **Aucun merge vers `main`, aucun déploiement**, PR #129 maintenue en brouillon. Tester dans WoW Forever et Windows réellement avant distribution à la guilde. Discord et refonte graphique par combinaison race × classe restent inscrits sur leurs roadmaps.
 - URL publique obligatoire en fin de lot : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ (ancienne version).
+
+## Golipette — synchronisation visible dès l'accueil (14 novembre)
+- Demande utilisateur : ne plus chercher l'import WoW dans les onglets. La page d'accueil `public/binch/index.html` affiche maintenant, **immédiatement sous la carte du personnage**, un panneau « Synchronisation WoW » très visible avec **« Importer GrimoireSync.lua »**, rappel `/reload` et bouton « Guide de synchronisation ».
+- Le bouton principal ouvre le **sélecteur de fichiers du véritable importeur préexistant** `#grimoire-bridge-file` ; il n'y a pas de second parseur ni de stockage parallèle, et tous les garde-fous (capture plus ancienne, non datée, changement de royaume/personnage) sont conservés. Le guide mène à l'onglet Synchronisation.
+- CSS responsive : panneau lisible sur téléphone, boutons de 44 px, styles de focus existants, et `role=status` pour les messages de secours. Aucun accès direct au disque WoW sans sélection explicite du joueur.
+- **GitHub Actions `43627334549` : SUCCESS 5/5 jobs**. Tests Chromium **58/58** (29 desktop + 29 mobile émulé), dont ouverture du vrai sélecteur de fichiers depuis l'accueil et navigation vers l'onglet Synchronisation ; Lua, Windows, Node et garde de conflits avec `main` réussis.
+- Mise en ligne : **pas encore**. La PR #129 reste en brouillon ; le site public peut encore afficher l'ancienne page tant que le code n'est pas fusionné et publié.
+- Lien public demandé en fin de lot : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/.
