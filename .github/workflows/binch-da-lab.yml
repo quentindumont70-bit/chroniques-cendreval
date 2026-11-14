@@ -8,6 +8,7 @@ on:
       - 'public/binch/da-scenes.css'
       - 'public/binch/da-components.css'
       - 'public/binch/da-cinema.css'
+      - 'public/binch/da-legibility.css'
       - 'scripts/test-binch-da-lab.mjs'
       - 'scripts/test-binch-da-visual.mjs'
       - '.github/workflows/binch-da-lab.yml'
