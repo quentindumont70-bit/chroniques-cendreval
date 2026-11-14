@@ -116,6 +116,26 @@ try{
     // True GrimoireSync.lua upload in a blank, synthetic browser profile.
     await page.locator('#app nav.nav [data-page="sync"]').evaluate(el=>el.click());
     await page.locator('#grimoire-bridge-file').waitFor({state:'attached',timeout:10000});
+    // A rejected/invalid import must not replace an existing character or metadata.
+    const testFile=async content=>page.locator('#grimoire-bridge-file').setInputFiles({
+      name:'GrimoireSync.lua',mimeType:'text/plain',buffer:Buffer.from(content,'utf8')
+    });
+    const startingProfile=await page.evaluate(()=>localStorage.getItem('grimoire.hub.v3'));
+    await testFile('GrimoireSyncDB = { ["payload"] = "GF7|C:Bad" }');
+    await assertVisible(page,'#grimoire-bridge-status','Invalid import status');
+    assert.match(await page.locator('#grimoire-bridge-status').innerText(),/Import impossible/i);
+    assert.equal(await page.evaluate(()=>localStorage.getItem('grimoire.hub.v3')),startingProfile);
+    assert.equal(await page.evaluate(()=>localStorage.getItem('grimoire.bridge.last')),null);
+    checks++;
+    const foreign='GF6|C:Autre-QA,Forever,35,DRUID,Tauren,Horde,Les%20Tarides,100,1700000000,2500,4000,500|P:|Q:';
+    let dialogCount=0;
+    page.once('dialog',dialog=>{dialogCount++;dialog.dismiss()});
+    await testFile('GrimoireSyncDB = { ["payload"] = "'+foreign+'" }');
+    await page.waitForFunction(()=>document.querySelector('#grimoire-bridge-status')?.textContent?.includes('Import'));
+    assert.equal(dialogCount,1,'foreign character triggers explicit confirmation');
+    assert.equal(await page.evaluate(()=>localStorage.getItem('grimoire.hub.v3')),startingProfile);
+    assert.equal(await page.evaluate(()=>localStorage.getItem('grimoire.bridge.last')),null);
+    checks++;
     const luaPayload='GF6|C:Golipette-QA,Forever,34,DRUID,Tauren,Horde,Les%20Tarides,100,1700000000,2000,4000,500|P:Minage,180,225|Q:79976|L:79192,Stepping%20Stones,0|LS:QuestLogAPI|I:6948,1,0,1,1,0,Pierre%20de%20foyer|E:|AH:Forever,Horde,1700000000,0|A:';
     const lua='GrimoireSyncDB = { ["payload"] = "'+luaPayload+'" }';
     await page.locator('#grimoire-bridge-file').setInputFiles({
@@ -136,7 +156,7 @@ try{
     assert.equal(profile.data.pseudo,'Golipette-QA','no character switch');
     checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
-    console.log('Browser '+device.name+': 16 checks passed');
+    console.log('Browser '+device.name+': 18 checks passed');
     await context.close();
   }
   console.log('Browser Specs + AH + GrimoireSync: '+checks+' checks passed');
