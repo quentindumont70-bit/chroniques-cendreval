@@ -47,3 +47,23 @@ test('V140: aucune mutation de Tournée, dates Maison lisibles et état vide exp
  assert.match(sw,/big-cthu-public-v2-v140/);
  assert.doesNotMatch(tour,/En retard depuis le/);
 });
+
+test('V140: au maximum huit lignes, sans masquer toutes les échéances futures derrière les retards',async()=>{
+ const html=await read('index.html');
+ const start=html.indexOf('function renderRadar()');
+ const end=html.indexOf('function renderNetwork()',start);
+ const old=Array.from({length:7},(_,i)=>({name:'Retard '+i,due:iso(-15+i),status:'todo'}));
+ const events=Array.from({length:6},(_,i)=>({title:'Futur '+i,date:iso(i+1)}));
+ const nodes=[];
+ const root={replaceChildren(){nodes.length=0},append(x){nodes.push(x)}};
+ const createElement=tag=>({tag,textContent:'',className:'',children:[],append(...items){this.children.push(...items)}});
+ runInNewContext(html.slice(start,end)+'renderRadar()',{
+  $:()=>root,document:{createElement},Date,
+  localStorage:{getItem:key=>JSON.stringify(key==='big-cthu-v2-maison-v1'?old:key==='big-cthu-v2-agenda-v1'?events:[])}
+ },{timeout:1000});
+ const displayed=nodes.filter(n=>n.tag==='div').flatMap(n=>n.children.map(x=>x.textContent)).join(' ');
+ assert.match(displayed,/Retard 6/);
+ assert.match(displayed,/Futur 0/);
+ assert.ok(nodes.filter(n=>n.tag==='div').length<=8);
+ assert.match(nodes.at(-1).textContent,/autres échéances/);
+});
