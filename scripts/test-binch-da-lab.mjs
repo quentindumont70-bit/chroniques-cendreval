@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {Script} from 'node:vm';
-import {createRequire} from 'node:module';
-const require=createRequire(import.meta.url);
-const themes=require('../public/binch/da-themes.js');
+import {Script,runInNewContext} from 'node:vm';
+const registrySource=readFileSync(new URL('../public/binch/da-themes.js',import.meta.url),'utf8');
+const context={window:{}};
+runInNewContext(registrySource,context,{filename:'da-themes.js'});
+const themes=context.window.BinchDaThemes;
 const html=readFileSync(new URL('../public/binch/da-lab.html',import.meta.url),'utf8');
 assert.match(html,/<html lang="fr">/);
 assert.match(html,/<meta name="viewport"/);
@@ -13,7 +14,7 @@ assert.match(html,/<main id="stage" data-pair="tauren-druid"/);
 assert.match(html,/aria-pressed="true"/);
 assert.match(html,/<script src="\.\/da-themes\.js"><\/script>/);
 const expected=['tauren-druid','troll-shaman','orc-warrior','elf-druid','undead-warlock','gnome-mage'];
-assert.deepEqual(themes.pairs,expected);
+assert.deepEqual(Array.from(themes.pairs),expected);
 const buttons=[...html.matchAll(/data-choice="([^"]+)"/g)].map(x=>x[1]);
 assert.deepEqual(buttons,expected);
 for(const id of expected){
