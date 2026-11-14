@@ -40,7 +40,7 @@ function validateRow(row,requireTimestamp=false){
  const source=clean(row.source||'Saisie personnelle',120);
  const time=row.observedAt||row.timestamp||(requireTimestamp?null:new Date().toISOString());
  if(typeof time!=='string'||!time.trim())return null;
- if(name.length<2||!Number.isSafeInteger(price)||price<1||price>1e12||!Number.isInteger(qty)||qty<1||qty>1e9||!date(time)||date(time)>new Date(Date.now()+3600000))return null;
+ if(name.length<2||!Number.isSafeInteger(price)||price<1||price>1e12||!Number.isInteger(qty)||qty<1||qty>1e9||!date(time)||date(time)>new Date())return null;
  const realm=clean(row.realm||'',65).toLocaleLowerCase('fr'),faction=String(row.faction||'');
  if((!!realm)!==(!!faction)||(faction&&!['Horde','Alliance'].includes(faction)))return null;
  return {name,price,quantity:qty,source,observedAt:new Date(time).toISOString(),scope:realm?realm+'|'+faction:'legacy'};
