@@ -108,3 +108,5 @@ jobs:
         run: |
           set -euo pipefail
           lua5.1 scripts/test-grimoiresync-mock.lua | node public/binch/test-grimoiresync-interop.cjs
+      - name: Verify Faith local assistant controls and opt-in with mocked WoW API
+        run: lua5.1 scripts/test-grimoiresync-faith.lua
