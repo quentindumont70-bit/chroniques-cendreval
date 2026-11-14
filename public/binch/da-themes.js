@@ -8,13 +8,13 @@ const concepts={
  'elf-druid':{culture:'Clair de lune · Verrières de feuilles',headline:'Les veilleurs du croissant',summary:'Un manuscrit de nuit bleutée. Les filigranes et les cercles lunaires dessinent une lecture plus silencieuse que les racines des plaines.',signature:'Croissant des Sentinelles',material:'Argent · verre · feuilles',role:'Veilleur des clairières',goal:'Objectif épinglé : méditer avant la prochaine métamorphose.',ornament:'☾',crest:'M43 9C20 15 20 49 43 55C16 57 6 33 18 17c7-9 16-11 25-8Z'},
  'undead-warlock':{culture:'Reliquaire · Encre obscure · Sceaux',headline:'Le livre des serments',summary:'Les reliquaires de cuivre terni veillent sur des pactes inscrits à l’encre. Une géométrie carrée et des fissures rituelles remplacent les ornements naturels.',signature:'Sceau du Pacte Voilé',material:'Encre · cuivre · violet',role:'Archiviste des pactes',goal:'Objectif épinglé : étudier le prochain rituel.',ornament:'♜',crest:'M16 16l16-9 16 9v31L32 56 16 47V16Zm16-9v49M16 16l16 11 16-11'},
  'gnome-mage':{culture:'Arcanotech · Cuivre poli · Cristal',headline:'L’atelier des étoiles',summary:'Des cadrans de précision, du verre gravé et un cristal azur : l’art de mesurer les sortilèges transforme le grimoire en console d’expérimentation.',signature:'Compas du Nexus',material:'Cuivre · cristal · verre',role:'Ingénieur des arcanes',goal:'Objectif épinglé : calibrer le prochain sort.',ornament:'◇',crest:'M32 7 57 32 32 57 7 32 32 7Zm0 11v28M18 32h28M24 24l16 16'}
-};;
+};
 const pairs=Object.freeze(Object.keys(concepts));
 const aliases=Object.freeze({
   race:{tauren:'tauren',troll:'troll',orc:'orc',elf:'elf',elfe:'elf',nightelf:'elf',mortvivant:'undead',undead:'undead',gnome:'gnome'},
   class:{druide:'druid',druid:'druid',chaman:'shaman',shaman:'shaman',guerrier:'warrior',warrior:'warrior',demoniste:'warlock',warlock:'warlock',mage:'mage'}
 });
-function normalize(value){return String(value??'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z]/g,'');}
+function normalize(value){return String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z]/g,'');}
 function findPair(race,cls){
   const r=aliases.race[normalize(race)],c=aliases.class[normalize(cls)];
   const id=r&&c?r+'-'+c:'';
