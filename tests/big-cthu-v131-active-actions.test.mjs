@@ -1,0 +1,82 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {runInNewContext} from 'node:vm';
+
+const read=name=>readFile(new URL('../big-cthu-beta/'+name,import.meta.url),'utf8');
+const K={tasks:'big-cthu-v2-demo-tasks',maison:'big-cthu-v2-maison-v1',musique:'big-cthu-v2-passions-v1',gaming:'big-cthu-v2-next-session-v1'};
+async function fixture(seed={}){
+ const code=await read('active-pulse.js');
+ const stored=new Map(Object.entries(seed)),queried=[];
+ let writes=0,network=0;
+ const el=()=>({children:[],textContent:'',className:'',href:'',
+  append(...items){this.children.push(...items)},
+  replaceChildren(...items){this.children=[...items]}});
+ const nodes=new Map(['activePulseList','activePulseCount','activePulseStatus'].map(key=>[key,el()]));
+ const document={readyState:'loading',getElementById:key=>nodes.get(key),createElement:el,addEventListener(){}};
+ const ctx={document,window:{addEventListener(){}},localStorage:{
+  getItem(key){queried.push(key);return stored.get(key)??null},
+  setItem(){writes++}
+ },JSON,Array,Object,Set,Date,fetch(){network++}};
+ assert.ok(code.endsWith('})();'));
+ runInNewContext(code.slice(0,code.lastIndexOf('})();'))+'globalThis.testCollect=collect;globalThis.testRender=render;})();',ctx,{timeout:1200});
+ return {ctx,nodes,queried,stored,writes:()=>writes,network:()=>network,collect:()=>JSON.parse(JSON.stringify(ctx.testCollect()))};
+}
+
+test('V131: retrouve les vraies priorités Maison, musique et prochaine session sans nouvelle base',async()=>{
+ const f=await fixture({
+  [K.tasks]:JSON.stringify([{id:'t',text:'Répondre à un devis fictif',done:false},{id:'done',text:'Déjà fini',done:true}]),
+  [K.maison]:JSON.stringify([{id:'a',name:'Sous-sol fictif',status:'doing',notes:'Rappeler artisan'},{id:'b',name:'Peinture fictive',status:'done'}]),
+  [K.musique]:JSON.stringify([{id:'s',mode:'musique',title:'Mix DnB fictif',note:'Régler les basses',date:'2026-11-14',status:'active'},{id:'x',mode:'muscu',title:'Donnée de sport',status:'active'}]),
+  [K.gaming]:JSON.stringify([{id:'g',game:'WoW',text:'Faire la quête fictive',done:false}])
+ });
+ const d=f.collect();
+ assert.deepEqual(d.items.map(x=>x.kind),['Priorités','Maison','Musique','Jeux']);
+ assert.deepEqual(d.items.map(x=>x.url),['#priorities','./maison.html','./musique.html','#nextSession']);
+ assert.equal(d.warnings,0);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+ assert.deepEqual(new Set(f.queried),new Set(Object.values(K)));
+});
+
+test('V131: ne remonte jamais les tâches terminées, les soins ou les entrées de sport',async()=>{
+ const f=await fixture({
+  [K.tasks]:JSON.stringify([{id:'1',text:'Terminé',done:true}]),
+  [K.musique]:JSON.stringify([{mode:'muscu',title:'Sport',status:'active'},{mode:'musique',title:'Piste finie',status:'done'}])
+ });
+ assert.equal(f.collect().items.length,0);
+ assert.equal(f.queried.some(x=>/tidel_|topaze|patient/i.test(x)),false);
+});
+
+test('V131: stockage illisible affiché sans effacer et sans fuite vers le réseau',async()=>{
+ const raw='{broken';
+ const f=await fixture({[K.maison]:raw,[K.gaming]:JSON.stringify([{game:'Elden Ring',text:'Boss fictif',done:false}])});
+ const d=f.collect();
+ assert.equal(d.warnings,1);
+ assert.equal(d.items.length,1);
+ f.ctx.testRender();
+ assert.match(f.nodes.get('activePulseStatus').textContent,/illisibles/);
+ assert.equal(f.stored.get(K.maison),raw);
+ assert.equal(f.writes(),0);
+});
+
+test('V131: titres non injectés et seulement les vrais liens de navigation',async()=>{
+ const f=await fixture({[K.tasks]:JSON.stringify([{text:'<img src=x onerror=alert(1)>',done:false}])});
+ f.ctx.testRender();
+ const card=f.nodes.get('activePulseList').children[0];
+ assert.equal(card.href,'#priorities');
+ assert.equal(card.children[1].textContent,'<img src=x onerror=alert(1)>');
+});
+
+test('V131: intégré au vrai cockpit, thèmes, mode hors ligne, Tournée isolée',async()=>{
+ const [html,sw,code,tournee,styles]=await Promise.all(['index.html','sw.js','active-pulse.js','tournee-complete.html','cockpit-themes.css'].map(read));
+ assert.match(html,/id="activePulse"/);
+ assert.match(html,/id="activePulseList"/);
+ assert.match(html,/src="\.\/active-pulse\.js"/);
+ assert.match(html,/bigcthu:changes/);
+ assert.match(styles,/\.active-pulse-list/);
+ assert.match(sw,/'\.\/active-pulse\.js'/);
+ assert.match(sw,/big-cthu-public-v2-v131/);
+ assert.doesNotMatch(code,/fetch\(|XMLHttpRequest|WebSocket|localStorage\.setItem|tidel_|Topaze/);
+ assert.doesNotMatch(tournee,/active-pulse\.js/);
+});

@@ -26,6 +26,7 @@
    localStorage.setItem(KEY,data);
    if(localStorage.getItem(KEY)!==data)throw Error('missing browser confirmation');
    rows=next;
+   if(typeof document.dispatchEvent==='function'&&typeof Event==='function')document.dispatchEvent(new Event('bigcthu:changes'));
    show('Notes conservées sur cet appareil. Elles ne constituent pas un rendez-vous.');
    return true;
   }catch(e){show('Impossible d’enregistrer sur cet appareil : aucune modification confirmée.',true);return false}

@@ -379,3 +379,14 @@ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) > .shell > .her
 #cthuCatalogToggle:hover{box-shadow:0 0 14px var(--cthu-glow)}
 #cthuCatalogToggle:focus-visible{outline:2px solid var(--cthu-accent);outline-offset:3px}
 @media(max-width:600px){.cthu-catalog-toolbar{align-items:stretch}.cthu-catalog-toolbar #cthuCatalogToggle{width:100%}}
+
+/* V131 : les prochaines actions, visibles sans ouvrir les tentacules. */
+.active-pulse-panel{margin-bottom:18px}
+.active-pulse-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
+.active-pulse-item{display:grid;gap:5px;min-height:94px;padding:13px;border:1px solid var(--cthu-line,#554679);border-radius:14px;background:var(--cthu-surface,rgba(20,18,40,.83));color:#f3efff;text-decoration:none;min-width:0}
+.active-pulse-item:hover{border-color:var(--cthu-accent);box-shadow:0 8px 24px var(--cthu-glow)}
+.active-pulse-item:focus-visible{outline:2px solid var(--cthu-accent);outline-offset:3px}
+.active-pulse-item small{font-size:11px;color:var(--cthu-accent);font-weight:800}
+.active-pulse-item strong{overflow-wrap:anywhere;font-size:14px}
+.active-pulse-next{font-size:13px;line-height:1.45;color:var(--cthu-sub);overflow-wrap:anywhere}
+@media(max-width:700px){.active-pulse-list{grid-template-columns:1fr}.active-pulse-item{min-height:66px}}
