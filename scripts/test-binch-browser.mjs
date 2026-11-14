@@ -62,8 +62,7 @@ try{
     // Mobile's animated sticky navigation interferes with automated pointer stability;
     // use direct DOM activation there. Desktop still verifies genuine pointer interaction.
     await page.locator('#binch-specs-pin').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
-    if(device.isMobile)await page.locator('#binch-specs-pin').evaluate(el=>el.click());
-    else await page.locator('#binch-specs-pin').click();
+    await page.locator('#binch-specs-pin').click({timeout:7000});
     assert.equal(await page.locator('#binch-specs-pinned').isVisible(),true);
     checks++;
     await classControl.selectOption({label:'Chasseur'});
