@@ -112,3 +112,33 @@ jobs:
         run: lua5.1 scripts/test-grimoiresync-faith.lua
       - name: Verify minimap reload and relative path dialog with mocked WoW API
         run: lua5.1 scripts/test-grimoiresync-minimap.lua
+
+  binch-integration-guard:
+    name: Protect upstream Binch files before merge
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out PR source with complete history
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Flag common file edits with upstream main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          common="$(git merge-base HEAD refs/remotes/origin/main)"
+          git diff --name-only "$common" HEAD -- public/binch/ > /tmp/binch-ours.txt
+          git diff --name-only "$common" refs/remotes/origin/main -- public/binch/ > /tmp/binch-upstream.txt
+          comm -12 <(sort -u /tmp/binch-ours.txt) <(sort -u /tmp/binch-upstream.txt) > /tmp/binch-overlap.txt
+          echo "Our Binch files changed:"
+          cat /tmp/binch-ours.txt
+          echo "Upstream Binch files changed:"
+          cat /tmp/binch-upstream.txt
+          if [[ -s /tmp/binch-overlap.txt ]]; then
+            echo "::error::Binch files modified on both branches. Review before merging."
+            cat /tmp/binch-overlap.txt
+            exit 1
+          fi
+          echo "No Binch path overlap with current main (not a substitute for merge review)."
