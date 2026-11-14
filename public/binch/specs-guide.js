@@ -55,6 +55,7 @@ const guides=[
 const urlOK=u=>/^https:\/\/(www\.)?(icy-veins\.com|wowhead\.com|armorywowforever\.com|foreverspec\.com)\//.test(u);
 function read(){try{let v=JSON.parse(localStorage.getItem(KEY));return v&&typeof v==='object'?v:{}}catch{return {}}}
 let state=read();if(!guides.some(g=>g.id===state.id))state.id='druid-feral';
+if(state.filter!=='all'&&!guides.some(g=>g.cls===state.filter))state.filter='all';
 let levelLocked=Number.isInteger(state.level)&&state.level>=10&&state.level<=60;
 function importedLevel(){
  try{const p=JSON.parse(localStorage.getItem('grimoire.hub.v3'))||{},l=JSON.parse(localStorage.getItem('grimoire.bridge.last'))||{},n=String(p.data?.pseudo||'').trim().toLowerCase(),match=n&&n===String(l.name||'').trim().toLowerCase(),level=Number(match?l.level:p.data?.level);return Number.isInteger(level)?Math.max(10,Math.min(60,level)):10}catch{return 10}
@@ -124,7 +125,7 @@ function mount(){
  $('binch-specs-pin').onclick=()=>{state.pinned=!state.pinned;persist();render()};
  $('binch-specs-pin-open').onclick=navigate;
  $('binch-specs-pin-close').onclick=()=>{state.pinned=false;persist();render()};
- document.addEventListener('grimoire:sync',render);window.addEventListener('storage',e=>{if(e.key===KEY){state=read();levelLocked=Number.isInteger(state.level)&&state.level>=10&&state.level<=60;render()}else if(e.key==='grimoire.hub.v3'||e.key==='grimoire.bridge.last')render()});
+ document.addEventListener('grimoire:sync',render);window.addEventListener('storage',e=>{if(e.key===KEY){state=read();if(!guides.some(g=>g.id===state.id))state.id='druid-feral';if(state.filter!=='all'&&!guides.some(g=>g.cls===state.filter))state.filter='all';if(state.filter!=='all'&&current().cls!==state.filter){const match=guides.find(g=>g.cls===state.filter);if(match)state.id=match.id}levelLocked=Number.isInteger(state.level)&&state.level>=10&&state.level<=60;$('binch-specs-class').value=state.filter;render()}else if(e.key==='grimoire.hub.v3'||e.key==='grimoire.bridge.last')render()});
  render();return true;
 }
 function start(){if(mount())return;const app=document.getElementById('app');if(!app)return;const observer=new MutationObserver(()=>{if(mount())observer.disconnect()});observer.observe(app,{childList:true,subtree:true});setTimeout(()=>observer.disconnect(),15000)}
