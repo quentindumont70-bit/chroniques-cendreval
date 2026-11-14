@@ -1,0 +1,17 @@
+.binch-ultimate-session{border:1px solid #5b7465;border-radius:10px;background:#0f231f;margin-top:15px;color:#e6dec8}
+.binch-ultimate-session>summary{cursor:pointer;font:700 .91rem Cinzel,Georgia,serif;color:#e8d3a5;padding:13px 15px}
+.binch-ultimate-session>summary:focus-visible{outline:2px solid #e8d3a5}
+.binch-session-inner{padding:4px 15px 15px}
+.binch-session-inner p,.binch-session-inner small{color:#b9d0c5;font-size:.76rem}
+.binch-session-controls{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0;align-items:end}
+.binch-session-controls label{display:grid;gap:5px;color:#d9cfae;font-size:.74rem}
+.binch-session-controls select{padding:10px;background:#152c25;color:#f0e0bb;border:1px solid #66856d;border-radius:7px}
+#binch-session-list{display:grid;gap:7px;margin:11px 0}
+.binch-session-check{display:flex;gap:12px;align-items:center;border:1px solid #4d6759;border-radius:8px;background:#122820;padding:10px}
+.binch-session-check>input{width:19px;height:19px;accent-color:#e9c98d}
+.binch-session-check>span{flex:1;min-width:0}
+.binch-session-check strong,.binch-session-check small{display:block}
+.binch-session-check strong{font-size:.8rem;color:#eee0b9}
+.binch-session-check small{font-size:.7rem;color:#b3c3b3}
+#binch-ultimate-briefing .binch-session-check button{min-height:31px;padding:5px 9px}
+@media(max-width:520px){.binch-session-controls>*{flex:1 1 100%}.binch-session-check{gap:7px;flex-wrap:wrap}.binch-session-check>span{flex:1 1 75%}}
