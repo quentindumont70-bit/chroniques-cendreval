@@ -87,3 +87,11 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - Nouveau job CI `binch-addon` sur Ubuntu 24.04 : `luac5.1 -p` sur les trois fichiers de `GrimoireSync.toc`, vérification des noms et de l'existence, **sans exécuter d'addon**.
 - Workflow GitHub Actions `43616735174` : **SUCCESS 4/4 jobs** — Node (41 assertions, 83 scripts contrôlés), Chromium (28 vérifications desktop/mobile), PowerShell 5.1 (2 scripts syntaxiquement valides) et Lua 5.1 (3 fichiers syntaxiquement valides).
 - Prochaine étape bloquante : installation sur Windows, test addon in-game et validation tactile sur téléphone ; ne pas déclarer ces validations accomplies.
+
+## Golipette tactile — vérification renforcée, 14 novembre
+- Le premier essai de clic Playwright mobile sur le bouton d'épinglage **a réussi** après le dégagement scroll CSS.
+- Les essais de pointeur sur la carte Farouche et la fermeture du bandeau ont ensuite révélé que `#binch-editor-toggle` (z-index 2147483000) interceptait le bouton `#binch-specs-pin-close` (bandeau anciennement z-index 8888).
+- Correctif ciblé mobile dans `specs-guide.css` : un bandeau épinglé visible reçoit `z-index:2147483002`, sans modifier les autres panneaux. CSS cache porté à `v=006`.
+- CI GitHub Actions `43617409191` : **SUCCESS 4/4**, dont 28 tests Chromium (14 desktop, 14 mobile) avec clics de pointeur natifs sur l'épinglage, la carte Farouche et la fermeture du bandeau.
+- Test mobile renforcé avec des appels Playwright `.tap()` (émulation tactile, non `DOM.click()`) sur ces trois interactions ; **run 43617514503 : SUCCESS 4/4**, 28/28 vérifications navigateur dont les `.tap()` mobiles ; 41 assertions Node, vérification Windows PowerShell et Lua 5.1 vertes.
+- **Limite** : Chromium sur viewport mobile avec événements tactiles simulés n'est pas un véritable iPhone/Android physique. Vérifier le scroll réel et les superpositions sur l'appareil avant diffusion.
