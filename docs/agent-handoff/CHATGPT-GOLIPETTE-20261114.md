@@ -126,3 +126,5 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - Ces essais sont désormais inclus dans le job `binch-addon` de GitHub Actions ; **run 43620726145 : job Lua SUCCESS**, vérification PowerShell et Node également réussies. Le smoke navigateur du même run est suivi séparément.
 - Aucune automatisation du jeu ni communication serveur, aucun test véritable WoW/Windows physique. Compatibilité de gameplay et UI réelle à confirmer dans WoW Forever.
 - Lien public permanent demandé pour chaque bilan : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ (ne contient pas les modifications de cette PR non fusionnée).
+
+- Recette de terrain mise à disposition : `docs/agent-handoff/BINCH-BETA-TEST-TERRAIN.md`, 10 étapes à réaliser par un vrai joueur sur téléphone, client WoW Forever et PC Windows ; aucune de ces étapes n'est déclarée passée.
