@@ -190,8 +190,11 @@ try{
    // PR snapshot; expose the real mounted homepage for visual-contract testing only.
    await page.evaluate(()=>{
     document.querySelector('#onboarding')?.classList.add('hidden');
-    document.querySelector('#app')?.classList.remove('hidden');
-    document.querySelector('#page-hub')?.classList.add('active');
+    const app=document.querySelector('#app');
+    if(app){app.classList.remove('hidden');app.style.setProperty('display','block','important');}
+    const hub=document.querySelector('#page-hub');
+    if(hub){hub.classList.add('active');hub.style.setProperty('display','block','important');}
+    document.querySelector('#binch-front')?.style.setProperty('display','block','important');
    });
    await page.locator('#binch-front .binch-front-hero').waitFor({state:'visible',timeout:10000});
    const result=await page.evaluate(()=>{
