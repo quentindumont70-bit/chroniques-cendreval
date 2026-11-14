@@ -165,3 +165,143 @@ html[data-cthu-theme] a:focus-visible,html[data-cthu-theme] button:focus-visible
  html[data-cthu-theme] .hero .action,
  html[data-cthu-theme] .cinema-live-pulse{transition:none!important;transform:none!important}
 }
+
+/* V155 — dashboard: staged instruments, not anonymous forms. */
+html[data-cthu-theme] .live-dashboard{
+ display:grid;grid-template-columns:repeat(12,minmax(0,1fr));
+ gap:18px;align-items:stretch;
+}
+html[data-cthu-theme] .live-dashboard > *{grid-column:1/-1;min-width:0}
+html[data-cthu-theme] .live-dashboard > #activePulse{grid-column:span 7}
+html[data-cthu-theme] .live-dashboard > #nextSession{grid-column:span 5}
+html[data-cthu-theme] .live-dashboard .panel{position:relative;isolation:isolate;overflow:hidden}
+html[data-cthu-theme] .live-dashboard .panel::before{
+ content:"";position:absolute;inset:0 0 auto;height:1px;pointer-events:none;
+ background:linear-gradient(90deg,transparent 4%,var(--cinema-ornament) 31%,var(--cinema-highlight) 62%,transparent 96%);
+ opacity:.65;
+}
+html[data-cthu-theme] .live-dashboard .panelhead{
+ gap:14px;align-items:center;padding-bottom:7px;
+}
+html[data-cthu-theme] .live-dashboard .panelhead h2{
+ line-height:1.16;text-wrap:balance;
+}
+html[data-cthu-theme] .live-dashboard .panelhead > .muted,
+html[data-cthu-theme] .live-dashboard .panelhead > .tag{
+ border:1px solid var(--cinema-edge);
+ color:var(--cinema-highlight);
+ background:rgba(7,31,51,.52);
+ padding:8px 10px;border-radius:999px;
+ white-space:nowrap;font-size:11px;
+}
+html[data-cthu-theme="organic"] .live-dashboard .panelhead > .muted,
+html[data-cthu-theme="organic"] .live-dashboard .panelhead > .tag{background:rgba(46,15,44,.58)}
+html[data-cthu-theme="medical"] .live-dashboard .panelhead > .muted,
+html[data-cthu-theme="medical"] .live-dashboard .panelhead > .tag{background:rgba(2,45,57,.6)}
+html[data-cthu-theme] .live-dashboard #activePulse{
+ background:
+  radial-gradient(ellipse at 2% 0%,var(--cinema-glimmer),transparent 47%),
+  linear-gradient(129deg,var(--cinema-soft),var(--cinema-glass));
+}
+html[data-cthu-theme] .live-dashboard #activePulse::after{
+ content:"";position:absolute;pointer-events:none;right:-50px;top:-64px;
+ width:215px;height:215px;border-radius:50%;
+ border:1px solid var(--cinema-edge);
+ box-shadow:0 0 0 24px rgba(140,205,241,.035),0 0 0 51px rgba(140,205,241,.025);
+ opacity:.55;z-index:-1;
+}
+html[data-cthu-theme] .active-pulse-list{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;
+ margin-top:17px;
+}
+html[data-cthu-theme] .active-pulse-list .active-pulse-item{
+ border:1px solid var(--cinema-edge);border-radius:16px;
+ padding:15px;min-height:104px;
+ background:linear-gradient(142deg,var(--cinema-soft),var(--cinema-glass));
+ box-shadow:inset 0 1px rgba(255,255,255,.09);
+ text-decoration:none;
+ transition:border-color .2s,transform .2s,box-shadow .2s;
+}
+html[data-cthu-theme] .active-pulse-list .active-pulse-item small{
+ color:var(--cinema-highlight);letter-spacing:.1em;text-transform:uppercase;
+ font-size:10px;font-weight:800;
+}
+html[data-cthu-theme] .active-pulse-list .active-pulse-item strong{
+ font-size:14px;line-height:1.45;overflow-wrap:anywhere;
+}
+html[data-cthu-theme] .active-pulse-list .active-pulse-item .active-pulse-next{
+ color:var(--dim);font-size:12px;line-height:1.45;
+}
+html[data-cthu-theme] .active-pulse-list > p.muted{
+ grid-column:1/-1;max-width:none;padding:25px;
+ border:1px dashed var(--cinema-edge);border-radius:16px;
+ background:rgba(7,24,44,.38);text-align:center;
+}
+@media(hover:hover) and (pointer:fine){
+ html[data-cthu-theme] .active-pulse-list .active-pulse-item:hover{
+  transform:translateY(-3px);border-color:var(--cinema-highlight);
+  box-shadow:0 14px 36px var(--cinema-shadow);
+ }
+}
+html[data-cthu-theme] #nextSession{
+ background:
+ radial-gradient(circle at 93% 2%,var(--cinema-glimmer),transparent 48%),
+ linear-gradient(120deg,var(--cinema-soft),var(--cinema-glass));
+}
+html[data-cthu-theme] #nextSession .ns-form{
+ display:grid;grid-template-columns:1fr;gap:10px;
+}
+html[data-cthu-theme] #nextSession .ns-form label{
+ display:grid;gap:6px;font-size:12px;color:var(--dim);
+}
+html[data-cthu-theme] #nextSession .ns-form input{
+ border:1px solid var(--cinema-edge);background:rgba(1,14,30,.62);
+ border-radius:12px;padding:12px;min-height:44px;color:var(--text);
+}
+html[data-cthu-theme] #nextSession .ns-form button{
+ border-radius:12px;min-height:47px;background:var(--cinema-highlight);
+ color:#062235;border:0;font-weight:800;
+}
+html[data-cthu-theme="organic"] #nextSession .ns-form button{color:#291126}
+html[data-cthu-theme="medical"] #nextSession .ns-form button{color:#052d38}
+html[data-cthu-theme] .live-dashboard #radar .cthu-radar-link{
+ border:1px solid var(--cinema-edge);
+ background:linear-gradient(110deg,var(--cinema-soft),var(--cinema-glass));
+ margin:8px 0;min-height:56px;border-radius:13px;
+}
+html[data-cthu-theme] .live-dashboard #radar .cthu-radar-link:hover{
+ border-color:var(--cinema-highlight);
+}
+html[data-cthu-theme] .live-dashboard #priorities .taskform{
+ background:rgba(1,15,28,.32);border-radius:16px;padding:7px;
+ border:1px solid var(--cinema-edge);
+}
+html[data-cthu-theme] .live-dashboard #priorities .taskform input{
+ background:transparent;border:0;min-height:43px;
+}
+html[data-cthu-theme] .live-dashboard #priorities .taskform button{
+ min-height:43px;border-radius:11px;background:var(--cinema-highlight);color:#062235;
+}
+html[data-cthu-theme] .live-dashboard #fastAccess .quick .tag{
+ min-height:40px;border-color:var(--cinema-edge);background:var(--cinema-soft);
+}
+html[data-cthu-theme] .live-dashboard #fastAccess .quick .tag:hover{border-color:var(--cinema-highlight)}
+html[data-cthu-theme] .live-dashboard .cthu-legacy-details{opacity:.88}
+html[data-cthu-theme] .live-dashboard .cthu-legacy-details summary{
+ min-height:44px;cursor:pointer;
+}
+@media(max-width:1040px){
+ html[data-cthu-theme] .live-dashboard > #activePulse,
+ html[data-cthu-theme] .live-dashboard > #nextSession{grid-column:1/-1}
+}
+@media(max-width:760px){
+ html[data-cthu-theme] .live-dashboard{grid-template-columns:1fr;gap:13px}
+ html[data-cthu-theme] .live-dashboard > *{grid-column:1}
+ html[data-cthu-theme] .active-pulse-list{grid-template-columns:1fr}
+ html[data-cthu-theme] .live-dashboard .panelhead{align-items:flex-start;flex-wrap:wrap}
+ html[data-cthu-theme] .live-dashboard .panelhead > .muted{white-space:normal}
+ html[data-cthu-theme] #nextSession .ns-form button{min-height:50px}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-cthu-theme] .active-pulse-list .active-pulse-item{transition:none!important;transform:none!important}
+}
