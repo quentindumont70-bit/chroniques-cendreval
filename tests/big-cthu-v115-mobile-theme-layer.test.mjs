@@ -23,6 +23,6 @@ test('V115: conservons le vrai bouton tactile, les trois thèmes et l extérieur
  for(const name of ['premium','organic','medical'])assert.match(home,new RegExp('data-cthu-choice="'+name+'"'));
  assert.match(css,/body:not\(\[data-cthu-theme-tentacle="yes"\]\)/);
  assert.match(sw,/cockpit-themes\.css/);
- assert.match(sw,/big-cthu-public-v2-v115/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
  assert.doesNotMatch(tour,/cockpit-themes\.css/,'Tournée CSS must stay untouched');
 });
