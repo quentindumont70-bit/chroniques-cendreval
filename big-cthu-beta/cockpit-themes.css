@@ -430,3 +430,21 @@ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) > .shell > .her
 
 /* V135 — zones tactiles des rappels de prochaine session, sans impact sur Tournée. */
 @media(max-width:700px){.ns-actions button{min-height:48px;touch-action:manipulation}.cthu-mobile-dock a{touch-action:manipulation}.active-pulse-item{min-height:72px}}
+
+/* V136 — finitions des trois ambiances sur le sélecteur, sans changement de données. */
+.cthu-theme-choice{position:relative;transition:border-color .18s ease,background-color .18s ease,box-shadow .18s ease}
+.cthu-theme-choice[aria-pressed="true"]{
+ border-color:var(--cthu-accent);
+ background:linear-gradient(110deg,var(--cthu-glow),var(--cthu-surface));
+ box-shadow:inset 3px 0 var(--cthu-accent),0 0 0 1px var(--cthu-glow);
+}
+.cthu-theme-choice[aria-pressed="true"] strong{color:var(--cthu-accent)}
+.cthu-theme-choice:focus-visible{outline:3px solid var(--cthu-accent);outline-offset:2px}
+.cthu-theme-swatch{box-shadow:inset 0 1px 2px rgba(255,255,255,.2),0 4px 14px rgba(0,0,0,.24)}
+.cthu-theme-choice[aria-pressed="true"] .cthu-theme-swatch{box-shadow:0 0 0 2px var(--cthu-accent),0 0 20px var(--cthu-glow)}
+@media(max-width:700px){
+ #cthuThemeMenu{padding:14px}
+ .cthu-theme-choice{min-height:64px;gap:12px}
+ .cthu-theme-choice small{font-size:12px;line-height:1.4}
+}
+@media(prefers-reduced-motion:reduce){.cthu-theme-choice{transition:none!important}}
