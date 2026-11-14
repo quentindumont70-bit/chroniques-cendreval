@@ -42,6 +42,17 @@ for(const id of ['neutral',...expected.slice(1)])assert.ok(tokens.includes('#sta
 assert.doesNotMatch(html,/#stage\[data-pair=troll-shaman\]/,'pair tokens must not be duplicated inline');
 assert.match(tokens,/--texture:/);
 assert.match(tokens,/--shape:/);
+const scenery=readFileSync(new URL('../public/binch/da-scenes.css',import.meta.url),'utf8');
+assert.match(html,/<link rel="stylesheet" href="\.\/da-scenes\.css">/);
+assert.match(html,/<div class="binch-da-scenery" aria-hidden="true">/);
+for(const layer of ['sky','orb','range','foreground','mist'])assert.ok(html.includes('binch-da-scenery__'+layer),'missing scene layer '+layer);
+for(const id of ['neutral',...expected.slice(1)])assert.ok(scenery.includes('#stage[data-pair='+id+']'),'missing scene '+id);
+assert.match(scenery,/#stage \ .stage-grid|#stage \.stage-grid/);
+assert.match(scenery,/@media\(max-width:820px\)/);
+assert.match(scenery,/@media\(prefers-reduced-motion:reduce\)/);
+assert.match(scenery,/#stage\.reduced/);
+assert.doesNotMatch(scenery,/(?:url\(|@import)/,'scenery must not fetch external content');
+
 assert.match(html,/id="neutral" aria-pressed="false"/);
 assert.match(html,/id==='neutral'\?themes\.neutral:themes\.resolve\(id\)/);
 
