@@ -1,0 +1,167 @@
+/* Big Cthu — CINEMA 2.0 / V154
+   Pure visual layer. No JS, storage, Tournée or data change.
+   Loaded after the pre-existing cinematic and functional CSS.
+*/
+html[data-cthu-theme]{
+ --cinema-highlight:#b4e8ff;--cinema-warm:#ffcfa2;
+ --cinema-edge:rgba(163,213,246,.38);
+ --cinema-glass:rgba(5,22,42,.73);
+ --cinema-soft:rgba(11,36,61,.61);
+ --cinema-shadow:rgba(0,8,23,.5);
+ --cinema-glimmer:rgba(111,205,253,.25);
+ --cinema-ornament:rgba(255,213,164,.75);
+ --cinema-image-grading:saturate(.93) contrast(1.06) brightness(.9);
+}
+html[data-cthu-theme="organic"]{
+ --cinema-highlight:#f5b7e8;--cinema-warm:#ffce97;
+ --cinema-edge:rgba(249,178,196,.37);
+ --cinema-glass:rgba(34,9,39,.77);
+ --cinema-soft:rgba(53,19,52,.69);
+ --cinema-shadow:rgba(22,2,30,.6);
+ --cinema-glimmer:rgba(234,119,210,.22);
+ --cinema-ornament:rgba(250,195,143,.78);
+ --cinema-image-grading:hue-rotate(297deg) saturate(.82) contrast(1.18) brightness(.62);
+}
+html[data-cthu-theme="medical"]{
+ --cinema-highlight:#8afaff;--cinema-warm:#b2f1ff;
+ --cinema-edge:rgba(87,228,242,.45);
+ --cinema-glass:rgba(0,25,37,.79);
+ --cinema-soft:rgba(0,44,59,.63);
+ --cinema-shadow:rgba(0,14,23,.6);
+ --cinema-glimmer:rgba(52,235,244,.24);
+ --cinema-ornament:rgba(123,249,254,.79);
+ --cinema-image-grading:brightness(.55) saturate(1.1);
+}
+html[data-cthu-theme] body{font-synthesis:none;-webkit-font-smoothing:antialiased}
+html[data-cthu-theme] body .page:before{
+ filter:var(--cinema-image-grading);
+}
+html[data-cthu-theme] .page::after{
+ background-image:
+  linear-gradient(180deg,rgba(1,10,21,.48) 0%,rgba(2,13,27,.28) 25%,rgba(2,12,24,.61) 68%,rgba(1,9,20,.84) 100%),
+  radial-gradient(ellipse at 78% 18%,var(--cinema-glimmer),transparent 42%);
+}
+html[data-cthu-theme="organic"] .page::after{
+ background-image:linear-gradient(115deg,rgba(20,3,24,.91),rgba(22,3,29,.58) 60%,rgba(19,7,27,.62)),
+ radial-gradient(ellipse at 80% 24%,var(--cinema-glimmer),transparent 50%);
+}
+html[data-cthu-theme="medical"] .page::after{
+ background-image:linear-gradient(112deg,rgba(0,12,22,.88),rgba(0,25,35,.51) 64%,rgba(0,12,24,.68)),
+ radial-gradient(ellipse at 84% 24%,var(--cinema-glimmer),transparent 46%);
+}
+/* Chrome: carefully layered contours rather than opaque boxes. */
+html[data-cthu-theme] .topinner{
+ border:1px solid var(--cinema-edge);
+ background:linear-gradient(115deg,var(--cinema-glass),var(--cinema-soft));
+ box-shadow:0 22px 70px var(--cinema-shadow),inset 0 1px rgba(255,255,255,.16);
+ -webkit-backdrop-filter:blur(22px) saturate(1.12);
+ backdrop-filter:blur(22px) saturate(1.12);
+}
+html[data-cthu-theme] .brandmark{
+ border-color:var(--cinema-edge);
+ background:radial-gradient(circle at 30% 20%,var(--cinema-glimmer),var(--cinema-glass) 70%);
+ box-shadow:0 0 22px var(--cinema-glimmer),inset 0 1px rgba(255,255,255,.12);
+}
+html[data-cthu-theme] .brand strong{letter-spacing:.075em}
+html[data-cthu-theme] .hero{
+ border-color:var(--cinema-edge);
+ box-shadow:0 38px 110px var(--cinema-shadow),inset 0 1px rgba(255,255,255,.21);
+}
+html[data-cthu-theme] .hero .scene-stamp{
+ filter:drop-shadow(0 4px 22px var(--cinema-shadow));
+}
+html[data-cthu-theme] .hero h1{
+ text-shadow:0 7px 34px rgba(0,8,23,.38);
+ text-wrap:balance;
+}
+html[data-cthu-theme] .hero h1 em{
+ background:linear-gradient(110deg,#fff 0%,var(--cinema-highlight) 58%,var(--cinema-warm) 100%);
+ -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+html[data-cthu-theme] .hero .subtitle{
+ max-width:610px;text-shadow:0 2px 16px rgba(0,7,19,.67);
+}
+html[data-cthu-theme] .hero .action.primary{
+ background:linear-gradient(125deg,var(--cinema-highlight),#e8faff);
+ color:#09233b;box-shadow:0 12px 32px var(--cinema-shadow),0 0 32px var(--cinema-glimmer);
+ border:1px solid rgba(255,255,255,.6);
+}
+html[data-cthu-theme="organic"] .hero .action.primary{
+ background:linear-gradient(125deg,#ffc6a0,#f2b2e7);color:#30102a;
+}
+html[data-cthu-theme="medical"] .hero .action.primary{
+ background:linear-gradient(125deg,#a6fcff,#63dff2);color:#002833;
+}
+html[data-cthu-theme] .hero .action,
+html[data-cthu-theme] .cinema-live-pulse{
+ transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,background-color .22s ease;
+}
+@media(hover:hover) and (pointer:fine){
+ html[data-cthu-theme] .hero .action:hover,
+ html[data-cthu-theme] .cinema-live-pulse:hover{transform:translateY(-2px)}
+}
+/* Module constellation: glass and subtly illuminated corners. */
+html[data-cthu-theme] .panel-grid{gap:17px}
+html[data-cthu-theme] .module{
+ border:1px solid var(--cinema-edge);
+ border-radius:25px;
+ background:
+  radial-gradient(ellipse at 95% 0%,var(--cinema-glimmer),transparent 58%),
+  linear-gradient(135deg,var(--cinema-soft),var(--cinema-glass));
+ box-shadow:0 22px 52px var(--cinema-shadow),inset 0 1px rgba(255,255,255,.14);
+ -webkit-backdrop-filter:blur(20px) saturate(1.15);
+ backdrop-filter:blur(20px) saturate(1.15);
+ transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
+}
+html[data-cthu-theme] .module::before{
+ content:"";position:absolute;inset:1px;pointer-events:none;border-radius:inherit;
+ background:linear-gradient(140deg,rgba(255,255,255,.105),transparent 36%);
+}
+html[data-cthu-theme] .module h3{position:relative;letter-spacing:-.02em}
+html[data-cthu-theme] .module .module-icon{
+ position:relative;text-shadow:0 2px 20px var(--cinema-glimmer);
+}
+html[data-cthu-theme] .module .open{
+ color:var(--cinema-highlight);
+}
+@media(hover:hover) and (pointer:fine){
+ html[data-cthu-theme] .module:hover{
+  transform:translateY(-5px);
+  border-color:var(--cinema-highlight);
+  box-shadow:0 29px 66px var(--cinema-shadow),0 0 32px var(--cinema-glimmer),inset 0 1px rgba(255,255,255,.18);
+ }
+}
+/* Functional panels follow the art direction while retaining all original forms. */
+html[data-cthu-theme] .live-dashboard .panel,
+html[data-cthu-theme] .live-dashboard .tournee-front,
+html[data-cthu-theme] .live-dashboard .cinema-tournee-details{
+ background:linear-gradient(130deg,var(--cinema-soft),var(--cinema-glass));
+ border-color:var(--cinema-edge);
+ box-shadow:0 20px 55px var(--cinema-shadow),inset 0 1px rgba(255,255,255,.11);
+}
+html[data-cthu-theme] .live-dashboard .panel h2{
+ font-size:clamp(21px,2vw,29px);letter-spacing:-.025em;
+}
+html[data-cthu-theme] .live-dashboard .active-pulse-item{
+ border-color:var(--cinema-edge);background:var(--cinema-soft);
+}
+html[data-cthu-theme] .live-dashboard .active-pulse-item:hover{
+ border-color:var(--cinema-highlight);
+}
+html[data-cthu-theme] .captionbar{border-color:var(--cinema-edge)}
+html[data-cthu-theme] .section-head h2{letter-spacing:-.025em}
+html[data-cthu-theme] a:focus-visible,html[data-cthu-theme] button:focus-visible{
+ outline:3px solid var(--cinema-highlight);outline-offset:3px;
+}
+@media(max-width:760px){
+ html[data-cthu-theme] .panel-grid{gap:11px}
+ html[data-cthu-theme] .module{border-radius:18px}
+ html[data-cthu-theme] .hero h1{font-size:clamp(42px,11vw,66px)}
+ html[data-cthu-theme] .hero .action{min-height:48px}
+ html[data-cthu-theme] .topinner{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-cthu-theme] .module,
+ html[data-cthu-theme] .hero .action,
+ html[data-cthu-theme] .cinema-live-pulse{transition:none!important;transform:none!important}
+}
