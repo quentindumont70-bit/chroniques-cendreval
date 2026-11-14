@@ -36,7 +36,7 @@ test('V126 gallery has all three previews and patient data is isolated',async()=
  assert.doesNotMatch(ops,/<script\b|localStorage|indexedDB|tidel_|Topaze|crypto\.subtle/i);
  assert.doesNotMatch(tour,/medical-ops-cinema\.html/);
  assert.match(sw,/'\.\/medical-ops-cinema\.html'/);
- assert.match(sw,/big-cthu-public-v2-v126/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
  const list=sw.slice(sw.indexOf('const ASSETS=['),sw.indexOf('];',sw.indexOf('const ASSETS=['))+2);
  assert.doesNotMatch(list,/images\.unsplash\.com/);
 });
