@@ -235,9 +235,12 @@ if(present('specs-guide.js')) {
  const branch=specs.match(/if\(g\.id!=='druid-feral'\)\{([\s\S]*?)\n \}/)?.[1]||'';
  if(!branch.includes('renderPinned();return;'))
   fail('Specs : le bandeau épinglé reste périmé pour les autres classes.');
+ if(!specs.includes("const first=guides.find(g=>g.cls===state.filter)") ||
+    !specs.includes("if(first)state.id=first.id"))
+  fail('Specs : filtre de classe non synchronisé avec le profil affiché.');
  if(!branch.includes("'binch-specs-pin-state'"))
   fail('Specs : statut d’épinglage non rafraîchi hors farouche.');
- if(!portal.includes('./specs-guide.js?v=004'))
+ if(!portal.includes('./specs-guide.js?v=005'))
   fail('Specs : cache non invalidé pour le correctif du bandeau.');
 }
 for(const warning of warnings)console.warn('AVERTISSEMENT : '+warning);
