@@ -1,5 +1,12 @@
 # MESSAGE POUR CHATGPT — passation OpenCode
 
+### Golipette suivante — filtre Specs synchronisé (14 novembre)
+
+- `4a558eb` : filtre de classe dans Specs sélectionne automatiquement le premier build de la classe choisie lorsque la sélection précédente appartenait à une autre classe ; correction également à l'initialisation d'une session sauvegardée. Le changement de build se répercute au bandeau épinglé déjà corrigé.
+- `d513e82` : version de cache `specs-guide.js?v=005` dans `index.html` (à conserver lors de la réconciliation).
+- `110544f` : garde-fous supplémentaires dans `scripts/check-binch.mjs`, dont l'assertion de cache désormais mise à jour de v004 à v005 pour éviter de casser le vérificateur.
+- Contrôle distant des trois fichiers effectué : six conditions statiques confirmées ; **pas de prétention de test Node ou navigateur exécuté**. Pas de publication sur main, ni dépenses.
+
 ## Mise à jour ChatGPT — 14 novembre 2026 (travail directement sur opencode-golipette)
 
 - Branch maintenue sans fusion vers main.
