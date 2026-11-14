@@ -259,9 +259,17 @@ SLASH_GRIMOIRESYNC1="/grimoire"
 SlashCmdList.GRIMOIRESYNC=function(message)
   message=(message or ""):lower():match("^%s*(.-)%s*$")
   if message=="scan" then startAuctionScan(); return end
+  if message=="minimap reset" then
+    if type(GrimoireSyncResetMinimap)=="function" and GrimoireSyncResetMinimap() then
+      print("|cffd9b56cGrimoireSync|r : position de la mini-carte restauree. /reload pour enregistrer.")
+    else
+      print("|cffff7777GrimoireSync|r : bouton de mini-carte indisponible.")
+    end
+    return
+  end
   capture()
   if message=="debug" then print("GrimoireSync schema="..tostring(GrimoireSyncDB.schema).." quetes="..tostring((function()local n=0 for _ in pairs(GrimoireSyncDB.completedTrackedQuests or {}) do n=n+1 end return n end)()).." API_QUETES="..tostring(GrimoireSyncDB.questAPI).." JOURNAL="..tostring(GrimoireSyncDB.questLogAPI).." ACTIVES="..tostring(#(GrimoireSyncDB.activeQuests or {})).." inventaire="..tostring(#(GrimoireSyncDB.inventory or {})).." API_AH="..tostring(C_AuctionHouse and C_AuctionHouse.ReplicateItems~=nil).." XP="..tostring(safe(UnitXP,"player")).."/"..tostring(safe(UnitXPMax,"player")).." statut="..tostring(GrimoireSyncDB.xpStatus or "capture initiale")); return end
   print("|cffd9b56cGrimoireSync|r : "..tostring(GrimoireSyncDB.lastCharacter)..", "..#(GrimoireSyncDB.inventory or {}).." piles dans les sacs.")
-  print("|cffd9b56cGrimoireSync|r : ouvre l'hotel des ventes puis tape |cffffffff/grimoire scan|r. /reload enregistre les donnees.")
+  print("|cffd9b56cGrimoireSync|r : AH : |cffffffff/grimoire scan|r · livre mini-carte : |cffffffff/grimoire minimap reset|r · /reload sauvegarde.")
 end
 

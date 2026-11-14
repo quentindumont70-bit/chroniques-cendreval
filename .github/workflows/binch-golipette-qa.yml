@@ -1,0 +1,151 @@
+name: La Binch — Golipette QA
+
+on:
+  pull_request:
+    paths:
+      - 'public/binch/**'
+      - 'scripts/check-binch.mjs'
+      - 'scripts/test-binch-golipette.mjs'
+      - '.github/workflows/binch-golipette-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: binch-golipette-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  binch-qa:
+    name: Specs, AH, bridge and static validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run Binch regression suite
+        run: node scripts/test-binch-golipette.mjs
+
+  binch-browser:
+    name: Browser smoke — desktop and mobile
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated Playwright
+        run: |
+          npm install --prefix /tmp/binch-browser --no-save --no-package-lock --no-audit --no-fund playwright@1.58.2
+          /tmp/binch-browser/node_modules/.bin/playwright install --with-deps chromium
+      - name: Smoke test Specs in Chromium
+        env:
+          BINCH_PLAYWRIGHT_PATH: /tmp/binch-browser/node_modules/playwright/index.mjs
+        run: node scripts/test-binch-browser.mjs
+
+  binch-windows:
+    name: Windows PowerShell installer syntax
+    runs-on: windows-2025
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse Windows installer and local companion without executing them
+        shell: powershell
+        run: |
+          $files = @(
+            'public/binch/Installer-La-Binch.ps1',
+            'public/binch/Compagnon-La-Binch.ps1'
+          )
+          foreach ($file in $files) {
+            if (-not (Test-Path -LiteralPath $file)) { throw "Missing: $file" }
+            $tokens = $null
+            $errors = $null
+            $full = (Resolve-Path -LiteralPath $file).Path
+            [void][System.Management.Automation.Language.Parser]::ParseFile($full, [ref]$tokens, [ref]$errors)
+            if ($errors.Count -gt 0) {
+              foreach ($error in $errors) { Write-Error "$file : $($error.Message)" }
+              throw "PowerShell syntax failed: $file"
+            }
+            Write-Host "PowerShell 5.1 syntax OK: $file"
+          }
+
+  binch-addon:
+    name: GrimoireSync Lua 5.1 preflight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lua 5.1 compiler
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lua5.1
+      - name: Check addon manifest and Lua syntax without launching WoW
+        shell: bash
+        run: |
+          set -euo pipefail
+          addon=public/binch/addon/GrimoireSync
+          test -f "$addon/GrimoireSync.toc"
+          count=0
+          while IFS= read -r line || [[ -n "$line" ]]; do
+            line="${line%$'\r'}"
+            [[ -z "$line" || "$line" == '##'* ]] && continue
+            [[ "$line" =~ ^[A-Za-z0-9_-]+[.]lua$ ]] || { echo "Unexpected TOC entry: $line"; exit 1; }
+            test -f "$addon/$line" || { echo "Missing Lua file: $line"; exit 1; }
+            luac5.1 -p "$addon/$line"
+            echo "Lua 5.1 syntax OK: $line"
+            count=$((count+1))
+          done < "$addon/GrimoireSync.toc"
+          test "$count" -eq 3 || { echo "Expected three Lua files, got $count"; exit 1; }
+          echo "GrimoireSync: manifest and three Lua files passed preflight"
+          version="$(sed -n 's/^## Version: //p' "$addon/GrimoireSync.toc" | tr -d '\r')"
+          [[ "$version" =~ ^[0-9]+[.][0-9]+[.][0-9]+$ ]] || { echo "Invalid addon version: $version"; exit 1; }
+          installer=public/binch/Installer-La-Binch.ps1
+          grep -Fq "'Mise a jour reussie !' '$version'" "$installer" || { echo "Installer displays a mismatched addon version"; exit 1; }
+          escapedVersion="${version//./\\.}"
+          grep -Fq "## Version: $escapedVersion" "$installer" || { echo "Installer validates an obsolete addon version"; exit 1; }
+          echo "Windows installer and WoW addon both target GrimoireSync $version"
+      - name: Validate real Lua export against browser parser
+        shell: bash
+        run: |
+          set -euo pipefail
+          lua5.1 scripts/test-grimoiresync-mock.lua | node public/binch/test-grimoiresync-interop.cjs
+      - name: Verify Faith local assistant controls and opt-in with mocked WoW API
+        run: lua5.1 scripts/test-grimoiresync-faith.lua
+      - name: Verify minimap reload and relative path dialog with mocked WoW API
+        run: lua5.1 scripts/test-grimoiresync-minimap.lua
+
+  binch-integration-guard:
+    name: Protect upstream Binch files before merge
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out PR source with complete history
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Flag common file edits with upstream main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          common="$(git merge-base HEAD refs/remotes/origin/main)"
+          git diff --name-only "$common" HEAD -- public/binch/ scripts/check-binch.mjs scripts/test-binch-golipette.mjs scripts/test-binch-browser.mjs scripts/test-grimoiresync-mock.lua scripts/test-grimoiresync-faith.lua scripts/test-grimoiresync-minimap.lua .github/workflows/binch-golipette-qa.yml > /tmp/binch-ours.txt
+          git diff --name-only "$common" refs/remotes/origin/main -- public/binch/ scripts/check-binch.mjs scripts/test-binch-golipette.mjs scripts/test-binch-browser.mjs scripts/test-grimoiresync-mock.lua scripts/test-grimoiresync-faith.lua scripts/test-grimoiresync-minimap.lua .github/workflows/binch-golipette-qa.yml > /tmp/binch-upstream.txt
+          comm -12 <(sort -u /tmp/binch-ours.txt) <(sort -u /tmp/binch-upstream.txt) > /tmp/binch-overlap.txt
+          echo "Our Binch files changed:"
+          cat /tmp/binch-ours.txt
+          echo "Upstream Binch files changed:"
+          cat /tmp/binch-upstream.txt
+          if [[ -s /tmp/binch-overlap.txt ]]; then
+            echo "::error::Binch files modified on both branches. Review before merging."
+            cat /tmp/binch-overlap.txt
+            exit 1
+          fi
+          echo "No overlapping Binch code/test/workflow paths with current main (not a substitute for merge review)."

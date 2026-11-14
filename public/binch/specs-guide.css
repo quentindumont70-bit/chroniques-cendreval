@@ -28,11 +28,20 @@
 #binch-specs-route{margin-top:14px}
 .binch-specs-progress{padding:13px 16px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;border-radius:10px;background:#413825;border:1px solid #aa915c;color:#f5e0a6}
 .binch-specs-progress span{font-size:.82rem;overflow-wrap:anywhere}
+.binch-specs-phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:8px;margin-top:12px}
+.binch-specs-phase{padding:11px 13px;border:1px solid #5b6a60;border-radius:9px;background:#152622}
+.binch-specs-phase strong{display:block;font-size:.8rem;color:#f2ddab;margin-bottom:4px}
+.binch-specs-phase p{font-size:.72rem;color:#bccfc4;margin:0}
+.binch-specs-phase.is-active{border-color:#e5ac69;background:#53412d;box-shadow:inset 0 0 0 1px #a27e53}
+.binch-specs-phase.is-done{border-color:#649782;background:#1c3932}
+.binch-specs-phase.is-future{opacity:.76}
 .binch-specs-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,285px),1fr));gap:8px;margin-top:12px}
 .binch-specs-step{display:flex;gap:12px;align-items:center;padding:11px 12px;border:1px solid #637064;border-radius:9px;background:#1b2d31;min-height:68px}
 .binch-specs-step.is-done{border-color:#649782;background:#1c3932}
 .binch-specs-step.is-current{border-color:#e5ac69;background:#53412d;box-shadow:inset 0 0 0 1px #a27e53}
+.binch-specs-step.is-next{border-color:#f0c469;background:#4d4023;box-shadow:inset 0 0 0 1px #c8a05a}
 .binch-specs-step.is-future{opacity:.76}
+.binch-specs-tip{font-size:.7rem;color:#a9c0b3;margin:4px 0 0;line-height:1.45}
 .binch-specs-range{font-size:.7rem;color:#d7bf90;border:1px solid #837253;border-radius:6px;min-width:49px;text-align:center;padding:5px}
 .binch-specs-step>div{min-width:0;flex:1}
 .binch-specs-step strong,.binch-specs-step small{display:block;overflow-wrap:anywhere}
@@ -46,3 +55,13 @@
 #binch-specs-pinned button:focus-visible{outline:3px solid #fff1ba;outline-offset:2px}
 @media(max-width:680px){.binch-specs-head>button{width:100%}.binch-specs-toolbar>*{flex:1 1 130px}#binch-specs-pinned{left:8px;right:8px;bottom:calc(68px + env(safe-area-inset-bottom));max-width:none}#binch-specs-pinned strong{font-size:.7rem}}
 @media(prefers-reduced-motion:reduce){#binch-specs *,#binch-specs-pinned *{transition:none!important;animation:none!important}}
+
+/* Mobile sticky tabs: keep Specs interactive targets out from under the nav. */
+@media(max-width:680px){
+ #page-specs{scroll-margin-top:105px}
+ #binch-specs :is(button,input,select,a){scroll-margin-top:110px;scroll-margin-bottom:95px}
+ #binch-specs .binch-spec-card{scroll-margin-top:110px;scroll-margin-bottom:95px}
+ #binch-specs{padding-bottom:75px}
+ /* An active pinned build must remain usable above the floating interface editor. */
+ #binch-specs-pinned:not([hidden]){z-index:2147483002}
+}

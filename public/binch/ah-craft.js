@@ -12,7 +12,7 @@ const scope=()=>{const x=read('binch.ah.scope.v1',null);return x?.realm&&['Horde
 const priceOf=item=>{
  const target=norm(item),marketData=market(),marketScope=scope();
  if(marketScope==='legacy')return null; // unknown realm or faction must never become a quote
- const matches=Array.isArray(marketData.items)?marketData.items.filter(x=>x.scope===marketScope&&x.name&&norm(x.name)===target&&Number.isSafeInteger(Number(x.last))&&Number(x.last)>0&&Number.isFinite(Date.parse(x.observedAt))):[];
+ const matches=Array.isArray(marketData.items)?marketData.items.filter(x=>x.scope===marketScope&&x.name&&norm(x.name)===target&&Number.isSafeInteger(Number(x.last))&&Number(x.last)>0&&Number.isFinite(Date.parse(x.observedAt))&&Date.parse(x.observedAt)<=Date.now()):[];
  matches.sort((a,b)=>Date.parse(b.observedAt)-Date.parse(a.observedAt));
  if(matches.length)return matches[0];
  const x=read('binch.ah.scope.v1',null),legacy=read('binch.market.v1',{});
@@ -26,14 +26,17 @@ const gold=n=>{const x=Number(String(n).replace(',','.'));return Number.isFinite
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(recipes.slice(-100)))}catch{}};
 function ingredientRows(){const list=$('binch-ah-craft-ingredients');if(!list)return;list.innerHTML=Array.from({length:6},(_,i)=>'<label>Composant '+(i+1)+'<input data-craft-name="'+i+'" maxlength="90" placeholder="Nom exact"></label><label>Quantité<input data-craft-count="'+i+'" type="number" min="1" max="99999" value="1"></label>').join('')}
 function estimate(recipe){
- const m=market(),fee=Math.max(0,Math.min(20,Number(m.fee??5))),rows=recipe.ingredients.map(x=>{
+ const m=market(),rawFee=Number(m.fee??5),fee=Number.isFinite(rawFee)?Math.max(0,Math.min(20,rawFee)):5,rows=recipe.ingredients.map(x=>{
   const v=priceOf(x.name),age=v?.observedAt?Date.now()-new Date(v.observedAt):Infinity;
   const price=Number(v?.last);
   return {...x,price:Number.isSafeInteger(price)&&price>0?price:null,old:!Number.isFinite(age)||age<0||age>24*60*60*1000,source:v?.source||'',at:v?.observedAt||''};
  });
- const known=rows.every(x=>x.price!=null),cost=known?rows.reduce((n,x)=>n+x.price*x.qty,0):null;
- const output=priceOf(recipe.output),raw=Number(output?.last),sale=Number.isSafeInteger(raw)&&raw>0?raw:null,yieldCount=recipe.yield||1;
- const net=sale==null?null:Math.floor(sale*yieldCount*(1-fee/100));
+ const known=rows.every(x=>x.price!=null&&Number.isSafeInteger(x.qty)&&x.qty>0);
+ let cost=known?0:null;
+ if(known)for(const x of rows){const line=x.price*x.qty;if(!Number.isSafeInteger(line)||!Number.isSafeInteger(cost+line)){cost=null;break}cost+=line}
+ const output=priceOf(recipe.output),raw=Number(output?.last),sale=Number.isSafeInteger(raw)&&raw>0?raw:null,yieldCount=Number(recipe.yield);
+ const gross=sale!=null&&Number.isSafeInteger(yieldCount)&&yieldCount>0?sale*yieldCount:null;
+ const net=gross!=null&&Number.isSafeInteger(gross)?Math.floor(gross*(1-fee/100)):null;
  const margin=net!=null&&cost!=null?net-cost:null;
  const componentsNet=cost==null?null:Math.floor(cost*(1-fee/100));
  const advantage=net==null||componentsNet==null?null:net-componentsNet;
@@ -45,7 +48,7 @@ function draw(){
  $('binch-ah-craft-count').textContent=recipes.length+' recette(s) personnelles · calcul à partir du carnet de prix de La Binch';
  const rows=recipes.slice().reverse();
  $('binch-ah-craft-list').innerHTML=rows.length?rows.map(r=>{
-  const x=estimate(r),sign=x.advantage==null?'Comparaison incomplète':x.advantage>0?'Fabriquer : revente théorique supérieure aux composants':x.advantage<0?'Revendre les composants : valeur nette théorique supérieure':'Deux voies équivalentes hors coûts supplémentaires';
+  const x=estimate(r),sign=x.advantage==null?'Comparaison incomplète':x.stale?'Comparaison indicative : relevés anciens ou incomplets':x.advantage>0?'Fabriquer : revente théorique supérieure aux composants':x.advantage<0?'Revendre les composants : valeur nette théorique supérieure':'Deux voies équivalentes hors coûts supplémentaires';
   return '<article class="binch-ah-craft-result"><div><strong>'+esc(r.output)+'</strong><small>'+esc(r.profession||'Métier non précisé')+' · production × '+r.yield+' · '+r.ingredients.length+' composant(s)</small><small>Prix de vente observé : '+(x.sale?money(x.sale):'non renseigné')+' · coût matières : '+(x.known?money(x.cost):'incomplet')+'</small><small>'+esc(sign)+(x.stale?' · données anciennes ou non datées':'')+'</small></div><strong>'+(x.margin==null?'—':money(x.margin))+'</strong><button type="button" data-craft-detail="'+esc(r.id)+'">Détails</button><button type="button" data-craft-remove="'+esc(r.id)+'" aria-label="Supprimer la recette">×</button></article>';
  }).join(''):'<p>Ajoute une recette personnelle pour calculer la rentabilité à partir des prix observés.</p>';
 }

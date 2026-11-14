@@ -1,4 +1,4 @@
-# La Binch - installation locale GrimoireSync v0.9.0
+# La Binch - installation locale GrimoireSync v0.9.1
 # Source publique : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/
 # Aucune permission administrateur, aucune lecture des identifiants/du dossier WTF, aucune telemetrie.
 $ErrorActionPreference = 'Stop'
@@ -144,7 +144,7 @@ try {
    if ((Get-Item -LiteralPath $out).Length -lt 40) { throw "Le fichier $filename est vide ou invalide." }
   }
   $toc = Get-Content -LiteralPath (Join-Path $staging 'GrimoireSync.toc') -Raw
-  if ($toc -notmatch '(?m)^## SavedVariables: GrimoireSyncDB' -or $toc -notmatch '(?m)^## Version: 0\.9\.0\s*$' -or $toc -notmatch '(?m)^Minimap.lua\s*$' -or $toc -notmatch '(?m)^Faith.lua\s*$') { throw 'Le manifeste GrimoireSync ne correspond pas a la version attendue.' }
+  if ($toc -notmatch '(?m)^## SavedVariables: GrimoireSyncDB' -or $toc -notmatch '(?m)^## Version: 0\.9\.1\s*$' -or $toc -notmatch '(?m)^Minimap.lua\s*$' -or $toc -notmatch '(?m)^Faith.lua\s*$') { throw 'Le manifeste GrimoireSync ne correspond pas a la version attendue.' }
   # Idempotent upgrade: do not make a new backup if files are already current.
   $sameFiles = Test-Path -LiteralPath $installed -PathType Container
   if ($sameFiles) {
@@ -156,7 +156,7 @@ try {
   }
   if ($sameFiles) {
    Save-LastFolder $addons
-   Show-InstallResult 'Deja a jour !' '0.9.0' $installed $previousVersion ''
+   Show-InstallResult 'Deja a jour !' '0.9.1' $installed $previousVersion ''
    exit 0
   }
   $minimapCode = Get-Content -LiteralPath (Join-Path $staging 'Minimap.lua') -Raw
@@ -182,9 +182,9 @@ try {
   Remove-Item -LiteralPath $staging -Recurse -Force -ErrorAction SilentlyContinue
  }
  $installedToc = Get-Content -LiteralPath (Join-Path $installed 'GrimoireSync.toc') -Raw
- if ($installedToc -notmatch '(?m)^## Version: 0\.9\.0\s*$') { throw 'Version installee incorrecte.' }
+ if ($installedToc -notmatch '(?m)^## Version: 0\.9\.1\s*$') { throw 'Version installee incorrecte.' }
  Save-LastFolder $addons
- Show-InstallResult 'Mise a jour reussie !' '0.9.0' $installed $previousVersion $(if (Test-Path -LiteralPath $backup) {$backup} else {''})
+ Show-InstallResult 'Mise a jour reussie !' '0.9.1' $installed $previousVersion $(if (Test-Path -LiteralPath $backup) {$backup} else {''})
 
 } catch {
  Tell ("Installation interrompue : " + $_.Exception.Message + [Environment]::NewLine + "Aucun dossier WTF/SavedVariables n'a ete modifie.") 'La Binch - Erreur'

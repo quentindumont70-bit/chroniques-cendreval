@@ -1,4 +1,4 @@
--- GrimoireSync / La Binch - livre fixe contre la mini-carte.
+-- GrimoireSync / La Binch - livre deplacable autour de la mini-carte.
 -- L'API WoW ne donne pas le chemin Windows absolu ni l'acces au presse-papiers.
 local boot=CreateFrame("Frame")
 boot:RegisterEvent("PLAYER_LOGIN")
@@ -10,8 +10,56 @@ boot:SetScript("OnEvent",function(self)
   button:SetHeight(28)
   button:SetFrameStrata("MEDIUM")
   button:SetFrameLevel((Minimap:GetFrameLevel() or 0)+5)
-  button:SetPoint("TOPRIGHT",Minimap,"TOPRIGHT",2,2)
   button:RegisterForClicks("LeftButtonUp","RightButtonUp")
+  -- Position stored only inside WoW SavedVariables, never sent to the browser.
+  -- Clamp both loaded coordinates and user drags to the minimap circumference.
+  local function radius()
+    local width=tonumber(Minimap:GetWidth()) or 140
+    local height=tonumber(Minimap:GetHeight()) or 140
+    return math.max(30,math.min(width,height)/2+10)
+  end
+  local function position(x,y)
+    local r=radius()
+    x=tonumber(x) or r*0.71
+    y=tonumber(y) or r*0.71
+    if x~=x or y~=y or math.abs(x)>10000 or math.abs(y)>10000 then
+      x,y=r*0.71,r*0.71
+    end
+    local length=math.sqrt(x*x+y*y)
+    if length<1 then x,y=r*0.71,r*0.71
+    else x,y=x*r/length,y*r/length end
+    button:ClearAllPoints()
+    button:SetPoint("CENTER",Minimap,"CENTER",x,y)
+    return x,y
+  end
+  local db=type(GrimoireSyncDB)=="table" and GrimoireSyncDB or {}
+  local stored=type(db.minimapPosition)=="table" and db.minimapPosition or {}
+  position(stored.x,stored.y)
+  -- Recovery if other minimap addons obscure the book. Callable from /grimoire minimap reset.
+  GrimoireSyncResetMinimap=function()
+    GrimoireSyncDB=type(GrimoireSyncDB)=="table" and GrimoireSyncDB or {}
+    GrimoireSyncDB.minimapPosition=nil
+    position(nil,nil)
+    return true
+  end
+  button:SetMovable(true)
+  button:EnableMouse(true)
+  button:RegisterForDrag("LeftButton")
+  -- Some WoW clients also dispatch OnClick when a drag ends. Never reload then.
+  local dragStopTime=nil
+  button:SetScript("OnDragStart",function(self)
+    self:StartMoving()
+  end)
+  button:SetScript("OnDragStop",function(self)
+    dragStopTime=type(GetTime)=="function" and GetTime() or nil
+    self:StopMovingOrSizing()
+    local x,y=self:GetCenter()
+    local mx,my=Minimap:GetCenter()
+    if not x or not y or not mx or not my then return end
+    local px,py=position(x-mx,y-my)
+    GrimoireSyncDB=type(GrimoireSyncDB)=="table" and GrimoireSyncDB or {}
+    GrimoireSyncDB.minimapPosition={x=px,y=py}
+  end)
 
   local background=button:CreateTexture(nil,"BACKGROUND")
   background:SetAllPoints(button)
@@ -67,11 +115,17 @@ boot:SetScript("OnEvent",function(self)
     GameTooltip:AddLine("La Binch - GrimoireSync",0.96,0.78,0.45)
     GameTooltip:AddLine("Clic gauche : /reload (sauvegarder)",1,1,1)
     GameTooltip:AddLine("Clic droit : afficher un chemin copiable (Ctrl+C)",0.8,0.9,0.8)
+    GameTooltip:AddLine("Glisser : deplacer le livre autour de la mini-carte",0.8,0.9,0.8)
     GameTooltip:Show()
   end)
   button:SetScript("OnLeave",function()if GameTooltip then GameTooltip:Hide()end end)
   button:SetScript("OnClick",function(self,mouse)
     if mouse=="LeftButton" then
+      if dragStopTime and type(GetTime)=="function" then
+        local elapsed=GetTime()-dragStopTime
+        dragStopTime=nil
+        if elapsed>=0 and elapsed<0.35 then return end
+      end
       if type(ReloadUI)=="function" then ReloadUI()
       else print("|cffff7777La Binch|r : /reload indisponible sur ce client.") end
     else

@@ -1,7 +1,16 @@
 'use strict';
 // Run: node public/binch/test-market-bridge.cjs
 const assert=require('node:assert/strict');
-const bridge=require('./market-bridge.js');
+const fs=require('node:fs');
+const path=require('node:path');
+const vm=require('node:vm');
+// Root package uses type:module: Node require('./market-bridge.js') returns an empty namespace.
+// Evaluate this UMD source in a sandbox and read its explicit CommonJS export.
+const moduleBox={exports:{}};
+vm.runInNewContext(fs.readFileSync(path.join(__dirname,'market-bridge.js'),'utf8'),
+ {module:moduleBox,Date,Math,Number,String,Array,Object,JSON},
+ {filename:'market-bridge.js'});
+const bridge=moduleBox.exports;
 const when='2026-11-10T10:00:00.000Z';
 const legacy={prices:[
  {item:'Feuillerêve',unit:700,time:when,realm:'Forever',faction:'Horde',source:'Saisie manuelle'},
@@ -20,4 +29,10 @@ assert.equal(bridge.latestFor(horde,'barre de CUIVRE').store,'binch.ah.market.v1
 assert.equal(bridge.latestFor(horde,'Sulfuras'),null);
 assert.equal(legacy.prices.length,2,'read-only legacy ledger');
 assert.equal(ah.items.length,2,'read-only AH ledger');
-console.log('Market bridge: 8 assertions passed');
+const future=new Date(Date.now()+60*60*1000).toISOString();
+const futureOnly=bridge.snapshot({prices:[{item:'Fausse cotation',unit:500,time:future,realm:'Forever',faction:'Horde'}]}, {items:[]}, {realm:'Forever',faction:'Horde'});
+assert.equal(futureOnly.status,'empty','future legacy prices cannot be quoted');
+assert.equal(bridge.latestFor(futureOnly,'Fausse cotation'),null);
+const futureAH=bridge.snapshot({prices:[]}, {items:[{name:'Fausse cotation',last:500,observedAt:future,scope:'forever|Horde'}]}, {realm:'Forever',faction:'Horde'});
+assert.equal(futureAH.status,'empty','future AH prices cannot be quoted');
+console.log('Market bridge: 11 assertions passed');
