@@ -189,6 +189,8 @@ try{
     assert.match(sourceLabel,/Capture WoW.*2023.*à actualiser/,'home shows source game age');
     assert.match(await page.locator('#binch-front-tasks').textContent(),/Rafraîchir les données du jeu/,'home offers resync priority');
     checks++;
+    assert.match(await page.locator('#binch-front-sync-message').textContent(),/Dernière capture ancienne ou non datée/,'homepage shows stale capture status');
+    checks++;
     // Home quick importer delegates to the guarded file picker; no duplicate importer.
     assert.equal(await page.locator('#binch-front-sync').count(),1,'permanent first-page sync panel');
     const quickImport=page.locator('#binch-front-sync-import');
@@ -226,6 +228,9 @@ try{
     }));
     assert.deepEqual(afterOld,beforeOld,'declined older save cannot overwrite character or crafts');
     assert.match(await page.locator('#grimoire-bridge-status').textContent(),/sauvegarde plus ancienne refusée/);
+    checks++;
+    await page.waitForFunction(()=>document.querySelector('#binch-front-sync-message')?.textContent?.includes('sauvegarde plus ancienne refusée'));
+    assert.match(await page.locator('#binch-front-sync-message').textContent(),/Import annulé/,'homepage mirrors the real importer refusal');
     checks++;
     // A timestamp-less file must not downgrade a previously dated capture.
     let unknownPrompt=0;
@@ -283,10 +288,11 @@ try{
     await page.locator('#app nav.nav [data-page="hub"]').evaluate(el=>el.click());
     await page.waitForFunction(()=>document.querySelector('#binch-front-source')?.textContent?.includes('Capture WoW'));
     assert.match(await page.locator('#binch-front-source').textContent(),/Capture WoW.*récente/,'recent game capture is recognized after page reload');
+    assert.match(await page.locator('#binch-front-sync-message').textContent(),/Dernière capture du jeu récente/,'homepage sync panel confirms actual current capture');
     assert.doesNotMatch(await page.locator('#binch-front-tasks').textContent(),/Rafraîchir les données du jeu/,'unnecessary resync objective cleared');
     checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
-    console.log('Browser '+device.name+': 29 checks passed');
+    console.log('Browser '+device.name+': 31 checks passed');
     await context.close();
   }
   console.log('Browser Specs + AH + GrimoireSync: '+checks+' checks passed');
