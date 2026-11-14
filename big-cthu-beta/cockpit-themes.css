@@ -360,7 +360,7 @@ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) > .shell > .her
 .ns-item .ns-note{line-height:1.4;overflow-wrap:anywhere;font-size:14px}
 .ns-item.isdone .ns-note{text-decoration:line-through;color:var(--cthu-sub,#c9c4d9)}
 .ns-actions{display:flex;gap:7px;flex-shrink:0}
-.ns-actions button{border-radius:10px;border:1px solid var(--cthu-line,#61547a);color:#f5f3ff;background:var(--cthu-surface,#221935);padding:8px 10px;min-height:42px;font:inherit;font-size:12px;font-weight:700}
+.ns-actions button{border-radius:10px;border:1px solid var(--cthu-line,#61547a);color:#f5f3ff;background:var(--cthu-surface,#221935);padding:10px 12px;min-height:48px;font:inherit;font-size:12px;font-weight:700}
 .ns-actions button:focus-visible{outline:2px solid var(--cthu-accent,#b89bff);outline-offset:2px}
 .ns-actions .ns-remove{color:#ffb2af}
 @media(max-width:700px){
@@ -427,3 +427,6 @@ html[data-cthu-theme] body:not([data-cthu-theme-tentacle="yes"]) > .shell > .her
  #activePulse{scroll-margin-top:20px}
 }
 @media(prefers-reduced-motion:reduce){.cthu-mobile-dock a{transition:none!important}}
+
+/* V135 — zones tactiles des rappels de prochaine session, sans impact sur Tournée. */
+@media(max-width:700px){.ns-actions button{min-height:48px;touch-action:manipulation}.cthu-mobile-dock a{touch-action:manipulation}.active-pulse-item{min-height:72px}}
