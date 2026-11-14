@@ -231,3 +231,21 @@ test('V173: une DLC proche est plus importante qu’une ancienne DDM, sans doubl
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
 });
+
+test('V174: dates calendaires impossibles exclues des rappels sans effacement',async()=>{
+ const iso=delta=>{const d=new Date();d.setDate(d.getDate()+delta);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+ const f=await fixture({
+  [K.agenda]:JSON.stringify([
+   {id:'a',title:'Faux 31 février',date:'2026-02-31',category:'perso'},
+   {id:'b',title:'Vrai événement',date:iso(2),category:'perso'}
+  ]),
+  [K.pantry]:JSON.stringify([
+   {id:'f',name:'Fausse DDM',kind:'DDM',date:'2026-02-31'},
+   {id:'v',name:'Vraie DLC',kind:'DLC',date:iso(1)}
+  ])
+ });
+ const titles=f.collect().items.map(x=>x.title);
+ assert.deepEqual(titles,['Vraie DLC','Vrai événement']);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
