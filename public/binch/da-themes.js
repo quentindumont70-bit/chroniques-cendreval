@@ -9,6 +9,17 @@ const concepts={
  'undead-warlock':{culture:'Reliquaire · Encre obscure · Sceaux',headline:'Le livre des serments',summary:'Les reliquaires de cuivre terni veillent sur des pactes inscrits à l’encre. Une géométrie carrée et des fissures rituelles remplacent les ornements naturels.',signature:'Sceau du Pacte Voilé',material:'Encre · cuivre · violet',role:'Archiviste des pactes',goal:'Objectif épinglé : étudier le prochain rituel.',ornament:'♜',crest:'M16 16l16-9 16 9v31L32 56 16 47V16Zm16-9v49M16 16l16 11 16-11'},
  'gnome-mage':{culture:'Arcanotech · Cuivre poli · Cristal',headline:'L’atelier des étoiles',summary:'Des cadrans de précision, du verre gravé et un cristal azur : l’art de mesurer les sortilèges transforme le grimoire en console d’expérimentation.',signature:'Compas du Nexus',material:'Cuivre · cristal · verre',role:'Ingénieur des arcanes',goal:'Objectif épinglé : calibrer le prochain sort.',ornament:'◇',crest:'M32 7 57 32 32 57 7 32 32 7Zm0 11v28M18 32h28M24 24l16 16'}
 };
+const neutral=Object.freeze({
+ culture:'Grimoire universel · Apparence neutre',
+ headline:'Ton aventure, ton grimoire',
+ summary:'Un carnet de route lisible pour chaque héros, même lorsque sa combinaison race et classe ne possède pas encore de direction artistique dédiée.',
+ signature:'Sceau du Voyageur',
+ material:'Pierre · encre · parchemin',
+ role:'Aventurier',
+ goal:'Objectif épinglé : préparer la prochaine expédition.',
+ ornament:'✦',
+ crest:'M32 7 54 19v26L32 57 10 45V19L32 7Zm0 9v31M18 23h28'
+});
 const pairs=Object.freeze(Object.keys(concepts));
 const aliases=Object.freeze({
   race:{tauren:'tauren',troll:'troll',orc:'orc',elf:'elf',elfe:'elf',nightelf:'elf',mortvivant:'undead',undead:'undead',gnome:'gnome'},
@@ -21,7 +32,8 @@ function findPair(race,cls){
   return Object.hasOwn(concepts,id)?id:null;
 }
 function resolve(id){return typeof id==='string'&&Object.hasOwn(concepts,id)?concepts[id]:null;}
-const api=Object.freeze({version:'0.3.0',pairs,resolve,findPair,compatibility:'unverified'});
+function resolveOrNeutral(id){return resolve(id)||neutral;}
+const api=Object.freeze({version:'0.4.0',pairs,resolve,resolveOrNeutral,neutral,findPair,compatibility:'unverified'});
 if(typeof module==='object'&&module.exports)module.exports=api;
 else root.BinchDaThemes=api;
 })(typeof window==='object'?window:{});
