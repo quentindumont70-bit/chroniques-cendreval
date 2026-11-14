@@ -1,0 +1,21 @@
+/* Tauren bag reminder · home command */
+#binch-remember-bag{margin:14px 0;border:1px solid #b5965e;border-radius:16px;background:radial-gradient(circle at 95% 0%,#bd8f4533,transparent 45%),linear-gradient(140deg,#17271e,#101c1b);color:#f5ebd4;padding:clamp(15px,2.7vw,24px)}
+.binch-remember-head{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+#binch-remember-bag h2{font:700 clamp(1.14rem,2.5vw,1.65rem) Cinzel,Georgia,serif;color:#f0d39c;margin:6px 0}
+#binch-remember-bag p{color:#d2dbc9;font-size:.85rem}
+#binch-remember-profile{margin:0}
+#binch-remember-state{font-size:.77rem;color:#ffdea2;border:1px solid #a58b60;padding:7px 11px;border-radius:9px}
+#binch-remember-bag.is-done{border-color:#658776}
+#binch-remember-bag.is-done #binch-remember-state{color:#bee5c5;border-color:#659f76}
+#binch-remember-details{border:1px solid #596c54;border-radius:10px;background:#0c1713bf;padding:10px 14px;margin-top:12px}
+#binch-remember-details summary{cursor:pointer;font-weight:750;color:#f1d09e}
+#binch-remember-details li{padding:9px 0;color:#e3e6d9}
+#binch-remember-details li>strong{display:block}
+#binch-remember-details li>small{display:block;color:#becdb8;margin:3px 0}
+.binch-remember-copy{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.binch-remember-copy code{background:#172820;border:1px solid #607b60;border-radius:6px;padding:6px 9px;color:#e9d6a5;overflow-wrap:anywhere}
+.binch-remember-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:15px}
+#binch-remember-bag button,.binch-remember-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:37px;padding:8px 11px;border:1px solid #957c52;border-radius:9px;background:#2c4334;color:#f6ddb0;font-size:.79rem;text-decoration:none;cursor:pointer}
+#binch-remember-bag button:hover,.binch-remember-actions a:hover{background:#45614b}
+#binch-remember-bag :is(button,a,summary):focus-visible{outline:2px solid #fff1c9;outline-offset:3px}
+@media(max-width:530px){.binch-remember-actions>*{flex:1 1 100%}}
