@@ -41,5 +41,5 @@ test('V121: proof remains separate, no clinical data, real modules keep their li
  assert.match(sw,/'\.\/premium-cinema\.html'/);
  const shellList=sw.slice(sw.indexOf('const ASSETS=['),sw.indexOf('];',sw.indexOf('const ASSETS=['))+2);
  assert.doesNotMatch(shellList,/images[.]unsplash[.]com/,'no third-party image in the mandatory shell list');
- assert.match(sw,/big-cthu-public-v2-v122/);
+ assert.match(sw,/big-cthu-public-v2-v123/);
 });
