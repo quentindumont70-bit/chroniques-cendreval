@@ -68,8 +68,34 @@ function render(){
    if(!target||target.status==='done'){rows=loaded;render();notice('Projet déjà modifié ailleurs : liste actualisée.',true);return}
    if(persist(loaded.map(x=>x.id===item.id?{...x,status:'done'}:x)))render();
   });
-  const link=element('a','', 'Voir / modifier');link.href='./passions.html#musique';
-  actions.append(done,link);card.append(actions);host.append(card);
+  const edit=element('button','','Modifier la prochaine action');edit.type='button';
+  edit.setAttribute('aria-label','Modifier la prochaine action de '+item.title);
+  edit.addEventListener('click',()=>{
+   if(card.querySelector('.studio-edit'))return;
+   const form=element('form','studio-edit');
+   const label=element('label','','Prochaine action pour '+item.title);
+   const input=element('textarea','studio-edit-input');
+   input.maxLength=1200;input.required=true;input.value=item.note||'';
+   label.append(input);form.append(label);
+   const controls=element('div','project-actions');
+   const save=element('button','','Enregistrer');save.type='submit';
+   const cancel=element('button','','Annuler');cancel.type='button';
+   cancel.addEventListener('click',()=>{form.remove();edit.focus()});
+   controls.append(save,cancel);form.append(controls);
+   form.addEventListener('submit',event=>{
+    event.preventDefault();
+    const note=input.value.trim();
+    if(!note||note.length>1200){notice('Ajoute une prochaine action de 1200 caractères maximum.',true);return}
+    const loaded=currentData();if(!loaded)return;
+    const target=loaded.find(x=>x.id===item.id&&x.mode==='musique');
+    if(!target||target.status==='done'){rows=loaded;render();notice('Ce projet a été modifié ailleurs ; liste actualisée.',true);return}
+    const next=loaded.map(x=>x.id===item.id?{...x,note,date:today()}:x);
+    if(persist(next))render();
+   });
+   card.append(form);input.focus();
+  });
+  const link=element('a','','Historique');link.href='./passions.html#musique';
+  actions.append(edit,done,link);card.append(actions);host.append(card);
  }
  if(current.length>20)host.append(element('p','muted','+'+(current.length-20)+' projets dans l’atelier complet.'));
 }
