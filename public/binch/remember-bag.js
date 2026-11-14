@@ -2,7 +2,7 @@
 (()=>{'use strict';
 const GUIDE='https://wow-forever.gg/guides/collections/cozy-sleeping-bag/';
 const BUILD='https://www.icy-veins.com/wow-forever/feral-druid-leveling/';
-const STORE='grimoire.hub.v3',QUEST='bag-quest',DONE='binch.discovery.done.v1';
+const STORE='grimoire.hub.v3',QUEST='bag-quest',DONE='grimoire.discovery.done.v1';
 const $=id=>document.getElementById(id);
 function profile(){try{const p=JSON.parse(localStorage.getItem(STORE))||{};return {race:p.race||'',className:p.classe||'',name:String(p.data?.pseudo||'aventurier').trim().toLowerCase()}}catch{return {race:'',className:'',name:'aventurier'}}}
 function key(){const p=profile();return DONE+'.'+p.name+'.'+p.race+'.'+p.className}
