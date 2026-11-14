@@ -990,6 +990,9 @@ function render(){
  const name=String(document.getElementById('pseudo')?.value||d.pseudo||'').trim();
  const race=s.race||'Aventurier',cls=s.classe||'Classe à choisir';
  const sync=data('grimoire.bridge.last'),actual=sync.name&&sync.name.toLowerCase()===name.toLowerCase()&&sync.level===level;
+ const captured=actual&&sync.capturedAt?Date.parse(sync.capturedAt):NaN;
+ const stale=actual&&(!Number.isFinite(captured)||captured>Date.now()+300000||Date.now()-captured>86400000);
+ const capturedLabel=Number.isFinite(captured)&&captured<=Date.now()+300000?new Date(captured).toLocaleDateString('fr-FR'):'non datée';
  const completed=data('grimoire.discovery.done.v1.'+(name||'aventurier').toLowerCase()+'.'+race+'.'+cls);
  const craft=data('grimoire.craft.v1'),craftKey=(name||'aventurier').toLowerCase()+'-'+race+'-'+cls;
  const planned=Object.values(craft.planned?.[craftKey]||{}).filter(v=>Number(v)>0).length;
@@ -1000,11 +1003,12 @@ function render(){
  if(cls==='Voleur'&&level>=20&&level<=30&&!completed['rogue-poisons'])tasks.push({kind:'Quête de classe',title:'Apprendre les poisons',text:'Prépare la chaîne et le crochetage.',page:'discoveries',priority:98});
  if((s.jobs||[]).length)tasks.push({kind:'Artisanat',title:'Préparer mes recettes',text:s.jobs.join(' · ')+' · '+planned+' fabrication(s) planifiée(s).',page:'crafting',priority:78});
  if(!actual)tasks.push({kind:'Synchronisation',title:'Actualiser mon personnage',text:'Obtiens des conseils selon ton vrai niveau et ta zone.',page:'sync',priority:70});
+ else if(stale)tasks.push({kind:'Synchronisation',title:'Rafraîchir les données du jeu',text:'Cette capture WoW est ancienne ou non datée. Fais /reload puis réimporte ton fichier.',page:'sync',priority:91});
  if(!tasks.length)tasks.push({kind:'Expédition',title:'Préparer la prochaine zone',text:'La carte t’indique la route de progression.',page:'progression',priority:60});
  tasks.sort((a,b)=>b.priority-a.priority);
  $('binch-front-name').textContent=name||'Ton aventurier';
  $('binch-front-character').textContent=[race,cls,'Niveau '+level,actual?sync.zone:''].filter(Boolean).join(' · ');
- $('binch-front-source').textContent=actual?'Dernier import du jeu · '+(sync.updated?new Date(sync.updated).toLocaleDateString('fr-FR'):'date inconnue'):'Profil manuel · import du jeu disponible';
+ $('binch-front-source').textContent=actual?'Capture WoW : '+capturedLabel+(stale?' · à actualiser':' · récente')+' · importée '+(sync.updated?new Date(sync.updated).toLocaleDateString('fr-FR'):'date inconnue'):'Profil manuel · import du jeu disponible';
  $('binch-front-emblem').textContent=document.getElementById('hero-sigil')?.textContent?.trim()||'◆';
  $('binch-front-level').textContent=level;
  $('binch-front-fill').style.width=Math.max(0,Math.min(100,level/60*100))+'%';
