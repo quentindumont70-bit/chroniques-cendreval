@@ -36,6 +36,8 @@ function CreateFrame(_,name)return widget(name)end
 Minimap=widget("Minimap")
 UIParent=widget("UIParent")
 local reloads=0
+local now=100
+function GetTime()return now end
 function ReloadUI()reloads=reloads+1 end
 function print()end
 local tooltips={}
@@ -69,7 +71,10 @@ button.cy=-80
 button.scripts.OnDragStop(button)
 assert(math.abs(GrimoireSyncDB.minimapPosition.y+80)<0.01,"new position replaces former one")
 button.scripts.OnClick(button,"LeftButton")
-assert(reloads==1,"left click issues /reload once")
+assert(reloads==0,"drag release must not invoke /reload")
+now=now+1
+button.scripts.OnClick(button,"LeftButton")
+assert(reloads==1,"deliberate later left click issues /reload once")
 button.scripts.OnClick(button,"RightButton")
 assert(dialog:IsShown(),"right click reveals relative SavedVariables path")
 button.scripts.OnEnter(button)
