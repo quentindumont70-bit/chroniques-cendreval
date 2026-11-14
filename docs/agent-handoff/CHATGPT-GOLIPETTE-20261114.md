@@ -76,3 +76,8 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - En complément de Specs : navigation vers la Bourse, présence réelle du formulaire de recette, création d'une recette synthétique et affichage explicite d'une estimation incomplète en absence de prix. Aucune cotation fabriquée.
 - Node : 41 assertions, contrôle statique : 83 scripts / 0 erreur / 1 avertissement LFG connu.
 - Restriction inchangée : bouton mobile testés en partie par activation DOM en raison du chevauchement de navigation sticky ; garder une QA tactile réelle avant publication.
+
+## QA Windows sans installation (14 novembre)
+- Job Windows `windows-2025` ajouté à la workflow PR : parseur PowerShell Windows 5.1 sur `Installer-La-Binch.ps1` et `Compagnon-La-Binch.ps1`, **sans exécution des scripts** et sans WoW installé.
+- GitHub Actions **43615472935 : SUCCESS sur les trois jobs** : Node 41 assertions + 83 scripts statiques ; Chromium desktop/mobile 28 vérifications ; syntaxe PowerShell 5.1 des deux fichiers OK.
+- Il reste expressément à valider le comportement de l'installateur sur un vrai PC Windows, ainsi que la compatibilité du Lua en jeu ; l'analyse syntaxique ne constitue pas ces validations.
