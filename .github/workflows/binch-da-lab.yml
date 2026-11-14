@@ -5,6 +5,7 @@ on:
       - 'public/binch/da-lab.html'
       - 'public/binch/da-themes.js'
       - 'public/binch/da-tokens.css'
+      - 'public/binch/da-scenes.css'
       - 'scripts/test-binch-da-lab.mjs'
       - '.github/workflows/binch-da-lab.yml'
   workflow_dispatch:
