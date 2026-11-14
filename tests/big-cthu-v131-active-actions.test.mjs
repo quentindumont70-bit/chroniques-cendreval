@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {runInNewContext} from 'node:vm';
 
 const read=name=>readFile(new URL('../big-cthu-beta/'+name,import.meta.url),'utf8');
-const K={captures:'big-cthu-v2-inbox-v1',tasks:'big-cthu-v2-demo-tasks',maison:'big-cthu-v2-maison-v1',musique:'big-cthu-v2-passions-v1',gaming:'big-cthu-v2-next-session-v1'};
+const K={pantry:'big-cthu-v2-pantry-v1',captures:'big-cthu-v2-inbox-v1',tasks:'big-cthu-v2-demo-tasks',maison:'big-cthu-v2-maison-v1',musique:'big-cthu-v2-passions-v1',gaming:'big-cthu-v2-next-session-v1'};
 async function fixture(seed={}){
  const code=await read('active-pulse.js');
  const stored=new Map(Object.entries(seed)),queried=[];
@@ -115,5 +115,41 @@ test('V145: captures invalides ou archives non affichées, aucun contenu inject�
  assert.equal(f.collect().items.length,1);
  const card=f.nodes.get('activePulseList').children[0];
  assert.equal(card.children[1].textContent,'<img src=x onerror=alert(1)>');
+ assert.equal(f.writes(),0);
+});
+
+test('V147: alertes de stock DLC/DDM à échéance proche sans duplication de données',async()=>{
+ const today=new Date();today.setHours(12,0,0,0);
+ const iso=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
+ const days=n=>{const d=new Date(today);d.setDate(d.getDate()+n);return iso(d)};
+ const f=await fixture({
+  [K.pantry]:JSON.stringify([
+   {id:'a',name:'Yaourt fictif',kind:'DLC',date:days(-1)},
+   {id:'b',name:'Conserve fictive',kind:'DDM',date:days(3)},
+   {id:'c',name:'Riz fictif',kind:'DDM',date:days(25)},
+   {id:'d',name:'Fruit fictif',kind:'inconnue',date:days(1)}
+  ])
+ });
+ const d=f.collect();
+ assert.equal(d.items.length,2);
+ assert.deepEqual(d.items.map(x=>x.kind),['Stock','Stock']);
+ assert.deepEqual(d.items.map(x=>x.url),['./garde-manger.html','./garde-manger.html']);
+ assert.match(d.items[0].next,/DLC · Date dépassée/);
+ assert.match(d.items[1].next,/DDM · Échéance/);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+ f.ctx.testRender();
+ assert.equal(f.nodes.get('activePulseList').children[0].href,'./garde-manger.html');
+});
+
+test('V147: aucune alerte si dates éloignées, texte invalide ou stockage absent',async()=>{
+ const f=await fixture({
+  [K.pantry]:JSON.stringify([
+   {name:'DLC loin',kind:'DLC',date:'2999-12-31'},
+   {name:'Inconnu',kind:'inconnue',date:'2001-01-01'},
+   {name:'X'.repeat(100),kind:'DLC',date:'2001-01-01'}
+  ])
+ });
+ assert.equal(f.collect().items.length,0);
  assert.equal(f.writes(),0);
 });
