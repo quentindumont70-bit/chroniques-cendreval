@@ -12,7 +12,7 @@ async function fixture(seed={}){
  const el=()=>({children:[],textContent:'',className:'',href:'',
   append(...items){this.children.push(...items)},
   replaceChildren(...items){this.children=[...items]}});
- const nodes=new Map(['activePulseList','activePulseCount','activePulseStatus'].map(key=>[key,el()]));
+ const nodes=new Map(['activePulseList','activePulseCount','activePulseStatus','cinemaPulseCount'].map(key=>[key,el()]));
  const document={readyState:'loading',getElementById:key=>nodes.get(key),createElement:el,addEventListener(){}};
  const ctx={document,window:{addEventListener(){}},localStorage:{
   getItem(key){queried.push(key);return stored.get(key)??null},
@@ -152,4 +152,19 @@ test('V147: aucune alerte si dates éloignées, texte invalide ou stockage absen
  });
  assert.equal(f.collect().items.length,0);
  assert.equal(f.writes(),0);
+});
+
+test('V151: la scène cinématographique affiche le nombre réel sans autre stockage',async()=>{
+ const empty=await fixture();
+ empty.ctx.testRender();
+ assert.equal(empty.nodes.get('cinemaPulseCount').textContent,'Aucune action en attente');
+ const active=await fixture({[K.tasks]:JSON.stringify([{id:'t',text:'Action fictive',done:false}])});
+ active.ctx.testRender();
+ assert.equal(active.nodes.get('cinemaPulseCount').textContent,'1 action à reprendre');
+ assert.equal(active.writes(),0);
+ assert.equal(active.network(),0);
+ const html=await read('index.html');
+ assert.match(html,/id="cinemaPulseCount" aria-live="polite"/);
+ assert.match(html,/class="cinema-live-pulse" href="#activePulse"/);
+ assert.match(html,/class="mini" href="\.\/musique\.html"/);
 });
