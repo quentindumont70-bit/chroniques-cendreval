@@ -31,22 +31,23 @@ function estimate(item){
  const diff=med&&last?100*(med-last)/med:null;
  return {med,low,last,net,diff,points};
 }
-function validateRow(row){
+function validateRow(row,requireTimestamp=false){
  const name=clean(row.name||row.item||row.title||row.itemName,100);
  const numericPrice=row.priceCopper??row.unitPriceCopper??row.copper??null;
  const price=numericPrice!=null?Number(numericPrice):fromGold(row.priceGold??row.gold??row.price);
  const qty=Number(row.quantity??row.qty??1);
  const source=clean(row.source||'Saisie personnelle',120);
- const time=row.observedAt||row.timestamp||new Date().toISOString();
+ const time=row.observedAt||row.timestamp||(requireTimestamp?null:new Date().toISOString());
+ if(typeof time!=='string'||!time.trim())return null;
  if(name.length<2||!Number.isSafeInteger(price)||price<1||price>1e12||!Number.isInteger(qty)||qty<1||qty>1e9||!date(time)||date(time)>new Date(Date.now()+3600000))return null;
  const realm=clean(row.realm||'',65).toLocaleLowerCase('fr'),faction=String(row.faction||'');
  if((!!realm)!==(!!faction)||(faction&&!['Horde','Alliance'].includes(faction)))return null;
  return {name,price,quantity:qty,source,observedAt:new Date(time).toISOString(),scope:realm?realm+'|'+faction:'legacy'};
 }
-function ingest(rows){
+function ingest(rows,requireTimestamp=false){
  if(rows.length>MAX)throw Error('Trop de lignes : maximum '+MAX+' observations par import.');
  let added=0,rejected=0;
- for(const raw of rows){const r=validateRow(raw);if(!r){rejected++;continue}
+ for(const raw of rows){const r=validateRow(raw,requireTimestamp);if(!r){rejected++;continue}
   const key=r.scope==='legacy'?norm(r.name):r.scope+'|'+norm(r.name),found=store.items.find(v=>v.key===key);
   const item=found||{key,scope:r.scope,name:r.name,history:[],last:0,quantity:0,observedAt:'',source:''};
   const sample={price:r.price,quantity:r.quantity,at:r.observedAt,source:r.source};
@@ -75,7 +76,7 @@ async function loadFile(file){
  const text=await file.text(),rows=file.name.toLowerCase().endsWith('.json')?JSON.parse(text):csvRows(text);
  const arr=Array.isArray(rows)?rows:Array.isArray(rows?.observations)?rows.observations:null;
  if(!arr)throw Error('Le JSON doit contenir une liste d’observations, pas un export d’enchères non reconnu.');
- return ingest(arr);
+ return ingest(arr,true);
 }
 function exportData(){
  const body=JSON.stringify({format:'binch-ah-market-v1',savedAt:new Date().toISOString(),observations:store.items.flatMap(x=>x.history.map(p=>({name:x.name,priceCopper:p.price,quantity:p.quantity,source:p.source,observedAt:p.at,realm:itemScope(x)==='legacy'?undefined:itemScope(x).split('|')[0],faction:itemScope(x)==='legacy'?undefined:itemScope(x).split('|')[1]}))),trades:store.trades,alerts:store.alerts},null,2);
