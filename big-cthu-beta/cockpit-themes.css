@@ -1,0 +1,158 @@
+/* Big Cthu — V113 : trois ambiances pour UN cockpit, donnees et navigation inchangees. */
+:root {
+  --cthu-accent:#b89bff;
+  --cthu-glow:rgba(156,105,255,.3);
+  --cthu-line:rgba(174,140,255,.32);
+  --cthu-surface:rgba(25,20,46,.83);
+  --cthu-deep:#100e22;
+  --cthu-sub:#c9c4d9;
+  --cthu-hero:linear-gradient(115deg,rgba(31,25,52,.97),rgba(15,15,32,.86));
+  --cthu-art:radial-gradient(ellipse at 86% 2%,rgba(156,72,180,.3),transparent 46%),radial-gradient(ellipse at 4% 74%,rgba(4,99,100,.24),transparent 50%);
+}
+html[data-cthu-theme="premium"] {
+  --cthu-accent:#6ccfff;--cthu-glow:rgba(52,156,241,.32);
+  --cthu-line:rgba(129,193,255,.34);--cthu-surface:rgba(9,29,51,.8);
+  --cthu-deep:#06121f;--cthu-sub:#bfd4e5;
+  --cthu-hero:linear-gradient(108deg,rgba(8,30,52,.96),rgba(13,25,47,.86));
+  --cthu-art:radial-gradient(ellipse at 85% -12%,rgba(38,136,201,.42),transparent 49%),radial-gradient(ellipse at 8% 87%,rgba(11,80,111,.35),transparent 48%);
+}
+html[data-cthu-theme="organic"] {
+  --cthu-accent:#f2bb84;--cthu-glow:rgba(203,75,162,.29);
+  --cthu-line:rgba(210,136,178,.33);--cthu-surface:rgba(36,13,39,.83);
+  --cthu-deep:#160b19;--cthu-sub:#e1cadd;
+  --cthu-hero:linear-gradient(105deg,rgba(39,14,44,.98),rgba(23,9,31,.87));
+  --cthu-art:radial-gradient(ellipse at 80% -14%,rgba(153,37,127,.41),transparent 48%),radial-gradient(ellipse at 4% 75%,rgba(88,23,84,.41),transparent 49%);
+}
+html[data-cthu-theme="medical"] {
+  --cthu-accent:#35f0e5;--cthu-glow:rgba(0,234,219,.29);
+  --cthu-line:rgba(55,225,216,.35);--cthu-surface:rgba(4,31,42,.84);
+  --cthu-deep:#03151d;--cthu-sub:#a6d7d8;
+  --cthu-hero:linear-gradient(112deg,rgba(3,35,48,.96),rgba(2,20,30,.91));
+  --cthu-art:radial-gradient(ellipse at 80% -12%,rgba(2,137,147,.3),transparent 48%),radial-gradient(ellipse at 0% 82%,rgba(0,154,165,.19),transparent 55%);
+}
+html[data-cthu-theme] {color-scheme:dark}
+html[data-cthu-theme] body,
+html[data-cthu-theme] body[data-profile="steph"]{
+  background:var(--cthu-art),var(--cthu-deep);
+  background-attachment:fixed;
+  color:#f5f8ff;
+}
+html[data-cthu-theme] .shell{position:relative;isolation:isolate}
+html[data-cthu-theme] .shell:before{
+  content:"";position:absolute;z-index:-1;top:0;left:0;right:0;
+  height:420px;pointer-events:none;opacity:.4;
+  background:linear-gradient(130deg,transparent 35%,var(--cthu-glow),transparent 75%);
+  filter:blur(55px)
+}
+html[data-cthu-theme] .top{
+  border:1px solid var(--cthu-line);border-radius:18px;padding:10px 14px;
+  background:var(--cthu-surface);backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 12px 36px rgba(0,0,0,.15)
+}
+html[data-cthu-theme] .brand strong{letter-spacing:-.035em}
+html[data-cthu-theme] .octo,
+html[data-cthu-theme] body[data-profile="steph"] .octo{
+  color:var(--cthu-accent);
+  background:linear-gradient(145deg,var(--cthu-glow),rgba(15,26,43,.85));
+  border:1px solid var(--cthu-line);
+  box-shadow:0 0 26px var(--cthu-glow);
+}
+html[data-cthu-theme] .hero,
+html[data-cthu-theme] body[data-profile="steph"] .hero{
+  background:var(--cthu-hero);
+  border:1px solid var(--cthu-line);
+  box-shadow:0 16px 55px rgba(0,0,0,.26),inset 0 1px rgba(255,255,255,.07);
+  isolation:isolate
+}
+html[data-cthu-theme] .hero:before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:radial-gradient(ellipse at 84% 70%,var(--cthu-glow),transparent 43%);
+  pointer-events:none
+}
+html[data-cthu-theme] .hero .symbol{filter:drop-shadow(0 0 26px var(--cthu-glow))}
+html[data-cthu-theme] .eyebrow,
+html[data-cthu-theme] body[data-profile="steph"] .eyebrow{color:var(--cthu-accent)}
+html[data-cthu-theme] .panel,
+html[data-cthu-theme] body[data-profile="steph"] .panel{
+  background:var(--cthu-surface);border:1px solid var(--cthu-line);
+  box-shadow:0 12px 34px rgba(0,0,0,.18);
+  backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px)
+}
+html[data-cthu-theme] .tile,
+html[data-cthu-theme] body[data-profile="steph"] .tile{
+  background:linear-gradient(145deg,var(--cthu-surface),rgba(8,15,27,.84));
+  border:1px solid var(--cthu-line);
+  box-shadow:inset 0 1px rgba(255,255,255,.07);
+}
+html[data-cthu-theme] .tile:hover{border-color:var(--cthu-accent);box-shadow:0 10px 28px var(--cthu-glow)}
+html[data-cthu-theme] .tile:after{background:radial-gradient(circle,var(--cthu-glow),transparent 75%)}
+html[data-cthu-theme] .tile .em{filter:drop-shadow(0 3px 11px var(--cthu-glow))}
+html[data-cthu-theme] .muted,
+html[data-cthu-theme] .hero p{color:var(--cthu-sub)}
+html[data-cthu-theme] .primary,
+html[data-cthu-theme] body[data-profile="steph"] .primary{
+  background:linear-gradient(125deg,var(--cthu-accent),var(--cthu-glow));
+  color:#07101a;border:1px solid var(--cthu-line);font-weight:800
+}
+html[data-cthu-theme] .pill,
+html[data-cthu-theme] .tag,
+html[data-cthu-theme] body[data-profile="steph"] .pill,
+html[data-cthu-theme] body[data-profile="steph"] .tag{
+  border-color:var(--cthu-line);background:var(--cthu-surface);color:#f2ecff
+}
+html[data-cthu-theme] .stat strong{color:var(--cthu-accent)}
+html[data-cthu-theme] input:focus-visible,
+html[data-cthu-theme] button:focus-visible,
+html[data-cthu-theme] a:focus-visible{outline:2px solid var(--cthu-accent);outline-offset:3px}
+html[data-cthu-theme] .tournee-front{border-color:var(--cthu-line);background:var(--cthu-surface)}
+html[data-cthu-theme] .tournee-front a{border-color:var(--cthu-line);background:rgba(14,30,49,.65)}
+html[data-cthu-theme] .tournee-front p{color:var(--cthu-sub)}
+html[data-cthu-theme] .task{border-color:var(--cthu-line)}
+html[data-cthu-theme] .notice{border-color:var(--cthu-line);background:var(--cthu-surface)}
+html[data-cthu-theme] .searchTentacules input{background:var(--cthu-surface);border-color:var(--cthu-line)}
+html[data-cthu-theme="premium"] .hero:after{content:"✦";right:8%;top:6%;font-size:190px;color:rgba(122,202,255,.08)}
+html[data-cthu-theme="organic"] .hero:after{content:"🐙";right:3%;top:3%;font-size:140px;opacity:.14;filter:blur(1px)}
+html[data-cthu-theme="medical"] .hero:after{content:"⌬";right:8%;top:2%;font-size:190px;color:rgba(54,240,230,.1)}
+html[data-cthu-theme="medical"] .hero,
+html[data-cthu-theme="medical"] .panel{background-image:linear-gradient(0deg,rgba(23,126,139,.055) 1px,transparent 1px),var(--cthu-hero);background-size:100% 31px,auto}
+html[data-cthu-theme="organic"] .octo{border-radius:40% 60% 46% 54%}
+html[data-cthu-theme="premium"] .top{border-radius:15px}
+
+/* Sélecteur accessible, non modal : changer la peau ne touche pas aux coffres. */
+.cthu-theme-wrap{position:relative;display:flex;align-items:center}
+#cthuThemeToggle{min-height:44px;white-space:nowrap;display:flex;align-items:center;gap:7px}
+#cthuThemeMenu[hidden]{display:none!important}
+#cthuThemeMenu{
+ position:absolute;right:0;top:calc(100% + 10px);width:min(340px,calc(100vw - 32px));z-index:50;
+ padding:12px;border-radius:18px;background:var(--cthu-deep);
+ border:1px solid var(--cthu-line);box-shadow:0 22px 70px rgba(0,0,0,.6);
+ backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)
+}
+.cthu-theme-title{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--cthu-accent);margin:2px 5px 10px}
+.cthu-theme-choice{
+ width:100%;display:flex;align-items:center;gap:11px;text-align:left;
+ border:1px solid transparent;background:rgba(255,255,255,.035);color:#f4f0ff;
+ border-radius:12px;padding:10px;min-height:58px;margin:5px 0;cursor:pointer;font:inherit
+}
+.cthu-theme-choice:hover,.cthu-theme-choice[aria-pressed="true"]{
+ border-color:var(--cthu-accent);background:var(--cthu-surface)
+}
+.cthu-theme-swatch{height:34px;width:44px;border-radius:9px;flex-shrink:0;border:1px solid rgba(255,255,255,.2)}
+.cthu-theme-choice[data-theme="premium"] .cthu-theme-swatch{background:linear-gradient(145deg,#091528,#2b85b1)}
+.cthu-theme-choice[data-theme="organic"] .cthu-theme-swatch{background:linear-gradient(145deg,#200d2a,#9e4c80 65%,#e5ad69)}
+.cthu-theme-choice[data-theme="medical"] .cthu-theme-swatch{background:linear-gradient(145deg,#031d28,#008e9a 65%,#4df5e7)}
+.cthu-theme-choice strong{display:block;font-size:13px}
+.cthu-theme-choice small{display:block;font-size:11px;color:var(--cthu-sub);margin-top:3px}
+#cthuThemeStatus{display:block;min-height:20px;font-size:11px;color:var(--cthu-sub);padding:4px}
+@media(max-width:750px){
+ html[data-cthu-theme] .top{padding:10px;gap:8px}
+ html[data-cthu-theme] .top .actions{flex-wrap:wrap;justify-content:flex-end}
+ #cthuThemeToggle{padding:9px 10px;font-size:12px}
+ #cthuThemeMenu{right:-8px}
+ html[data-cthu-theme] .hero{border-radius:20px}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-cthu-theme] .hero .symbol{animation:none!important}
+ html[data-cthu-theme] .tile{transition:none!important}
+}
