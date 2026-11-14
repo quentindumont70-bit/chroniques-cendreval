@@ -1,0 +1,31 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+const read=name=>readFile(new URL('../big-cthu-beta/'+name,import.meta.url),'utf8');
+test('V161: update the next step inline without duplicate project or separate workflow',async()=>{
+ const js=await read('musique-studio.js');
+ assert.match(js,/const edit=element\('button','','Modifier la prochaine action'\)/);
+ assert.match(js,/const form=element\('form','studio-edit'\)/);
+ assert.match(js,/if\(card\.querySelector\('\.studio-edit'\)\)return/);
+ assert.match(js,/input\.maxLength=1200;input\.required=true;input\.value=item\.note\|\|''/);
+ assert.match(js,/if\(!note\|\|note\.length>1200\)/);
+ assert.match(js,/const loaded=currentData\(\);if\(!loaded\)return/);
+ assert.match(js,/if\(!target\|\|target\.status==='done'\)/);
+ assert.match(js,/\.\.\.x,note,date:today\(\)/);
+ assert.match(js,/if\(persist\(next\)\)render\(\)/);
+ assert.match(js,/const link=element\('a','','Historique'\)/);
+ assert.match(js,/cancel\.addEventListener\('click'/);
+ assert.match(js,/textContent=text/);
+});
+test('V161: old data schema, project form and three themes remain untouched',async()=>{
+ const [js,html,css,sw,tour]=await Promise.all(['musique-studio.js','musique.html','cinema-musique.css','sw.js','tournee-complete.html'].map(read));
+ assert.match(js,/KEY='big-cthu-v2-passions-v1'/);
+ assert.match(js,/function valid\(x\)/);
+ assert.match(js,/localStorage\.setItem\(KEY,json\)/);
+ assert.match(html,/id="studio-form"/);
+ assert.match(html,/src="\.\/musique-studio\.js"/);
+ for(const t of ['organic','medical'])assert.ok(css.includes('data-cthu-theme="'+t+'"'));
+ assert.match(css,/\.studio-edit-input:focus-visible/);
+ assert.match(sw,/big-cthu-public-v2-v161/);
+ assert.doesNotMatch(tour,/studio-edit-input|V161/);
+});
