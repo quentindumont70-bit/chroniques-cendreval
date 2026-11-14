@@ -45,6 +45,8 @@ function render(){
  $('binch-ultimate-next').innerHTML=next?'<span class="binch-ultimate-category">'+esc(next.category)+'</span><h3>'+esc(next.title)+'</h3><p>'+esc(next.description)+'</p><small>Source : '+esc(next.origin||'profil local')+' · '+(next.verified?'référence ou action documentée':'vérification recommandée')+'</small>':'<p>Aucun objectif disponible. Consulter ton carnet de route.</p>';
  $('binch-ultimate-next-button').disabled=!next;
  $('binch-ultimate-actions').innerHTML=actions.slice(0,6).map((x,i)=>'<article class="binch-ultimate-task"><span class="binch-ultimate-order">'+(i+1)+'</span><div><strong>'+esc(x.title)+'</strong><small>'+esc(x.category)+' · '+(x.when==='soon'?'Accessible dès le niveau '+x.level:'Accessible selon le profil')+' · '+esc(x.origin)+'</small></div><button type="button" data-ultimate-open="'+esc(x.page)+'" data-ultimate-id="'+esc(x.id)+'" aria-label="Ouvrir '+esc(x.title)+'">Voir</button><button type="button" data-ultimate-dismiss="'+esc(x.id)+'" aria-label="Masquer cette suggestion">×</button></article>').join('');
+ window.BinchUltimate={getPlan:()=>lastPlan?{profile:{...lastPlan.profile},actions:lastPlan.actions.map(x=>({...x})),next:lastPlan.next?{...lastPlan.next}:null}:null,open:go,refresh:render};
+ document.dispatchEvent(new Event('binch:ultimate-updated'));
  $('binch-ultimate-status').textContent='Conseils calculés localement à partir du profil, du carnet des découvertes et de l’import lorsqu’il correspond au personnage. Aucune action effectuée dans WoW.';
  document.dispatchEvent(new CustomEvent('binch:journey-updated',{detail:{next:next?{id:next.id,title:next.title,page:next.page}:null,level:profile.level,imported:profile.imported}}));
 }
