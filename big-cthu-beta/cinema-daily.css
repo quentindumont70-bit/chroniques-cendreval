@@ -1,0 +1,117 @@
+/* V170 — CINEMA 2.0 daily flow: Capture and Agenda, purely presentational.
+   Three themes, zero data duplication, no clinical surfaces. */
+html[data-cthu-theme] body[data-cthu-area="daily"]{
+ --daily-ink:#f1faff;--daily-sub:#bdd8e8;--daily-glass:rgba(5,24,44,.82);
+ --daily-edge:rgba(154,219,249,.39);--daily-light:#a6e8ff;--daily-warm:#ffdab2;
+ --daily-glow:rgba(90,197,247,.23);
+ color:var(--daily-ink);
+ background:linear-gradient(115deg,rgba(2,12,27,.89),rgba(5,26,47,.76)),
+ url("https://images.unsplash.com/photo-1649401691853-6ecfa00f044e?auto=format&fit=crop&w=1800&q=80") center/cover fixed;
+}
+html[data-cthu-theme="organic"] body[data-cthu-area="daily"]{
+ --daily-ink:#fff1fc;--daily-sub:#e5c5df;--daily-glass:rgba(35,10,41,.82);
+ --daily-edge:rgba(240,173,206,.42);--daily-light:#f8c2e8;--daily-warm:#ffce9d;
+ --daily-glow:rgba(247,129,201,.24);
+ background:linear-gradient(115deg,rgba(23,5,29,.88),rgba(46,13,47,.79)),
+ url("https://images.unsplash.com/photo-1523486230352-65ff5222cea4?auto=format&fit=crop&w=1800&q=80") center/cover fixed;
+}
+html[data-cthu-theme="medical"] body[data-cthu-area="daily"]{
+ --daily-ink:#ecfbff;--daily-sub:#b6d8e2;--daily-glass:rgba(0,23,37,.84);
+ --daily-edge:rgba(91,236,247,.44);--daily-light:#81f5ff;--daily-warm:#bdedff;
+ --daily-glow:rgba(50,232,241,.2);
+ background:linear-gradient(115deg,rgba(0,16,28,.9),rgba(0,37,47,.77)),
+ url("https://images.unsplash.com/photo-1648565726114-cfb73eb46340?auto=format&fit=crop&w=1800&q=80") center/cover fixed;
+}
+body[data-cthu-area="daily"] .wrap{max-width:1120px;padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
+body[data-cthu-area="daily"] header{
+ border:1px solid var(--daily-edge);border-radius:22px;padding:12px 17px;
+ background:var(--daily-glass);backdrop-filter:blur(17px);-webkit-backdrop-filter:blur(17px);
+ box-shadow:0 17px 47px rgba(0,7,20,.35);
+}
+body[data-cthu-area="daily"] header a{min-height:44px;display:inline-flex;align-items:center;color:var(--daily-ink)}
+body[data-cthu-area="daily"] header :is(strong,span){color:var(--daily-light);font-weight:800}
+body[data-cthu-area="daily"] .cthu-daily-flow{
+ border:1px solid var(--daily-edge);border-radius:18px;
+ background:var(--daily-glass);backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px);
+ padding:7px;gap:6px;margin-top:14px;
+}
+body[data-cthu-area="daily"] .cthu-daily-flow a{
+ min-height:46px;border-radius:12px;color:var(--daily-ink);
+}
+body[data-cthu-area="daily"] .cthu-daily-flow a[aria-current="page"]{
+ background:var(--daily-glow);border-color:var(--daily-light);color:var(--daily-ink);
+}
+body[data-cthu-area="daily"] h1{
+ font-family:Georgia,"Times New Roman",serif;font-weight:500;
+ font-size:clamp(35px,5.2vw,63px);letter-spacing:-.05em;
+ line-height:1.12;color:var(--daily-ink);
+ text-shadow:0 7px 26px rgba(0,7,20,.65);text-wrap:balance;
+}
+body[data-cthu-area="daily"] h2{
+ font-family:Georgia,"Times New Roman",serif;font-weight:500;
+ font-size:clamp(21px,2.7vw,29px);color:var(--daily-ink);letter-spacing:-.025em;
+}
+body[data-cthu-area="daily"] p,body[data-cthu-area="daily"] .muted{color:var(--daily-sub)}
+body[data-cthu-area="daily"] :is(.card,.panel){
+ background:
+ radial-gradient(ellipse at 98% 0%,var(--daily-glow),transparent 49%),
+ linear-gradient(130deg,var(--daily-glass),rgba(4,20,39,.7));
+ border:1px solid var(--daily-edge);border-radius:23px;
+ box-shadow:0 22px 60px rgba(0,8,24,.37),inset 0 1px rgba(255,255,255,.1);
+ color:var(--daily-ink);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);
+}
+body[data-cthu-area="daily"] .status,
+body[data-cthu-area="daily"] .notice{
+ background:rgba(9,44,53,.72);border-color:var(--daily-edge);
+ color:var(--daily-sub);
+}
+body[data-cthu-area="daily"] :is(input,textarea,select),
+body[data-cthu-area="daily"] .field :is(input,textarea,select),
+body[data-cthu-area="daily"] #filter{
+ background:rgba(1,13,29,.68);border:1px solid var(--daily-edge);
+ color:var(--daily-ink);min-height:46px;
+}
+body[data-cthu-area="daily"] :is(label,.field label){color:var(--daily-sub)}
+body[data-cthu-area="daily"] .primary,
+body[data-cthu-area="daily"] .btn{
+ background:linear-gradient(115deg,var(--daily-light),#f0faff);
+ color:#07283e;font-weight:800;min-height:47px;
+}
+html[data-cthu-theme="organic"] body[data-cthu-area="daily"] :is(.primary,.btn){
+ background:linear-gradient(115deg,#ffd4a5,#f4b9e1);color:#30112a;
+}
+html[data-cthu-theme="medical"] body[data-cthu-area="daily"] :is(.primary,.btn){
+ background:linear-gradient(115deg,#b2fcff,#66e7f2);color:#062e36;
+}
+body[data-cthu-area="daily"] :is(.outline,.ghost){
+ background:var(--daily-glass);color:var(--daily-ink);border-color:var(--daily-edge);
+ min-height:44px;
+}
+body[data-cthu-area="daily"] :is(.capture-more,.agenda-more){
+ background:rgba(3,21,38,.48);border-color:var(--daily-edge);
+}
+body[data-cthu-area="daily"] :is(.capture-more,.agenda-more) summary{
+ color:var(--daily-light);
+}
+body[data-cthu-area="daily"] :is(.item,.event){
+ border-color:var(--daily-edge);color:var(--daily-ink);
+}
+body[data-cthu-area="daily"] .event{background:rgba(1,19,37,.48)}
+body[data-cthu-area="daily"] .event small,
+body[data-cthu-area="daily"] .item small{color:var(--daily-sub)}
+body[data-cthu-area="daily"] :is(button,a,input,textarea,select,summary):focus-visible{
+ outline:3px solid var(--daily-light);outline-offset:3px;
+}
+@media(max-width:760px){
+ body[data-cthu-area="daily"]{background-attachment:scroll}
+ body[data-cthu-area="daily"] .wrap{padding-inline:13px}
+ body[data-cthu-area="daily"] header{padding:9px 12px}
+ body[data-cthu-area="daily"] :is(.card,.panel){padding:16px;border-radius:17px}
+ body[data-cthu-area="daily"] .cthu-daily-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px}
+ body[data-cthu-area="daily"] .cthu-daily-flow a{font-size:11px;padding:7px 3px;text-align:center;justify-content:center}
+}
+@media(prefers-reduced-transparency:reduce){
+ body[data-cthu-area="daily"] :is(header,.cthu-daily-flow,.card,.panel){
+  backdrop-filter:none;-webkit-backdrop-filter:none;background-color:var(--daily-glass);
+ }
+}
