@@ -224,6 +224,6 @@ try{
  }
  await writeFile(join(out,'manifest.json'),JSON.stringify({generatedAt:new Date().toISOString(),screenshots:manifest,liveChecks,contrastMeasurements,failures},null,2));
  assert.deepEqual(failures,[],'visual layout smoke detected overflow/touch problems');
- console.log('La Binch DA browser visual: '+manifest.length+' captures, '+devices.length+' viewports, '+themes.length+' visual themes; zero overflow or page errors');
+ console.log('La Binch DA browser visual: '+(manifest.length+liveChecks.length)+' captures ('+manifest.length+' lab + '+liveChecks.length+' real homepage), '+devices.length+' lab viewports, '+themes.length+' themes; no measured overflow or page errors');
 }catch(e){console.error(e);process.exitCode=1;}
 finally{if(browser)await browser.close();if(server.listening)await close();}
