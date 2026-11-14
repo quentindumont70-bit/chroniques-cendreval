@@ -73,7 +73,7 @@ function validatePreset(preset){
  });
 }
 
-let dataset=null,error='';
+let dataset=null,error='';let viewMode='full';
 const fixes={'Feral Combat':'Combat farouche',Balance:'Équilibre',Restoration:'Restauration'};
 const aliases={
 'Feral Instinct':['Feral Instinct'],'Feral Swiftness':['Feral Swiftness'],
@@ -104,19 +104,34 @@ function render(){
  if(!dataset){host.innerHTML='<div class="binch-tree-info"><strong>Arbres du druide Forever</strong><p>'+esc(error||'Chargement des arbres de talents sourcés…')+'</p><a href="'+calc+'" target="_blank" rel="noopener noreferrer">Voir le calculateur Forever</a></div>';return}
  const isLeveling=String(g).toLocaleLowerCase('fr').includes('pex');
  const preset=presetCounts(g,level),presetValid=validatePreset(preset);
- const valid=isLeveling&&validateRoute(),counts=valid?points(level):presetValid?preset.counts:new Map(),next=valid?routes.find(x=>x.level===level+1):null;
+ const valid=isLeveling&&validateRoute(),earned=valid?points(level):new Map(),counts=valid?points(viewMode==='full'?60:level):presetValid?preset.counts:new Map(),next=valid?routes.find(x=>x.level===level+1):null;
  if(old)old.hidden=valid||presetValid;
  const treeHTML=dataset.map(t=>{
  const current=t.talents.reduce((n,x)=>n+(counts.get(t.name+'|'+x.name)||0),0);
  const cells=t.talents.map(x=>{
   const owned=Math.min(Number(x.max)||0,counts.get(t.name+'|'+x.name)||0);
   const coming=next?.tree===t.name&&next?.name===x.name;
+  const acquired=earned.get(t.name+'|'+x.name)||0,planned=valid&&owned>acquired;
   const img=icon(x.icon),safe=esc(x.name),tip=esc((x.desc||[])[Math.max(0,Math.min(x.max-1,owned-1))]||x.desc?.[0]||'');
-  return '<button type="button" class="binch-tree-node'+(owned?' has-points':'')+(coming?' is-next':'')+'" style="--tree-row:'+Number(x.row)+';--tree-col:'+Number(x.col)+'" aria-label="'+safe+' : '+owned+'/'+Number(x.max)+' rangs" data-tree-tooltip="'+safe+'" data-tree-description="'+tip+'"><img loading="lazy" alt="" src="'+img+'"><span>'+owned+'/'+Number(x.max)+'</span></button>';
+  return '<button type="button" class="binch-tree-node'+(owned?' has-points':'')+(planned?' is-planned':'')+(coming?' is-next':'')+'" style="--tree-row:'+Number(x.row)+';--tree-col:'+Number(x.col)+'" aria-label="'+safe+' : '+owned+'/'+Number(x.max)+' rangs" data-tree-tooltip="'+safe+'" data-tree-description="'+tip+'"><img loading="lazy" alt="" src="'+img+'"><span>'+owned+'/'+Number(x.max)+'</span></button>';
  }).join('');
  return '<section class="binch-tree-panel"><header><h4>'+esc(fixes[t.name]||t.name)+'</h4><strong>'+current+' point(s)</strong></header><div class="binch-tree-cells">'+cells+'</div></section>';
  }).join('');
  host.innerHTML='<section class="binch-tree-info"><h3>Arbres de talents Forever · Druide</h3><p>'+esc(note)+'</p><div class="binch-tree-badges"><strong>Level '+level+'</strong><span>'+(valid?Math.max(0,level-9):0)+'/51 points · recommandation pex validée si disponible</span><span>'+ (valid?'Parcours pex validé sur les talents exportés':presetValid?'Allocation ForeverSpec niveau 60':'Aucun rang attribué sans vérification')+'</span></div><p>'+(next?'Prochain point au niveau '+next.level+' : '+esc(next.name)+' ('+esc(fixes[next.tree]||next.tree)+')':valid?'Parcours de pex terminé.':presetValid?'Build niveau 60 sourcé ForeverSpec ; ne représente pas la répartition avant 60.':'Pas de préremplissage : consulte le guide propre au profil.')+'</p><a href="'+calc+'" target="_blank" rel="noopener noreferrer">Ouvrir le calculateur avec les véritables talents</a></section><div class="binch-tree-grid">'+treeHTML+'</div><div id="binch-tree-description" class="binch-tree-description" role="status">Sélectionne une icône pour lire son effet. Les rangs colorés représentent le parcours recommandé.</div><p class="binch-tree-license">Données d’arbres et positions : <a href="'+src+'" target="_blank" rel="noopener noreferrer">Talents Forever</a> · CC BY 4.0 · export du client bêta (4 nov. 2026). Icônes © Blizzard. Le calculateur Armory Forever peut refléter un hotfix plus récent.</p>';
+ if(valid){
+  const badges=host.querySelector('.binch-tree-badges');
+  if(badges?.children[1])badges.children[1].textContent=viewMode==='full'?'Plan complet : 51 points à répartir':'Progression : '+Math.max(0,level-9)+'/51 points';
+  const controls=document.createElement('div');
+  controls.className='binch-tree-viewmode';
+  controls.setAttribute('role','group');
+  controls.setAttribute('aria-label','Choisir la vue du build');
+  controls.innerHTML='<button type="button" data-tree-mode="full" aria-pressed="'+(viewMode==='full')+'">Build complet niv. 60</button><button type="button" data-tree-mode="current" aria-pressed="'+(viewMode==='current')+'">Ma progression niv. '+level+'</button>';
+  badges?.after(controls);
+  const legend=document.createElement('p');legend.className='binch-tree-legend';
+  legend.textContent='Doré : points accessibles dans le parcours · Bleu : points prévus ensuite · Halo : prochain talent. Il s’agit d’un guide, pas des talents réellement importés du jeu.';
+  controls.after(legend);
+  controls.querySelectorAll('[data-tree-mode]').forEach(b=>b.addEventListener('click',()=>{viewMode=b.dataset.treeMode==='current'?'current':'full';render()}));
+ }
  host.querySelectorAll('.binch-tree-node').forEach(b=>b.addEventListener('click',()=>{
   $('binch-tree-description').textContent=b.dataset.treeTooltip+' — '+b.dataset.treeDescription;
  }));
