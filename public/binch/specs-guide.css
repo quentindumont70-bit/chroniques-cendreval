@@ -55,3 +55,11 @@
 #binch-specs-pinned button:focus-visible{outline:3px solid #fff1ba;outline-offset:2px}
 @media(max-width:680px){.binch-specs-head>button{width:100%}.binch-specs-toolbar>*{flex:1 1 130px}#binch-specs-pinned{left:8px;right:8px;bottom:calc(68px + env(safe-area-inset-bottom));max-width:none}#binch-specs-pinned strong{font-size:.7rem}}
 @media(prefers-reduced-motion:reduce){#binch-specs *,#binch-specs-pinned *{transition:none!important;animation:none!important}}
+
+/* Mobile sticky tabs: keep Specs interactive targets out from under the nav. */
+@media(max-width:680px){
+ #page-specs{scroll-margin-top:105px}
+ #binch-specs :is(button,input,select,a){scroll-margin-top:110px;scroll-margin-bottom:95px}
+ #binch-specs .binch-spec-card{scroll-margin-top:110px;scroll-margin-bottom:95px}
+ #binch-specs{padding-bottom:75px}
+}
