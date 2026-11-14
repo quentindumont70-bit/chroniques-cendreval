@@ -1,0 +1,22 @@
+/* La Binch DA — legibility plates. Opaque text surfaces protect reading from procedural scenery.
+   Color ratios are measured in Chromium for every theme and cinematic state. */
+#stage{--da-reading:#0a1511;--da-reading-raised:#15241f;--da-reading-text:#f5efe0;--da-reading-muted:#d7e5d8}
+#stage[data-pair=orc-warrior]{--da-reading:#1b1412;--da-reading-raised:#2a1b16}
+#stage[data-pair=elf-druid]{--da-reading:#151927;--da-reading-raised:#22273b}
+#stage[data-pair=undead-warlock]{--da-reading:#191321;--da-reading-raised:#292033}
+#stage[data-pair=gnome-mage]{--da-reading:#11222a;--da-reading-raised:#193440}
+#stage[data-pair=troll-shaman]{--da-reading:#10232a;--da-reading-raised:#173440}
+#stage[data-pair=neutral]{--da-reading:#201f1a;--da-reading-raised:#302c24}
+#stage .hero h1{display:table;max-width:100%;padding:.12em .19em .17em;margin-left:-.19em;color:var(--da-reading-text);background:var(--da-reading);box-decoration-break:clone;-webkit-box-decoration-break:clone}
+#stage .hero p{display:table;color:var(--da-reading-muted);background:var(--da-reading);padding:13px 17px;border-left:2px solid var(--accent);max-width:min(100%,550px)}
+#stage .hero .eyebrow{display:table;background:var(--da-reading);color:#f2d7a2;padding:8px 12px;border:1px solid var(--da-etch)}
+#stage .signature strong{display:table;color:var(--da-reading-text);background:var(--da-reading);padding:4px 8px;margin:2px 0}
+#stage .signature .eyebrow{display:table;background:var(--da-reading);padding:4px 8px}
+#stage aside h2{display:table;max-width:100%;padding:8px 12px;margin:0;background:var(--da-reading);color:var(--da-reading-text)}
+#stage aside p{padding:10px 12px;background:var(--da-reading);color:var(--da-reading-muted)}
+#stage .module h3{display:table;max-width:100%;padding:8px 11px;margin:12px 0;background:var(--da-reading);color:var(--da-reading-text)}
+#stage .module p{padding:10px 11px;background:var(--da-reading);color:var(--da-reading-muted)}
+#stage.cinematic .hero h1{background:var(--da-reading);color:var(--da-reading-text)}
+#stage.cinematic .hero p{background:var(--da-reading);color:var(--da-reading-muted)}
+@media(max-width:430px){#stage .hero h1{padding:.1em .14em .14em;margin-left:-.14em}#stage .hero p{padding:10px 12px}#stage .module p{padding:9px 10px}}
+@media(prefers-reduced-motion:reduce){#stage .hero h1,#stage .hero p{animation:none!important;transition:none!important}}
