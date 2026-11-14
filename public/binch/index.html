@@ -1064,6 +1064,22 @@ function boot(){
    if(input&&typeof input.click==='function')input.click();
    else {openTab('sync');$('grimoire-bridge-file')?.focus();$('binch-front-sync-message').textContent='Ouvre Synchronisation pour choisir ton fichier.';}
  });
+ const copyPath=document.createElement('button');
+ copyPath.type='button';
+ copyPath.id='binch-front-sync-copy-path';
+ copyPath.textContent='Copier le chemin du fichier';
+ $('binch-front-sync')?.querySelector('.binch-front-sync-actions')?.append(copyPath);
+ copyPath.addEventListener('click',async()=>{
+   const relativePath=['WTF','Account','NOM_DU_COMPTE','SavedVariables','GrimoireSync.lua'].join(String.fromCharCode(92));
+   try{
+     if(!navigator.clipboard?.writeText)throw Error('Presse-papiers indisponible');
+     await navigator.clipboard.writeText(relativePath);
+     $('binch-front-sync-message').textContent='Chemin relatif copié. Remplace NOM_DU_COMPTE par ton compte WoW dans ton dossier de jeu.';
+   }catch{
+     window.prompt('Copie ce chemin relatif et remplace NOM_DU_COMPTE :',relativePath);
+     $('binch-front-sync-message').textContent='Chemin affiché : copie-le et remplace NOM_DU_COMPTE.';
+   }
+ });
  $('binch-front-sync-details')?.addEventListener('click',()=>openTab('sync'));
  // Mirror the real importer's result on the homepage; never claim a successful import on file selection.
  const importerStatus=$('grimoire-bridge-status');
