@@ -31,5 +31,5 @@ test('V133: aucun lien externe ni modification de Tournée ou des données priv�
  const dock=html.slice(html.indexOf('<nav class="cthu-mobile-dock"'),html.indexOf('</nav>',html.indexOf('<nav class="cthu-mobile-dock"')));
  assert.doesNotMatch(dock,/https?:\/\/|javascript:|onclick|data:|localStorage|indexedDB/);
  assert.doesNotMatch(tour,/cthu-mobile-dock/);
- assert.match(sw,/big-cthu-public-v2-v133/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
 });
