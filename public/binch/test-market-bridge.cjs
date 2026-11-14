@@ -1,7 +1,16 @@
 'use strict';
 // Run: node public/binch/test-market-bridge.cjs
 const assert=require('node:assert/strict');
-const bridge=require('./market-bridge.js');
+const fs=require('node:fs');
+const path=require('node:path');
+const vm=require('node:vm');
+// Root package uses type:module: Node require('./market-bridge.js') returns an empty namespace.
+// Evaluate this UMD source in a sandbox and read its explicit CommonJS export.
+const moduleBox={exports:{}};
+vm.runInNewContext(fs.readFileSync(path.join(__dirname,'market-bridge.js'),'utf8'),
+ {module:moduleBox,Date,Math,Number,String,Array,Object,JSON},
+ {filename:'market-bridge.js'});
+const bridge=moduleBox.exports;
 const when='2026-11-10T10:00:00.000Z';
 const legacy={prices:[
  {item:'Feuillerêve',unit:700,time:when,realm:'Forever',faction:'Horde',source:'Saisie manuelle'},
