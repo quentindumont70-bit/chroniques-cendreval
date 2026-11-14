@@ -9,7 +9,7 @@ function snapshot(legacy,ah,scope){
  const items=[];
  const push=(name,price,date,source,store)=>{
   const amount=Number(price),timestamp=Date.parse(date);
-  if(!clean(name)||!Number.isSafeInteger(amount)||amount<=0||amount>1e12||!Number.isFinite(timestamp)||timestamp>Date.now()+3600000)return;
+  if(!clean(name)||!Number.isSafeInteger(amount)||amount<=0||amount>1e12||!Number.isFinite(timestamp)||timestamp>Date.now())return;
   items.push({name:clean(name),price:amount,observedAt:new Date(timestamp).toISOString(),source:clean(source||'Saisie manuelle',80),store});
  };
  for(const x of Array.isArray(legacy?.prices)?legacy.prices:[]){
