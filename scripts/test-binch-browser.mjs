@@ -49,6 +49,20 @@ try{
     page.on('pageerror',e=>errors.push(e.message));
     await page.goto(base,{waitUntil:'domcontentloaded',timeout:30000});
     await page.locator('#binch-specs').waitFor({state:'attached',timeout:30000});
+    // Permanent first-page sync shortcut must invoke the real GrimoireSync file picker.
+    await page.locator('#app nav.nav [data-page="hub"]').evaluate(el=>el.click());
+    const quickImport=page.locator('#binch-front-sync-import');
+    await assertVisible(page,'#binch-front-sync',device.name+' homepage sync shortcut');
+    assert.match(await quickImport.innerText(),/Importer GrimoireSync.lua/);
+    const chooserPromise=page.waitForEvent('filechooser',{timeout:7000});
+    await quickImport.click({timeout:7000});
+    const chooser=await chooserPromise;
+    assert.equal(await chooser.element().getAttribute('id'),'grimoire-bridge-file','homepage uses existing validated importer');
+    await chooser.setFiles([]);
+    checks++;
+    await page.locator('#binch-front-sync-details').click({timeout:7000});
+    assert.equal(await page.locator('#page-sync').isVisible(),true,'homepage sync help opens sync section');
+    checks++;
     // Programmatic navigation is intentional: the mobile nav is collapsible.
     await page.locator('#app nav.nav [data-page="specs"]').evaluate(el=>el.click());
     await assertVisible(page,'#binch-specs',device.name+' Specs');
@@ -272,7 +286,7 @@ try{
     assert.doesNotMatch(await page.locator('#binch-front-tasks').textContent(),/Rafraîchir les données du jeu/,'unnecessary resync objective cleared');
     checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
-    console.log('Browser '+device.name+': 27 checks passed');
+    console.log('Browser '+device.name+': 29 checks passed');
     await context.close();
   }
   console.log('Browser Specs + AH + GrimoireSync: '+checks+' checks passed');
