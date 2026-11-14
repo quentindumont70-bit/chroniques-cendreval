@@ -209,3 +209,10 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - **GitHub Actions `43627334549` : SUCCESS 5/5 jobs**. Tests Chromium **58/58** (29 desktop + 29 mobile émulé), dont ouverture du vrai sélecteur de fichiers depuis l'accueil et navigation vers l'onglet Synchronisation ; Lua, Windows, Node et garde de conflits avec `main` réussis.
 - Mise en ligne : **pas encore**. La PR #129 reste en brouillon ; le site public peut encore afficher l'ancienne page tant que le code n'est pas fusionné et publié.
 - Lien public demandé en fin de lot : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/.
+
+## Golipette — résultats de synchronisation visibles sur l'accueil (14 novembre)
+- Le panneau Synchronisation WoW sur la page d'accueil affiche désormais clairement l'état du dernier import : aucune capture pour le profil, capture ancienne / non datée, ou capture récente à partir du vrai timestamp en jeu `capturedAt`, séparé de la date d'import.
+- Le bouton « Importer GrimoireSync.lua » ouvre toujours le vrai importeur déjà protégé. Le panneau relaie, via `MutationObserver`, les résultats de ce même importeur (profil importé, import annulé, import impossible, fichier trop volumineux). Il **ne déclare jamais un succès juste parce qu'un fichier a été sélectionné**.
+- L'annonce est un message accessible (`role=status`, `aria-live=polite`), avec retour visuel sur l'état récent ; aucune logique d'import ou base de données supplémentaire.
+- Tests Playwright : nouvelle vérification de l'affichage d'ancienneté, de la remontée de refus et du statut « récent » après import puis rechargement. **Run 43627808156 : SUCCESS 5/5 jobs**, **62/62 contrôles navigateur** (31 desktop, 31 mobile émulé), plus Lua, Node, Windows PowerShell et garde anti-chevauchement de fichiers avec `main`.
+- Aucun merge ni déploiement. Site public actuel : https://quentindumont70-bit.github.io/chroniques-cendreval/binch/ (les ajouts ne seront visibles qu'après intégration).
