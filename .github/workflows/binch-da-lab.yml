@@ -1,0 +1,22 @@
+name: La Binch — DA pilot
+on:
+  pull_request:
+    paths:
+      - 'public/binch/da-lab.html'
+      - 'scripts/test-binch-da-lab.mjs'
+      - '.github/workflows/binch-da-lab.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  da-lab:
+    name: Original race-class design lab static checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate self-contained design preview
+        run: node scripts/test-binch-da-lab.mjs
