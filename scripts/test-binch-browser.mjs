@@ -127,6 +127,13 @@ try{
     assert.equal(await page.evaluate(()=>localStorage.getItem('grimoire.hub.v3')),startingProfile);
     assert.equal(await page.evaluate(()=>localStorage.getItem('grimoire.bridge.last')),null);
     checks++;
+    // Valid GF6 syntax but unsupported class: do not mutate the existing profile.
+    const badClass='GF6|C:Golipette-QA,Forever,34,DEATHKNIGHT,Tauren,Horde,Zone,0,1700000000,0,0,0|P:|Q:';
+    await testFile('GrimoireSyncDB = { ["payload"] = "'+badClass+'" }');
+    await page.waitForFunction(()=>document.querySelector('#grimoire-bridge-status')?.textContent?.includes('Race/classe inconnue'));
+    assert.equal(await page.evaluate(()=>localStorage.getItem('grimoire.hub.v3')),startingProfile);
+    assert.equal(await page.evaluate(()=>localStorage.getItem('grimoire.bridge.last')),null);
+    checks++;
     const foreign='GF6|C:Autre-QA,Forever,35,DRUID,Tauren,Horde,Les%20Tarides,100,1700000000,2500,4000,500|P:|Q:';
     let dialogCount=0;
     let resolvePrompt;
@@ -135,6 +142,8 @@ try{
     await testFile('GrimoireSyncDB = { ["payload"] = "'+foreign+'" }');
     await Promise.race([promptHandled,new Promise((_,reject)=>setTimeout(()=>reject(new Error('Missing character-switch dialog')),5000))]);
     assert.equal(dialogCount,1,'foreign character triggers explicit confirmation');
+    await page.waitForFunction(()=>document.querySelector('#grimoire-bridge-status')?.textContent?.includes('Import annulé'));
+    assert.match(await page.locator('#grimoire-bridge-status').textContent(),/profil Golipette-QA est conservé/);
     assert.equal(await page.evaluate(()=>localStorage.getItem('grimoire.hub.v3')),startingProfile);
     assert.equal(await page.evaluate(()=>localStorage.getItem('grimoire.bridge.last')),null);
     checks++;
@@ -158,7 +167,7 @@ try{
     assert.equal(profile.data.pseudo,'Golipette-QA','no character switch');
     checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
-    console.log('Browser '+device.name+': 18 checks passed');
+    console.log('Browser '+device.name+': 19 checks passed');
     await context.close();
   }
   console.log('Browser Specs + AH + GrimoireSync: '+checks+' checks passed');
