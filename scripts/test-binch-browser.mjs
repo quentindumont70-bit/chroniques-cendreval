@@ -100,11 +100,25 @@ try{
     else await page.locator('#binch-specs-pin-close').click();
     assert.equal(await page.locator('#binch-specs-pinned').isVisible(),false);
     checks++;
+    // Smoke the AH craft workflow without injecting made-up market prices.
+    await page.locator('#app nav.nav [data-page="market"]').evaluate(el=>el.click());
+    await page.locator('#binch-ah-craft-form').waitFor({state:'attached',timeout:10000});
+    assert.equal(await page.locator('#binch-ah-craft-form').isVisible(),true);
+    checks++;
+    await page.locator('#binch-ah-craft-form').evaluate(form=>{
+      form.elements.namedItem('output').value='Armure Golipette QA';
+      form.querySelector('[data-craft-name="0"]').value='Barre Golipette QA';
+      form.querySelector('[data-craft-count="0"]').value='2';
+      form.requestSubmit();
+    });
+    assert.match(await page.locator('#binch-ah-craft-list').innerText(),/Armure Golipette QA/);
+    assert.match(await page.locator('#binch-ah-craft-list').innerText(),/incomplet|non renseigné/i);
+    checks++;
     if(errors.length)throw new Error(device.name+' page errors: '+errors.slice(0,5).join(' | '));
-    console.log('Browser '+device.name+': 12 checks passed');
+    console.log('Browser '+device.name+': 14 checks passed');
     await context.close();
   }
-  console.log('Browser Specs: '+checks+' checks passed');
+  console.log('Browser Specs + AH: '+checks+' checks passed');
 }catch(error){
   console.error(error);
   process.exitCode=1;
