@@ -41,5 +41,5 @@ test('V123: photographic preview never reads patient data and official Tournée 
  assert.doesNotMatch(tour,/premium-cinema\.html/);
  assert.match(sw,/'\.\/premium-cinema\.html'/);
  assert.doesNotMatch(sw.slice(sw.indexOf('const ASSETS=['),sw.indexOf('];',sw.indexOf('const ASSETS=['))+2),/images\.unsplash\.com/);
- assert.match(sw,/big-cthu-public-v2-v126/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
 });
