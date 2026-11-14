@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'public/binch/da-lab.html'
+      - 'public/binch/da-themes.js'
       - 'scripts/test-binch-da-lab.mjs'
       - '.github/workflows/binch-da-lab.yml'
   workflow_dispatch:
