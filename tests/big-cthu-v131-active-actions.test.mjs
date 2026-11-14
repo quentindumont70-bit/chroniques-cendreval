@@ -193,3 +193,27 @@ test('V169: erreur Agenda signalée sans toucher aux autres modules',async()=>{
  assert.deepEqual(d.items.map(x=>x.title),['Priorité préservée']);
  assert.equal(f.writes(),0);
 });
+
+test('V172: nombre total vrai même quand les cartes sont limitées par rubrique',async()=>{
+ const f=await fixture({[K.tasks]:JSON.stringify([
+  {id:'a',text:'A',done:false},{id:'b',text:'B',done:false},
+  {id:'c',text:'C',done:false},{id:'d',text:'D',done:false}
+ ])});
+ assert.equal(f.collect().total,4);
+ assert.equal(f.collect().items.length,2);
+ f.ctx.testRender();
+ assert.equal(f.nodes.get('cinemaPulseCount').textContent,'4 actions à reprendre');
+ assert.equal(f.nodes.get('activePulseCount').textContent,'4 actions · 2 affichées');
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
+
+test('V172: aucune fausse sérénité si une source locale est illisible',async()=>{
+ const f=await fixture({[K.agenda]:'{données illisibles'});
+ f.ctx.testRender();
+ assert.equal(f.collect().total,0);
+ assert.equal(f.nodes.get('cinemaPulseCount').textContent,'Certaines actions indisponibles');
+ assert.match(f.nodes.get('activePulseList').children[0].textContent,/impossible de garantir/);
+ assert.match(f.nodes.get('activePulseStatus').textContent,/illisibles/);
+ assert.equal(f.writes(),0);
+});
