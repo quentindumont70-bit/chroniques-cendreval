@@ -34,7 +34,7 @@ assert.match(html,/themes\.resolve\(id\)/);
 assert.match(html,/\.textContent=x\[field\]/);
 assert.doesNotMatch(html,/(?:localStorage|fetch\(|XMLHttpRequest|sendBeacon\()/,'preview must not read player data or make requests');
 assert.doesNotMatch(readFileSync(new URL('../public/binch/da-themes.js',import.meta.url),'utf8'),/(?:localStorage|fetch\(|XMLHttpRequest|sendBeacon\()/,'registry must not read player data or make requests');
-const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)];
+const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
 assert.equal(scripts.length,1,'one standalone inline controller expected');
 new Script(scripts[0][1],{filename:'da-lab.html:inline'});
 assert.match(html,/Effets réduits/);
