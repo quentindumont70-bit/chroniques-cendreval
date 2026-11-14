@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {runInNewContext} from 'node:vm';
 
 const read=name=>readFile(new URL('../big-cthu-beta/'+name,import.meta.url),'utf8');
-const K={pantry:'big-cthu-v2-pantry-v1',captures:'big-cthu-v2-inbox-v1',tasks:'big-cthu-v2-demo-tasks',maison:'big-cthu-v2-maison-v1',musique:'big-cthu-v2-passions-v1',gaming:'big-cthu-v2-next-session-v1'};
+const K={pantry:'big-cthu-v2-pantry-v1',agenda:'big-cthu-v2-agenda-v1',captures:'big-cthu-v2-inbox-v1',tasks:'big-cthu-v2-demo-tasks',maison:'big-cthu-v2-maison-v1',musique:'big-cthu-v2-passions-v1',gaming:'big-cthu-v2-next-session-v1'};
 async function fixture(seed={}){
  const code=await read('active-pulse.js');
  const stored=new Map(Object.entries(seed)),queried=[];
@@ -167,4 +167,29 @@ test('V151: la scène cinématographique affiche le nombre réel sans autre stoc
  assert.match(html,/id="cinemaPulseCount" aria-live="polite"/);
  assert.match(html,/class="cinema-live-pulse" href="#activePulse"/);
  assert.match(html,/class="mini" href="\.\/musique\.html"/);
+});
+
+test('V169: le cockpit reprend deux vrais événements Agenda proches, et aucun événement ancien',async()=>{
+ const iso=delta=>{const d=new Date();d.setDate(d.getDate()+delta);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+ const f=await fixture({[K.agenda]:JSON.stringify([
+  {id:'later',title:'Échéance fictive',date:iso(3),time:'14:30',category:'perso'},
+  {id:'today',title:'Rendez-vous fictif',date:iso(0),category:'perso'},
+  {id:'past',title:'Date passée',date:iso(-1),category:'perso'},
+  {id:'far',title:'Date lointaine',date:iso(20),category:'perso'},
+  {id:'bad',title:'Titre invalide',date:'non-date',category:'perso'}
+ ])});
+ const data=f.collect();
+ assert.deepEqual(data.items.map(x=>x.title),['Rendez-vous fictif','Échéance fictive']);
+ assert.ok(data.items.every(x=>x.kind==='Agenda'&&x.url==='./agenda.html'));
+ assert.match(data.items[1].next,/14:30/);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
+
+test('V169: erreur Agenda signalée sans toucher aux autres modules',async()=>{
+ const f=await fixture({[K.agenda]:'{cassé',[K.tasks]:JSON.stringify([{id:'t',text:'Priorité préservée',done:false}])});
+ const d=f.collect();
+ assert.equal(d.warnings,1);
+ assert.deepEqual(d.items.map(x=>x.title),['Priorité préservée']);
+ assert.equal(f.writes(),0);
 });

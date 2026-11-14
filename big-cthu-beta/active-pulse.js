@@ -3,6 +3,7 @@
 'use strict';
 const SOURCES=[
  {key:'big-cthu-v2-pantry-v1',kind:'Stock',url:'./garde-manger.html',limit:2},
+ {key:'big-cthu-v2-agenda-v1',kind:'Agenda',url:'./agenda.html',limit:2},
  {key:'big-cthu-v2-inbox-v1',kind:'Captures',url:'./capture.html',limit:2},
  {key:'big-cthu-v2-demo-tasks',kind:'Priorités',url:'#priorities',limit:2},
  {key:'big-cthu-v2-maison-v1',kind:'Maison',url:'./maison.html',limit:2},
@@ -31,6 +32,7 @@ function collect(){
   if(bad){warnings++;continue}
   let selected=[];
   if(source.kind==='Stock')selected=rows.filter(x=>x&&typeof x.name==='string'&&x.name.trim()&&x.name.length<=90&&typeof x.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&x.date<=stop&&['DLC','DDM'].includes(x.kind)).sort((a,b)=>a.date.localeCompare(b.date)).map(x=>({title:x.name,next:x.kind+' · '+(x.date<today?'Date dépassée : ':'Échéance : ')+x.date}));
+  if(source.kind==='Agenda')selected=rows.filter(x=>x&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=120&&typeof x.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&!Number.isNaN(Date.parse(x.date+'T12:00:00Z'))&&x.date>=today&&x.date<=stop&&(!x.time||/^([01]\d|2[0-3]):[0-5]\d$/.test(x.time))).sort((a,b)=>(a.date+' '+(a.time||'00:00')).localeCompare(b.date+' '+(b.time||'00:00'))).map(x=>({title:x.title,next:'Le '+x.date+(x.time?' · '+x.time:'')}));
   if(source.kind==='Captures')selected=rows.filter(x=>x&&x.status==='new'&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140).map(x=>({title:x.title,next:x.target==='agenda'?'À envoyer vers Agenda':x.target==='task'?'À envoyer vers Priorités':'À traiter dans Capture'}));
   if(source.kind==='Priorités')selected=rows.filter(x=>x&&typeof x.text==='string'&&x.text.trim()&&x.text.length<=160&&!x.done).map(x=>({title:x.text,next:''}));
   if(source.kind==='Maison')selected=rows.filter(x=>x&&typeof x.name==='string'&&x.name.trim()&&x.name.length<=120&&['todo','doing'].includes(x.status)).sort((a,b)=>(a.status==='doing'?0:1)-(b.status==='doing'?0:1)).map(x=>({title:x.name,next:typeof x.notes==='string'?x.notes.slice(0,120):''}));
