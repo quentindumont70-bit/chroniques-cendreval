@@ -248,6 +248,87 @@ footer p{line-height:1.6;max-width:900px;margin:0}
  .topinner,.hero,.glass,.module,.mini,.mobile-dock{border:1px solid CanvasText;box-shadow:none}
 }
 
+
+/* V123 — portes photographiques : chaque tentacule possède son image, pas juste un aplat. */
+/* Les URL Unsplash ne transportent aucune donnée privée ; les gradients assurent un repli hors ligne. */
+.module.tournee{
+ --image:radial-gradient(ellipse at 80% 28%,rgba(118,205,255,.36),transparent 58%),linear-gradient(145deg,#123650,#061e35);
+}
+.module.maison{
+ --image:linear-gradient(140deg,rgba(12,31,48,.18),rgba(20,40,58,.08)),url("https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1080&q=82");
+}
+.module.budget{
+ --image:linear-gradient(125deg,rgba(6,27,40,.24),rgba(7,29,52,.1)),url("https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=840&q=78");
+}
+.module.agenda{
+ --image:linear-gradient(150deg,rgba(12,28,50,.16),rgba(10,35,56,.13)),url("https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=840&q=78");
+}
+.module.creation{
+ --image:linear-gradient(125deg,rgba(25,10,37,.2),rgba(9,25,45,.1)),url("https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=840&q=78");
+}
+.module.passions{
+ --image:linear-gradient(125deg,rgba(8,25,41,.24),rgba(13,32,46,.1)),url("https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=840&q=78");
+}
+/* Fond photographique + surfaçage de verre : lisibilité quels que soient les reliefs. */
+.module{
+ -webkit-backdrop-filter:blur(7px) saturate(1.14);
+ backdrop-filter:blur(7px) saturate(1.14);
+}
+.module:before{
+ background-image:linear-gradient(0deg,rgba(1,10,23,.96) 0%,rgba(1,13,29,.68) 37%,rgba(2,18,34,.12) 79%),var(--image);
+ background-repeat:no-repeat;
+ background-position:center,center;
+ background-size:cover,cover;
+ filter:saturate(.91) contrast(1.09);
+ transform:scale(1.01);
+ transition:transform .55s cubic-bezier(.16,1,.3,1),filter .35s ease;
+}
+.module:after{
+ background:linear-gradient(148deg,rgba(223,247,255,.15) 0%,transparent 30%),linear-gradient(0deg,rgba(2,11,24,.65),transparent 55%);
+}
+.module:hover:before,.module:focus-visible:before{
+ transform:scale(1.085);
+ filter:saturate(1.02) contrast(1.1);
+}
+.module h3{
+ text-shadow:0 3px 16px rgba(0,6,16,.75);
+}
+.module p{
+ color:#d7e8f5;
+ text-shadow:0 3px 11px rgba(0,6,15,.8);
+}
+.module .module-icon{
+ -webkit-backdrop-filter:blur(12px);
+ backdrop-filter:blur(12px);
+}
+.module:not(.special) .module-icon{
+ background:linear-gradient(135deg,rgba(32,71,91,.73),rgba(5,26,44,.71));
+}
+.section-head h2{
+ text-shadow:0 3px 21px rgba(0,8,19,.34);
+}
+@media(max-width:760px){
+ .panel-grid{gap:12px}
+ .module{min-height:192px}
+ .module.special{min-height:180px}
+ .module:before{background-position:center,center}
+ .module.maison:before{background-position:center,center 45%}
+ .module.agenda:before{background-position:center,center 62%}
+ .module.creation:before{background-position:center,center 46%}
+ .module.passions:before{background-position:center,center 40%}
+ .module .module-icon{width:43px;height:43px}
+ .module h3{font-size:clamp(21px,5.2vw,25px)}
+ .module p{font-size:11px;line-height:1.55}
+}
+@media(max-width:370px){
+ .module{min-height:188px;padding:13px}
+ .module h3{font-size:21px}
+}
+@media(prefers-reduced-motion:reduce){
+ .module:before{transition:none!important;transform:none!important}
+ .module:hover:before,.module:focus-visible:before{transform:none!important}
+}
+
 </style>
 </head>
 <body>
