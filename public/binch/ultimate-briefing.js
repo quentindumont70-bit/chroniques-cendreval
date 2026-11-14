@@ -17,7 +17,10 @@ function loadSettings(id){
 function save(){try{localStorage.setItem(settingKey(currentId),JSON.stringify({mode,dismissed}))}catch{}}
 function syncState(profile){
  const imp=read('grimoire.bridge.last',{}),name=String(profile.data?.pseudo||'').trim().toLocaleLowerCase('fr'),match=!!name&&String(imp.name||'').trim().toLocaleLowerCase('fr')===name;
- return {match,level:match&&Number.isInteger(Number(imp.level))?Number(imp.level):Number(profile.data?.level)||1,updated:match?imp.updated||imp.at||imp.date:null,zone:match?String(imp.zone||''):''};
+ const when=match?(imp.updated||imp.at||imp.date||null):null;
+ const stamp=typeof when==='number'?(when<1e11?when*1000:when):Date.parse(String(when||''));
+ const ageHours=Number.isFinite(stamp)?Math.max(0,Math.floor((Date.now()-stamp)/3600000)):null;
+ return {match,level:match&&Number.isInteger(Number(imp.level))?Number(imp.level):Number(profile.data?.level)||1,updated:when,ageHours,zone:match?String(imp.zone||''):''};
 }
 function customObjectives(id){
  const key='binch.custom.objectives.v1.'+id;const items=read(key,[]);
@@ -40,14 +43,14 @@ function render(){
  const root=$('binch-ultimate-briefing');if(!root)return;
  lastPlan=plan();if(!lastPlan){root.textContent='Le moteur de planification est indisponible. Les autres modules restent accessibles.';return}
  const {profile,actions,next,sync}=lastPlan;
- $('binch-ultimate-level').textContent='Niveau '+profile.level+(sync.zone?' · '+sync.zone:'')+(sync.match?' · dernier import connu':' · niveau du profil manuel');
+ $('binch-ultimate-level').textContent='Niveau '+profile.level+(sync.zone?' · '+sync.zone:'')+(sync.match?' · import '+(sync.ageHours==null?'date inconnue':sync.ageHours<1?'récent':sync.ageHours+' h auparavant'):' · niveau du profil manuel');
  const control=$('binch-ultimate-mode');control.value=mode;
  $('binch-ultimate-next').innerHTML=next?'<span class="binch-ultimate-category">'+esc(next.category)+'</span><h3>'+esc(next.title)+'</h3><p>'+esc(next.description)+'</p><small>Source : '+esc(next.origin||'profil local')+' · '+(next.verified?'référence ou action documentée':'vérification recommandée')+'</small>':'<p>Aucun objectif disponible. Consulter ton carnet de route.</p>';
  $('binch-ultimate-next-button').disabled=!next;
  $('binch-ultimate-actions').innerHTML=actions.slice(0,6).map((x,i)=>'<article class="binch-ultimate-task"><span class="binch-ultimate-order">'+(i+1)+'</span><div><strong>'+esc(x.title)+'</strong><small>'+esc(x.category)+' · '+(x.when==='soon'?'Accessible dès le niveau '+x.level:'Accessible selon le profil')+' · '+esc(x.origin)+'</small></div><button type="button" data-ultimate-open="'+esc(x.page)+'" data-ultimate-id="'+esc(x.id)+'" aria-label="Ouvrir '+esc(x.title)+'">Voir</button><button type="button" data-ultimate-dismiss="'+esc(x.id)+'" aria-label="Masquer cette suggestion">×</button></article>').join('');
  window.BinchUltimate={getPlan:()=>lastPlan?{profile:{...lastPlan.profile},actions:lastPlan.actions.map(x=>({...x})),next:lastPlan.next?{...lastPlan.next}:null}:null,open:go,refresh:render};
  document.dispatchEvent(new Event('binch:ultimate-updated'));
- $('binch-ultimate-status').textContent='Conseils calculés localement à partir du profil, du carnet des découvertes et de l’import lorsqu’il correspond au personnage. Aucune action effectuée dans WoW.';
+ $('binch-ultimate-status').textContent=(sync.match&&sync.ageHours!=null&&sync.ageHours>24?'Attention : import âgé de plus de 24 heures. Les quêtes et la zone peuvent avoir changé. ':'')+'Conseils calculés localement à partir du profil, du carnet des découvertes et de l’import lorsqu’il correspond au personnage. Aucune action effectuée dans WoW.';
  document.dispatchEvent(new CustomEvent('binch:journey-updated',{detail:{next:next?{id:next.id,title:next.title,page:next.page}:null,level:profile.level,imported:profile.imported}}));
 }
 function exportPlan(){
@@ -70,7 +73,8 @@ function mount(){
  };
  for(const event of ['grimoire:sync','binch:route-complete','binch:external-complete','binch:objectives-change'])document.addEventListener(event,render);
  window.addEventListener('storage',e=>{if(!e.key||e.key.includes('grimoire')||e.key.includes('binch.custom')||e.key.startsWith('binch.ultimate.')){if(e.key?.startsWith('binch.ultimate.'))currentId='';render()}});
- $('binch-command-refresh')?.addEventListener('click',render);
+ ['level','pseudo'].forEach(id=>$(id)?.addEventListener('change',()=>setTimeout(render,0)));
+  $('binch-command-refresh')?.addEventListener('click',render);
  setTimeout(render,0);return true;
 }
 function start(){if(mount())return;const app=$('app');if(!app)return;const mo=new MutationObserver(()=>{if(mount())mo.disconnect()});mo.observe(app,{childList:true,subtree:true});setTimeout(()=>mo.disconnect(),10000)}
