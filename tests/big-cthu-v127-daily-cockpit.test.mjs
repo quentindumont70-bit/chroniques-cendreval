@@ -23,7 +23,7 @@ async function fixture(){
  }
  for(const id of ['#profileWarning','#profile','#welcome','#tentacleSearch','#tiles','#tentacleCount','#cthuCatalogToggle'])nodes.set(id,node());
  const document={body:{dataset:{}},querySelector:id=>nodes.get(id),createElement:node,getElementById:()=>null};
- const context={document,location:{href:''},Set,Object,Array};
+ const context={document,location:{href:''},Set,Object,Array,profile:'bobinch'};
  runInNewContext(html.slice(first,last)+html.slice(start,end)+'\nthis.show=renderProfile;this.toggleCatalog=()=>{catalogExpanded=!catalogExpanded};this.setProfile=p=>{profile=p};',context,{timeout:1500});
  return {context,nodes,html,show:()=>context.show(),search:value=>{nodes.get('#tentacleSearch').value=value;context.show()},toggle:()=>{context.toggleCatalog();context.show()},setProfile:p=>{context.setProfile(p);context.show()}};
 }
