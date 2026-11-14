@@ -108,3 +108,32 @@ body[data-cthu-area="nutrition"] :is(a,button,input):focus-visible{
   -webkit-backdrop-filter:none;backdrop-filter:none;background-color:var(--food-glass)
  }
 }
+
+/* V162 — alerts before catalog; truly empty state stays visible but compact. */
+body[data-cthu-area="nutrition"] #nutritionAttention{
+ margin:0 0 18px;
+ background:
+ radial-gradient(ellipse at 2% -12%,var(--food-glow),transparent 58%),
+ linear-gradient(128deg,var(--food-glass),rgba(9,34,47,.77));
+}
+body[data-cthu-area="nutrition"] #nutritionAttention h2{color:var(--food-warm)}
+body[data-cthu-area="nutrition"] #nutritionAttention[data-has-alerts="false"]{
+ padding:15px 20px;
+ background:var(--food-glass);
+}
+body[data-cthu-area="nutrition"] #nutritionAttention[data-has-alerts="false"] h2{
+ font-size:19px;margin:0 0 5px;
+}
+body[data-cthu-area="nutrition"] #nutritionAttention[data-has-alerts="false"] > .muted,
+body[data-cthu-area="nutrition"] #nutritionAttention[data-has-alerts="false"] .attention-list{
+ display:none;
+}
+body[data-cthu-area="nutrition"] #nutritionAttention[data-has-alerts="false"] #nh-status{
+ margin:0;min-height:0;
+}
+body[data-cthu-area="nutrition"] #nutritionAttention[data-has-alerts="unknown"]{
+ border-color:var(--food-warm);
+}
+@media(max-width:760px){
+ body[data-cthu-area="nutrition"] #nutritionAttention{margin-bottom:13px}
+}
