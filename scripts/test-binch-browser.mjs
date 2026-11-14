@@ -80,6 +80,8 @@ try{
     checks++;
     await page.reload({waitUntil:'domcontentloaded'});
     await page.locator('#binch-specs').waitFor({state:'attached'});
+    await page.locator('#app nav.nav [data-page="specs"]').evaluate(el=>el.click());
+    await assertVisible(page,'#binch-specs',device.name+' Specs after reload');
     assert.equal(await page.locator('#binch-specs-level').inputValue(),'34','persisted manual level');
     checks++;
     assert.equal(await page.locator('#binch-specs-pinned').isVisible(),true,'persisted pin');
