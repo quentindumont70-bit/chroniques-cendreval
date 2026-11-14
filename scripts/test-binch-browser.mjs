@@ -59,7 +59,10 @@ try{
     checks++;
     assert.equal(await page.locator('#binch-spec-card-does-not-exist').count(),0);
     // Test a different class while retaining a pinned build.
-    await page.locator('#binch-specs-pin').click();
+    // Mobile sticky navigation can overlap the header during automatic Playwright scrolling.
+    // Center the real control in the viewport before a genuine pointer click.
+    await page.locator('#binch-specs-pin').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));
+    await page.locator('#binch-specs-pin').click({timeout:8000});
     assert.equal(await page.locator('#binch-specs-pinned').isVisible(),true);
     checks++;
     await classControl.selectOption({label:'Chasseur'});
