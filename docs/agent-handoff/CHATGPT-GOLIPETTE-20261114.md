@@ -102,3 +102,11 @@ Depuis la racine du dépôt, exécuter `node scripts/test-binch-golipette.mjs` :
 - Nouveau `scripts/test-grimoiresync-mock.lua` : API WoW simulée avec Lua 5.1 qui charge `Core.lua` et génère le vrai `GrimoireSyncDB.payload`. Pipe vers `public/binch/test-grimoiresync-interop.cjs` qui appelle le parseur réel du navigateur. Run `43618359682` : 4 jobs SUCCESS, **14 assertions interop Lua → JS**, plus les 60 assertions Node et 32 contrôles Chromium.
 - Aucun fichier personnel ni instance WoW utilisée. Cela valide une simulation de compatibilité, **pas une validation du fonctionnement dans WoW Forever lui-même**.
 - Nouvelle étude **future** `docs/agent-handoff/BINCH-DISCORD-ROADMAP.md` : 10 chantiers pour relier recherches LFG, coffre de souhaits, coffre de guilde déclaré, artisans et événements GM à Discord. Toujours priorité aux fonctionnalités et à la QA actuelles ; **aucun bot Discord créé, aucune source payante activée**.
+
+## Contrôle incrémental XP (suite GrimoireSync)
+- `scripts/test-grimoiresync-mock.lua` a maintenant un simulateur d'XP mutable : login niveau 34, gain d'XP 2000→2500, XP de repos 500→600 ; simulation de l'événement `PLAYER_XP_UPDATE`.
+- Le script vérifie que le GF6 est réémis avec les valeurs actualisées, que le statut XP est `ok` et surtout que le journal de quêtes ne subit **aucun rescannage** pendant l'actualisation XP.
+- Le test `test-grimoiresync-interop.cjs` valide ensuite les nouvelles valeurs sur le vrai parseur navigateur (désormais 15 assertions interop).
+- GitHub Actions run `43619031657` : **SUCCESS 4/4** (Node 60 assertions ; Chromium 32 vérifications desktop/mobile ; GrimoireSync Lua 5.1 ; PowerShell Windows).
+- Réserve inchangée : simulation d'API WoW, pas de client WoW Forever réel ; test physique mobile/Windows à faire.
+- Demande permanente : chaque fin de lot doit proposer le lien direct de La Binch `https://quentindumont70-bit.github.io/chroniques-cendreval/binch/` (site public, ne montrant pas cette PR tant qu'elle n'est pas fusionnée).
