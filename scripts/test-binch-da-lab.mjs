@@ -30,6 +30,16 @@ assert.equal(themes.findPair('Gnome','Druide'),null,'unsupported art combination
 assert.equal(themes.findPair('__proto__','constructor'),null,'only whitelisted pair identifiers are allowed');
 assert.equal(themes.resolve('__proto__'),null);
 assert.equal(themes.resolve('unknown'),null);
+assert.equal(themes.version,'0.4.0');
+assert.equal(themes.resolveOrNeutral('tauren-druid'),themes.resolve('tauren-druid'));
+assert.equal(themes.resolveOrNeutral('unknown'),themes.neutral);
+assert.equal(themes.resolveOrNeutral('__proto__'),themes.neutral);
+assert.ok(themes.neutral.crest&&themes.neutral.headline&&themes.neutral.signature);
+assert.equal(themes.findPair('Gobelin','Druide'),null);
+assert.match(html,/data-pair=neutral/);
+assert.match(html,/id="neutral" aria-pressed="false"/);
+assert.match(html,/id==='neutral'\?themes\.neutral:themes\.resolve\(id\)/);
+
 assert.match(html,/themes\.resolve\(id\)/);
 assert.match(html,/\.textContent=x\[field\]/);
 assert.doesNotMatch(html,/(?:localStorage|fetch\(|XMLHttpRequest|sendBeacon\()/,'preview must not read player data or make requests');
