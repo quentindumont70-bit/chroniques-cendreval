@@ -838,6 +838,13 @@ html[data-cthu-theme] .module:hover{border-color:var(--cyan)}
  .cthu-mobile-dock a{display:grid;place-items:center;text-decoration:none;color:var(--text);font-size:10px;min-height:53px}
 }
 @media(prefers-reduced-motion:reduce){.hero,.module{transition:none!important}}
+
+/* V151 — indicateur de reprise réel, directement sur la scène cinématographique. */
+.cinema-live-pulse{display:inline-flex;align-items:center;gap:10px;margin:8px 0 16px;padding:10px 14px;min-height:46px;border-radius:999px;border:1px solid var(--line);background:rgba(5,22,39,.64);color:var(--text);text-decoration:none;font-size:12px;font-weight:800;backdrop-filter:blur(12px)}
+.cinema-live-pulse:hover{border-color:var(--cyan)}
+.cinema-live-pulse:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+.cinema-live-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 11px var(--cyan);flex:none}
+@media(max-width:760px){.cinema-live-pulse{margin-bottom:14px;font-size:11px}}
 </style>
 <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png"><script src="./cockpit-themes.js"></script><script src="./next-session.js" defer></script><script src="./active-pulse.js" defer></script></head>
 <body>
@@ -855,12 +862,12 @@ html[data-cthu-theme] .module:hover{border-color:var(--cyan)}
     <div class="scene-stamp" aria-hidden="true"><span class="scene-stamp__ring">✦</span><span>CRYSTAL<br>VISTA</span></div>
     <div class="eyebrow">UN LIEU AU-DESSUS DU BRUIT · BIG CTHU</div>
     <h1 id="intro">Ton monde.<br><em>Sous contrôle.</em></h1><span class="sr-only" id="welcome" aria-live="polite"></span>
-    <p class="subtitle">Un cockpit à la hauteur de tes ambitions. Ce qui mérite ton attention, sans l'encombrement du reste.</p>
+    <p class="subtitle">Un cockpit à la hauteur de tes ambitions. Ce qui mérite ton attention, sans l'encombrement du reste.</p><a class="cinema-live-pulse" href="#activePulse" aria-label="Voir les actions en attente"><span class="cinema-live-dot" aria-hidden="true"></span><span id="cinemaPulseCount" aria-live="polite">Mes actions locales</span><span aria-hidden="true">↘</span></a>
     <div class="hero-actions"><a class="action primary" href="./tournee-complete.html">✚ Ouvrir Tournée</a><button class="action" id="focus" type="button">Voir mes priorités ↘</button><a class="action" href="./capture.html">⚡ Capture rapide</a></div>
     <div class="hero-bottom" aria-label="Raccourcis du cockpit">
      <a class="mini" href="./agenda.html"><span class="glyph" aria-hidden="true">◷</span><span><strong>Échéances</strong><span>Consulter l'agenda</span></span></a>
      <a class="mini" href="./maison.html"><span class="glyph" aria-hidden="true">⌂</span><span><strong>Maison</strong><span>Actions en cours</span></span></a>
-     <a class="mini" href="./passions.html"><span class="glyph" aria-hidden="true">✧</span><span><strong>Mes passions</strong><span>Reprendre un projet</span></span></a>
+     <a class="mini" href="./musique.html"><span class="glyph" aria-hidden="true">✧</span><span><strong>Musique</strong><span>Reprendre un projet actif</span></span></a>
     </div>
    </div>
   </section>

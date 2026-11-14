@@ -51,6 +51,7 @@ function render(){
  const {items,warnings}=collect();
  root.replaceChildren();
  const count=$('activePulseCount');if(count)count.textContent=items.length+' actions retrouvées';
+ const heroCount=$('cinemaPulseCount');if(heroCount)heroCount.textContent=items.length===0?'Aucune action en attente':items.length+' action'+(items.length>1?'s':'')+' à reprendre';
  if(!items.length)root.append(node('p','Aucune action en attente dans tes modules locaux. Tu peux simplement continuer ta journée.','muted'));
  for(const item of items){
   const link=node('a','','active-pulse-item');
