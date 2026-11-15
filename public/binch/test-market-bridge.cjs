@@ -1,7 +1,10 @@
 'use strict';
 // Run: node public/binch/test-market-bridge.cjs
 const assert=require('node:assert/strict');
-const bridge=require('./market-bridge.js');
+const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const mod={exports:{}};
+vm.runInNewContext(fs.readFileSync(path.join(__dirname,'market-bridge.js'),'utf8'),{module:mod},{filename:'market-bridge.js'});
+const bridge=mod.exports;
 const when='2026-11-10T10:00:00.000Z';
 const legacy={prices:[
  {item:'Feuillerêve',unit:700,time:when,realm:'Forever',faction:'Horde',source:'Saisie manuelle'},
