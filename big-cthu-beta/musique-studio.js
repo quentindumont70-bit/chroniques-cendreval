@@ -51,8 +51,8 @@ function render(){
  const host=$('studio-list');if(!host)return;
  host.replaceChildren();
  const current=rows.filter(x=>x.mode==='musique'&&x.status!=='done')
-  .sort((a,b)=>b.date.localeCompare(a.date));
- const count=$('studio-count');if(count)count.textContent=current.length+' piste(s) à reprendre';
+  .sort((a,b)=>(a.status==='active'?0:1)-(b.status==='active'?0:1)||b.date.localeCompare(a.date));
+ const count=$('studio-count');if(count){const active=current.filter(x=>x.status==='active').length;count.textContent=active?active+' en cours · '+(current.length-active)+' à démarrer':current.length+' piste(s) à démarrer'}
  if(!current.length){host.append(element('p','muted','Aucun projet en cours : une idée suffit pour commencer.'));return}
  for(const item of current.slice(0,20)){
   const card=element('article','project'),name=element('strong','',item.title),date=element('small','',item.date+' · '+(item.status==='active'?'En cours':'À démarrer'));
