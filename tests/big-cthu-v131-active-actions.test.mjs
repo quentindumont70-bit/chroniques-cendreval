@@ -32,7 +32,7 @@ test('V131: retrouve les vraies priorités Maison, musique et prochaine session 
  });
  const d=f.collect();
  assert.deepEqual(d.items.map(x=>x.kind),['Priorités','Maison','Musique','Jeux']);
- assert.deepEqual(d.items.map(x=>x.url),['#priorities','./maison.html','./musique.html','#nextSession']);
+ assert.deepEqual(d.items.map(x=>x.url),['#priorities','./maison.html','./musique.html#studio-list','#nextSession']);
  assert.equal(d.warnings,0);
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
@@ -93,13 +93,13 @@ test('V145: les captures à traiter apparaissent sans écriture ni copie',async(
  const items=f.collect().items;
  assert.equal(items.length,2);
  assert.deepEqual(items.map(x=>x.kind),['Captures','Captures']);
- assert.deepEqual(items.map(x=>x.url),['./capture.html','./capture.html']);
+ assert.deepEqual(items.map(x=>x.url),['./capture.html#list','./capture.html#list']);
  assert.deepEqual(items.map(x=>x.next),['À traiter dans Capture','À envoyer vers Agenda']);
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
  f.ctx.testRender();
  const link=f.nodes.get('activePulseList').children[0];
- assert.equal(link.href,'./capture.html');
+ assert.equal(link.href,'./capture.html#list');
  assert.equal(link.children[1].textContent,'Rappeler le plombier fictif');
 });
 
@@ -180,7 +180,7 @@ test('V169: le cockpit reprend deux vrais événements Agenda proches, et aucun 
  ])});
  const data=f.collect();
  assert.deepEqual(data.items.map(x=>x.title),['Rendez-vous fictif','Échéance fictive']);
- assert.ok(data.items.every(x=>x.kind==='Agenda'&&x.url==='./agenda.html'));
+ assert.ok(data.items.every(x=>x.kind==='Agenda'&&x.url==='./agenda.html#events'));
  assert.match(data.items[1].next,/14:30/);
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
