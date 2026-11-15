@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const SOURCES=[
- {key:'big-cthu-v2-maison-v1',kind:'Travaux',url:'./maison.html',label:'Chantier',date:'due',name:'name',skipDone:true},
+ {key:'big-cthu-v2-maison-v1',kind:'Travaux',url:'./maison.html#jobs',label:'Chantier',date:'due',name:'name',skipDone:true},
  {key:'big-cthu-v2-maintenance-v1',kind:'Entretien',url:'./entretiens.html',label:'Entretien',date:'next',name:'title'},
  {key:'big-cthu-v2-equipments-v1',kind:'Équipement',url:'./equipements.html',label:'Équipement',date:'maintenance',name:'name'}
 ];
@@ -11,7 +11,7 @@ function localDay(date){
  const d=date instanceof Date?date:new Date(date);
  return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
 }
-function dateValid(x){return typeof x==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x)&&!Number.isNaN(Date.parse(x+'T12:00:00Z'))}
+function dateValid(x){return typeof x==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x)&&!Number.isNaN(Date.parse(x+'T12:00:00Z'))&&new Date(x+'T12:00:00Z').toISOString().slice(0,10)===x}
 function collect(today){
  const upcoming=new Date(today+'T12:00:00Z');
  upcoming.setUTCDate(upcoming.getUTCDate()+30);
