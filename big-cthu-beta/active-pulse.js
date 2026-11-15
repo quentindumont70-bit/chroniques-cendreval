@@ -3,11 +3,11 @@
 'use strict';
 const SOURCES=[
  {key:'big-cthu-v2-pantry-v1',kind:'Stock',url:'./garde-manger.html',limit:2},
- {key:'big-cthu-v2-agenda-v1',kind:'Agenda',url:'./agenda.html',limit:2},
- {key:'big-cthu-v2-inbox-v1',kind:'Captures',url:'./capture.html',limit:2},
+ {key:'big-cthu-v2-agenda-v1',kind:'Agenda',url:'./agenda.html#events',limit:2},
+ {key:'big-cthu-v2-inbox-v1',kind:'Captures',url:'./capture.html#list',limit:2},
  {key:'big-cthu-v2-demo-tasks',kind:'Priorités',url:'#priorities',limit:2},
  {key:'big-cthu-v2-maison-v1',kind:'Maison',url:'./maison.html',limit:2},
- {key:'big-cthu-v2-passions-v1',kind:'Musique',url:'./musique.html',limit:2},
+ {key:'big-cthu-v2-passions-v1',kind:'Musique',url:'./musique.html#studio-list',limit:2},
  {key:'big-cthu-v2-next-session-v1',kind:'Jeux',url:'#nextSession',limit:2}
 ];
 const $=id=>document.getElementById(id);
