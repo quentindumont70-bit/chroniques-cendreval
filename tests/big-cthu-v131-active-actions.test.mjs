@@ -32,7 +32,7 @@ test('V131: retrouve les vraies priorités Maison, musique et prochaine session 
  });
  const d=f.collect();
  assert.deepEqual(d.items.map(x=>x.kind),['Priorités','Maison','Musique','Jeux']);
- assert.deepEqual(d.items.map(x=>x.url),['#priorities','./maison.html','./musique.html#studio-list','#nextSession']);
+ assert.deepEqual(d.items.map(x=>x.url),['#priorities','./maison.html#jobs','./musique.html#studio-list','#nextSession']);
  assert.equal(d.warnings,0);
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
@@ -246,6 +246,21 @@ test('V174: dates calendaires impossibles exclues des rappels sans effacement',a
  });
  const titles=f.collect().items.map(x=>x.title);
  assert.deepEqual(titles,['Vraie DLC','Vrai événement']);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
+
+test('V178: real Maison work is visible first; high priority breaks ties and link opens jobs',async()=>{
+ const f=await fixture({[K.maison]:JSON.stringify([
+  {id:'todo-high',name:'Projet planifié urgent',status:'todo',priority:'haute'},
+  {id:'doing-low',name:'Projet en cours peu urgent',status:'doing',priority:'basse'},
+  {id:'doing-high',name:'Projet en cours urgent',status:'doing',priority:'haute'},
+  {id:'done',name:'Projet terminé',status:'done',priority:'haute'}
+ ])});
+ const items=f.collect().items;
+ assert.deepEqual(items.map(x=>x.title),['Projet en cours urgent','Projet en cours peu urgent']);
+ assert.ok(items.every(x=>x.url==='./maison.html#jobs'));
+ assert.equal(f.collect().total,3);
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
 });
