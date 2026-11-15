@@ -27,6 +27,8 @@ jobs:
       # Pages must not be blocked by unrelated game / trading tests.
       # Build the existing site and validate the public Big Cthu shell.
       - run: npm run build:pages
+      - name: Vérifier le corpus Druide Forever
+        run: node scripts/check-druid-corpus.mjs
       - name: Contrôles ciblés Big Cthu iPhone
         run: node --test tests/big-cthu-iphone.test.mjs
       - name: Tests de la planification Ultimate
