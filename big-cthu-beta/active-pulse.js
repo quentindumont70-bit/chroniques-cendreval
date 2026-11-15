@@ -6,7 +6,7 @@ const SOURCES=[
  {key:'big-cthu-v2-agenda-v1',kind:'Agenda',url:'./agenda.html#events',limit:2},
  {key:'big-cthu-v2-inbox-v1',kind:'Captures',url:'./capture.html#list',limit:2},
  {key:'big-cthu-v2-demo-tasks',kind:'Priorités',url:'#priorities',limit:2},
- {key:'big-cthu-v2-maison-v1',kind:'Maison',url:'./maison.html',limit:2},
+ {key:'big-cthu-v2-maison-v1',kind:'Maison',url:'./maison.html#jobs',limit:2},
  {key:'big-cthu-v2-passions-v1',kind:'Musique',url:'./musique.html#studio-list',limit:2},
  {key:'big-cthu-v2-next-session-v1',kind:'Jeux',url:'#nextSession',limit:2}
 ];
@@ -36,7 +36,7 @@ function collect(){
   if(source.kind==='Agenda')selected=rows.filter(x=>x&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=120&&validDate(x.date)&&x.date>=today&&x.date<=stop&&(!x.time||/^([01]\d|2[0-3]):[0-5]\d$/.test(x.time))).sort((a,b)=>(a.date+' '+(a.time||'00:00')).localeCompare(b.date+' '+(b.time||'00:00'))).map(x=>({title:x.title,next:'Le '+x.date+(x.time?' · '+x.time:'')}));
   if(source.kind==='Captures')selected=rows.filter(x=>x&&x.status==='new'&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140).map(x=>({title:x.title,next:x.target==='agenda'?'À envoyer vers Agenda':x.target==='task'?'À envoyer vers Priorités':'À traiter dans Capture'}));
   if(source.kind==='Priorités')selected=rows.filter(x=>x&&typeof x.text==='string'&&x.text.trim()&&x.text.length<=160&&!x.done).map(x=>({title:x.text,next:''}));
-  if(source.kind==='Maison')selected=rows.filter(x=>x&&typeof x.name==='string'&&x.name.trim()&&x.name.length<=120&&['todo','doing'].includes(x.status)).sort((a,b)=>(a.status==='doing'?0:1)-(b.status==='doing'?0:1)).map(x=>({title:x.name,next:typeof x.notes==='string'?x.notes.slice(0,120):''}));
+  if(source.kind==='Maison')selected=rows.filter(x=>x&&typeof x.name==='string'&&x.name.trim()&&x.name.length<=120&&['todo','doing'].includes(x.status)).sort((a,b)=>(a.status==='doing'?0:1)-(b.status==='doing'?0:1)||({haute:0,normale:1,basse:2}[a.priority]??1)-({haute:0,normale:1,basse:2}[b.priority]??1)).map(x=>({title:x.name,next:typeof x.notes==='string'?x.notes.slice(0,120):''}));
   if(source.kind==='Musique')selected=rows.filter(x=>x&&x.mode==='musique'&&['active','planned'].includes(x.status)&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).map(x=>({title:x.title,next:typeof x.note==='string'?x.note.slice(0,120):''}));
   if(source.kind==='Jeux')selected=rows.filter(x=>x&&x.done===false&&typeof x.game==='string'&&x.game.length<=60&&typeof x.text==='string'&&x.text.trim()&&x.text.length<=180).map(x=>({title:x.game,next:x.text}));
   total+=selected.length;
