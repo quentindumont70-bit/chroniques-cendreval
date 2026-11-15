@@ -65,7 +65,7 @@ test('V128: liens vers les vrais modules et aucun texte HTML injecté depuis des
  const f=await fixture({[keys.work]:JSON.stringify([{name:'<script>alert(1)</script>',due:'2026-11-14',status:'todo'}])});
  f.ctx.testAccess.render();
  const item=f.nodes.get('maisonPulseList').children[0];
- assert.equal(item.href,'./maison.html');
+ assert.equal(item.href,'./maison.html#jobs');
  assert.equal(item.children[0].textContent,'<script>alert(1)</script>');
  assert.equal(f.writes(),0);
 });
@@ -79,4 +79,20 @@ test('V128: intégré sur Maison avec style mobile et cache public, Tournée inc
  assert.match(sw,/'\.\/maison-pulse\.js'/);
  assert.doesNotMatch(js,/fetch\(|XMLHttpRequest|WebSocket|localStorage\.setItem/);
  assert.doesNotMatch(tournee,/maison-pulse\.js/);
+});
+
+test('V180: Maison ignores impossible dates and keeps leap-year deadlines',async()=>{
+ const f=await fixture({
+  [keys.work]:JSON.stringify([
+   {name:'Faux 31 février',due:'2026-02-31',status:'doing'},
+   {name:'Échéance valide',due:'2026-03-03',status:'doing'},
+   {name:'29 février bissextile',due:'2024-02-29',status:'doing'}
+  ]),
+  [keys.maintenance]:JSON.stringify([{title:'31 avril inexistant',next:'2026-04-31'}])
+ });
+ const data=f.read('2026-03-02');
+ assert.deepEqual(data.entries.map(x=>x.name),['29 février bissextile','Échéance valide']);
+ assert.ok(data.entries.every(x=>x.url==='./maison.html#jobs'));
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
 });
