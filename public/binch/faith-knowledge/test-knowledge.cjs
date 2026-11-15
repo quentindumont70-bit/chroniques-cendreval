@@ -3,7 +3,15 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path');
 const root=__dirname;
-const validator=require('./validator.js'),knowledge=require('./search.js');
+const vm=require('node:vm');
+// Les modules UMD .js sont dans un dépôt ESM : require() renvoie un namespace vide.
+// Exécuter leur branche CommonJS dans un contexte isolé pour tester la vraie API.
+function loadUmd(file) {
+ const mod={exports:{}};
+ vm.runInNewContext(fs.readFileSync(path.join(root,file),'utf8'),{module:mod,URL},{filename:file});
+ return mod.exports;
+}
+const validator=loadUmd('validator.js'),knowledge=loadUmd('search.js');
 const manifest=JSON.parse(fs.readFileSync(path.join(root,'manifest.json'),'utf8'));
 const datasets=manifest.datasets.map(file=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8')));
 const records=datasets.flat();
