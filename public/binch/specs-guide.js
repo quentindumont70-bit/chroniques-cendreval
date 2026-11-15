@@ -31,6 +31,7 @@ const guides=[
 const urlOK=u=>/^https:\/\/(www\.)?(icy-veins\.com|wowhead\.com|armorywowforever\.com|foreverspec\.com)\//.test(u);
 function read(){try{let v=JSON.parse(localStorage.getItem(KEY));return v&&typeof v==='object'?v:{}}catch{return {}}}
 let state=read();if(!guides.some(g=>g.id===state.id))state.id='druid-feral';
+if(state.filter&&state.filter!=='all'&&guides.some(g=>g.cls===state.filter)&&!guides.some(g=>g.id===state.id&&g.cls===state.filter))state.id=guides.find(g=>g.cls===state.filter).id;
 let levelLocked=Number.isInteger(state.level)&&state.level>=10&&state.level<=60;
 function importedLevel(){
  try{const p=JSON.parse(localStorage.getItem('grimoire.hub.v3'))||{},l=JSON.parse(localStorage.getItem('grimoire.bridge.last'))||{},n=String(p.data?.pseudo||'').trim().toLowerCase(),match=n&&n===String(l.name||'').trim().toLowerCase(),level=Number(match?l.level:p.data?.level);return Number.isInteger(level)?Math.max(10,Math.min(60,level)):10}catch{return 10}
@@ -52,7 +53,9 @@ function render(){
  $('binch-specs-cards').innerHTML=guides.filter(x=>(state.filter||'all')==='all'||x.cls===state.filter).map(x=>'<button type="button" class="binch-spec-card'+(x.id===g.id?' active':'')+'" data-spec-id="'+x.id+'" aria-pressed="'+(x.id===g.id)+'"><span>'+esc(x.cls)+'</span><strong>'+esc(x.name)+'</strong><small>'+esc(x.role)+'</small></button>').join('');
  const route=$('binch-specs-route');
  if(g.id!=='druid-feral'){
-  route.innerHTML='<p class="binch-specs-sources">Ce profil possède un guide source et un calculateur Forever. Son ordre détaillé de talents n’est pas encore certifié dans La Binch : aucun rang fictif affiché.</p>';return;
+  route.innerHTML='<p class="binch-specs-sources">Ce profil possède un guide source et un calculateur Forever. Son ordre détaillé de talents n’est pas encore certifié dans La Binch : aucun rang fictif affiché.</p>';
+  $('binch-specs-pin-state').textContent=state.pinned?'Build épinglé dans le bandeau flottant.':'Bandeau non épinglé.';
+  renderPinned();return;
  }
  const pts=Math.max(0,lvl-9),n=nextPoint(lvl);
  const owned=build(lvl);
@@ -82,7 +85,7 @@ function mount(){
  $('binch-specs-class').value=state.filter||'all';
  button.onclick=()=>{document.querySelectorAll('#app nav.nav button[data-page]').forEach(x=>x.classList.toggle('active',x===button));document.querySelectorAll('#app main .page').forEach(x=>x.classList.toggle('active',x===page));scrollTo({top:0,behavior:'auto'});render()};
  $('binch-specs-cards').onclick=e=>{const b=e.target.closest('[data-spec-id]');if(!b)return;state.id=b.dataset.specId;persist();render()};
- $('binch-specs-class').onchange=e=>{state.filter=e.target.value;persist();render()};
+ $('binch-specs-class').onchange=e=>{state.filter=e.target.value;const selected=current();if(state.filter!=='all'&&selected.cls!==state.filter){const first=guides.find(g=>g.cls===state.filter);if(first)state.id=first.id}persist();render()};
  $('binch-specs-level').onchange=e=>{const n=Number(e.target.value);if(!Number.isInteger(n)||n<10||n>60){render();return}state.level=n;levelLocked=true;persist();render()};
  $('binch-specs-auto-level').onclick=()=>{delete state.level;levelLocked=false;persist();render()};
  $('binch-specs-pin').onclick=()=>{state.pinned=!state.pinned;persist();render()};
