@@ -24,6 +24,7 @@ function read(key){
 function collect(){
  const now=new Date();
  const today=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
+ const clock=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
  const end=new Date(now);end.setDate(end.getDate()+7);
  const stop=[end.getFullYear(),String(end.getMonth()+1).padStart(2,'0'),String(end.getDate()).padStart(2,'0')].join('-');
  const results=[];
@@ -33,7 +34,7 @@ function collect(){
   if(bad){warnings++;continue}
   let selected=[];
   if(source.kind==='Stock')selected=rows.filter(x=>x&&typeof x.name==='string'&&x.name.trim()&&x.name.length<=90&&validDate(x.date)&&x.date<=stop&&['DLC','DDM'].includes(x.kind)).sort((a,b)=>(a.kind==='DLC'?0:1)-(b.kind==='DLC'?0:1)||a.date.localeCompare(b.date)).map(x=>({title:x.name,next:x.kind+' · '+(x.date<today?(x.kind==='DLC'?'Date limite dépassée : ':'DDM dépassée, qualité à vérifier : '):'Échéance : ')+x.date}));
-  if(source.kind==='Agenda')selected=rows.filter(x=>x&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=120&&validDate(x.date)&&x.date>=today&&x.date<=stop&&(!x.time||/^([01]\d|2[0-3]):[0-5]\d$/.test(x.time))).sort((a,b)=>(a.date+' '+(a.time||'00:00')).localeCompare(b.date+' '+(b.time||'00:00'))).map(x=>({title:x.title,next:'Le '+x.date+(x.time?' · '+x.time:'')}));
+  if(source.kind==='Agenda')selected=rows.filter(x=>x&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=120&&validDate(x.date)&&x.date>=today&&x.date<=stop&&(!x.time||/^([01]\d|2[0-3]):[0-5]\d$/.test(x.time))&&(x.date>today||!x.time||x.time>=clock)).sort((a,b)=>(a.date+' '+(a.time||'00:00')).localeCompare(b.date+' '+(b.time||'00:00'))).map(x=>({title:x.title,next:'Le '+x.date+(x.time?' · '+x.time:'')}));
   if(source.kind==='Captures')selected=rows.filter(x=>x&&x.status==='new'&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140).map(x=>({title:x.title,next:x.target==='agenda'?'À envoyer vers Agenda':x.target==='task'?'À envoyer vers Priorités':'À traiter dans Capture'}));
   if(source.kind==='Priorités')selected=rows.filter(x=>x&&typeof x.text==='string'&&x.text.trim()&&x.text.length<=160&&!x.done).map(x=>({title:x.text,next:''}));
   if(source.kind==='Maison')selected=rows.filter(x=>x&&typeof x.name==='string'&&x.name.trim()&&x.name.length<=120&&['todo','doing'].includes(x.status)).sort((a,b)=>(a.status==='doing'?0:1)-(b.status==='doing'?0:1)||({haute:0,normale:1,basse:2}[a.priority]??1)-({haute:0,normale:1,basse:2}[b.priority]??1)).map(x=>({title:x.name,next:typeof x.notes==='string'?x.notes.slice(0,120):''}));
