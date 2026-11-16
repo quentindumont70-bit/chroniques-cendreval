@@ -258,7 +258,8 @@ function risksOf(s){
  if(s.ageH>=24)list.push('Relevé de plus de 24 h');
  if(s.n<5)list.push('Historique court ('+s.n+' relevés)');
  if(s.days<3)list.push('Moins de 3 jours observés');
- if(s.trend!=null&&s.trend<=-10)list.push('Tendance baissière ('+Math.round(s.trend)+' %)');
+ if(s.priorTrend!=null&&s.priorTrend<=-10)list.push('Tendance baissière avant ce relevé ('+Math.round(s.priorTrend)+' %)');
+ else if(s.trend!=null&&s.trend<=-10&&s.discount>=15)list.push('Chute récente : vérifier qu’elle n’annonce pas une baisse durable');
  if(!s.last||!Number.isSafeInteger(Number(s.last.listings)))list.push('Profondeur du marché inconnue (pas de scan complet)');
  return list;
 }

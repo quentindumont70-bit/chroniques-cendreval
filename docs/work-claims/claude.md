@@ -23,4 +23,4 @@ Non modifiés volontairement (PR #129 ouverte dessus) : `ah-market.js`, `ah-craf
 
 ## Statut
 
-En cours. Voir `docs/BINCH-TRADING.md` pour l'état des lots.
+Livré en PR (voir `docs/BINCH-TRADING.md`). Périmètre réservé jusqu’à fusion ou abandon de la PR.
