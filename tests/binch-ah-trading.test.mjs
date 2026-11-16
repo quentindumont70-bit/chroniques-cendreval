@@ -148,3 +148,29 @@ test('Faith marchande: références datées, refus sans marché identifié',()=>
  assert.match(f.lines.at(-1),/aucune enchère/);
  assert.match(T.faithBrief({scope:'legacy'}).lines[0],/Données insuffisantes/);
 });
+
+const FEED={format:'binch-ah-feed-v1',generatedAt:'2026-11-16T11:00:00Z',names:{2318:{n:'Light Leather'},2319:{n:'Medium Leather'}},markets:{
+ 'forever.normal.horde.us':{at:Date.parse('2026-11-16T10:00:00Z'),contributors7d:7,items:{2318:{row:[30,15560,Date.parse('2026-11-16T10:00:00Z')],days:[[20770,19,25,2521],[20771,23,26,34027],[20772,23,29,15381],[20773,24,30,15560]]},2319:{row:[94,4859,Date.parse('2026-11-16T10:00:00Z')],days:[]}}},
+ 'forever.pvp.horde.us':{at:Date.parse('2026-11-06T10:00:00Z'),contributors7d:0,items:{2318:{row:[45,100,Date.parse('2026-11-06T10:00:00Z')],days:[]}}}}};
+
+test('Flux multi-marchés: observations du carnet, comparaison et fraîcheur',()=>{
+ const rows=T.feedObservations(FEED,'forever.normal.horde.us',{realm:'Forever',now:NOW});
+ assert.equal(rows.filter(r=>r.itemId===2318).length,5);
+ const merged=T.mergeObservations({version:1,items:[],trades:[],alerts:[],fee:5},rows,NOW);
+ const s=T.itemStats(merged.store.items.find(x=>x.itemId===2318),NOW);
+ assert.equal(s.sufficient,true,'le flux suffit à produire une cote');
+ const cm=T.crossMarket(FEED,2318,NOW);
+ assert.equal(cm[0].label,'Normal · Horde');assert.equal(cm[0].price,30);assert.equal(cm[1].price,45);
+ assert.equal(T.feedSummary(FEED,NOW).markets.length,2);
+ assert.deepEqual(T.feedObservations({format:'autre'},'x'),[]);
+});
+
+test('Progression: seuil de dépeçage Classic et plan selon le niveau',()=>{
+ assert.equal(T.skinSkillFor(20),100);assert.equal(T.skinSkillFor(32),160);
+ assert.equal(T.maxSkinnableLevel(150),30);
+ const plan=T.skinningPlan({level:32,professions:{'Dépeçage':{rank:150}},feedMarket:FEED.markets['forever.normal.horde.us']});
+ assert.equal(plan.maxMob,30);
+ assert.equal(plan.best.name,'Cuir moyen','94pc > 30pc, accessible à ce niveau');
+ assert.equal(plan.tiers.find(t=>t.itemId===4304).reachable,false);
+ assert.equal(T.skinningPlan({level:32,professions:{}}).status,'Dépeçage non importé');
+});

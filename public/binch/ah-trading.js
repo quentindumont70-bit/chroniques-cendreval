@@ -14,9 +14,9 @@ const coin=T.coin,pct=x=>Number.isFinite(x)?(x>0?'+':'')+x.toLocaleString('fr-FR
 const when=iso=>{const t=Date.parse(iso);if(!Number.isFinite(t))return 'date inconnue';const h=(Date.now()-t)/3600000;return new Date(t).toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'})+' ('+(h<1?'< 1 h':Math.floor(h)+' h')+')'};
 const gold=v=>{if(v==null||String(v).trim()==='')return null;const x=Number(String(v).replace(',','.'));return Number.isFinite(x)&&x>=0&&x<1e8?Math.round(x*10000):null};
 const toGold=c=>Number.isFinite(c)?(c/10000).toFixed(4):'';
-const defaults=()=>({version:1,reservePct:40,maxItemPct:15,capitalOverride:null,decisions:[],alerts:[],imports:[],grimoire:null,view:'dashboard'});
+const defaults=()=>({version:1,reservePct:40,maxItemPct:15,capitalOverride:null,feedMarket:null,autoFeed:true,decisions:[],alerts:[],imports:[],grimoire:null,view:'dashboard'});
 let state=Object.assign(defaults(),read(KEY,{}));if(!Array.isArray(state.decisions))state.decisions=[];if(!Array.isArray(state.alerts))state.alerts=[];if(!Array.isArray(state.imports))state.imports=[];
-let pendingScan=null,historyItem='',simSeed=null;
+let pendingScan=null,historyItem='',simSeed=null,feed=read('binch.ah.feed.cache.v1',null),feedStatus='',feedTimer=null;
 const save=()=>{state.decisions=state.decisions.slice(-300);state.alerts=state.alerts.slice(-100);state.imports=state.imports.slice(-30);write(KEY,state)};
 
 /* ---------- contexte de données ---------- */
@@ -29,7 +29,8 @@ function character(){
   Array.isArray(last.inventory)&&String(last.name||'').toLowerCase()===pseudo.toLowerCase()?{list:last.inventory,at:last.updated,src:'Synchronisation La Binch'}:{list:[],at:null,src:null};
  let professions=mine&&g.professions&&Object.keys(g.professions).length?g.professions:{};
  if(!Object.keys(professions).length){const imports=read('grimoire.craft.v1',{}).imports||{};for(const [k,v] of Object.entries(imports))if(k.startsWith(pseudo.toLowerCase()+'-')&&v?.skills)for(const [n,r] of Object.entries(v.skills))professions[n]={rank:Number(r)||0}}
- return {pseudo:pseudo||'Aventurier',inventory,professions,gold:mine&&Number.isSafeInteger(g.character.gold)?{value:g.character.gold,at:g.importedAt}:null};
+ const level=Number(mine&&g.character.level)||Number(hub.data?.level)||Number(last.level)||0;
+ return {pseudo:pseudo||'Aventurier',level,inventory,professions,gold:mine&&Number.isSafeInteger(g.character.gold)?{value:g.character.gold,at:g.importedAt}:null};
 }
 function context(){
  const store=read(MARKET,{version:1,items:[],trades:[],alerts:[],fee:5}),scope=scopeOf(),fee=Number(store.fee??5);
@@ -48,7 +49,7 @@ function context(){
 }
 
 /* ---------- composants ---------- */
-const VIEWS=[['dashboard','Tableau de bord'],['bags','Mes sacs'],['radar','Radar'],['history','Historique'],['sim','Simulateur'],['crafts','Métiers'],['wallet','Portefeuille'],['journal','Journal'],['alerts','Alertes'],['faith','Faith marchande'],['data','Données']];
+const VIEWS=[['dashboard','Tableau de bord'],['live','En direct'],['bags','Mes sacs'],['radar','Radar'],['history','Historique'],['sim','Simulateur'],['crafts','Métiers'],['wallet','Portefeuille'],['journal','Journal'],['alerts','Alertes'],['faith','Faith marchande'],['data','Données']];
 const conf=c=>'<span class="bt-conf bt-conf-'+esc(String(c).normalize('NFD').replace(/[^a-z]/gi,'').toLowerCase())+'">'+esc(c)+'</span>';
 const empty=msg=>'<p class="bt-empty">'+msg+'</p>';
 function card({title,price,reference,qty,margin,risks,confidence,at,extra='',actions=''}){
@@ -128,7 +129,7 @@ function vCrafts(c){
   (x.status==='ok'?'<dl><div><dt>Coût d’achat des composants</dt><dd>'+coin(x.cost)+'</dd></div><div><dt>Produit net</dt><dd>'+coin(x.outputNet)+'</dd></div><div><dt>Marge si j’achète</dt><dd>'+coin(x.margin)+'</dd></div><div><dt>Gain vs vente des composants</dt><dd>'+coin(x.transformGain)+'</dd></div></dl><p class="bt-decision">'+(x.transformGain>0?'Transformer est plus rentable que vendre les composants':'Vendre les composants rapporte autant ou plus')+'</p><small>Produit relevé : '+esc(when(x.outputAt))+'</small>':'<p class="bt-alert">Données insuffisantes : '+esc(x.missing.join(', '))+'.</p>')+'<small>'+esc(x.recipe.reference)+'</small></article>').join('')+'</div>':empty('Aucune recette applicable : importe tes métiers (Travail du cuir) ou ajoute une recette dans l’atelier de la Bourse.');
  const farm=T.farmTargets({index:c.index,professions:c.ch.professions});
  const farmHtml=farm.length?'<div class="bt-table"><table><thead><tr><th>Ressource</th><th>Cours</th><th>Médiane</th><th>Quantité listée</th><th>Confiance</th><th>Relevé</th></tr></thead><tbody>'+farm.map(f=>'<tr><td>'+esc(f.name)+'</td><td>'+(f.price!=null?coin(f.price):'—')+'</td><td>'+(f.median!=null?coin(f.median):'—')+'</td><td>'+(f.quantity??'—')+'</td><td>'+conf(f.confidence)+'</td><td>'+esc(f.lastAt?when(f.lastAt):'—')+'</td></tr>').join('')+'</tbody></table></div><p class="bt-note">Classement par cours observé. Aucun « or par heure » n’est estimé : il dépend de ta zone et de ton rythme, non mesurés.</p>':empty('Aucune ressource de récolte reconnue pour tes métiers (Dépeçage attendu).');
- return head+list+'<h3>Que farmer ?</h3>'+farmHtml;
+ return head+list+'<h3>Que dépecer à mon niveau ?</h3>'+skinHtml(c)+'<h3>Que farmer ?</h3>'+farmHtml;
 }
 function vWallet(c){
  const b=c.budget;
@@ -150,6 +151,45 @@ function vAlerts(c){
 function vFaith(c){
  const f=T.faithBrief({bags:c.bags,opps:c.opps,crafts:c.crafts,budget:c.budget,scope:c.scope?.id,dataNote:c.lastScan?'Données du scan du '+when(c.lastScan)+'.':'Aucun scan GrimoireSync importé : les avis reposent sur des relevés manuels.'});
  return '<div class="bt-faith"><p class="bt-faith-intro">Faith, intendante marchande : je ne reformule que les calculs ci-dessus, sans rien inventer.</p>'+f.lines.map(l=>'<p>'+esc(l)+'</p>').join('')+(f.refs.length?'<h3>Références</h3><ol class="bt-refs">'+f.refs.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ol>':'')+'</div>';
+}
+function feedMarketId(c){return state.feedMarket||('forever.normal.'+(c.scope?.faction||'Horde').toLowerCase()+'.us')}
+function skinHtml(c){
+ const plan=T.skinningPlan({level:c.ch.level,professions:c.ch.professions,index:c.index,feedMarket:feed?.markets?.[feedMarketId(c)]});
+ if(plan.status!=='ok')return empty('Dépeçage non importé : importe GrimoireSync.lua pour obtenir un plan selon ton niveau.');
+ const best=plan.best?'<p class="bt-decision">Priorité : '+esc(plan.best.name)+' — '+coin(plan.best.leather.price)+' l’unité ('+esc(plan.best.leather.src)+', '+esc(when(plan.best.leather.at))+'), monstres niveau '+plan.best.mobRange.join('–')+'.</p>':'<p class="bt-alert">Aucun cuir accessible n’a de cote connue : données insuffisantes.</p>';
+ return '<p class="bt-note">Niveau '+(plan.level||'inconnu')+' · Dépeçage '+plan.skill+' → monstres dépeçables jusqu’au niveau '+plan.maxMob+(plan.nextSkill?' (niveau '+plan.nextSkill.mobLevel+' à '+plan.nextSkill.skill+' de compétence)':'')+'. Règle et tranches de niveaux Classic, à confirmer sur Forever.</p>'+best+
+  '<div class="bt-table"><table><thead><tr><th>Cuir</th><th>Monstres</th><th>Cuir</th><th>Peau</th><th>Pour toi</th></tr></thead><tbody>'+plan.tiers.map(t=>'<tr><td>'+esc(t.name)+'</td><td>'+t.mobs.join('–')+'</td><td>'+(t.leather?coin(t.leather.price):'—')+'</td><td>'+(t.hideP?coin(t.hideP.price):'—')+'</td><td>'+esc(t.why)+'</td></tr>').join('')+'</tbody></table></div>';
+}
+function vLive(c){
+ const sum=T.feedSummary(feed),mk=feedMarketId(c);
+ const head='<p class="bt-honesty">Flux communautaire auctionhouse.fyi, republié toutes les 3 h par La Binch et relu ici toutes les 10 minutes. Les prix dépendent des scans d’autres joueurs : <b>ce n’est pas un flux temps réel</b>. Ton propre <code>/grimoire scan</code> reste la source la plus fraîche.</p>';
+ if(!sum)return head+empty(feedStatus||'Flux pas encore disponible (il sera publié après fusion de la PR et premier passage du collecteur).')+'<button type="button" id="bt-feed-refresh">Réessayer</button>';
+ const markets=sum.markets;
+ const ids=[...new Set(markets.flatMap(m=>Object.keys(feed.markets[m.market].items||{})))];
+ const table='<div class="bt-table"><table><thead><tr><th>Objet</th>'+markets.map(m=>'<th>'+esc(m.label)+'</th>').join('')+'</tr></thead><tbody>'+ids.map(id=>{const cm=T.crossMarket(feed,Number(id)),low=cm.find(x=>x.price!=null)?.market;
+  return '<tr><td>'+esc(feed.names?.[id]?.n||'Objet '+id)+'</td>'+markets.map(m=>{const x=cm.find(y=>y.market===m.market);return '<td'+(x?.market===low&&markets.length>1?' class="bt-up"':'')+'>'+(x?.price!=null?coin(x.price)+'<br><small>'+x.quantity+' u.</small>':'—')+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table></div>';
+ const top=[...c.bags.filter(b=>['Vendre à l’AH','Transformer','Garder'].includes(b.decision)).slice(0,4).map(b=>b.decision+' : '+b.name+' ×'+b.count+(b.price?' (cours '+coin(b.price)+')':'')),...c.opps.slice(0,3).map(o=>'Achat à étudier : '+o.name+' à '+coin(o.price)+' (médiane '+coin(o.reference)+')')];
+ return head+'<div class="bt-form"><label class="bt-field">Mon marché<select id="bt-feed-market">'+markets.map(m=>'<option value="'+esc(m.market)+'"'+(m.market===mk?' selected':'')+'>'+esc(m.label)+'</option>').join('')+(markets.some(m=>m.market===mk)?'':'<option selected value="'+esc(mk)+'">'+esc(T.MARKET_LABEL(mk))+' (aucune donnée)</option>')+'</select></label><label class="bt-check"><input type="checkbox" id="bt-feed-auto"'+(state.autoFeed?' checked':'')+'> Intégrer automatiquement ce marché à mon carnet</label><button type="button" id="bt-feed-refresh">Actualiser</button></div>'+
+  '<div class="bt-kpis">'+kpi('Flux publié',when(sum.generatedAt),'collecteur GitHub')+markets.map(m=>kpi(m.label,m.scanAt?when(m.scanAt):'—',m.items+' objets · '+m.contributors7d+' contributeur(s) / 7 j')).join('')+'</div>'+
+  '<h3>Conseils du moment pour '+esc(c.ch.pseudo)+(c.ch.level?' (niveau '+c.ch.level+')':'')+'</h3>'+(top.length?'<ol class="bt-list">'+top.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol>':empty('Pas encore de conseil étayé : il faut au moins 3 relevés par objet (le flux en apporte jusqu’à 8 par passage).'))+
+  '<h3>Que dépecer maintenant ?</h3>'+skinHtml(c)+
+  '<h3>Comparaison des hôtels des ventes</h3><p class="bt-note">Le moins cher est en vert. Information seulement : les objets ne passent pas d’un serveur ou d’une faction à l’autre sans échange réel.</p>'+table+(feedStatus?'<p class="bt-note">'+esc(feedStatus)+'</p>':'');
+}
+async function loadFeed(force){
+ try{
+  const res=await fetch(T.FEED_URL+(force?'?t='+Date.now():''),{cache:force?'no-store':'default'});
+  if(!res.ok)throw Error(res.status===404?'Flux pas encore publié (collecteur actif après fusion de la PR).':'Flux indisponible (HTTP '+res.status+').');
+  const f=await res.json();if(f?.format!=='binch-ah-feed-v1')throw Error('Flux au format inattendu.');
+  feed=f;write('binch.ah.feed.cache.v1',f);feedStatus='';
+ }catch(e){feedStatus=(e.message||'Flux injoignable')+(feed?' Dernière copie locale affichée.':'')}
+ mergeFeed();render();
+}
+function mergeFeed(){
+ const scope=scopeOf();if(!feed||!state.autoFeed||!scope)return;
+ const mk=state.feedMarket||('forever.normal.'+scope.faction.toLowerCase()+'.us');
+ if(!mk.includes('.'+scope.faction.toLowerCase()+'.'))return;
+ const rows=T.feedObservations(feed,mk,{realm:scope.realm});if(!rows.length)return;
+ const out=T.mergeObservations(read(MARKET,{}),rows);if(out.added)try{persistMarket(out.store)}catch{}
 }
 function vData(c){
  const p=pendingScan;
@@ -229,7 +269,7 @@ function render(){
  const c=context(),v=VIEWS.some(x=>x[0]===state.view)?state.view:'dashboard';
  document.querySelectorAll('#bt-tabs [data-bt-view]').forEach(b=>{const on=b.dataset.btView===v;b.classList.toggle('active',on);b.setAttribute('aria-selected',on)});
  $('bt-scope').innerHTML=scopeBanner(c);
- host.innerHTML='<h2>'+esc(VIEWS.find(x=>x[0]===v)[1])+'</h2>'+({dashboard:vDashboard,bags:vBags,radar:vRadar,history:vHistory,sim:vSim,crafts:vCrafts,wallet:vWallet,journal:vJournal,alerts:vAlerts,faith:vFaith,data:vData})[v](c);
+ host.innerHTML='<h2>'+esc(VIEWS.find(x=>x[0]===v)[1])+'</h2>'+({dashboard:vDashboard,live:vLive,bags:vBags,radar:vRadar,history:vHistory,sim:vSim,crafts:vCrafts,wallet:vWallet,journal:vJournal,alerts:vAlerts,faith:vFaith,data:vData})[v](c);
  if(v==='sim')simCompute();
 }
 
@@ -241,7 +281,7 @@ function mount(){
  const page=document.createElement('section');page.className='page';page.id='page-trading';
  page.innerHTML='<section class="bt"><header class="bt-head"><div><div class="eyebrow">LA BINCH · CONSEILLER MARCHAND</div><h1>Assistant Trading</h1><p>Vendre, garder, transformer, acheter : des avis calculés et expliqués à partir de tes vrais relevés. Tu décides et tu cliques toi-même en jeu.</p></div><span class="bt-badge">Aucune transaction automatisée</span></header><div id="bt-scope"></div><nav id="bt-tabs" class="bt-tabs" role="tablist" aria-label="Sections de l’Assistant Trading">'+VIEWS.map(([id,label])=>'<button type="button" role="tab" data-bt-view="'+id+'">'+esc(label)+'</button>').join('')+'</nav><div id="bt-view" class="bt-view" role="tabpanel"></div></section>';
  main.append(page);
- tab.addEventListener('click',()=>{nav.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x===tab));main.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x===page));window.scrollTo({top:0,behavior:'auto'});render()});
+ tab.addEventListener('click',()=>{nav.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x===tab));main.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x===page));window.scrollTo({top:0,behavior:'auto'});render();loadFeed(false);clearInterval(feedTimer);feedTimer=setInterval(()=>{if(page.classList.contains('active')&&document.visibilityState==='visible')loadFeed(true)},600000)});
  page.addEventListener('click',e=>{
   const t=e.target.closest('button');if(!t)return;
   if(t.dataset.btView){state.view=t.dataset.btView;save();render();return}
@@ -252,12 +292,15 @@ function mount(){
    t.textContent='Décision notée ✓';t.disabled=true;return}
   if(t.dataset.btDelDecision){state.decisions=state.decisions.filter(d=>d.id!==t.dataset.btDelDecision);save();render();return}
   if(t.dataset.btDelAlert){state.alerts=state.alerts.filter(a=>a.id!==t.dataset.btDelAlert);save();render();return}
+  if(t.id==='bt-feed-refresh'){feedStatus='Actualisation…';loadFeed(true);return}
   if(t.id==='bt-scan-apply')applyScan();
   if(t.id==='bt-scan-cancel'){pendingScan=null;render()}
  });
  page.addEventListener('change',e=>{
   if(e.target.id==='bt-scan-file'){const f=e.target.files?.[0];e.target.value='';onScanFile(f)}
   if(e.target.id==='bt-history-item'){historyItem=e.target.value;render()}
+  if(e.target.id==='bt-feed-market'){state.feedMarket=e.target.value;save();mergeFeed();render()}
+  if(e.target.id==='bt-feed-auto'){state.autoFeed=e.target.checked;save();mergeFeed();render()}
  });
  page.addEventListener('input',e=>{if(e.target.closest('#bt-sim'))simCompute()});
  page.addEventListener('submit',e=>{

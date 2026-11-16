@@ -342,6 +342,53 @@ function faithBrief({bags=[],opps=[],crafts=[],budget=null,scope,dataNote}){
  return {lines,refs};
 }
 
-return {SCAN_SOURCE,COMMUNITY_SOURCE,LEATHER,CONVERSIONS,coin,median,weightedMedian,weightedMean,extractPayload,parseGrimoire,aggregateListings,scanObservations,parseCommunity,
+/* ---------- 14. Flux communautaire multi-marchés (branche binch-ah-data) ---------- */
+const FEED_URL='https://raw.githubusercontent.com/quentindumont70-bit/chroniques-cendreval/binch-ah-data/ah-feed.json';
+const MARKET_LABEL=m=>{const x=String(m).match(/^forever\.(normal|pvp|rp)\.(horde|alliance)\.us$/);return x?({normal:'Normal',pvp:'JcJ',rp:'RP'})[x[1]]+' · '+(x[2]==='horde'?'Horde':'Alliance'):String(m)};
+function validFeed(f){return !!f&&f.format==='binch-ah-feed-v1'&&f.markets&&typeof f.markets==='object'}
+/** Observations d'un marché du flux, au format du carnet (réutilise parseCommunity). */
+function feedObservations(feed,market,{realm,now=Date.now()}={}){
+ if(!validFeed(feed)||!feed.markets[market])return [];
+ const out=[];
+ for(const [id,v] of Object.entries(feed.markets[market].items||{})){
+  try{out.push(...parseCommunity({market,item:Number(id),row:v.row,days:v.days},{name:feed.names?.[id]?.n||('Objet '+id),realm,now}))}catch{}
+ }
+ return out;
+}
+/** Comparaison d'un objet entre tous les marchés du flux (information, pas d'arbitrage automatique). */
+function crossMarket(feed,itemId,now=Date.now()){
+ if(!validFeed(feed))return [];
+ return Object.entries(feed.markets).map(([m,v])=>{const r=v.items?.[itemId]?.row;const t=r?parseTime(r[2]):null;
+  return {market:m,label:MARKET_LABEL(m),price:r&&isCopper(r[0])?r[0]:null,quantity:r&&Number.isSafeInteger(r[1])?r[1]:null,at:t&&t<=now?new Date(t).toISOString():null,ageH:t?(now-t)/HOUR:null}})
+  .sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));
+}
+function feedSummary(feed,now=Date.now()){
+ if(!validFeed(feed))return null;
+ const gen=parseTime(feed.generatedAt);
+ return {generatedAt:feed.generatedAt,ageH:gen?(now-gen)/HOUR:null,markets:Object.entries(feed.markets).map(([m,v])=>({market:m,label:MARKET_LABEL(m),scanAt:v.at?new Date(v.at).toISOString():null,scanAgeH:v.at?(now-v.at)/HOUR:null,items:Object.keys(v.items||{}).length,contributors7d:v.contributors7d||0}))};
+}
+
+/* ---------- 15. Progression : quoi dépecer à mon niveau ---------- */
+// Niveaux de monstres par cuir (archive Vanilla) ; seuil de dépeçage Classic : (niveau-10)×10 jusqu'au niveau 20, puis niveau×5.
+const LEATHER_TIERS=[{itemId:2318,hide:783,name:'Cuir léger',mobs:[1,27]},{itemId:2319,hide:4232,name:'Cuir moyen',mobs:[15,38]},{itemId:4234,hide:4235,name:'Cuir lourd',mobs:[26,46]},{itemId:4304,hide:8169,name:'Cuir épais',mobs:[35,58]},{itemId:8170,hide:8171,name:'Cuir robuste',mobs:[45,60]}];
+const skinSkillFor=level=>level<=10?1:level<=20?(level-10)*10:level*5;
+const maxSkinnableLevel=skill=>{let lv=1;for(let l=1;l<=63;l++)if(skinSkillFor(l)<=skill)lv=l;return lv};
+function professionRank(professions,label){const keys=PROFESSION_ALIASES[label]||[norm(label)];for(const [n,v] of Object.entries(professions||{}))if(keys.includes(norm(n)))return Number(v?.rank??v)||0;return null}
+function skinningPlan({level,professions,index,feedMarket}){
+ const skill=professionRank(professions,'Dépeçage');
+ if(skill==null)return {status:'Dépeçage non importé',tiers:[]};
+ const lv=Number(level)||0,cap=maxSkinnableLevel(skill);
+ const price=id=>{const e=index?.find({itemId:id});if(e?.stats.sufficient)return {price:e.stats.current,at:e.stats.lastAt,src:'carnet'};const r=feedMarket?.items?.[id]?.row;return r&&isCopper(r[0])?{price:r[0],at:new Date(parseTime(r[2])).toISOString(),src:'flux communautaire'}:null};
+ const tiers=LEATHER_TIERS.map(t=>{
+  const lo=t.mobs[0],hi=Math.min(t.mobs[1],lv+3,cap);
+  const reachable=lv>0&&hi>=lo&&lo<=lv+3;
+  const p=price(t.itemId),h=price(t.hide);
+  return {...t,reachable,mobRange:reachable?[lo,hi]:null,leather:p,hideP:h,why:!lv?'Niveau inconnu':lo>lv+3?'Monstres trop forts pour ton niveau ('+lo+'+)':lo>cap?'Compétence de dépeçage insuffisante (niveau '+cap+' max)':'Monstres niveau '+lo+'–'+hi+' accessibles'};
+ });
+ const ranked=tiers.filter(t=>t.reachable&&t.leather).sort((a,b)=>b.leather.price-a.leather.price);
+ return {status:'ok',skill,level:lv,maxMob:cap,tiers,best:ranked[0]||null,nextSkill:cap<60?{mobLevel:cap+1,skill:skinSkillFor(cap+1)}:null};
+}
+
+return {FEED_URL,MARKET_LABEL,feedObservations,crossMarket,feedSummary,LEATHER_TIERS,skinSkillFor,maxSkinnableLevel,skinningPlan,SCAN_SOURCE,COMMUNITY_SOURCE,LEATHER,CONVERSIONS,coin,median,weightedMedian,weightedMean,extractPayload,parseGrimoire,aggregateListings,scanObservations,parseCommunity,
  mergeObservations,itemStats,simulate,hasProfession,marketIndex,evaluateRecipe,craftAnalysis,bagAdvice,budgetPlan,opportunities,movers,resaleCandidates,farmTargets,journalReview,evaluateAlerts,faithBrief};
 });

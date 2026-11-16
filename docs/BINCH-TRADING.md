@@ -54,3 +54,11 @@ Aucun appel réseau, aucune automatisation en jeu, aucun prix fictif, relevés f
 3. Import des exports Auctionator / TSM-like si l'utilisateur en utilise.
 4. Ratios et recettes Forever (source metabot.gg / jeu) à la place des références Classic.
 5. Rotation des scans (vitesse d'écoulement mesurée par variation de profondeur entre scans).
+
+## 7. Lot « En direct » (16/11/2026, après-midi)
+
+- `scripts/collect-ah-feed.mjs` + `.github/workflows/binch-ah-feed.yml` : toutes les 3 h, lecture anonyme d'auctionhouse.fyi (`/api/v1/ah`, puis 39 objets suivis × chaque marché Forever, puis noms via `/items`), 400 ms entre requêtes, `Retry-After` respecté, `robots.txt` autorise ces chemins. Résultat publié sur la branche `binch-ah-data` (un seul commit écrasé) ; La Binch le lit via `raw.githubusercontent.com` (CORS `*` vérifié). **Actif seulement après fusion sur main** (contrainte GitHub des tâches programmées), ou lancement manuel du workflow.
+- Essai réel depuis la session : 2 marchés publiés (Normal Horde, scan de 7 h ; JcJ Horde, 10 jours), 78 cotations, 0 erreur, 2 minutes, fichier de 11 Ko. Aucun marché Alliance ni RP n'avait de données.
+- Vue « En direct » : fraîcheur par marché, choix de mon marché, intégration automatique au carnet (désactivable), conseils personnalisés, comparaison des hôtels des ventes, rafraîchissement toutes les 10 min onglet visible.
+- Progression : plan de dépeçage selon niveau et compétence (seuil Classic `(niv-10)×10` puis `niv×5`, tranches de monstres Vanilla), cuir accessible le mieux coté.
+- Limites : pas de temps réel (scans communautaires horaires au mieux), dépendance à un service tiers gratuit sans contrat, noms anglais du flux (rapprochement par identifiant d'objet).
