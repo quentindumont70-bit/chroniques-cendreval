@@ -17,3 +17,17 @@ test('Collecteur: marchés Forever seulement, Retry-After respecté, noms issus 
  assert.ok(waits.includes(2000));
  await assert.rejects(getJSON('x',{fetchImpl:async()=>resp(500,{}),pause:async()=>{}}),/HTTP 500/);
 });
+import {collectBlizzard,aggregateAuctions,parseHouses} from '../scripts/collect-ah-feed.mjs';
+test('Blizzard: inactif sans configuration, agrégation, maison indisponible signalée',async()=>{
+ assert.match((await collectBlizzard({ids:[2318],env:{}})).skipped,/non configuré/);
+ assert.deepEqual(parseHouses('2:Alliance,6:Horde,x:Neutral,7:Neutral,9:Autre'),[{id:2,faction:'Alliance'},{id:6,faction:'Horde'},{id:7,faction:'Neutral'}]);
+ const agg=aggregateAuctions([{item:{id:2318},quantity:20,unit_price:30},{item:{id:2318},quantity:5,unit_price:28},{item:{id:2318},quantity:1,buyout:50},{item:{id:9},quantity:1,unit_price:1}],[2318],123);
+ assert.deepEqual(agg,{2318:{row:[28,26,123],days:[]}});
+ const env={BLIZZARD_CLIENT_ID:'a',BLIZZARD_CLIENT_SECRET:'b',BLIZZARD_REGION:'eu',FOREVER_RULESET_ID:'1',FOREVER_HOUSES:'6:Horde'};
+ const fetchImpl=async url=>url.includes('oauth')?resp(200,{access_token:'t'}):resp(503,{});
+ const r=await collectBlizzard({ids:[2318],env,fetchImpl});
+ assert.deepEqual(r.markets,{});assert.match(r.errors[0],/maison 6 : HTTP 503/);
+ const ok=await collectBlizzard({ids:[2318],env,fetchImpl:async url=>url.includes('oauth')?resp(200,{access_token:'t'}):resp(200,{auctions:[{item:{id:2318},quantity:3,unit_price:31}]}),now:5});
+ const m=ok.markets['blizzard.eu.1.6'];
+ assert.equal(m.meta.region,'eu');assert.equal(m.meta.faction,'Horde');assert.deepEqual(m.items[2318].row,[31,3,5]);
+});

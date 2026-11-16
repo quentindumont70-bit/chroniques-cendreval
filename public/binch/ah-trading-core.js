@@ -344,14 +344,42 @@ function faithBrief({bags=[],opps=[],crafts=[],budget=null,scope,dataNote}){
 
 /* ---------- 14. Flux communautaire multi-marchés (branche binch-ah-data) ---------- */
 const FEED_URL='https://raw.githubusercontent.com/quentindumont70-bit/chroniques-cendreval/binch-ah-data/ah-feed.json';
-const MARKET_LABEL=m=>{const x=String(m).match(/^forever\.(normal|pvp|rp)\.(horde|alliance)\.us$/);return x?({normal:'Normal',pvp:'JcJ',rp:'RP'})[x[1]]+' · '+(x[2]==='horde'?'Horde':'Alliance'):String(m)};
-function validFeed(f){return !!f&&f.format==='binch-ah-feed-v1'&&f.markets&&typeof f.markets==='object'}
+/** Décrit un marché sans ambiguïté : fournisseur, région, règleset, faction, maison. */
+function marketMeta(id,info){
+ const fyi=String(id).match(/^forever\.(normal|pvp|rp)\.(horde|alliance)\.us$/);
+ if(fyi)return {id:String(id),provider:'auctionhouse.fyi',region:'us',ruleset:fyi[1],faction:fyi[2]==='horde'?'Horde':'Alliance',houseId:null};
+ const m=info&&typeof info==='object'?info:{};
+ const region=['eu','us','kr','tw'].includes(m.region)?m.region:null;
+ const faction=['Horde','Alliance','Neutral'].includes(m.faction)?m.faction:null;
+ return {id:String(id),provider:clean(m.provider,40)||'inconnu',region,ruleset:clean(m.ruleset,40)||null,faction,houseId:m.houseId??null};
+}
+const RULESET_FR={normal:'Normal',pvp:'JcJ',rp:'RP'};
+const FACTION_FR={Horde:'Horde',Alliance:'Alliance',Neutral:'Neutre'};
+function MARKET_LABEL(id,info){const m=marketMeta(id,info);return (m.region?m.region.toUpperCase():'Région ?')+' · '+(RULESET_FR[m.ruleset]||m.ruleset||'règleset ?')+' · '+(FACTION_FR[m.faction]||'faction ?')+(m.houseId!=null?' · maison '+m.houseId:'')+' ('+m.provider+')'}
+/** Garde-fou : un flux externe n'entre dans le carnet que si région et marché sont confirmés par le joueur. */
+function canMergeFeed({userRegion,confirmedMarket,marketId,marketInfo,scopeFaction,enabled}){
+ const m=marketMeta(marketId,marketInfo);
+ if(!enabled)return {ok:false,reason:'Intégration automatique désactivée.'};
+ if(!['eu','us','kr','tw'].includes(userRegion))return {ok:false,reason:'Région de ton compte non renseignée : aucun prix externe n’est intégré.'};
+ if(!m.region)return {ok:false,reason:'Région du marché inconnue.'};
+ if(m.region!==userRegion)return {ok:false,reason:'Marché '+m.region.toUpperCase()+' différent de ta région '+userRegion.toUpperCase()+' : jamais mélangés.'};
+ if(confirmedMarket!==m.id)return {ok:false,reason:'Confirme d’abord que ce marché (règleset et maison) est bien le tien.'};
+ if(!m.faction||(m.faction!=='Neutral'&&m.faction!==scopeFaction))return {ok:false,reason:m.faction==='Neutral'?'':'Faction du marché différente de ton carnet.'};
+ if(m.faction==='Neutral'&&scopeFaction)return {ok:false,reason:'Maison neutre : séparée des maisons de faction, non fusionnée dans ton carnet '+scopeFaction+'.'};
+ return {ok:true,reason:'Marché confirmé.'};
+}
+function validFeed(f){return !!f&&['binch-ah-feed-v1','binch-ah-feed-v2'].includes(f.format)&&f.markets&&typeof f.markets==='object'}
 /** Observations d'un marché du flux, au format du carnet (réutilise parseCommunity). */
 function feedObservations(feed,market,{realm,now=Date.now()}={}){
  if(!validFeed(feed)||!feed.markets[market])return [];
- const out=[];
- for(const [id,v] of Object.entries(feed.markets[market].items||{})){
-  try{out.push(...parseCommunity({market,item:Number(id),row:v.row,days:v.days},{name:feed.names?.[id]?.n||('Objet '+id),realm,now}))}catch{}
+ const info=feed.markets[market],meta=marketMeta(market,info.meta),out=[];
+ if(!meta.faction||!meta.region)return [];
+ const src=(meta.provider==='auctionhouse.fyi'?COMMUNITY_SOURCE:meta.provider)+' · '+MARKET_LABEL(market,info.meta);
+ for(const [id,v] of Object.entries(info.items||{})){
+  const name=feed.names?.[id]?.n||('Objet '+id),base={name,itemId:Number(id),realm,faction:meta.faction==='Neutral'?null:meta.faction,region:meta.region,market};
+  const r=v.row;
+  if(Array.isArray(r)&&isCopper(r[0])){const t=parseTime(r[2]);if(t&&t<=now)out.push({...base,priceCopper:r[0],quantity:Number.isSafeInteger(r[1])&&r[1]>0?r[1]:1,source:src,observedAt:new Date(t).toISOString()})}
+  for(const d of Array.isArray(v.days)?v.days:[]){const [day,low,,q]=d,t=Number(day)*DAY+12*HOUR;if(Number.isSafeInteger(day)&&isCopper(low)&&t<=now)out.push({...base,priceCopper:low,quantity:Number.isSafeInteger(q)&&q>0?q:1,source:src+' (plus bas du jour)',observedAt:new Date(t).toISOString()})}
  }
  return out;
 }
@@ -359,13 +387,13 @@ function feedObservations(feed,market,{realm,now=Date.now()}={}){
 function crossMarket(feed,itemId,now=Date.now()){
  if(!validFeed(feed))return [];
  return Object.entries(feed.markets).map(([m,v])=>{const r=v.items?.[itemId]?.row;const t=r?parseTime(r[2]):null;
-  return {market:m,label:MARKET_LABEL(m),price:r&&isCopper(r[0])?r[0]:null,quantity:r&&Number.isSafeInteger(r[1])?r[1]:null,at:t&&t<=now?new Date(t).toISOString():null,ageH:t?(now-t)/HOUR:null}})
+  return {market:m,label:MARKET_LABEL(m,v.meta),region:marketMeta(m,v.meta).region,price:r&&isCopper(r[0])?r[0]:null,quantity:r&&Number.isSafeInteger(r[1])?r[1]:null,at:t&&t<=now?new Date(t).toISOString():null,ageH:t?(now-t)/HOUR:null}})
   .sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));
 }
 function feedSummary(feed,now=Date.now()){
  if(!validFeed(feed))return null;
  const gen=parseTime(feed.generatedAt);
- return {generatedAt:feed.generatedAt,ageH:gen?(now-gen)/HOUR:null,markets:Object.entries(feed.markets).map(([m,v])=>({market:m,label:MARKET_LABEL(m),scanAt:v.at?new Date(v.at).toISOString():null,scanAgeH:v.at?(now-v.at)/HOUR:null,items:Object.keys(v.items||{}).length,contributors7d:v.contributors7d||0}))};
+ return {generatedAt:feed.generatedAt,ageH:gen?(now-gen)/HOUR:null,markets:Object.entries(feed.markets).map(([m,v])=>({market:m,label:MARKET_LABEL(m,v.meta),meta:marketMeta(m,v.meta),stale:v.at?(now-v.at)/HOUR>72:true,scanAt:v.at?new Date(v.at).toISOString():null,scanAgeH:v.at?(now-v.at)/HOUR:null,items:Object.keys(v.items||{}).length,contributors7d:v.contributors7d||0}))};
 }
 
 /* ---------- 15. Progression : quoi dépecer à mon niveau ---------- */
@@ -389,6 +417,6 @@ function skinningPlan({level,professions,index,feedMarket}){
  return {status:'ok',skill,level:lv,maxMob:cap,tiers,best:ranked[0]||null,nextSkill:cap<60?{mobLevel:cap+1,skill:skinSkillFor(cap+1)}:null};
 }
 
-return {FEED_URL,MARKET_LABEL,feedObservations,crossMarket,feedSummary,LEATHER_TIERS,skinSkillFor,maxSkinnableLevel,skinningPlan,SCAN_SOURCE,COMMUNITY_SOURCE,LEATHER,CONVERSIONS,coin,median,weightedMedian,weightedMean,extractPayload,parseGrimoire,aggregateListings,scanObservations,parseCommunity,
+return {FEED_URL,MARKET_LABEL,marketMeta,canMergeFeed,feedObservations,crossMarket,feedSummary,LEATHER_TIERS,skinSkillFor,maxSkinnableLevel,skinningPlan,SCAN_SOURCE,COMMUNITY_SOURCE,LEATHER,CONVERSIONS,coin,median,weightedMedian,weightedMean,extractPayload,parseGrimoire,aggregateListings,scanObservations,parseCommunity,
  mergeObservations,itemStats,simulate,hasProfession,marketIndex,evaluateRecipe,craftAnalysis,bagAdvice,budgetPlan,opportunities,movers,resaleCandidates,farmTargets,journalReview,evaluateAlerts,faithBrief};
 });

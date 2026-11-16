@@ -62,3 +62,12 @@ Aucun appel réseau, aucune automatisation en jeu, aucun prix fictif, relevés f
 - Vue « En direct » : fraîcheur par marché, choix de mon marché, intégration automatique au carnet (désactivable), conseils personnalisés, comparaison des hôtels des ventes, rafraîchissement toutes les 10 min onglet visible.
 - Progression : plan de dépeçage selon niveau et compétence (seuil Classic `(niv-10)×10` puis `niv×5`, tranches de monstres Vanilla), cuir accessible le mieux coté.
 - Limites : pas de temps réel (scans communautaires horaires au mieux), dépendance à un service tiers gratuit sans contrat, noms anglais du flux (rapprochement par identifiant d'objet).
+
+## 8. Corrections après revue ChatGPT (16/11/2026, soir)
+
+- **Aucune fusion externe par défaut.** Intégration au carnet seulement si : région du compte renseignée (EU/US), marché de même région, marché explicitement confirmé par le joueur (règleset + maison), même faction que le carnet ; maison neutre jamais fusionnée dans un carnet Horde/Alliance. Réglages précédents remis à zéro (`binch.ah.trading.v1` version 2).
+- **Libellés sans ambiguïté** : `Région · Règleset · Faction (· maison) (fournisseur)` ; auctionhouse.fyi = **US uniquement** ; avertissement si aucun marché de ta région n'existe dans le flux ; collage manuel auctionhouse.fyi refusé hors région US.
+- **API Blizzard Forever** : fournisseur optionnel en lecture seule dans le collecteur (`/data/wow/ruleset/{id}/auctions/{houseId}`, namespace `dynamic-forever-{region}`, OAuth client credentials). **Chemins non vérifiés** par La Binch (source : fil communautaire du forum Blizzard). Inactif sans secrets `BLIZZARD_CLIENT_ID/SECRET` et variables `BLIZZARD_REGION`, `FOREVER_RULESET_ID`, `FOREVER_RULESET_NAME`, `FOREVER_HOUSES` (`6:Horde,2:Alliance,7:Neutral`). Les secrets restent côté GitHub Actions, jamais dans la page publique.
+- **Publication sans écrasement** : plus de `push --force` ; un commit ajouté sur `binch-ah-data` seulement si le flux change. `contents: write` reste nécessaire pour qu'un workflow pousse une branche ; `main` n'est jamais modifiée et la branche peut être protégée contre la suppression.
+- **Sacs seulement** affiché partout (banque non lue). Conversions de cuir et règles de dépeçage : Classic, non certifiées Forever.
+- Tests ajoutés : isolation EU/US, confirmation, faction/neutre, région inconnue, fraîcheur > 72 h, fournisseur Blizzard non configuré / maison en erreur 503 / agrégation.

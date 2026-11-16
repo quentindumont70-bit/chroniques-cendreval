@@ -14,8 +14,9 @@ const coin=T.coin,pct=x=>Number.isFinite(x)?(x>0?'+':'')+x.toLocaleString('fr-FR
 const when=iso=>{const t=Date.parse(iso);if(!Number.isFinite(t))return 'date inconnue';const h=(Date.now()-t)/3600000;return new Date(t).toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'})+' ('+(h<1?'< 1 h':Math.floor(h)+' h')+')'};
 const gold=v=>{if(v==null||String(v).trim()==='')return null;const x=Number(String(v).replace(',','.'));return Number.isFinite(x)&&x>=0&&x<1e8?Math.round(x*10000):null};
 const toGold=c=>Number.isFinite(c)?(c/10000).toFixed(4):'';
-const defaults=()=>({version:1,reservePct:40,maxItemPct:15,capitalOverride:null,feedMarket:null,autoFeed:true,decisions:[],alerts:[],imports:[],grimoire:null,view:'dashboard'});
-let state=Object.assign(defaults(),read(KEY,{}));if(!Array.isArray(state.decisions))state.decisions=[];if(!Array.isArray(state.alerts))state.alerts=[];if(!Array.isArray(state.imports))state.imports=[];
+const defaults=()=>({version:2,region:null,confirmedMarket:null,reservePct:40,maxItemPct:15,capitalOverride:null,feedMarket:null,autoFeed:false,decisions:[],alerts:[],imports:[],grimoire:null,view:'dashboard'});
+let state=Object.assign(defaults(),read(KEY,{}));if(state.version!==2){state.version=2;state.autoFeed=false;state.confirmedMarket=null;state.region=state.region||null} // revue : jamais d’intégration externe sans confirmation
+if(!Array.isArray(state.decisions))state.decisions=[];if(!Array.isArray(state.alerts))state.alerts=[];if(!Array.isArray(state.imports))state.imports=[];
 let pendingScan=null,historyItem='',simSeed=null,feed=read('binch.ah.feed.cache.v1',null),feedStatus='',feedTimer=null;
 const save=()=>{state.decisions=state.decisions.slice(-300);state.alerts=state.alerts.slice(-100);state.imports=state.imports.slice(-30);write(KEY,state)};
 
@@ -71,7 +72,7 @@ function vDashboard(c){
  return '<div class="bt-kpis">'+
   kpi('Capital',c.capital?coin(c.capital.value):'—',c.capital?c.capital.src:'importe GrimoireSync ou saisis-le')+
   kpi('Réserve conservée',c.budget?coin(c.budget.reserve):'—',state.reservePct+' % du capital')+
-  kpi('Valeur des sacs (net AH)',stockAH?coin(stockAH):'—','marchand : '+coin(stockVendor))+
+  kpi('Valeur des sacs seulement (net AH)',stockAH?coin(stockAH):'—','marchand : '+coin(stockVendor))+
   kpi('Objets à vendre / garder',count('Vendre à l’AH')+' / '+count('Garder'),count('Transformer')+' à transformer · '+count('Données insuffisantes')+' sans cote')+
   kpi('Opportunités étayées',String(c.opps.length),'décote ≥ 15 %, relevé < 24 h')+
   kpi('Résultat réalisé (FIFO)',coin(c.ledger.realized||0),'d’après tes opérations déclarées')+'</div>'+
@@ -85,7 +86,7 @@ function moversTable(list){
 }
 function vBags(c){
  if(!c.ch.inventory.list.length)return empty('Aucun inventaire importé pour '+esc(c.ch.pseudo)+'. Importe GrimoireSync.lua (onglet Synchronisation ou « Données » ici).');
- return '<p class="bt-note">Sacs de '+esc(c.ch.pseudo)+' · source : '+esc(c.ch.inventory.src)+' · '+esc(when(c.ch.inventory.at))+'. La banque n’est pas lue par l’addon actuel.</p><div class="bt-cards">'+c.bags.map(b=>card({title:b.name+' ×'+b.count,price:b.price,reference:b.stats?.median??null,qty:b.count,margin:b.ahNetTotal!=null?b.ahNetTotal-b.vendorTotal:null,
+ return '<p class="bt-note">Sacs de '+esc(c.ch.pseudo)+' · source : '+esc(c.ch.inventory.src)+' · '+esc(when(c.ch.inventory.at))+'. <b>Sacs seulement</b> : la banque n’est pas lue par l’addon actuel.</p><div class="bt-cards">'+c.bags.map(b=>card({title:b.name+' ×'+b.count,price:b.price,reference:b.stats?.median??null,qty:b.count,margin:b.ahNetTotal!=null?b.ahNetTotal-b.vendorTotal:null,
   risks:b.stats?.sufficient?riskList(b.stats):[],confidence:b.stats?.confidence,at:b.lastAt,
   extra:'<p class="bt-decision bt-d-'+esc(b.decision.normalize('NFD').replace(/[^a-z]/gi,'').toLowerCase())+'">'+esc(b.decision)+'</p><p>'+esc(b.reasons.join(' '))+'</p><small>Marge affichée = net AH − revente marchand.</small>',
   actions:b.price?'<button type="button" data-bt-decide="'+esc(b.name)+'" data-bt-action="'+esc(b.decision)+'" data-bt-ref="'+b.price+'" data-bt-qty="'+b.count+'">Noter ma décision</button>':''})).join('')+'</div>';
@@ -152,16 +153,18 @@ function vFaith(c){
  const f=T.faithBrief({bags:c.bags,opps:c.opps,crafts:c.crafts,budget:c.budget,scope:c.scope?.id,dataNote:c.lastScan?'Données du scan du '+when(c.lastScan)+'.':'Aucun scan GrimoireSync importé : les avis reposent sur des relevés manuels.'});
  return '<div class="bt-faith"><p class="bt-faith-intro">Faith, intendante marchande : je ne reformule que les calculs ci-dessus, sans rien inventer.</p>'+f.lines.map(l=>'<p>'+esc(l)+'</p>').join('')+(f.refs.length?'<h3>Références</h3><ol class="bt-refs">'+f.refs.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ol>':'')+'</div>';
 }
-function feedMarketId(c){return state.feedMarket||('forever.normal.'+(c.scope?.faction||'Horde').toLowerCase()+'.us')}
+function feedMarketId(){const ids=Object.keys(feed?.markets||{});return state.feedMarket&&ids.includes(state.feedMarket)?state.feedMarket:null}
+function regionMarket(){const id=feedMarketId();if(!id)return null;const m=T.marketMeta(id,feed.markets[id].meta);return m.region&&m.region===state.region&&state.confirmedMarket===id?feed.markets[id]:null}
+function gate(c){const id=feedMarketId();return T.canMergeFeed({userRegion:state.region,confirmedMarket:state.confirmedMarket,marketId:id,marketInfo:id?feed.markets[id].meta:null,scopeFaction:c.scope?.faction,enabled:state.autoFeed})}
 function skinHtml(c){
- const plan=T.skinningPlan({level:c.ch.level,professions:c.ch.professions,index:c.index,feedMarket:feed?.markets?.[feedMarketId(c)]});
+ const plan=T.skinningPlan({level:c.ch.level,professions:c.ch.professions,index:c.index,feedMarket:regionMarket()});
  if(plan.status!=='ok')return empty('Dépeçage non importé : importe GrimoireSync.lua pour obtenir un plan selon ton niveau.');
  const best=plan.best?'<p class="bt-decision">Priorité : '+esc(plan.best.name)+' — '+coin(plan.best.leather.price)+' l’unité ('+esc(plan.best.leather.src)+', '+esc(when(plan.best.leather.at))+'), monstres niveau '+plan.best.mobRange.join('–')+'.</p>':'<p class="bt-alert">Aucun cuir accessible n’a de cote connue : données insuffisantes.</p>';
  return '<p class="bt-note">Niveau '+(plan.level||'inconnu')+' · Dépeçage '+plan.skill+' → monstres dépeçables jusqu’au niveau '+plan.maxMob+(plan.nextSkill?' (niveau '+plan.nextSkill.mobLevel+' à '+plan.nextSkill.skill+' de compétence)':'')+'. Règle et tranches de niveaux Classic, à confirmer sur Forever.</p>'+best+
   '<div class="bt-table"><table><thead><tr><th>Cuir</th><th>Monstres</th><th>Cuir</th><th>Peau</th><th>Pour toi</th></tr></thead><tbody>'+plan.tiers.map(t=>'<tr><td>'+esc(t.name)+'</td><td>'+t.mobs.join('–')+'</td><td>'+(t.leather?coin(t.leather.price):'—')+'</td><td>'+(t.hideP?coin(t.hideP.price):'—')+'</td><td>'+esc(t.why)+'</td></tr>').join('')+'</tbody></table></div>';
 }
 function vLive(c){
- const sum=T.feedSummary(feed),mk=feedMarketId(c);
+ const sum=T.feedSummary(feed),mk=feedMarketId();
  const head='<p class="bt-honesty">Flux communautaire auctionhouse.fyi, republié toutes les 3 h par La Binch et relu ici toutes les 10 minutes. Les prix dépendent des scans d’autres joueurs : <b>ce n’est pas un flux temps réel</b>. Ton propre <code>/grimoire scan</code> reste la source la plus fraîche.</p>';
  if(!sum)return head+empty(feedStatus||'Flux pas encore disponible (il sera publié après fusion de la PR et premier passage du collecteur).')+'<button type="button" id="bt-feed-refresh">Réessayer</button>';
  const markets=sum.markets;
@@ -169,7 +172,11 @@ function vLive(c){
  const table='<div class="bt-table"><table><thead><tr><th>Objet</th>'+markets.map(m=>'<th>'+esc(m.label)+'</th>').join('')+'</tr></thead><tbody>'+ids.map(id=>{const cm=T.crossMarket(feed,Number(id)),low=cm.find(x=>x.price!=null)?.market;
   return '<tr><td>'+esc(feed.names?.[id]?.n||'Objet '+id)+'</td>'+markets.map(m=>{const x=cm.find(y=>y.market===m.market);return '<td'+(x?.market===low&&markets.length>1?' class="bt-up"':'')+'>'+(x?.price!=null?coin(x.price)+'<br><small>'+x.quantity+' u.</small>':'—')+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table></div>';
  const top=[...c.bags.filter(b=>['Vendre à l’AH','Transformer','Garder'].includes(b.decision)).slice(0,4).map(b=>b.decision+' : '+b.name+' ×'+b.count+(b.price?' (cours '+coin(b.price)+')':'')),...c.opps.slice(0,3).map(o=>'Achat à étudier : '+o.name+' à '+coin(o.price)+' (médiane '+coin(o.reference)+')')];
- return head+'<div class="bt-form"><label class="bt-field">Mon marché<select id="bt-feed-market">'+markets.map(m=>'<option value="'+esc(m.market)+'"'+(m.market===mk?' selected':'')+'>'+esc(m.label)+'</option>').join('')+(markets.some(m=>m.market===mk)?'':'<option selected value="'+esc(mk)+'">'+esc(T.MARKET_LABEL(mk))+' (aucune donnée)</option>')+'</select></label><label class="bt-check"><input type="checkbox" id="bt-feed-auto"'+(state.autoFeed?' checked':'')+'> Intégrer automatiquement ce marché à mon carnet</label><button type="button" id="bt-feed-refresh">Actualiser</button></div>'+
+ const g=mk?gate(c):{ok:false,reason:'Choisis un marché.'},regionHas=markets.some(m=>m.meta.region===state.region);
+ const controls='<div class="bt-form"><label class="bt-field">Région de ton compte<select id="bt-region"><option value="">Non renseignée</option>'+['eu','us'].map(r=>'<option value="'+r+'"'+(state.region===r?' selected':'')+'>'+r.toUpperCase()+'</option>').join('')+'</select></label><label class="bt-field">Marché à afficher<select id="bt-feed-market"><option value="">Choisir…</option>'+markets.map(m=>'<option value="'+esc(m.market)+'"'+(m.market===mk?' selected':'')+'>'+esc(m.label)+'</option>').join('')+'</select></label><button type="button" id="bt-feed-refresh">Actualiser</button></div>'+
+  (mk?'<label class="bt-check"><input type="checkbox" id="bt-feed-confirm"'+(state.confirmedMarket===mk?' checked':'')+'> Je confirme que « '+esc(T.MARKET_LABEL(mk,feed.markets[mk].meta))+' » est bien mon marché</label><label class="bt-check"><input type="checkbox" id="bt-feed-auto"'+(state.autoFeed?' checked':'')+'> Intégrer ce marché à mon carnet</label><p class="'+(g.ok?'bt-honesty':'bt-alert')+'">Intégration : '+esc(g.ok?'active':'bloquée')+' — '+esc(g.reason)+'</p>':'')+
+  (state.region&&!regionHas?'<p class="bt-alert">Aucun marché '+esc(state.region.toUpperCase())+' dans le flux : les cours ci-dessous concernent une autre région, à titre indicatif seulement. Ton <code>/grimoire scan</code> reste la seule source de ton serveur.</p>':'');
+ return head+controls+
   '<div class="bt-kpis">'+kpi('Flux publié',when(sum.generatedAt),'collecteur GitHub')+markets.map(m=>kpi(m.label,m.scanAt?when(m.scanAt):'—',m.items+' objets · '+m.contributors7d+' contributeur(s) / 7 j')).join('')+'</div>'+
   '<h3>Conseils du moment pour '+esc(c.ch.pseudo)+(c.ch.level?' (niveau '+c.ch.level+')':'')+'</h3>'+(top.length?'<ol class="bt-list">'+top.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol>':empty('Pas encore de conseil étayé : il faut au moins 3 relevés par objet (le flux en apporte jusqu’à 8 par passage).'))+
   '<h3>Que dépecer maintenant ?</h3>'+skinHtml(c)+
@@ -185,9 +192,8 @@ async function loadFeed(force){
  mergeFeed();render();
 }
 function mergeFeed(){
- const scope=scopeOf();if(!feed||!state.autoFeed||!scope)return;
- const mk=state.feedMarket||('forever.normal.'+scope.faction.toLowerCase()+'.us');
- if(!mk.includes('.'+scope.faction.toLowerCase()+'.'))return;
+ const scope=scopeOf(),mk=feedMarketId();if(!feed||!scope||!mk)return;
+ if(!T.canMergeFeed({userRegion:state.region,confirmedMarket:state.confirmedMarket,marketId:mk,marketInfo:feed.markets[mk].meta,scopeFaction:scope.faction,enabled:state.autoFeed}).ok)return;
  const rows=T.feedObservations(feed,mk,{realm:scope.realm});if(!rows.length)return;
  const out=T.mergeObservations(read(MARKET,{}),rows);if(out.added)try{persistMarket(out.store)}catch{}
 }
@@ -249,6 +255,7 @@ function onFyi(form){
  const d=new FormData(form),scope=scopeOf(),status=$('bt-fyi-status');
  try{
   if(!scope)throw Error('Choisis d’abord ton marché (royaume et faction).');
+  if(state.region!=='us')throw Error('auctionhouse.fyi ne couvre que des marchés US : renseigne la région US dans « En direct » si c’est bien la tienne.');
   const rows=T.parseCommunity(String(d.get('json')),{name:d.get('name'),realm:scope.realm});
   if(rows.some(r=>r.faction!==scope.faction))throw Error('Ce relevé concerne l’autre faction que ton marché sélectionné.');
   const out=T.mergeObservations(read(MARKET,{}),rows);persistMarket(out.store);
@@ -299,7 +306,9 @@ function mount(){
  page.addEventListener('change',e=>{
   if(e.target.id==='bt-scan-file'){const f=e.target.files?.[0];e.target.value='';onScanFile(f)}
   if(e.target.id==='bt-history-item'){historyItem=e.target.value;render()}
-  if(e.target.id==='bt-feed-market'){state.feedMarket=e.target.value;save();mergeFeed();render()}
+  if(e.target.id==='bt-feed-market'){state.feedMarket=e.target.value||null;save();render()}
+  if(e.target.id==='bt-region'){state.region=e.target.value||null;save();render()}
+  if(e.target.id==='bt-feed-confirm'){state.confirmedMarket=e.target.checked?feedMarketId():null;save();mergeFeed();render()}
   if(e.target.id==='bt-feed-auto'){state.autoFeed=e.target.checked;save();mergeFeed();render()}
  });
  page.addEventListener('input',e=>{if(e.target.closest('#bt-sim'))simCompute()});

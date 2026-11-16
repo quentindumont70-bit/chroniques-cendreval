@@ -160,7 +160,7 @@ test('Flux multi-marchés: observations du carnet, comparaison et fraîcheur',()
  const s=T.itemStats(merged.store.items.find(x=>x.itemId===2318),NOW);
  assert.equal(s.sufficient,true,'le flux suffit à produire une cote');
  const cm=T.crossMarket(FEED,2318,NOW);
- assert.equal(cm[0].label,'Normal · Horde');assert.equal(cm[0].price,30);assert.equal(cm[1].price,45);
+ assert.equal(cm[0].label,'US · Normal · Horde (auctionhouse.fyi)');assert.equal(cm[0].region,'us');assert.equal(cm[0].price,30);assert.equal(cm[1].price,45);
  assert.equal(T.feedSummary(FEED,NOW).markets.length,2);
  assert.deepEqual(T.feedObservations({format:'autre'},'x'),[]);
 });
@@ -173,4 +173,31 @@ test('Progression: seuil de dépeçage Classic et plan selon le niveau',()=>{
  assert.equal(plan.best.name,'Cuir moyen','94pc > 30pc, accessible à ce niveau');
  assert.equal(plan.tiers.find(t=>t.itemId===4304).reachable,false);
  assert.equal(T.skinningPlan({level:32,professions:{}}).status,'Dépeçage non importé');
+});
+
+test('Isolation des marchés: région, confirmation, faction, maison neutre',()=>{
+ const base={confirmedMarket:'forever.normal.horde.us',marketId:'forever.normal.horde.us',scopeFaction:'Horde',enabled:true};
+ assert.equal(T.canMergeFeed({...base,userRegion:'us'}).ok,true);
+ assert.match(T.canMergeFeed({...base,userRegion:'eu'}).reason,/US différent de ta région EU/);
+ assert.match(T.canMergeFeed({...base,userRegion:null}).reason,/non renseignée/);
+ assert.equal(T.canMergeFeed({...base,userRegion:'us',confirmedMarket:null}).ok,false);
+ assert.equal(T.canMergeFeed({...base,userRegion:'us',enabled:false}).ok,false);
+ assert.equal(T.canMergeFeed({...base,userRegion:'us',scopeFaction:'Alliance'}).ok,false);
+ const eu={provider:'API Blizzard (non vérifiée)',region:'eu',ruleset:'normal',faction:'Neutral',houseId:7};
+ assert.match(T.canMergeFeed({userRegion:'eu',confirmedMarket:'blizzard.eu.1.7',marketId:'blizzard.eu.1.7',marketInfo:eu,scopeFaction:'Horde',enabled:true}).reason,/neutre/);
+ assert.equal(T.MARKET_LABEL('forever.pvp.alliance.us'),'US · JcJ · Alliance (auctionhouse.fyi)');
+ assert.equal(T.marketMeta('blizzard.x',{region:'zz'}).region,null);
+});
+
+test('Flux v2: maison neutre et région inconnue jamais fusionnées, marché ancien signalé',()=>{
+ const feed={format:'binch-ah-feed-v2',generatedAt:'2026-11-16T11:00:00Z',names:{},markets:{
+  'blizzard.eu.1.7':{meta:{provider:'API Blizzard',region:'eu',ruleset:'normal',faction:'Neutral',houseId:7},at:Date.parse('2026-11-16T10:00:00Z'),items:{2318:{row:[30,5,Date.parse('2026-11-16T10:00:00Z')],days:[]}}},
+  'mystere':{meta:{faction:'Horde'},at:Date.parse('2026-11-01T10:00:00Z'),items:{2318:{row:[30,5,Date.parse('2026-11-01T10:00:00Z')],days:[]}}}}};
+ const neutral=T.feedObservations(feed,'blizzard.eu.1.7',{realm:'Forever',now:NOW});
+ assert.equal(neutral.length,1);
+ assert.equal(T.mergeObservations({version:1,items:[]},neutral,NOW).added,0,'sans faction : refusé par le carnet');
+ assert.deepEqual(T.feedObservations(feed,'mystere',{realm:'Forever',now:NOW}),[],'région inconnue : aucune observation');
+ const sum=T.feedSummary(feed,NOW);
+ assert.equal(sum.markets.find(m=>m.market==='mystere').stale,true);
+ assert.equal(sum.markets.find(m=>m.market==='blizzard.eu.1.7').stale,false);
 });
