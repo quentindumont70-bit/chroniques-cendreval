@@ -399,3 +399,9 @@ test('Dépeçage: cours externes datés, quantités vérifiables, aucune cote p�
  assert.match(ui,/m\.region===state\.region/,'région du joueur requise');
  assert.match(ui,/state\.confirmedMarket===id/,'confirmation du marché requise');
 });
+
+test('Consentement marché AH: changement région ou serveur révoque la confirmation',()=>{
+ const ui=readFileSync(new URL('../public/binch/ah-trading.js',import.meta.url),'utf8');
+ assert.match(ui,/next!==state\.feedMarket\)\{state\.feedMarket=next;state\.confirmedMarket=null;state\.autoFeed=false/);
+ assert.match(ui,/next!==state\.region\)\{state\.region=next;state\.confirmedMarket=null;state\.autoFeed=false/);
+});
