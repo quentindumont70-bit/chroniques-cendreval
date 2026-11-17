@@ -161,8 +161,21 @@ test('Flux multi-marchés: observations du carnet, comparaison et fraîcheur',()
  assert.equal(s.sufficient,true,'le flux suffit à produire une cote');
  const cm=T.crossMarket(FEED,2318,NOW);
  assert.equal(cm[0].label,'US · Normal · Horde (auctionhouse.fyi)');assert.equal(cm[0].region,'us');assert.equal(cm[0].price,30);assert.equal(cm[1].price,45);
+ assert.equal(cm[0].faction,'Horde');assert.equal(cm[0].fresh,true,'relevé de 2 h comparable');
+ assert.equal(cm[1].fresh,false,'relevé vieux de dix jours visible mais non comparable');
  assert.equal(T.feedSummary(FEED,NOW).markets.length,2);
  assert.deepEqual(T.feedObservations({format:'autre'},'x'),[]);
+});
+
+test('Comparateur AH : cotations futures écartées et données sans date non comparables',()=>{
+ const future={format:'binch-ah-feed-v2',markets:{
+  'forever.normal.horde.us':{items:{2318:{row:[17,12,NOW+3600000]}}},
+  'forever.pvp.horde.us':{items:{2318:{row:[18,10,0]}}}
+ }};
+ const c=T.crossMarket(future,2318,NOW);
+ assert.equal(c.length,2);
+ assert.ok(c.every(x=>x.price===null&&x.at===null&&x.fresh===false));
+ assert.ok(c.every(x=>x.region==='us'&&x.faction==='Horde'));
 });
 
 test('Progression: seuil de dépeçage Classic et plan selon le niveau',()=>{
