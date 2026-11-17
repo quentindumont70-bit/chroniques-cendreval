@@ -46,9 +46,10 @@ function context(){
  const trades=(Array.isArray(store.trades)?store.trades:[]).filter(t=>(t.scope||'legacy')===(scope?.id||'legacy'));
  const ledger=window.BinchAHPortfolio?.ledger?window.BinchAHPortfolio.ledger(trades,fee):{positions:[],realized:0,remainingCost:0};
  const resale=T.resaleCandidates({positions:ledger.positions,index,fee});
+ const performance=window.BinchAHPortfolio?.tradePerformance?.(ledger)||null;
  const fresh=index.items.filter(x=>Date.now()-Date.parse(x.observedAt)<86400000).length;
  const scans=index.items.filter(x=>String(x.source).startsWith(T.SCAN_SOURCE)).map(x=>x.observedAt).sort().pop()||null;
- return {store,scope,fee,index,ch,crafts,bags,capital,budget,opps,trades,ledger,resale,fresh,lastScan:scans};
+ return {store,scope,fee,index,ch,crafts,bags,capital,budget,opps,trades,ledger,performance,resale,fresh,lastScan:scans};
 }
 
 /* ---------- composants ---------- */
@@ -77,7 +78,8 @@ function vDashboard(c){
   kpi('Valeur des sacs seulement (net AH)',stockAH?coin(stockAH):'—','marchand : '+coin(stockVendor))+
   kpi('Objets à vendre / garder',count('Vendre à l’AH')+' / '+count('Garder'),count('Transformer')+' à transformer · '+count('Données insuffisantes')+' sans cote')+
   kpi('Achats à étudier',String(c.opps.filter(o=>o.status==='Achat à étudier').length),c.opps.filter(o=>o.status!=='Achat à étudier').length+' décote(s) à surveiller')+
-  kpi('Résultat réalisé (FIFO)',coin(c.ledger.realized||0),'d’après tes opérations déclarées')+'</div>'+
+  kpi('Résultat réalisé (FIFO)',coin(c.ledger.realized||0),'d’après tes opérations déclarées')+
+  kpi('Ventes consignées (30 j)',c.performance?.operations?String(c.performance.sold)+' unité(s)':'—',c.performance?.unmatched?'dont '+c.performance.unmatched+' sans prix d’achat connu':'déclarations personnelles, pas volume du marché')+'</div>'+
   '<h3>Priorités du moment</h3>'+(actions.length?'<ol class="bt-list">'+actions.map(a=>'<li>'+esc(a)+'</li>').join('')+'</ol>':empty('Données insuffisantes pour proposer une action. Lance <code>/grimoire scan</code> à l’hôtel des ventes, fais <code>/reload</code>, puis importe GrimoireSync.lua dans « Données ».'))+
   '<h3>Marchés en mouvement</h3>'+moversTable(T.movers(c.index));
 }
@@ -143,9 +145,25 @@ function vWallet(c){
   (b?'<div class="bt-kpis">'+kpi('Capital',coin(b.capital),c.capital.src)+kpi('Réserve intouchable',coin(b.reserve),state.reservePct+' %')+kpi('Déployable',coin(b.deployable),'pour l’ensemble des achats')+kpi('Plafond par objet',coin(b.perItemCap),state.maxItemPct+' % du capital')+kpi('Stock acheté (coût)',coin(c.ledger.remainingCost||0),(c.ledger.remainingUnits||0)+' unité(s) en lots FIFO')+kpi('Résultat réalisé',coin(c.ledger.realized||0),'ventes rapprochées d’achats')+'</div>':empty('Capital inconnu : importe GrimoireSync.lua (or du personnage) ou saisis un montant.'))+
   '<h3>Exposition actuelle par objet</h3>'+(c.ledger.positions?.length?'<div class="bt-table"><table><thead><tr><th>Objet</th><th>Unités</th><th>Coût engagé</th><th>Part du capital</th></tr></thead><tbody>'+c.ledger.positions.filter(p=>p.remaining>0).map(p=>'<tr><td>'+esc(p.item)+'</td><td>'+p.remaining+'</td><td>'+coin(p.carryingCost)+'</td><td>'+(b&&b.capital?pct(100*p.carryingCost/b.capital).replace('+',''):'—')+(b&&p.carryingCost>b.perItemCap?' ⚠':'')+'</td></tr>').join('')+'</tbody></table></div>':empty('Aucune position : déclare tes achats dans le journal ou la Bourse d’Azeroth.'));
 }
+function tradePerformanceSection(p){
+ if(!p)return '';
+ const note='<p class="bt-note">Uniquement les opérations que tu as <strong>déclarées</strong> dans le Journal ou la Bourse. Ce n’est ni le volume réel de l’AH, ni une mesure de liquidité globale. Les ventes sans achat enregistré ne contribuent jamais au bénéfice FIFO.</p>';
+ if(!p.operations)return '<h3>Ventes déclarées · 30 derniers jours</h3>'+note+empty('Aucune vente datée et saisie sur cette période.');
+ const overview='<div class="bt-kpis">'+
+  kpi('Unités vendues et saisies',String(p.sold),p.operations+' déclaration(s) sur '+p.days+' jours')+
+  kpi('Bénéfice FIFO calculable',coin(p.realized),p.matched+' unité(s) rapprochée(s) d’un achat')+
+  kpi('Coût d’achat inconnu',String(p.unmatched)+' unité(s)','exclues du bénéfice, jamais valorisées à zéro')+
+  kpi('Rendement sur coût rapproché',p.roi==null?'—':pct(p.roi),p.roi==null?'aucun coût d’achat connu':'hors dépôts et autres frais non déclarés')+'</div>';
+ const table='<div class="bt-table"><table><thead><tr><th>Objet</th><th>Vendu</th><th>Coût connu</th><th>Sans coût</th><th>Bénéfice FIFO</th><th>ROI</th><th>Dernière déclaration</th></tr></thead><tbody>'+
+  p.rows.slice(0,40).map(x=>'<tr><td>'+esc(x.item)+'</td><td>'+x.sold+'</td><td>'+x.matched+'</td><td>'+x.unmatched+'</td><td>'+coin(x.realized)+'</td><td>'+(x.roi==null?'—':pct(x.roi))+'</td><td>'+esc(when(x.lastSale))+'</td></tr>').join('')+
+  '</tbody></table></div>';
+ return '<h3>Ventes déclarées · '+p.days+' derniers jours</h3>'+note+overview+table+
+  (p.excluded?'<p class="bt-note">'+p.excluded+' déclaration(s) écartée(s) : date ou données incohérentes.</p>':'');
+}
 function vJournal(c){
  const rev=T.journalReview({decisions:state.decisions,trades:c.trades,index:c.index,fee:c.fee});
  return '<form id="bt-trade" class="bt-form"><label class="bt-field">Opération réelle<select name="kind"><option value="buy">Achat</option><option value="sell">Vente</option></select></label><label class="bt-field">Objet<input name="item" required maxlength="100"></label><label class="bt-field">Quantité<input name="qty" type="number" min="1" value="1" required></label><label class="bt-field">Prix unitaire (or)<input name="price" inputmode="decimal" required></label><button type="submit">Déclarer</button></form><p class="bt-note">Les opérations sont ajoutées au registre de la Bourse d’Azeroth (même carnet) pour comparer prévisions et résultats.</p>'+
+  tradePerformanceSection(c.performance)+
   (rev.length?'<div class="bt-table"><table><thead><tr><th>Date</th><th>Décision</th><th>Référence</th><th>Attendu</th><th>Ventes réelles</th><th>Écart</th><th>Cours actuel</th><th>Bilan</th><th></th></tr></thead><tbody>'+rev.slice().reverse().map(d=>'<tr><td>'+esc(when(d.at))+'</td><td>'+esc(d.action+' · '+d.item+' ×'+d.qty)+'</td><td>'+coin(d.reference)+'</td><td>'+(d.expected?coin(d.expected):'—')+'</td><td>'+(d.realizedQty?d.realizedQty+' à '+coin(d.realizedAvg):'—')+'</td><td>'+pct(d.realizedVsExpected)+'</td><td>'+(d.marketNow?coin(d.marketNow)+' ('+pct(d.marketVsReference)+')':'—')+'</td><td>'+esc(d.outcome)+'</td><td><button type="button" data-bt-del-decision="'+esc(d.id)+'" aria-label="Supprimer">×</button></td></tr>').join('')+'</tbody></table></div>':empty('Aucune décision notée. Utilise « Noter ma décision » depuis les sacs ou le radar.'));
 }
 function vAlerts(c){
