@@ -180,7 +180,7 @@ test('V169: le cockpit reprend deux vrais événements Agenda proches, et aucun 
  ])});
  const data=f.collect();
  assert.deepEqual(data.items.map(x=>x.title),['Rendez-vous fictif','Échéance fictive']);
- assert.ok(data.items.every(x=>x.kind==='Agenda'&&x.url==='./agenda.html#events'));
+ assert.deepEqual(data.items.map(x=>x.url),['./agenda.html#event=today','./agenda.html#event=later']);
  assert.match(data.items[1].next,/14:30/);
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
@@ -351,5 +351,38 @@ test('V185: la fiche Maison se cible par fragment local sans donnée copiée ni 
  assert.match(html,/scrollIntoView\(\{block:'center'\}\)/);
  assert.match(js,/encodeURIComponent\(item\.id\)/);
  assert.doesNotMatch(js,/localStorage\.setItem|fetch\(|XMLHttpRequest|WebSocket/);
- assert.match(sw,/big-cthu-public-v2-v185/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
+});
+
+
+test('V186: ouvrir directement un événement depuis À reprendre sans changer le calendrier',async()=>{
+ const today=(()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')})();
+ const f=await fixture({[K.agenda]:JSON.stringify([
+  {id:'rdv & maison',title:'Rendez-vous artisan',date:today,category:'maison'},
+  {id:'future',title:'Autre rendez-vous',date:today,category:'perso'},
+  {title:'Ancienne fiche sans identifiant',date:today,category:'perso'}
+ ])});
+ const d=f.collect();
+ assert.equal(d.total,3);
+ assert.deepEqual(d.items.map(x=>x.url),['./agenda.html#event=rdv%20%26%20maison','./agenda.html#event=future']);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
+
+test('V186: rendez-vous sans identifiant lisible conservent le lien Agenda traditionnel',async()=>{
+ const today=(()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')})();
+ const f=await fixture({[K.agenda]:JSON.stringify([{title:'Ancien rendez-vous',date:today,category:'perso'}])});
+ assert.deepEqual(f.collect().items.map(x=>x.url),['./agenda.html#events']);
+ assert.equal(f.writes(),0);
+});
+
+test('V186: Agenda peut cibler son événement sans migration, accès réseau ni traitement de patient',async()=>{
+ const [html,sw,js,tour]=await Promise.all(['agenda.html','sw.js','active-pulse.js','tournee-complete.html'].map(read));
+ assert.match(html,/new URLSearchParams\(window\.location\.hash\.slice\(1\)\)\.get\('event'\)/);
+ assert.match(html,/\.event\.is-focused\{/);
+ assert.match(html,/scrollIntoView\(\{block:'center'\}\)/);
+ assert.match(js,/\.\/agenda\.html#event=/);
+ assert.match(sw,/big-cthu-public-v2-v186/);
+ assert.doesNotMatch(js,/localStorage\.setItem|fetch\(|XMLHttpRequest|WebSocket/);
+ assert.doesNotMatch(tour,/V186|\.event\.is-focused/);
 });
