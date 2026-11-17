@@ -439,7 +439,7 @@ test('V194–V197: cockpit mobile compact, ancres accessibles et cache public re
  assert.match(css,/#activePulse > p\.muted:not\(#activePulseStatus\)/);
  assert.match(css,/#activePulse,#nextSession,#priorities\{scroll-margin-top/);
  assert.match(css,/#activePulseToggle\{min-height:44px/);
- assert.match(sw,/const CACHE='big-cthu-public-v2-v196'/);
+ assert.match(sw,/const CACHE='big-cthu-public-v2-v207'/);
  assert.match(sw,/'\.\/active-pulse\.js'/);
  assert.match(sw,/'\.\/next-session\.js'/);
  assert.match(html,/id="activePulseToggle"/);
@@ -474,6 +474,22 @@ test('V201–V203: expansion progressive jusqu’à 48 par rubrique et accès mo
  const css=await read('cockpit-themes.css');
  assert.match(css,/#activePulseCategory\{display:block/);
  assert.match(css,/#activePulseToggle\{min-height:44px/);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
+
+test('V204–V207: urgences regroupées, compteur exact et cache public à jour',async()=>{
+ const date=new Date();date.setDate(date.getDate()-1);
+ const day=[date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+ const f=await fixture({[K.tasks]:JSON.stringify([{id:'p',text:'Priorité',done:false}]),[K.pantry]:JSON.stringify([{id:'f',name:'Produit fictif',kind:'DLC',date:day}])});
+ const d=f.collect();
+ assert.equal(d.counts.Urgentes,2);
+ assert.equal(d.urgentCompact,2);
+ assert.equal(d.items.filter(x=>x.rank<=2).length,2);
+ const [html,css,sw]=await Promise.all(['index.html','cockpit-themes.css','sw.js'].map(read));
+ assert.match(html,/<option value="Urgentes">Urgences et priorités<\/option>/);
+ assert.match(css,/@media\(forced-colors:active\)/);
+ assert.match(sw,/big-cthu-public-v2-v207/);
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
 });
