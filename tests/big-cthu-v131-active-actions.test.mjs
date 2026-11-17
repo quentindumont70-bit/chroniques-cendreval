@@ -32,7 +32,7 @@ test('V131: retrouve les vraies priorités Maison, musique et prochaine session 
  });
  const d=f.collect();
  assert.deepEqual(d.items.map(x=>x.kind),['Priorités','Maison','Musique','Jeux']);
- assert.deepEqual(d.items.map(x=>x.url),['#priorities','./maison.html#jobs','./musique.html#studio-list','#nextSession']);
+ assert.deepEqual(d.items.map(x=>x.url),['#priorities','./maison.html#job=a','./musique.html#studio-list','#nextSession']);
  assert.equal(d.warnings,0);
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
@@ -258,8 +258,8 @@ test('V178: real Maison work is visible first; high priority breaks ties and lin
   {id:'done',name:'Projet terminé',status:'done',priority:'haute'}
  ])});
  const items=f.collect().items;
- assert.deepEqual(items.map(x=>x.title),['Projet en cours urgent','Projet en cours peu urgent']);
- assert.ok(items.every(x=>x.url==='./maison.html#jobs'));
+ assert.deepEqual(items.map(x=>x.title),['Projet en cours urgent','Projet planifié urgent']);
+ assert.deepEqual(items.map(x=>x.url),['./maison.html#job=doing-high','./maison.html#job=todo-high']);
  assert.equal(f.collect().total,3);
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
@@ -315,4 +315,41 @@ test('V182: une DDM dépassée depuis longtemps reste dans la source sans sature
  assert.equal(f.stored.get(K.pantry),raw);
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
+});
+
+
+test('V185: les échéances Maison réellement urgentes sont parmi les deux cartes visibles',async()=>{
+ const iso=n=>{const d=new Date();d.setDate(d.getDate()+n);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+ const f=await fixture({[K.maison]:JSON.stringify([
+  {id:'routine',name:'Rangement tranquille',status:'doing',priority:'basse',due:iso(20)},
+  {id:'fuite & eau',name:'Fuite à réparer',status:'todo',priority:'haute',due:iso(-1)},
+  {id:'devis',name:'Devis à traiter',status:'doing',priority:'haute',due:iso(0)}
+ ])});
+ const d=f.collect();
+ assert.deepEqual(d.items.map(x=>x.title),['Fuite à réparer','Devis à traiter']);
+ assert.deepEqual(d.items.map(x=>x.url),['./maison.html#job=fuite%20%26%20eau','./maison.html#job=devis']);
+ assert.equal(d.total,3);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
+
+test('V185: un ancien chantier sans identifiant reste navigable et la priorité haute dépasse le travail secondaire',async()=>{
+ const f=await fixture({[K.maison]:JSON.stringify([
+  {name:'Ancien chantier',status:'doing',priority:'basse'},
+  {id:'urgent',name:'Urgence prévue',status:'todo',priority:'haute'}
+ ])});
+ const d=f.collect();
+ assert.deepEqual(d.items.map(x=>x.title),['Urgence prévue','Ancien chantier']);
+ assert.deepEqual(d.items.map(x=>x.url),['./maison.html#job=urgent','./maison.html#jobs']);
+ assert.equal(f.writes(),0);
+});
+
+test('V185: la fiche Maison se cible par fragment local sans donnée copiée ni lien externe',async()=>{
+ const [html,sw,js]=await Promise.all(['maison.html','sw.js','active-pulse.js'].map(read));
+ assert.match(html,/new URLSearchParams\(window\.location\.hash\.slice\(1\)\)\.get\('job'\)/);
+ assert.match(html,/\.job\.is-focused\{/);
+ assert.match(html,/scrollIntoView\(\{block:'center'\}\)/);
+ assert.match(js,/encodeURIComponent\(item\.id\)/);
+ assert.doesNotMatch(js,/localStorage\.setItem|fetch\(|XMLHttpRequest|WebSocket/);
+ assert.match(sw,/big-cthu-public-v2-v185/);
 });
