@@ -21,7 +21,7 @@ function read(key){
   return {rows,bad:false};
  }catch(e){return {rows:[],bad:true}}
 }
-function collect(expanded=false){
+function collect(expanded=false,limit=8){
  const now=new Date();
  const today=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
  const clock=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
@@ -53,7 +53,7 @@ function collect(expanded=false){
   counts[source.kind]=selected.length;
   total+=selected.length;
   compactVisible+=Math.min(selected.length,source.limit);
-  for(const item of selected.slice(0,expanded?8:source.limit))results.push({...item,kind:source.kind,url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.kind==='Agenda'&&item.id?'./agenda.html#event='+encodeURIComponent(item.id):source.kind==='Captures'&&item.id?'./capture.html#capture='+encodeURIComponent(item.id):source.kind==='Priorités'&&item.id?'#priority-'+encodeURIComponent(item.id):source.kind==='Musique'&&item.id?'./musique.html#studio='+encodeURIComponent(item.id):source.kind==='Stock'&&item.id?'./garde-manger.html#food='+encodeURIComponent(item.id):source.kind==='Jeux'&&item.id?'#session='+encodeURIComponent(item.id):source.url});
+  for(const item of selected.slice(0,expanded?limit:source.limit))results.push({...item,kind:source.kind,url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.kind==='Agenda'&&item.id?'./agenda.html#event='+encodeURIComponent(item.id):source.kind==='Captures'&&item.id?'./capture.html#capture='+encodeURIComponent(item.id):source.kind==='Priorités'&&item.id?'#priority-'+encodeURIComponent(item.id):source.kind==='Musique'&&item.id?'./musique.html#studio='+encodeURIComponent(item.id):source.kind==='Stock'&&item.id?'./garde-manger.html#food='+encodeURIComponent(item.id):source.kind==='Jeux'&&item.id?'#session='+encodeURIComponent(item.id):source.url});
  }
  return {items:results.sort((a,b)=>a.rank-b.rank),warnings,total,compactVisible,counts};
 }
@@ -63,10 +63,10 @@ function node(tag,text,className){
  if(className)x.className=className;
  return x;
 }
-let expanded=false,selectedKind='all';
+let expanded=false,selectedKind='all',pageSize=8;
 function render(){
  const root=$('activePulseList');if(!root)return;
- const {items,warnings,total,compactVisible,counts}=collect(expanded);
+ const {items,warnings,total,compactVisible,counts}=collect(expanded,pageSize);
  const visible=selectedKind==='all'?items:items.filter(item=>item.kind===selectedKind);
  const available=selectedKind==='all'?total:(counts[selectedKind]||0);
  const compact=selectedKind==='all'?compactVisible:Math.min(available,2);
@@ -82,8 +82,8 @@ function render(){
   root.append(link);
  }
  const toggle=$('activePulseToggle');
- if(toggle){toggle.hidden=available<=compact;toggle.textContent=expanded?'Afficher moins':'Afficher plus d’actions';toggle.setAttribute('aria-expanded',expanded?'true':'false');toggle.onclick=()=>{expanded=!expanded;render()}}
- const category=$('activePulseCategory');if(category){category.value=selectedKind;category.onchange=()=>{selectedKind=category.value;expanded=false;render()}}
+ if(toggle){toggle.hidden=available<=compact;toggle.textContent=expanded?(visible.length<available&&pageSize<48?'Afficher encore':'Afficher moins'):'Afficher plus d’actions';toggle.setAttribute('aria-expanded',expanded?'true':'false');toggle.onclick=()=>{if(!expanded){expanded=true;pageSize=8}else if(visible.length<available&&pageSize<48){pageSize=Math.min(48,pageSize+16)}else{expanded=false;pageSize=8}render()}}
+ const category=$('activePulseCategory');if(category){category.value=selectedKind;category.onchange=()=>{selectedKind=category.value;expanded=false;pageSize=8;render()}}
  const status=$('activePulseStatus');
  if(status)status.textContent=warnings?'Certaines données locales sont illisibles ; aucune n’a été modifiée.':available>visible.length?'Affichage de '+visible.length+' sur '+available+' actions. Rappels lus localement, sans copie.':'Rappels lus localement, sans copie ni synchronisation.';
 }
