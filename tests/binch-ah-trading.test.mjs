@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import '../public/binch/ah-trading-core.js';
 import '../public/binch/ah-portfolio-core.js';
 const T=globalThis.BinchTrading;
@@ -258,4 +259,43 @@ test('Flux v2: maison neutre et région inconnue jamais fusionnées, marché anc
  const sum=T.feedSummary(feed,NOW);
  assert.equal(sum.markets.find(m=>m.market==='mystere').stale,true);
  assert.equal(sum.markets.find(m=>m.market==='blizzard.eu.1.7').stale,false);
+});
+
+test('Historique AH: comparer uniquement deux scans personnels frais et du même marché',()=>{
+ const scan=T.SCAN_SOURCE,now=NOW;
+ const at=(h)=>new Date(now-h*3600000).toISOString();
+ const row=(h,qty,listings,price,over={})=>({at:at(h),price,quantity:qty,listings,source:scan,...over});
+ const item={history:[row(4,90,12,100),row(2,60,8,95)]};
+ const d=T.supplyChange(item,now);
+ assert.ok(d);
+ assert.equal(d.from,90);assert.equal(d.to,60);assert.equal(d.change,-30);
+ assert.equal(Math.round(d.changePct),-33);
+ assert.equal(d.listingsChange,-4);
+ assert.equal(d.floorFrom,100);assert.equal(d.floorTo,95);
+ assert.equal(d.hours,2);
+ assert.equal(d.source,scan);
+ assert.equal(T.supplyChange({history:[row(2,30,5,10)]},now),null,'un seul scan insuffisant');
+ assert.equal(T.supplyChange({history:[row(80,50,6,10),row(73,40,5,12)]},now),null,
+  'un relevé trop ancien ne produit pas une comparaison');
+ assert.equal(T.supplyChange({history:[row(220,50,6,10),row(2,40,5,12)]},now),null,
+  'deux scans séparés de plus de 7 jours ne sont pas comparés');
+ assert.equal(T.supplyChange({history:[row(2,50,6,10),row(2,40,5,12)]},now),null,
+  'deux imports du même instant ne forment pas deux scans');
+ assert.equal(T.supplyChange({history:[row(4,90,12,100,{market:'forever.normal.horde.eu'}),
+  row(2,60,8,95,{market:'forever.pvp.horde.eu'})]},now),null,'marchés distincts non mélangés');
+ assert.equal(T.supplyChange({history:[row(4,90,12,100,{region:'us'}),
+  row(2,60,8,95,{region:'eu'})]},now),null,'régions distinctes non mélangées');
+ assert.equal(T.supplyChange({history:[row(4,90,12,100,{source:'Saisie manuelle'}),
+  row(2,60,8,95)]},now),null,'la saisie manuelle ne fait pas croire à un scan');
+ assert.equal(T.supplyChange({history:[row(4,90,12,100,{listings:0}),row(2,60,8,95)]},now),null,
+  'une observation non exhaustive sans annonce ne devient pas un instantané');
+ assert.equal(T.supplyChange({history:[row(4,90,12,100),row(2,60,8,95),
+  row(-3,10,2,70)]},now).to,60,'un scan futur est exclu et ne provoque pas de comparaisons fantômes');
+});
+test('Historique AH: la vue parle d’offre observée sans prétendre identifier des ventes',()=>{
+ const ui=readFileSync(new URL('../public/binch/ah-trading.js',import.meta.url),'utf8');
+ assert.match(ui,/T\.supplyChange\(item\)/);
+ assert.match(ui,/supplySection\(cur\)/);
+ assert.match(ui,/ne prouve pas une vente/);
+ assert.match(ui,/deux scans GrimoireSync/);
 });

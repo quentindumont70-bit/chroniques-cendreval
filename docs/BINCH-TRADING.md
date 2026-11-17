@@ -181,3 +181,31 @@ Module : `BinchAHPortfolio.tradePerformance()` dans `ah-portfolio-core.js?v=003`
 8. Alertes de prix sur les relevés connus, sans promesse de surveillance hors navigateur.
 9. Fiches de leveling, quêtes et métiers Druide farouche.
 10. Parcours bêta GM et partage avec le frère.
+
+## 15. Comparaison de l'offre entre deux scans GrimoireSync (17 novembre 2026)
+
+Dans **Assistant Trading → Historique**, chaque objet doté de deux vrais scans GrimoireSync récents du même marché affiche maintenant :
+
+- **Quantité d'objets encore listés** : valeurs initiale/finale et variation absolue/relative ;
+- **Nombre d'annonces** : différence de profondeur visible ;
+- **Prix plancher** : écart entre scans, exprimé en pièces de cuivre et en pourcentage ;
+- **Horodatages et intervalle** exacts des deux observations.
+
+**Conditions :** source strictement `Scan GrimoireSync (/grimoire scan)`, annonces/quantités/valeurs positives et cohérentes, deux instants distincts, identité de marché et région identiques lorsque présentes, au maximum sept jours entre scans et dernier scan âgé de moins de 72 heures. Les simples saisies et le flux communautaire ne sont pas convertis en fausses observations complètes.
+
+**Interprétation :** une annonce disparue peut avoir été vendue, annulée, expirée ou déplacée ; cet indicateur **ne permet pas de conclure à des ventes ni d'estimer un débit de vente**. Aucun conseil d'achat ni ordre en jeu n'est automatisé à partir de ce chiffre.
+
+Module : `BinchTrading.supplyChange()`, version `ah-trading-core.js?v=007` et `ah-trading.js?v=013`. Tests : `tests/binch-ah-trading.test.mjs`, partie comparaison d'offre, plus tests de cache de l'interface.
+
+### Golipette : 10 prochains chantiers
+
+1. Contrôler la comparaison d'offre sur un vrai export GrimoireSync.
+2. Vérifier le rendu mobile de l'historique et des tableaux.
+3. Vérifier l'accès à l'API de prix EU sur navigateur, sans service payant.
+4. Intégrer séparément le contenu de banque si l'API addon l'autorise.
+5. Affiner les limites du capital en or, dépôts et invendus.
+6. Ajouter des filtres de qualité d'historique et de sources au radar.
+7. Enrichir les recettes d'artisanat avec références spécifiques Forever.
+8. Ajouter des alertes sur les données observées, sans promesse de surveillance active.
+9. Développer Faith et les conseils de leveling du Druide farouche.
+10. Préparer le parcours de validation pour le frère et les outils de GM.

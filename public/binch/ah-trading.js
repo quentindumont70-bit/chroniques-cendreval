@@ -112,12 +112,24 @@ function chart(rows){
  const X=i=>Math.round(30+i/(n-1)*560),Y=p=>Math.round(150-(p-min)/d*125);
  return '<svg class="bt-chart" viewBox="0 0 600 175" role="img" aria-label="Évolution de '+n+' relevés, de '+esc(coin(v[0]))+' à '+esc(coin(v[n-1]))+'"><line x1="30" x2="590" y1="'+Y(med)+'" y2="'+Y(med)+'" class="bt-med"/><polyline points="'+rows.map((r,i)=>X(i)+','+Y(r.ref)).join(' ')+'"/>'+rows.map((r,i)=>'<circle cx="'+X(i)+'" cy="'+Y(r.ref)+'" r="3"><title>'+esc(coin(r.ref)+' · '+when(r.at))+'</title></circle>').join('')+'<text x="30" y="170">'+esc(coin(min))+'</text><text x="590" y="16" text-anchor="end">'+esc(coin(max))+'</text><text x="590" y="'+(Y(med)-4)+'" text-anchor="end" class="bt-medtxt">médiane '+esc(coin(med))+'</text></svg>';
 }
+function supplySection(item){
+ const d=T.supplyChange(item);
+ const title='<h3>Évolution de l’offre entre deux scans personnels</h3>';
+ const caution='<p class="bt-note">Comparaison de deux scans GrimoireSync du même marché, espacés de moins de 7 jours, dont le plus récent date de moins de 72 h. Une baisse du nombre d’annonces ou d’objets visibles <strong>ne prouve pas une vente</strong> : annulations, expirations ou nouveaux dépôts peuvent expliquer les écarts.</p>';
+ if(!d)return title+empty('Deux scans complets GrimoireSync récents et comparables sont nécessaires. Les saisies manuelles et relevés communautaires ne permettent pas ce calcul.')+caution;
+ return title+'<div class="bt-kpis">'+
+  kpi('Objets actuellement listés',String(d.to),d.from+' → '+d.to+' ('+pct(d.changePct)+')')+
+  kpi('Nombre d’annonces',String(d.listingsTo),d.listingsFrom+' → '+d.listingsTo+' ('+(d.listingsChange>0?'+':'')+d.listingsChange+')')+
+  kpi('Prix plancher',coin(d.floorTo),coin(d.floorFrom)+' → '+coin(d.floorTo)+' ('+pct(d.floorChangePct)+')')+
+  kpi('Intervalle entre relevés',Math.round(d.hours*10)/10+' h',when(d.fromAt)+' → '+when(d.toAt))+
+  '</div>'+caution;
+}
 function vHistory(c){
  const items=c.index.items.slice().sort((a,b)=>a.name.localeCompare(b.name,'fr'));
  if(!items.length)return empty('Aucun relevé pour ce marché.');
  const cur=items.find(x=>x.key===historyItem)||items[0];historyItem=cur.key;
  const s=T.itemStats(cur),rows=(cur.history||[]).map(h=>({...h,ref:Number(h.ask10)||Number(h.price)})).filter(h=>h.ref>0);
- return '<label class="bt-field">Objet<select id="bt-history-item">'+items.map(x=>'<option value="'+esc(x.key)+'"'+(x.key===cur.key?' selected':'')+'>'+esc(x.name)+' ('+x.history.length+')</option>').join('')+'</select></label>'+chart(rows)+
+ return '<label class="bt-field">Objet<select id="bt-history-item">'+items.map(x=>'<option value="'+esc(x.key)+'"'+(x.key===cur.key?' selected':'')+'>'+esc(x.name)+' ('+x.history.length+')</option>').join('')+'</select></label>'+chart(rows)+supplySection(cur)+
   '<div class="bt-kpis">'+kpi('Médiane',coin(s.median),s.n+' relevés · '+s.days+' jours')+kpi('Moyenne pondérée',coin(s.weightedMean),'pondérée par la quantité listée')+kpi('Volatilité',s.volatility!=null?Math.round(s.volatility)+' %':'—','écart absolu médian / médiane')+kpi('Tendance',pct(s.trend),'tiers récents vs anciens')+kpi('Fraîcheur',s.freshness,when(s.lastAt))+kpi('Confiance',s.confidence,'score '+s.score+'/100')+'</div>'+
   '<div class="bt-table"><table><thead><tr><th>Date</th><th>Plancher</th><th>Prix à 10 %</th><th>Quantité listée</th><th>Annonces</th><th>Source</th></tr></thead><tbody>'+rows.slice().reverse().slice(0,40).map(h=>'<tr><td>'+esc(when(h.at))+'</td><td>'+coin(Number(h.price))+'</td><td>'+(h.ask10?coin(Number(h.ask10)):'—')+'</td><td>'+esc(h.quantity)+'</td><td>'+(h.listings??'—')+'</td><td>'+esc(h.source)+'</td></tr>').join('')+'</tbody></table></div>';
 }
