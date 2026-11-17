@@ -117,7 +117,7 @@ test('Journal AH : dépôts perdus déduits du FIFO à coût connu, dépenses or
  assert.equal(JSON.stringify(trades),before,'les opérations enregistrées ne sont jamais mutées');
  const p=tradePerformance(book,{now:Date.parse('2026-11-17T10:00:00Z')});
  assert.equal(p.realized,2400);
- assert.equal(p.roi,80);
+ assert.equal(p.roi,100*2400/3300,'rendement calculé sur achat + dépôts réellement perdus');
  assert.equal(p.depositsLost,500);
  assert.equal(p.matchedDeposits,300);
  assert.equal(p.unmatchedDeposits,200);
