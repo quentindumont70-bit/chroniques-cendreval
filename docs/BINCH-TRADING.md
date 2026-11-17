@@ -160,3 +160,24 @@ L'onglet **En direct → AHledger** propose désormais quatre liens **en lecture
 Source documentée : https://ahledger.com/developers — vues `deals`, `crafting`, `structure` et `signals`, toutes filtrées par `market=forever/<ruleset>/<faction>/<region>`. Une donnée externe n'est jamais un ordre d'achat ni une preuve de liquidité garantie.
 
 Version navigateur : `ahledger-reader.js?v=003`, `ah-trading.js?v=011`, `ah-trading.css?v=002`. Tests des marchés acceptés/refusés dans `tests/binch-ahledger.test.mjs`. Les liens s'ouvrent sur action explicite, sans poll ni API key.
+
+## 14. Historique des ventes déclarées et bénéfices FIFO sur 30 jours (17 novembre 2026)
+
+**Assistant Trading → Journal** affiche désormais un bilan calculé localement à partir des achats/ventes que le joueur a saisis dans le carnet commun de la Bourse : unités vendues, unités rapprochées d’un coût d'achat FIFO, unités sans coût connu, bénéfice net après commission et ROI uniquement lorsque le coût est connu. Le tableau détaille ces valeurs **par objet**, avec dernière date de vente déclarée. Le tableau de bord montre le nombre d'unités consignées durant les 30 derniers jours.
+
+**Attention :** il s’agit uniquement de ventes **saisies par le joueur** et non d'un relevé automatique de l'AH ou de la vitesse de vente de l'ensemble du marché. Les ventes sans achat correspondant sont indiquées séparément et ne comptent **jamais** comme un profit à coût zéro. Les dates absentes, futures ou invalides sont exclues. Le ROI ne comprend ni dépôts, ni frais non enregistrés. Aucune modification des opérations originales, aucune synchronisation avec un compte ou un serveur externe.
+
+Module : `BinchAHPortfolio.tradePerformance()` dans `ah-portfolio-core.js?v=003` ; interface `ah-trading.js?v=012`. Cas FIFO, ventes orphelines, dates et séparation des factions couverts par `tests/binch-ah-portfolio.test.mjs`.
+
+### Dix prochaines priorités
+
+1. Confirmation du rapport de ventes en conditions réelles sur iPhone.
+2. Importation d'un vrai scan GrimoireSync sur le client Forever.
+3. Étiquetage de la banque séparément des sacs.
+4. Contrôle du fonctionnement CORS des cours AH européens sur navigateur réel.
+5. Analyse prudente de l’offre entre deux scans, sans assimiler disparition d’annonce à vente.
+6. Amélioration du classement des achats selon les dépôts et le risque d'invendus.
+7. Enrichissement des recettes Forever vérifiées.
+8. Alertes de prix sur les relevés connus, sans promesse de surveillance hors navigateur.
+9. Fiches de leveling, quêtes et métiers Druide farouche.
+10. Parcours bêta GM et partage avec le frère.
