@@ -32,6 +32,7 @@ jobs:
           node scripts/check-druid-corpus.mjs
           node public/binch/faith-knowledge/test-knowledge.cjs
           node public/binch/test-market-bridge.cjs
+          node scripts/test-faith-guide.cjs
       - name: Contrôles ciblés Big Cthu iPhone
         run: node --test tests/big-cthu-iphone.test.mjs
       - name: Tests de la planification Ultimate
