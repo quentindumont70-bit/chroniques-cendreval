@@ -401,3 +401,66 @@ html[data-cthu-theme] .active-pulse-item.is-urgent{
 html[data-cthu-theme] .active-pulse-item.is-urgent:focus-visible{
  outline:3px solid var(--cinema-highlight);outline-offset:3px;
 }
+
+
+/* V182 — three distinct visual identities, presentation only.
+   The selectors intentionally target the cinematic shell and never alter data or actions. */
+html[data-cthu-theme="premium"]{
+ --cthu-signature:#f0cf9a;--cthu-display-tracking:.025em;
+ --cthu-shape:18px;--cthu-panel-stroke:rgba(224,193,139,.33);
+}
+html[data-cthu-theme="organic"]{
+ --cthu-signature:#f4b6df;--cthu-display-tracking:-.035em;
+ --cthu-shape:27px 12px 29px 14px;--cthu-panel-stroke:rgba(233,149,197,.36);
+}
+html[data-cthu-theme="medical"]{
+ --cthu-signature:#6bf3f4;--cthu-display-tracking:.095em;
+ --cthu-shape:5px;--cthu-panel-stroke:rgba(83,237,243,.49);
+}
+html[data-cthu-theme] .hero h1,
+html[data-cthu-theme] .module h2,
+html[data-cthu-theme] .live-dashboard h2{
+ letter-spacing:var(--cthu-display-tracking);
+}
+html[data-cthu-theme] .module,
+html[data-cthu-theme] .live-dashboard .panel{
+ border-color:var(--cthu-panel-stroke);
+ border-radius:var(--cthu-shape);
+}
+html[data-cthu-theme="premium"] .hero{
+ background-image:linear-gradient(120deg,rgba(5,18,34,.93),rgba(11,38,65,.75)),
+ radial-gradient(ellipse at 78% 17%,rgba(240,207,154,.2),transparent 55%);
+}
+html[data-cthu-theme="premium"] .module{
+ box-shadow:inset 0 1px rgba(255,234,198,.17),0 22px 55px rgba(0,9,27,.32);
+}
+html[data-cthu-theme="premium"] .eyebrow,
+html[data-cthu-theme="premium"] .module h2{color:var(--cthu-signature)}
+html[data-cthu-theme="organic"] .hero{
+ border-radius:37px 15px 39px 18px;
+ background-image:radial-gradient(ellipse at 87% 17%,rgba(203,95,161,.27),transparent 55%),
+ linear-gradient(120deg,rgba(30,8,39,.93),rgba(45,16,50,.79));
+}
+html[data-cthu-theme="organic"] .module{
+ box-shadow:inset 0 1px rgba(255,203,225,.1),0 18px 55px rgba(25,3,34,.42);
+}
+html[data-cthu-theme="organic"] .eyebrow{color:var(--cthu-signature)}
+html[data-cthu-theme="medical"] .hero,
+html[data-cthu-theme="medical"] .module{
+ border-radius:5px;
+}
+html[data-cthu-theme="medical"] .hero{
+ background-image:linear-gradient(90deg,rgba(0,20,30,.95),rgba(0,43,55,.77)),
+ repeating-linear-gradient(0deg,transparent 0 23px,rgba(69,239,242,.045) 24px);
+}
+html[data-cthu-theme="medical"] .module{
+ box-shadow:inset 3px 0 0 rgba(74,231,238,.5),0 15px 42px rgba(0,11,19,.36);
+}
+html[data-cthu-theme="medical"] .eyebrow,
+html[data-cthu-theme="medical"] .module h2{
+ color:var(--cthu-signature);text-transform:uppercase;
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-cthu-theme] .hero .action,
+ html[data-cthu-theme] .cinema-live-pulse{transition:none}
+}
