@@ -4,6 +4,7 @@
    Ses propres réglages : binch.ah.trading.v1. Aucune transaction réelle, aucun appel réseau. */
 (()=>{'use strict';
 const T=window.BinchTrading;if(!T)return;
+const AH=window.BinchAHLedger;
 const MARKET='binch.ah.market.v1',SCOPE='binch.ah.scope.v1',KEY='binch.ah.trading.v1',CRAFT='binch.ah.craft.v1';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -163,10 +164,51 @@ function skinHtml(c){
  return '<p class="bt-note">Niveau '+(plan.level||'inconnu')+' · Dépeçage '+plan.skill+' → monstres dépeçables jusqu’au niveau '+plan.maxMob+(plan.nextSkill?' (niveau '+plan.nextSkill.mobLevel+' à '+plan.nextSkill.skill+' de compétence)':'')+'. Règle et tranches de niveaux Classic, à confirmer sur Forever.</p>'+best+
   '<div class="bt-table"><table><thead><tr><th>Cuir</th><th>Monstres</th><th>Cuir</th><th>Peau</th><th>Pour toi</th></tr></thead><tbody>'+plan.tiers.map(t=>'<tr><td>'+esc(t.name)+'</td><td>'+t.mobs.join('–')+'</td><td>'+(t.leather?coin(t.leather.price):'—')+'</td><td>'+(t.hideP?coin(t.hideP.price):'—')+'</td><td>'+esc(t.why)+'</td></tr>').join('')+'</tbody></table></div>';
 }
+function ahledgerLookupSection(c){
+ const faction=c.scope?.faction==='Alliance'?'alliance':'horde';
+ const market=AH?.market('eu','normal',faction);
+ const link=market?.page||'https://ahledger.com';
+ return '<section class="bt-ahl-source"><h3>Prix EU par objet · AHledger</h3>'+
+  '<p class="bt-note">Consultation ponctuelle de prix publics, sans clé API. Choisis la région, le type de serveur et la faction : cela ne modifie pas ton marché La Binch. Aucun achat, import ou enregistrement automatique.</p>'+
+  '<form id="bt-ahl-query" class="bt-form">'+
+  '<label class="bt-field">Région<select name="region"><option value="eu">Europe (EU)</option><option value="us">Amériques (US)</option></select></label>'+
+  '<label class="bt-field">Mode<select name="ruleset"><option value="normal">Normal</option><option value="pvp">JcJ</option><option value="rp">RP</option><option value="rppvp">RP JcJ</option></select></label>'+
+  '<label class="bt-field">Faction<select name="faction"><option value="horde"'+(faction==='horde'?' selected':'')+'>Horde</option><option value="alliance"'+(faction==='alliance'?' selected':'')+'>Alliance</option></select></label>'+
+  '<label class="bt-field">ID de l’objet WoW<input name="item" type="number" min="1" max="1000000" step="1" required placeholder="Ex. 2318"></label>'+
+  '<button type="submit">Consulter ce prix</button></form>'+
+  '<div id="bt-ahl-result" role="status" aria-live="polite"></div>'+
+  '<p class="bt-note">Source tierce gratuite avec attribution. Les prix ne sont ni garantis ni versés dans ton carnet. <a href="'+link+'" target="_blank" rel="noopener noreferrer">Ouvrir le marché Europe · Normal · '+esc(faction==='horde'?'Horde':'Alliance')+' chez AHledger</a> · <a href="https://ahledger.com/developers" target="_blank" rel="noopener noreferrer">API et conditions</a>.</p></section>';
+}
+
+async function onAhl(form){
+ const target=$('bt-ahl-result'),values=new FormData(form);
+ const market=AH?.market(String(values.get('region')||''),String(values.get('ruleset')||''),String(values.get('faction')||''));
+ const itemId=Number(values.get('item')),url=AH?.lookupUrl(market,itemId);
+ if(!target||!market||!url){if(target)target.textContent='Choisis un marché valide et un ID d’objet positif.';return}
+ target.textContent='Consultation ponctuelle AHledger en cours…';
+ const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),9000);
+ try{
+  const response=await fetch(url,{signal:ctrl.signal,cache:'no-store'});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const quote=AH.parseQuote(await response.json(),{...market,itemId});
+  if(!quote.ok){target.innerHTML='<p class="bt-alert">'+esc(quote.reason)+'</p><a href="'+market.page+'" target="_blank" rel="noopener noreferrer">Consulter directement le marché sur AHledger</a>';return}
+  const price=n=>n==null?'non renseigné':coin(n);
+  target.innerHTML='<article class="bt-card"><h4>'+esc(quote.name)+' · '+market.id.toUpperCase()+'</h4>'+
+   '<p>Prix le plus bas : <strong>'+price(quote.minBuyout)+'</strong> · médiane : <strong>'+price(quote.median)+'</strong>'+
+   ' · médiane sur 7 jours : '+price(quote.median7d)+'.</p>'+
+   '<p>Quantité : '+(quote.quantity??'inconnue')+' · annonces : '+(quote.auctions??'inconnues')+' · source : '+esc(quote.source)+' · '+esc(when(quote.observedAt))+'.</p>'+
+   (quote.stale?'<p class="bt-alert">Relevé périmé (plus de 72 h) : pas de conseil d’achat.</p>':'<p class="bt-note">Donnée observée, pas une promesse de vente ni un ordre d’achat.</p>')+
+   '<p><a href="'+esc(quote.attribution)+'" target="_blank" rel="noopener noreferrer">Prices from AHledger</a> · <a href="'+market.page+'" target="_blank" rel="noopener noreferrer">Voir le marché</a>.</p></article>';
+ }catch(err){
+  target.innerHTML='<p class="bt-alert">Lecture directe indisponible ('+esc(err?.name==='AbortError'?'délai dépassé':'réseau ou accès navigateur refusé')+'). Aucun prix inventé.</p>'+
+   '<p><a href="'+market.page+'" target="_blank" rel="noopener noreferrer">Consulter gratuitement les prix du marché chez AHledger</a></p>';
+ }finally{clearTimeout(timeout)}
+}
+
 function vLive(c){
  const sum=T.feedSummary(feed),mk=feedMarketId();
  const head='<p class="bt-honesty">Flux de relevés : auctionhouse.fyi (marchés US) et, seulement si configurée, API Blizzard Forever expérimentale. Publication planifiée toutes les 3 h, relecture ici toutes les 10 minutes. Les prix dépendent des scans d’autres joueurs : <b>ce n’est pas un flux temps réel</b>. Ton propre <code>/grimoire scan</code> reste la source la plus fraîche.</p>';
- if(!sum)return head+empty(feedStatus||'Flux pas encore disponible (il sera publié après fusion de la PR et premier passage du collecteur).')+'<button type="button" id="bt-feed-refresh">Réessayer</button>';
+ if(!sum)return head+ahledgerLookupSection(c)+empty(feedStatus||'Flux communautaire actuellement indisponible.')+'<button type="button" id="bt-feed-refresh">Réessayer</button>';
  const markets=sum.markets;
  const ids=[...new Set(markets.flatMap(m=>Object.keys(feed.markets[m.market].items||{})))];
  const table='<div class="bt-table"><table><thead><tr><th>Objet</th>'+markets.map(m=>'<th>'+esc(m.label)+'</th>').join('')+'</tr></thead><tbody>'+ids.map(id=>{
@@ -183,7 +225,7 @@ function vLive(c){
  const controls='<div class="bt-form"><label class="bt-field">Région de ton compte<select id="bt-region"><option value="">Non renseignée</option>'+['eu','us'].map(r=>'<option value="'+r+'"'+(state.region===r?' selected':'')+'>'+r.toUpperCase()+'</option>').join('')+'</select></label><label class="bt-field">Marché à afficher<select id="bt-feed-market"><option value="">Choisir…</option>'+markets.map(m=>'<option value="'+esc(m.market)+'"'+(m.market===mk?' selected':'')+'>'+esc(m.label)+'</option>').join('')+'</select></label><button type="button" id="bt-feed-refresh">Actualiser</button></div>'+
   (mk?'<label class="bt-check"><input type="checkbox" id="bt-feed-confirm"'+(state.confirmedMarket===mk?' checked':'')+'> Je confirme que « '+esc(T.MARKET_LABEL(mk,feed.markets[mk].meta))+' » est bien mon marché</label><label class="bt-check"><input type="checkbox" id="bt-feed-auto"'+(state.autoFeed?' checked':'')+'> Intégrer ce marché à mon carnet</label><p class="'+(g.ok?'bt-honesty':'bt-alert')+'">Intégration : '+esc(g.ok?'active':'bloquée')+' — '+esc(g.reason)+'</p>':'')+
   (state.region&&!regionHas?'<p class="bt-alert">Aucun marché '+esc(state.region.toUpperCase())+' dans le flux : les cours ci-dessous concernent une autre région, à titre indicatif seulement. Ton <code>/grimoire scan</code> reste la seule source de ton serveur.</p>':'');
- return head+controls+
+ return head+ahledgerLookupSection(c)+controls+
   '<div class="bt-kpis">'+kpi('Flux publié',when(sum.generatedAt),'collecteur GitHub')+markets.map(m=>kpi(m.label,m.scanAt?when(m.scanAt):'—',m.items+' objets · '+m.contributors7d+' contributeur(s) / 7 j')).join('')+'</div>'+
   '<h3>Conseils du moment pour '+esc(c.ch.pseudo)+(c.ch.level?' (niveau '+c.ch.level+')':'')+'</h3>'+(top.length?'<ol class="bt-list">'+top.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol>':empty('Pas encore de conseil étayé : il faut au moins 3 relevés par objet (le flux en apporte jusqu’à 8 par passage).'))+
   '<h3>Que dépecer maintenant ?</h3>'+skinHtml(c)+
@@ -321,6 +363,7 @@ function mount(){
  page.addEventListener('input',e=>{if(e.target.closest('#bt-sim'))simCompute()});
  page.addEventListener('submit',e=>{
   e.preventDefault();const f=e.target;
+  if(f.id==='bt-ahl-query')onAhl(f);
   if(f.id==='bt-fyi')onFyi(f);
   if(f.id==='bt-trade')onTrade(f);
   if(f.id==='bt-budget'){const d=new FormData(f);state.capitalOverride=gold(d.get('capital'));state.reservePct=Math.max(0,Math.min(100,Number(d.get('reserve'))||0));state.maxItemPct=Math.max(1,Math.min(100,Number(d.get('cap'))||15));save();render()}
