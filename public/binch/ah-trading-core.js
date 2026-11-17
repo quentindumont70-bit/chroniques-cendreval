@@ -360,7 +360,7 @@ function faithBrief({bags=[],opps=[],crafts=[],budget=null,scope,dataNote}){
  if(keep.length)lines.push('À garder : '+keep.map(b=>b.name+' (cours '+Math.round(b.stats.discount)+' % sous sa médiane) '+cite(b.name,b.lastAt,b.stats.last.source)).join(', ')+'.');
  const tr=crafts.filter(c=>c.status==='ok'&&c.transformGain>0).slice(0,2);
  if(tr.length)lines.push('À transformer : '+tr.map(c=>c.recipe.output.name+' (+'+coin(c.transformGain)+' par fabrication) '+cite(c.recipe.output.name,c.outputAt,c.recipe.reference)).join(', ')+'.');
- if(opps.length){const o=opps[0];lines.push('Meilleure décote observée : '+o.name+' à '+coin(o.price)+' contre une médiane de '+coin(o.reference)+' '+cite(o.name,o.lastAt,o.source)+'. Confiance '+o.confidence.toLowerCase()+(o.risks.length?' ; risques : '+o.risks.join(', ').toLowerCase():'')+'.')}
+ if(opps.length){const o=opps[0];lines.push((o.status==='Achat à étudier'?'Achat à étudier, après vérification en jeu':'Sous surveillance, sans conseil d’achat')+' : '+o.name+' à '+coin(o.price)+' contre une médiane de '+coin(o.reference)+' '+cite(o.name,o.lastAt,o.source)+'. Confiance '+o.confidence.toLowerCase()+(o.risks.length?' ; risques : '+o.risks.join(', ').toLowerCase():'')+'.')}
  if(budget)lines.push('Capital : '+coin(budget.capital)+', réserve conservée '+coin(budget.reserve)+', plafond par objet '+coin(budget.perItemCap)+'.');
  const insufficient=bags.filter(b=>b.decision==='Données insuffisantes').length;
  if(insufficient)lines.push(insufficient+' objet(s) de tes sacs restent sans cote fiable : un /grimoire scan à l’hôtel des ventes les couvrira.');
