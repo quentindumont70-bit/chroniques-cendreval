@@ -75,3 +75,8 @@
 }
 @media(max-width:380px){.bt-kpis{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.bt *{transition:none!important}}
+
+/* Outils de marché AHledger : liens explicites vers le marché sélectionné, sans appel caché. */
+.bt-ahl-source .bt-actions{grid-column:1/-1;margin-top:4px}
+.bt-ahl-source .bt-actions a{display:inline-flex;align-items:center;min-height:42px;padding:9px 12px;border:1px solid #a38a57;border-radius:8px;background:#243024;color:#f4dca3;text-decoration:none;font-weight:650}
+.bt-ahl-source .bt-actions a:focus-visible,.bt-ahl-source .bt-actions a:hover{outline:2px solid #e6c77e;outline-offset:2px;background:#2c3c30}

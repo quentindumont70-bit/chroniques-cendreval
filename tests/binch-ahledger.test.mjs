@@ -10,6 +10,12 @@ test('AHledger: allowlisted market and per-item URL, no freeform host',()=>{
  assert.equal(m.id,'forever.normal.horde.eu');
  assert.equal(m.page,'https://ahledger.com/markets/forever/normal/horde/eu');
  assert.equal(A.lookupUrl(m,2318),'https://api.ahledger.com/v1/prices/forever.normal.horde.eu/2318?range=7d');
+ assert.equal(A.marketToolUrl(m,'deals'),'https://ahledger.com/deals?market=forever%2Fnormal%2Fhorde%2Feu');
+ assert.equal(A.marketToolUrl(A.market('us','pvp','alliance'),'crafting'),'https://ahledger.com/crafting?market=forever%2Fpvp%2Falliance%2Fus');
+ assert.equal(A.marketToolUrl(m,'structure'),'https://ahledger.com/structure?market=forever%2Fnormal%2Fhorde%2Feu');
+ assert.equal(A.marketToolUrl(m,'signals'),'https://ahledger.com/signals?market=forever%2Fnormal%2Fhorde%2Feu');
+ assert.equal(A.marketToolUrl({...m,id:'forever.normal.horde.us'},'deals'),null,'marché falsifié refusé');
+ assert.equal(A.marketToolUrl(m,'https://example.org'),null,'outil non autorisé refusé');
  assert.equal(A.market('eu','evil','horde'),null);
  assert.equal(A.market('us','pvp','neutral'),null);
  assert.equal(A.lookupUrl(m,0),null);
@@ -52,9 +58,12 @@ test('AHledger: reject wrong market/id, future/missing prices and unsafe attribu
 test('AHledger: UI access is click initiated, no automatic import or persistent cache',()=>{
  const html=readFileSync(new URL('../public/binch/index.html',import.meta.url),'utf8');
  const ui=readFileSync(new URL('../public/binch/ah-trading.js',import.meta.url),'utf8');
- assert.match(html,/ahledger-reader\.js\?v=002/);
- assert.match(html,/ah-trading\.js\?v=010/);
+ assert.match(html,/ahledger-reader\.js\?v=003/);
+ assert.match(html,/ah-trading\.js\?v=011/);
  assert.match(ui,/id="bt-ahl-query"/);
+ assert.match(ui,/data-bt-market-tool/);
+ assert.match(ui,/form\.querySelectorAll\('a\[data-bt-market-tool\]'\)/);
+ assert.match(ui,/AH\?\.marketToolUrl\?\.\(m,a\.dataset\.btMarketTool\)/);
  const area=ui.slice(ui.indexOf('async function onAhl('),ui.indexOf('function vLive('));
  assert.match(area,/await fetch\(url,\{signal:ctrl\.signal,cache:'no-store'\}\)/);
  assert.doesNotMatch(area,/localStorage|write\(|mergeObservations/);

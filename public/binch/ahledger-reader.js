@@ -8,6 +8,12 @@ function market(region,ruleset,faction){
  const id='forever.'+ruleset+'.'+faction+'.'+region;
  return {id,region,ruleset,faction,page:'https://ahledger.com/markets/forever/'+ruleset+'/'+faction+'/'+region};
 }
+// Liens vers les scanners gratuits AHledger ; marché construit uniquement par liste blanche.
+function marketToolUrl(m,tool){
+ const safe=m&&market(m.region,m.ruleset,m.faction);
+ if(!safe||m.id!==safe.id||!['deals','crafting','structure','signals'].includes(tool))return null;
+ return 'https://ahledger.com/'+tool+'?market='+encodeURIComponent('forever/'+safe.ruleset+'/'+safe.faction+'/'+safe.region);
+}
 function lookupUrl(m,itemId){
  if(!m||!market(m.region,m.ruleset,m.faction)||m.id!=='forever.'+m.ruleset+'.'+m.faction+'.'+m.region||
     !Number.isSafeInteger(itemId)||itemId<=0||itemId>1000000)return null;
@@ -42,5 +48,5 @@ function parseQuote(payload,expected,now=Date.now()){
   quantity:num(x.quantity),auctions:num(x.auctions),estimatedSalesPerDay,salesWindowDays,source:String(x.source||'Relevé tiers').slice(0,80),
   attribution:credit};
 }
-return {market,lookupUrl,parseQuote};
+return {market,marketToolUrl,lookupUrl,parseQuote};
 });

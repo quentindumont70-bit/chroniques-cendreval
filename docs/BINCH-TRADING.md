@@ -152,3 +152,11 @@ Tests : `tests/binch-ah-trading.test.mjs` vérifie profondeur, historique, tenda
 8. Ajouter un signal prudent de profondeur d'AH entre scans, sans confondre disparitions et ventes.
 9. Améliorer les recommandations de leveling / spécialisations / métiers pour le Druide.
 10. Préparer la bêta pour le frère et le tableau de bord GM.
+
+## 13. Outils de marché par ruleset / faction / région (17 novembre 2026)
+
+L'onglet **En direct → AHledger** propose désormais quatre liens **en lecture seule et attribués** qui suivent le marché effectivement choisi dans le formulaire : **Bonnes affaires**, **Craft rentable**, **Liquidité AH** (structure) et **Signaux de prix**. Ces liens ouvrent les pages publiques AHledger dans un nouvel onglet ; aucun résultat externe n'est enregistré ou représenté comme un scan personnel. Les régions EU et US, règlesets Normal/JcJ/RP/RP JcJ et factions Horde/Alliance sont validés par une liste blanche et le marché complet figure dans chaque URL. La banque, les actions de jeu et le carnet local ne sont pas modifiés.
+
+Source documentée : https://ahledger.com/developers — vues `deals`, `crafting`, `structure` et `signals`, toutes filtrées par `market=forever/<ruleset>/<faction>/<region>`. Une donnée externe n'est jamais un ordre d'achat ni une preuve de liquidité garantie.
+
+Version navigateur : `ahledger-reader.js?v=003`, `ah-trading.js?v=011`, `ah-trading.css?v=002`. Tests des marchés acceptés/refusés dans `tests/binch-ahledger.test.mjs`. Les liens s'ouvrent sur action explicite, sans poll ni API key.
