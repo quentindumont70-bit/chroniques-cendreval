@@ -473,7 +473,7 @@ function feedObservations(feed,market,{realm,now=Date.now()}={}){
  for(const [id,v] of Object.entries(info.items||{})){
   const name=feed.names?.[id]?.n||('Objet '+id),base={name,itemId:Number(id),realm,faction:meta.faction==='Neutral'?null:meta.faction,region:meta.region,market};
   const r=v.row;
-  if(Array.isArray(r)&&isCopper(r[0])){const t=parseTime(r[2]);if(t&&t<=now)out.push({...base,priceCopper:r[0],quantity:Number.isSafeInteger(r[1])&&r[1]>0?r[1]:1,source:src,observedAt:new Date(t).toISOString()})}
+  if(Array.isArray(r)&&isCopper(r[0])&&Number.isSafeInteger(r[1])&&r[1]>0){const t=parseTime(r[2]);if(t&&t<=now)out.push({...base,priceCopper:r[0],quantity:r[1],source:src,observedAt:new Date(t).toISOString()})}
   for(const d of Array.isArray(v.days)?v.days:[]){const [day,low,,q]=d,t=Number(day)*DAY+12*HOUR;if(Number.isSafeInteger(day)&&isCopper(low)&&t<=now)out.push({...base,priceCopper:low,quantity:Number.isSafeInteger(q)&&q>0?q:1,source:src+' (plus bas du jour)',observedAt:new Date(t).toISOString()})}
  }
  return out;
