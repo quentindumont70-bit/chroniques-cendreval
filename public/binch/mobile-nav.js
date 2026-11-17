@@ -1,7 +1,7 @@
 /* La Binch — barre mobile personnalisable, sans timers permanents. */
 (()=>{'use strict';
 const $=s=>document.querySelector(s),KEY='binch.mobile.shortcuts.v2';
-const ITEMS=[['hub','Carnet','⌂'],['progression','Carte','◈'],['bibliotheque','Biblio','▤'],['gm','Guilde','♜'],['command','Cockpit','◉'],['lfg','LFG','⚔'],['equipment','Équipement','◇'],['market','Bourse','¤'],['coffre','Coffre','▣']];
+const ITEMS=[['hub','Carnet','⌂'],['progression','Carte','◈'],['bibliotheque','Biblio','▤'],['gm','Guilde','♜'],['command','Cockpit','◉'],['lfg','LFG','⚔'],['equipment','Équipement','◇'],['market','Bourse','¤'],['trading','Trading','◇'],['coffre','Coffre','▣']];
 const defaults=ITEMS.slice(0,4).map(x=>x[0]);
 function load(){try{const v=JSON.parse(localStorage.getItem(KEY));return Array.isArray(v)&&v.length===4&&v.every(id=>ITEMS.some(x=>x[0]===id))&&new Set(v).size===4?v:defaults.slice()}catch{return defaults.slice()}}
 function save(p){try{localStorage.setItem(KEY,JSON.stringify(p))}catch{}}

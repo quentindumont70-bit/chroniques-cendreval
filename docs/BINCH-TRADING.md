@@ -6,7 +6,7 @@ Branche : `feature/claude-ah-trading-advisor` · base `main` 70221a3 · 16 novem
 
 | Source | Statut | Utilisation |
 |---|---|---|
-| API officielle AH | **Inexistante** pour WoW Forever (auctionhouse.fyi le déclare dans sa doc ; aucune API Blizzard équivalente). | Aucune. |
+| API Blizzard Forever (non documentée officiellement) | **Signalée par la communauté depuis le 6/11/2026**, chemins enchères par règleset/maison avec OAuth ; disponibilité et schéma à vérifier sur les comptes réels. Le fournisseur du collecteur reste désactivé sans configuration explicite. Source : https://us.forums.blizzard.com/en/blizzard/t/wow-forever-api-what-works-so-far-plus-a-ts-client/60334 | Option de collecte **lecture seule**, jamais présumée active. |
 | Addon GrimoireSync (`/grimoire scan`) | **Déjà codé** dans `Core.lua` : `C_AuctionHouse.ReplicateItems` + `REPLICATE_ITEM_LIST_UPDATE`, écrit en section `AH:`/`A:` du payload GF6. Les addons Forever publiés (Hammerprice, AHDB) décrivent le même scan complet, environ un toutes les 15 minutes. **Le site ignorait jusqu'ici ces sections.** | Source principale de l'Assistant. Lecture seule, déclenchée par le joueur. |
 | auctionhouse.fyi (relevés communautaires) | API publique sans clé, prix horaires + 7 jours (`row`, `days`). **Pas d'en-tête CORS** (vérifié par requête avec `Origin`) : un `fetch` depuis GitHub Pages est bloqué. Conséquence : le visualiseur `ah-public-snapshots.js` existant ne peut pas fonctionner dans le navigateur. | Import par copier-coller de la réponse JSON, étiqueté « relevé communautaire ». |
 | Exports d'addons tiers (Auctionator, etc.) | Non traités dans ce lot : formats propres à chaque addon. | Piste future. |
@@ -39,7 +39,7 @@ Chaque relevé conserve : source, horodatage, royaume, faction, prix unitaire en
 
 ## 4. Garde-fous
 
-Aucun appel réseau, aucune automatisation en jeu, aucun prix fictif, relevés futurs ou sans marché refusés, fusion non destructive (500 objets max, 120 relevés par objet), aucun fichier Big Cthu / Tournée modifié.
+Moteur de calcul sans appel réseau ; seule la vue « En direct » lit le flux GitHub public sur demande et lors des rafraîchissements visibles. Aucune automatisation en jeu, aucun prix fictif, relevés futurs ou sans marché refusés, fusion non destructive (500 objets max, 120 relevés par objet), aucun fichier Big Cthu / Tournée modifié.
 
 ## 5. Tests
 
@@ -57,7 +57,7 @@ Aucun appel réseau, aucune automatisation en jeu, aucun prix fictif, relevés f
 
 ## 7. Lot « En direct » (16/11/2026, après-midi)
 
-- `scripts/collect-ah-feed.mjs` + `.github/workflows/binch-ah-feed.yml` : toutes les 3 h, lecture anonyme d'auctionhouse.fyi (`/api/v1/ah`, puis 39 objets suivis × chaque marché Forever, puis noms via `/items`), 400 ms entre requêtes, `Retry-After` respecté, `robots.txt` autorise ces chemins. Résultat publié sur la branche `binch-ah-data` (un seul commit écrasé) ; La Binch le lit via `raw.githubusercontent.com` (CORS `*` vérifié). **Actif seulement après fusion sur main** (contrainte GitHub des tâches programmées), ou lancement manuel du workflow.
+- `scripts/collect-ah-feed.mjs` + `.github/workflows/binch-ah-feed.yml` : toutes les 3 h, lecture anonyme d'auctionhouse.fyi (`/api/v1/ah`, puis 39 objets suivis × chaque marché Forever, puis noms via `/items`), 400 ms entre requêtes, `Retry-After` respecté, `robots.txt` autorise ces chemins. Résultat publié sur la branche `binch-ah-data` (commits successifs, sans écrasement d'historique) ; La Binch le lit via `raw.githubusercontent.com` (CORS `*` vérifié). **Actif seulement après fusion sur main** (contrainte GitHub des tâches programmées), ou lancement manuel du workflow.
 - Essai réel depuis la session : 2 marchés publiés (Normal Horde, scan de 7 h ; JcJ Horde, 10 jours), 78 cotations, 0 erreur, 2 minutes, fichier de 11 Ko. Aucun marché Alliance ni RP n'avait de données.
 - Vue « En direct » : fraîcheur par marché, choix de mon marché, intégration automatique au carnet (désactivable), conseils personnalisés, comparaison des hôtels des ventes, rafraîchissement toutes les 10 min onglet visible.
 - Progression : plan de dépeçage selon niveau et compétence (seuil Classic `(niv-10)×10` puis `niv×5`, tranches de monstres Vanilla), cuir accessible le mieux coté.
@@ -67,7 +67,29 @@ Aucun appel réseau, aucune automatisation en jeu, aucun prix fictif, relevés f
 
 - **Aucune fusion externe par défaut.** Intégration au carnet seulement si : région du compte renseignée (EU/US), marché de même région, marché explicitement confirmé par le joueur (règleset + maison), même faction que le carnet ; maison neutre jamais fusionnée dans un carnet Horde/Alliance. Réglages précédents remis à zéro (`binch.ah.trading.v1` version 2).
 - **Libellés sans ambiguïté** : `Région · Règleset · Faction (· maison) (fournisseur)` ; auctionhouse.fyi = **US uniquement** ; avertissement si aucun marché de ta région n'existe dans le flux ; collage manuel auctionhouse.fyi refusé hors région US.
-- **API Blizzard Forever** : fournisseur optionnel en lecture seule dans le collecteur (`/data/wow/ruleset/{id}/auctions/{houseId}`, namespace `dynamic-forever-{region}`, OAuth client credentials). **Chemins non vérifiés** par La Binch (source : fil communautaire du forum Blizzard). Inactif sans secrets `BLIZZARD_CLIENT_ID/SECRET` et variables `BLIZZARD_REGION`, `FOREVER_RULESET_ID`, `FOREVER_RULESET_NAME`, `FOREVER_HOUSES` (`6:Horde,2:Alliance,7:Neutral`). Les secrets restent côté GitHub Actions, jamais dans la page publique.
+- **API Blizzard Forever** : fournisseur optionnel en lecture seule dans le collecteur (`/data/wow/ruleset/{id}/auctions/{houseId}`, namespace `dynamic-forever-{region}`, OAuth client credentials). **Chemins non vérifiés** par La Binch (source : fil communautaire du forum Blizzard). Inactif sans secrets `BLIZZARD_CLIENT_ID/SECRET` et variables `BLIZZARD_REGION`, `FOREVER_RULESET_ID`, `FOREVER_RULESET_NAME`, `FOREVER_HOUSES` (identifiants à relever depuis l'index des maisons Blizzard, typiquement 110–125 ; **ne pas utiliser les anciens IDs 2/6/7** ni deviner leur faction). Les secrets restent côté GitHub Actions, jamais dans la page publique.
 - **Publication sans écrasement** : plus de `push --force` ; un commit ajouté sur `binch-ah-data` seulement si le flux change. `contents: write` reste nécessaire pour qu'un workflow pousse une branche ; `main` n'est jamais modifiée et la branche peut être protégée contre la suppression.
 - **Sacs seulement** affiché partout (banque non lue). Conversions de cuir et règles de dépeçage : Classic, non certifiées Forever.
 - Tests ajoutés : isolation EU/US, confirmation, faction/neutre, région inconnue, fraîcheur > 72 h, fournisseur Blizzard non configuré / maison en erreur 503 / agrégation.
+
+## 9. Golipette du 17 novembre 2026 — reprise autonome
+
+- PR #182 fusionnée sur `main` après deux contrôles CI réussis ; publication GitHub Pages déclenchée.
+- L'onglet Trading est ajouté aux **raccourcis mobiles personnalisables** (les quatre raccourcis existants ne sont pas modifiés).
+- Tests ciblés reliés aux workflows de revue et de publication ; le collecteur externe se déclenche aussi lors d'une modification de son workflow, de son script ou de sa liste d'objets sur `main` — utile pour le premier relevé sans PC.
+- Attention aux marchés : le flux `auctionhouse.fyi` public couvre **six marchés US**, pas les marchés EU. Aucun import automatique vers le carnet joueur sans région et marché explicitement confirmés. Source : https://auctionhouse.fyi/docs/api/markets
+- Le fournisseur Blizzard optionnel exige un client OAuth et une validation des vrais identifiants de maisons (110–125) ; **les identifiants 2/6/7 ne correspondent pas à ce schéma**. Tant que les secrets ne sont pas disponibles, les scans personnels restent la source de marché la plus fidèle.
+- Le premier vrai scan de GrimoireSync et la lecture de la banque nécessiteront une session de jeu : ne pas présenter ces points comme testés en direct.
+
+### Feuille de route des 10 prochains chantiers
+
+1. Publication et contrôle du pipeline de Pages.
+2. Première exécution du flux AH public gratuit, contrôle de fraîcheur / erreurs.
+3. Raccourci Trading mobile et vérification de navigation.
+4. Ajustement de l'UX des opportunités, signaux insuffisants et risques.
+5. Vérification du format d'un vrai scan GrimoireSync dans Forever.
+6. Banque et sacs séparés, à synchroniser sans collision avec PR #129.
+7. Récupération EU via fournisseur validé et secrets optionnels ; aucun mélange EU/US.
+8. Métiers et conversions sourcées exclusivement Forever.
+9. Revue qualité mobile et parcours bêta frère/GM.
+10. Revue des résultats réellement vendus et amélioration du moteur de confiance.
