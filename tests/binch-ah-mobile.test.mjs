@@ -26,10 +26,10 @@ test('Trading accepts future supported AH feed formats through the shared parser
 
 test('Trading comparateur ne surligne que les cotations du marché confirmé et compatibles',()=>{
  const ui=read('ah-trading.js');
- assert.match(ui,/T\\.comparableQuotes\\(feed,cm,state\\.confirmedMarket===mk\\?mk:null,state\\.region,c\\.scope\\?\\.faction\\)/);
- assert.match(ui,/comparable\\.length>=2/);
- assert.match(ui,/périmé, non comparable/);
- assert.match(ui,/la même région, faction, règleset, maison et fournisseur/);
+ assert.ok(ui.includes('T.comparableQuotes(feed,cm,state.confirmedMarket===mk?mk:null,state.region,c.scope?.faction)'));
+ assert.ok(ui.includes('comparable.length>=2'));
+ assert.ok(ui.includes('périmé, non comparable'));
+ assert.ok(ui.includes('la même région, faction, règleset, maison et fournisseur'));
 });
 
 test('From imported bags, item lookup is explicit and never auto-fetches or writes a price',()=>{
