@@ -15,7 +15,7 @@ const coin=T.coin,pct=x=>Number.isFinite(x)?(x>0?'+':'')+x.toLocaleString('fr-FR
 const when=iso=>{const t=Date.parse(iso);if(!Number.isFinite(t))return 'date inconnue';const h=(Date.now()-t)/3600000;return new Date(t).toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'})+' ('+(h<1?'< 1 h':Math.floor(h)+' h')+')'};
 const gold=v=>{if(v==null||String(v).trim()==='')return null;const x=Number(String(v).replace(',','.'));return Number.isFinite(x)&&x>=0&&x<1e8?Math.round(x*10000):null};
 const toGold=c=>Number.isFinite(c)?(c/10000).toFixed(4):'';
-const defaults=()=>({version:2,region:null,confirmedMarket:null,reservePct:40,maxItemPct:15,capitalOverride:null,feedMarket:null,autoFeed:false,decisions:[],alerts:[],imports:[],grimoire:null,view:'dashboard'});
+const defaults=()=>({version:2,region:null,confirmedMarket:null,reservePct:40,maxItemPct:15,capitalOverride:null,feedMarket:null,autoFeed:false,decisions:[],alerts:[],imports:[],grimoire:null,view:'dashboard',radarSource:'all',radarAgeH:24,radarStatus:'all'});
 let state=Object.assign(defaults(),read(KEY,{}));if(state.version!==2){state.version=2;state.autoFeed=false;state.confirmedMarket=null;state.region=state.region||null} // revue : jamais d’intégration externe sans confirmation
 if(!Array.isArray(state.decisions))state.decisions=[];if(!Array.isArray(state.alerts))state.alerts=[];if(!Array.isArray(state.imports))state.imports=[];
 let lookupItemId=null,lookupItemName='';
@@ -97,14 +97,23 @@ function vBags(c){
 }
 const riskList=s=>{const r=[];if(s.volatility>=25)r.push('volatilité '+Math.round(s.volatility)+' %');if(s.ageH>=24)r.push('relevé > 24 h');if(s.n<5)r.push(s.n+' relevés');return r};
 function vRadar(c){
- const buy=c.opps.length?'<div class="bt-cards">'+c.opps.slice(0,24).map(o=>card({title:o.name,price:o.price,reference:o.reference,qty:o.qty,margin:o.margin??o.unitMargin,risks:o.risks,confidence:o.confidence,at:o.lastAt,
-  extra:'<p class="bt-decision"><strong>'+esc(o.status||'Surveillance')+'</strong> · décote '+pct(-o.discount)+' · marge unitaire théorique après commission '+coin(o.unitMargin)+'.</p>'+
+ const shown=T.filterOpportunities(c.opps,{source:state.radarSource,ageH:Number(state.radarAgeH),status:state.radarStatus});
+ const opt=(values,chosen)=>values.map(([id,name])=>'<option value="'+id+'"'+(String(chosen)===String(id)?' selected':'')+'>'+esc(name)+'</option>').join('');
+ const sourceNames={scan:'Scan personnel GrimoireSync',community:'Cotations externes',manual:'Saisie manuelle',mixed:'Historique mixte'};
+ const controls='<div class="bt-form" role="group" aria-label="Filtres du radar AH">'+
+  '<label class="bt-field">Provenance<select id="bt-radar-source">'+opt([['all','Toutes les sources'],['scan','Scans personnels'],['community','Flux externe'],['manual','Saisie manuelle'],['mixed','Historique mixte']],state.radarSource)+'</select></label>'+
+  '<label class="bt-field">Fraîcheur<select id="bt-radar-age">'+opt([[24,'Moins de 24 h'],[6,'Moins de 6 h']],state.radarAgeH)+'</select></label>'+
+  '<label class="bt-field">Nature du signal<select id="bt-radar-status">'+opt([['all','Tous les signaux'],['buy','Achats à étudier'],['watch','Surveillance uniquement']],state.radarStatus)+'</select></label>'+
+  '</div><p class="bt-note">'+shown.length+' signal(s) visible(s) sur '+c.opps.length+' détecté(s). Les filtres n’ajoutent jamais de prix et ne transforment aucune surveillance en conseil d’achat.</p>';
+ const buy=shown.length?'<div class="bt-cards">'+shown.slice(0,24).map(o=>card({title:o.name,price:o.price,reference:o.reference,qty:o.qty,margin:o.margin??o.unitMargin,risks:o.risks,confidence:o.confidence,at:o.lastAt,
+  extra:'<p class="bt-note">Provenance : '+esc(sourceNames[o.sourceKind]||'Inconnue')+' · dernier relevé : '+esc(o.source||'non identifié')+'.</p>'+
+   '<p class="bt-decision"><strong>'+esc(o.status||'Surveillance')+'</strong> · décote '+pct(-o.discount)+' · marge unitaire théorique après commission '+coin(o.unitMargin)+'.</p>'+
    '<p>Si la revente se fait 10 % sous la médiane historique : '+coin(o.stressedUnitMargin)+' par unité, avant dépôts et invendus. Quantité limitée par : '+esc(o.limitedBy)+'.</p>'+
    (o.status!=='Achat à étudier'?'<p class="bt-note">Signal d’observation uniquement : '+esc((o.warnings||[]).join(' · '))+'.</p>':'<p class="bt-note">Même avec profondeur connue, la vitesse de vente reste non prouvée. Vérifie l’AH en jeu.</p>'),
   actions:'<button type="button" data-bt-sim="'+esc(JSON.stringify({buy:o.price,sell:o.reference,qty:o.qty||1}))+'">Simuler</button>'+
    (o.status==='Achat à étudier'?'<button type="button" data-bt-decide="'+esc(o.name)+'" data-bt-action="Acheter" data-bt-ref="'+o.price+'" data-bt-exp="'+o.reference+'" data-bt-qty="'+o.qty+'">Noter ma décision</button>':'') })).join('')+'</div>':empty('Aucune décote suffisamment étayée (≥ 15 % sous la médiane, ≥ 3 relevés, < 24 h, volatilité < 40 %). C’est un résultat, pas une panne.');
  const res=c.resale.length?'<div class="bt-table"><table><thead><tr><th>Position</th><th>Unités</th><th>Coût unitaire</th><th>Cours</th><th>Gain net estimé</th><th>Statut</th></tr></thead><tbody>'+c.resale.map(r=>'<tr><td>'+esc(r.item)+'</td><td>'+r.remaining+'</td><td>'+coin(r.unitCost)+'</td><td>'+(r.current?coin(r.current):'—')+'</td><td>'+(r.gain!=null?coin(r.gain):'—')+'</td><td>'+esc(r.status)+'</td></tr>').join('')+'</tbody></table></div>':empty('Aucune position ouverte dans ton registre d’achats.');
- return '<h3>Achats sous-évalués</h3><p class="bt-note">« Achat à étudier » exige capital, profondeur observée, au moins 3 jours d’historique et absence de forte chute antérieure. Les autres décotes restent en surveillance.</p>'+buy+'<h3>Reventes possibles de mes positions</h3>'+res+'<h3>Variations</h3>'+moversTable(T.movers(c.index));
+ return '<h3>Achats sous-évalués</h3><p class="bt-note">« Achat à étudier » exige un historique constitué de scans personnels GrimoireSync, du capital, une profondeur observée, au moins 3 jours de données et l’absence de forte baisse antérieure. Sources externes ou mélangées : surveillance uniquement.</p>'+controls+buy+'<h3>Reventes possibles de mes positions</h3>'+res+'<h3>Variations</h3>'+moversTable(T.movers(c.index));
 }
 function chart(rows){
  if(rows.length<2)return empty('Au moins deux relevés datés sont nécessaires pour tracer une courbe.');
@@ -410,6 +419,9 @@ function mount(){
   }
   if(e.target.id==='bt-scan-file'){const f=e.target.files?.[0];e.target.value='';onScanFile(f)}
   if(e.target.id==='bt-history-item'){historyItem=e.target.value;render()}
+  if(e.target.id==='bt-radar-source'){state.radarSource=['all','scan','community','manual','mixed'].includes(e.target.value)?e.target.value:'all';save();render()}
+  if(e.target.id==='bt-radar-age'){state.radarAgeH=e.target.value==='6'?6:24;save();render()}
+  if(e.target.id==='bt-radar-status'){state.radarStatus=['all','buy','watch'].includes(e.target.value)?e.target.value:'all';save();render()}
   if(e.target.id==='bt-feed-market'){state.feedMarket=e.target.value||null;save();render()}
   if(e.target.id==='bt-region'){state.region=e.target.value||null;save();render()}
   if(e.target.id==='bt-feed-confirm'){state.confirmedMarket=e.target.checked?feedMarketId():null;save();mergeFeed();render()}
