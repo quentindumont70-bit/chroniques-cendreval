@@ -1,0 +1,55 @@
+name: La Binch — flux AH communautaire
+
+# Relevés publics auctionhouse.fyi des marchés WoW Forever, publiés sur la branche
+# binch-ah-data (un commit ajouté par passage, sans réécriture d'historique ;
+# contents: write est requis par GitHub pour pousser, la branche main n'est jamais touchée). Lu par l'Assistant Trading
+# via raw.githubusercontent.com. Les déclenchements programmés ne s'activent qu'une fois
+# ce fichier présent sur la branche par défaut.
+on:
+  schedule:
+    - cron: '17 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: binch-ah-feed
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Collecter les cotations
+        env:
+          # Facultatif : API officielle (secrets/variables du dépôt). Sans eux, seul le flux communautaire US est collecté.
+          BLIZZARD_CLIENT_ID: ${{ secrets.BLIZZARD_CLIENT_ID }}
+          BLIZZARD_CLIENT_SECRET: ${{ secrets.BLIZZARD_CLIENT_SECRET }}
+          BLIZZARD_REGION: ${{ vars.BLIZZARD_REGION }}
+          FOREVER_RULESET_ID: ${{ vars.FOREVER_RULESET_ID }}
+          FOREVER_RULESET_NAME: ${{ vars.FOREVER_RULESET_NAME }}
+          FOREVER_HOUSES: ${{ vars.FOREVER_HOUSES }}
+        run: node scripts/collect-ah-feed.mjs /tmp/ah-feed.json
+      - name: Publier sur binch-ah-data (commit ajouté, jamais de réécriture)
+        run: |
+          set -e
+          git config user.name "La Binch bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git fetch -q --depth=1 origin binch-ah-data; then
+            git switch -q -c binch-ah-data FETCH_HEAD
+          else
+            git switch -q --orphan binch-ah-data
+            git rm -rq --cached . >/dev/null 2>&1 || true
+            find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          fi
+          cp /tmp/ah-feed.json ah-feed.json
+          git add ah-feed.json
+          git diff --cached --quiet && { echo "Flux inchangé"; exit 0; }
+          git commit -q -m "Flux AH $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -q origin binch-ah-data

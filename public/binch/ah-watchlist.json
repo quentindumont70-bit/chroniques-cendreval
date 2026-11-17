@@ -1,0 +1,12 @@
+{
+  "format": "binch-ah-watchlist-v1",
+  "note": "Identifiants d'objets suivis par le collecteur communautaire. Les noms affichés viennent de l'API (métadonnées), pas de cette liste.",
+  "groups": {
+    "Dépeçage et cuirs": [2934, 2318, 783, 2319, 4232, 4234, 4235, 4304, 8169, 8170, 8171],
+    "Travail du cuir": [4231, 4233, 4236, 2304, 2313, 4265, 2320, 2321, 4289],
+    "Tissus": [2589, 2592, 4306, 4338, 14047],
+    "Minerais": [2770, 2771, 2772, 3858, 10620],
+    "Herbes": [2447, 765, 2449, 785, 2450, 3356, 3818],
+    "Enchantement": [10940, 10938]
+  }
+}
