@@ -133,13 +133,13 @@ test('V147: alertes de stock DLC/DDM à échéance proche sans duplication de do
  const d=f.collect();
  assert.equal(d.items.length,2);
  assert.deepEqual(d.items.map(x=>x.kind),['Stock','Stock']);
- assert.deepEqual(d.items.map(x=>x.url),['./garde-manger.html','./garde-manger.html']);
+ assert.deepEqual(d.items.map(x=>x.url),['./garde-manger.html#food=a','./garde-manger.html#food=b']);
  assert.match(d.items[0].next,/DLC · Date limite dépassée/);
  assert.match(d.items[1].next,/DDM · Échéance/);
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
  f.ctx.testRender();
- assert.equal(f.nodes.get('activePulseList').children[0].href,'./garde-manger.html');
+ assert.equal(f.nodes.get('activePulseList').children[0].href,'./garde-manger.html#food=a');
 });
 
 test('V147: aucune alerte si dates éloignées, texte invalide ou stockage absent',async()=>{
