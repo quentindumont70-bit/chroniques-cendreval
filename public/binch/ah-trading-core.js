@@ -491,6 +491,17 @@ function crossMarket(feed,itemId,now=Date.now()){
    ageH,fresh:price!==null&&ageH<=72};
  }).sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));
 }
+/** Cotations comparables uniquement dans un même périmètre confirmé : région, faction, règles et maison. */
+function comparableQuotes(feed,quotes,selectedMarket,region,faction){
+ if(!validFeed(feed)||!selectedMarket||!feed.markets[selectedMarket]||!region||!faction)return [];
+ const selected=marketMeta(selectedMarket,feed.markets[selectedMarket].meta);
+ if(selected.region!==region||selected.faction!==faction||!selected.ruleset)return [];
+ return (Array.isArray(quotes)?quotes:[]).filter(q=>{
+  if(q?.price==null||!q.fresh||!feed.markets[q.market])return false;
+  const meta=marketMeta(q.market,feed.markets[q.market].meta);
+  return meta.region===region&&meta.faction===faction&&meta.ruleset===selected.ruleset&&meta.houseId===selected.houseId&&meta.provider===selected.provider;
+ });
+}
 function feedSummary(feed,now=Date.now()){
  if(!validFeed(feed))return null;
  const gen=parseTime(feed.generatedAt);
@@ -518,6 +529,6 @@ function skinningPlan({level,professions,index,feedMarket,now=Date.now()}){
  return {status:'ok',skill,level:lv,maxMob:cap,tiers,best:ranked[0]||null,nextSkill:cap<60?{mobLevel:cap+1,skill:skinSkillFor(cap+1)}:null};
 }
 
-return {FEED_URL,MARKET_LABEL,marketMeta,canMergeFeed,feedObservations,crossMarket,feedSummary,LEATHER_TIERS,skinSkillFor,maxSkinnableLevel,skinningPlan,SCAN_SOURCE,COMMUNITY_SOURCE,LEATHER,CONVERSIONS,coin,median,weightedMedian,weightedMean,extractPayload,parseGrimoire,aggregateListings,scanObservations,parseCommunity,
+return {FEED_URL,MARKET_LABEL,marketMeta,canMergeFeed,feedObservations,crossMarket,comparableQuotes,feedSummary,LEATHER_TIERS,skinSkillFor,maxSkinnableLevel,skinningPlan,SCAN_SOURCE,COMMUNITY_SOURCE,LEATHER,CONVERSIONS,coin,median,weightedMedian,weightedMean,extractPayload,parseGrimoire,aggregateListings,scanObservations,parseCommunity,
  mergeObservations,itemStats,supplyChange,simulate,hasProfession,marketIndex,evaluateRecipe,craftAnalysis,bagAdvice,budgetPlan,opportunities,filterOpportunities,observationOrigin,movers,resaleCandidates,farmTargets,journalReview,evaluateAlerts,faithBrief};
 });
