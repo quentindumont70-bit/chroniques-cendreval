@@ -39,7 +39,9 @@ test('AHledger: reject wrong market/id, future/missing prices and unsafe attribu
  assert.equal(A.parseQuote({...p,latest:{...p.latest,observedAt:'2026-11-18T11:00:00Z'}},{...m,itemId:2318},NOW).ok,false);
  assert.equal(A.parseQuote({...p,latest:{...p.latest,minBuyout:0}},{...m,itemId:2318},NOW).ok,false);
  const q=A.parseQuote({...p,attribution:{url:'https://evil.invalid/landing'}},{...m,itemId:2318},NOW);
- assert.equal(q.attribution,m.page);
+ assert.equal(q.ok,false,'ne jamais afficher un prix tiers sans crédit valide');
+ assert.match(q.reason,/lien AHledger/);
+ assert.equal(A.parseQuote(p,{...m,itemId:2318},NOW).ok,false,'attribution absente refusée');
 });
 
 test('AHledger: UI access is click initiated, no automatic import or persistent cache',()=>{
