@@ -406,3 +406,11 @@ test('Import communautaire: quantité manquante, nulle ou invalide jamais rempla
  }
  assert.equal(T.mergeObservations(store,[{...base,quantity:3}],now).added,1);
 });
+
+test('Import AH public: identifiant positif et date journalière plausible requis',()=>{
+ const market='forever.normal.horde.us';
+ for(const item of [0,-1,null]){
+  assert.throws(()=>T.parseCommunity({market,item,row:[100,3,NOW-1000]},{realm:'Forever',now:NOW}),/non reconnue/);
+ }
+ assert.equal(T.parseCommunity({market,item:2318,row:null,days:[[-1,100,null,3]]},{realm:'Forever',now:NOW}).length,0);
+});
