@@ -405,3 +405,32 @@ test('Consentement marché AH: changement région ou serveur révoque la confirm
  assert.match(ui,/next!==state\.feedMarket\)\{state\.feedMarket=next;state\.confirmedMarket=null;state\.autoFeed=false/);
  assert.match(ui,/next!==state\.region\)\{state\.region=next;state\.confirmedMarket=null;state\.autoFeed=false/);
 });
+
+test('Comparaison AH: jamais de meilleur prix sans marché confirmé et périmètre identique',()=>{
+ const market='forever.normal.horde.us',now=NOW;
+ const quotes=[
+  {market,price:100,fresh:true},
+  {market:'autre-normal',price:80,fresh:true},
+  {market:'forever.pvp.horde.us',price:20,fresh:true},
+  {market:'forever.normal.alliance.us',price:10,fresh:true},
+  {market:'eu-normal',price:5,fresh:true},
+  {market:'autre-maison',price:1,fresh:true},
+  {market:'autre-fournisseur',price:2,fresh:true},
+  {market:'vieux-normal',price:3,fresh:false}
+ ];
+ const meta=(provider,region,ruleset,faction,houseId=null)=>({provider,region,ruleset,faction,houseId});
+ const markets=Object.fromEntries(quotes.map(x=>[x.market,{meta:meta('auctionhouse.fyi','us','normal','Horde')}]));
+ markets['forever.pvp.horde.us'].meta.ruleset='pvp';
+ markets['forever.normal.alliance.us'].meta.faction='Alliance';
+ markets['eu-normal'].meta.region='eu';
+ markets['autre-maison'].meta.houseId=6;
+ markets['autre-fournisseur'].meta.provider='API Blizzard';
+ const feed={format:'binch-ah-feed-v2',markets};
+ const result=T.comparableQuotes(feed,quotes,market,'us','Horde');
+ assert.deepEqual(result.map(x=>x.market),[market,'autre-normal']);
+ assert.deepEqual(T.comparableQuotes(feed,quotes,null,'us','Horde'),[]);
+ assert.deepEqual(T.comparableQuotes(feed,quotes,market,'eu','Horde'),[]);
+ assert.deepEqual(T.comparableQuotes(feed,quotes,market,'us','Alliance'),[]);
+ const ui=readFileSync(new URL('../public/binch/ah-trading.js',import.meta.url),'utf8');
+ assert.match(ui,/state\.confirmedMarket===mk\?mk:null/,'comparateur sans consentement ne marque aucun meilleur cours');
+});
