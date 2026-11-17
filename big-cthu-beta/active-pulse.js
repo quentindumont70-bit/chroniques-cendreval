@@ -1,4 +1,4 @@
-/* V131 — actions vraiment utiles, lecture locale des modules existants, sans duplication. */
+/* V185 — actions utiles, Maison prioritaire et accès direct, sans duplication locale. */
 (function(){
 'use strict';
 const SOURCES=[
@@ -41,11 +41,16 @@ function collect(){
   if(source.kind==='Agenda')selected=rows.filter(x=>x&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=120&&validDate(x.date)&&x.date>=today&&x.date<=stop&&(!x.time||/^([01]\d|2[0-3]):[0-5]\d$/.test(x.time))&&(x.date>today||!x.time||x.time>=clock)).sort((a,b)=>(a.date+' '+(a.time||'00:00')).localeCompare(b.date+' '+(b.time||'00:00'))).map(x=>({title:x.title,rank:x.date===today?1:4,next:'Le '+x.date+(x.time?' · '+x.time:'')}));
   if(source.kind==='Captures')selected=rows.filter(x=>x&&x.status==='new'&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140).map(x=>({title:x.title,rank:4,next:x.target==='agenda'?'À envoyer vers Agenda':x.target==='task'?'À envoyer vers Priorités':'À traiter dans Capture'}));
   if(source.kind==='Priorités')selected=rows.filter(x=>x&&typeof x.text==='string'&&x.text.trim()&&x.text.length<=160&&!x.done).map(x=>({title:x.text,rank:2,next:''}));
-  if(source.kind==='Maison')selected=rows.filter(x=>x&&typeof x.name==='string'&&x.name.trim()&&x.name.length<=120&&['todo','doing'].includes(x.status)).sort((a,b)=>(a.status==='doing'?0:1)-(b.status==='doing'?0:1)||({haute:0,normale:1,basse:2}[a.priority]??1)-({haute:0,normale:1,basse:2}[b.priority]??1)).map(x=>({title:x.name,rank:x.status==='doing'?2:6,next:typeof x.notes==='string'?x.notes.slice(0,120):''}));
+  if(source.kind==='Maison')selected=rows.filter(x=>x&&typeof x.name==='string'&&x.name.trim()&&x.name.length<=120&&['todo','doing'].includes(x.status)).map(x=>{
+   const due=validDate(x.due)?x.due:'';
+   const notes=typeof x.notes==='string'?x.notes.slice(0,120):'';
+   const rank=due&&due<=today?1:due&&due<=near?1.5:x.priority==='haute'?2:x.status==='doing'?3:6;
+   return {id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.name,rank,due,status:x.status,next:(due?'Date cible : '+due+(notes?' · ':''):'')+notes};
+  }).sort((a,b)=>a.rank-b.rank||(a.status==='doing'?0:1)-(b.status==='doing'?0:1)||(a.due||'9999').localeCompare(b.due||'9999'));
   if(source.kind==='Musique')selected=rows.filter(x=>x&&x.mode==='musique'&&['active','planned'].includes(x.status)&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).map(x=>({title:x.title,rank:x.status==='active'?5:7,next:typeof x.note==='string'?x.note.slice(0,120):''}));
   if(source.kind==='Jeux')selected=rows.filter(x=>x&&x.done===false&&typeof x.game==='string'&&x.game.length<=60&&typeof x.text==='string'&&x.text.trim()&&x.text.length<=180).map(x=>({title:x.game,rank:9,next:x.text}));
   total+=selected.length;
-  for(const item of selected.slice(0,source.limit))results.push({...item,kind:source.kind,url:source.url});
+  for(const item of selected.slice(0,source.limit))results.push({...item,kind:source.kind,url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.url});
  }
  return {items:results.sort((a,b)=>a.rank-b.rank),warnings,total};
 }
