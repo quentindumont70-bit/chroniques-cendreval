@@ -483,11 +483,12 @@ function crossMarket(feed,itemId,now=Date.now()){
  if(!validFeed(feed))return [];
  return Object.entries(feed.markets).map(([m,v])=>{
   const r=v.items?.[itemId]?.row,t=r?parseTime(r[2]):null,validTime=t&&t<=now;
-  const meta=marketMeta(m,v.meta),price=validTime&&r&&isCopper(r[0])?r[0]:null;
+  const validQuantity=r&&Number.isSafeInteger(r[1])&&r[1]>0;
+  const meta=marketMeta(m,v.meta),price=validTime&&r&&isCopper(r[0])&&validQuantity?r[0]:null;
   const ageH=validTime?(now-t)/HOUR:null;
   // Afficher un vieux cours est utile pour l'historique, jamais pour qualifier un meilleur achat.
   return {market:m,label:MARKET_LABEL(m,v.meta),region:meta.region,faction:meta.faction,price,
-   quantity:r&&Number.isSafeInteger(r[1])?r[1]:null,at:validTime?new Date(t).toISOString():null,
+   quantity:validQuantity?r[1]:null,at:validTime?new Date(t).toISOString():null,
    ageH,fresh:price!==null&&ageH<=72};
  }).sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));
 }
