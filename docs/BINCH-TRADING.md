@@ -127,3 +127,28 @@ Test de non-régression : `tests/binch-ah-mobile.test.mjs` (raccourci, validité
 Le panneau ponctuel « En direct → AHledger » affiche, lorsque la réponse de la source le fournit, `sales.estimatedPerDay` et `sales.windowDays` : estimation d'unités écoulées par jour et fenêtre d'observation. Ce n'est **pas** un journal de ventes réellement conclues par le joueur et ce n'est pas une garantie de revente. Si le champ est absent ou non valide, afficher « Rotation non estimable » ; `0` observé reste distinct de « inconnu ». Données jamais réinjectées automatiquement dans le carnet ou dans le moteur d'opportunités.
 
 Source : https://ahledger.com/developers (endpoint `GET /v1/prices/{market}/{itemId}?range=7d`, volume estimé lorsque l'historique suffit). L'attribution AHledger reste requise à l'affichage. Contrôle : `tests/binch-ahledger.test.mjs` ; JS `ahledger-reader.js?v=002`, `ah-trading.js?v=009`.
+
+## 12. Discipline d'achat — capital, liquidité et tendance (17 novembre 2026)
+
+Le radar distingue désormais deux niveaux sans inventer de ventes ni de prix :
+
+- **Achat à étudier** : capital renseigné, au moins une unité finançable après la réserve, quantité au plancher constatée, historique de 3 jours distincts au minimum, pas de baisse antérieure supérieure ou égale à 10 %, confiance statistique non faible. Il s'agit d'une étude, **pas** d'un ordre automatique ni d'une garantie de revente.
+- **Surveillance** : décote significative mais sans preuve suffisante de quantité disponible, budget non renseigné, historique trop court ou tendance déjà baissière. Le bouton « noter un achat » n'est pas proposé ; seule la simulation demeure.
+- **Exclusion** : quand le plafond de capital ou la réserve rend impossible l'achat d'une seule unité, la décote n'est plus affichée comme opportunité d'achat.
+- **Stress de revente** : marge par unité si le prix de revente est 10 % sous la médiane historique, après commission, **hors dépôts et invendus** ; le simulateur complet traite ces hypothèses séparément.
+- Le tableau de bord et Faith emploient le même statut, sans appeler les simples surveillances des achats.
+
+Tests : `tests/binch-ah-trading.test.mjs` vérifie profondeur, historique, tendance, réserve, budget, quantité et statut. Cache `ah-trading-core.js?v=006`, `ah-trading.js?v=010`. Les prix restent des **observations attribuées**, pas des cours de négociation garantis.
+
+### Les dix chantiers suivants
+
+1. Faire confirmer en navigateur réel la présentation du radar sur iPhone.
+2. Tester l'appel ponctuel de prix européens avec API et CORS réels.
+3. Valider un premier `/grimoire scan` complet depuis un vrai client Forever.
+4. Ajouter un bilan mensuel des opérations personnelles réellement conclues.
+5. Relier les sacs importés à la banque sans mélanger les emplacements.
+6. Fiabiliser l'identité région / ruleset / faction du personnage.
+7. Enrichir les recettes Forever sourcées et la rentabilité de fabrication.
+8. Ajouter un signal prudent de profondeur d'AH entre scans, sans confondre disparitions et ventes.
+9. Améliorer les recommandations de leveling / spécialisations / métiers pour le Druide.
+10. Préparer la bêta pour le frère et le tableau de bord GM.
