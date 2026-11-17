@@ -408,10 +408,14 @@ function journalReview({decisions,trades,index,fee=5}){
 /* ---------- 12. Alertes de prix observés ---------- */
 function evaluateAlerts(alerts,index){
  return (Array.isArray(alerts)?alerts:[]).map(a=>{
-  const s=index.find({name:a.name})?.stats;
-  if(!s||!s.last)return {...a,state:'Aucun relevé'};
+  const ceiling=Number(a?.ceiling);
+  if(!Number.isSafeInteger(ceiling)||ceiling<1||ceiling>=1e12||!['below','above',undefined].includes(a?.kind))
+   return {...a,state:'Seuil invalide'};
+  const s=index?.find({name:a.name})?.stats;
+  if(!s||!s.last||!isCopper(s.current))return {...a,state:'Aucun relevé'};
+  if(!Number.isFinite(s.ageH)||s.ageH<0)return {...a,state:'Date du relevé invalide'};
   if(s.ageH>=24)return {...a,state:'Relevé trop ancien',current:s.current,lastAt:s.lastAt};
-  const hit=a.kind==='above'?s.current>=a.ceiling:s.current<=a.ceiling;
+  const hit=a.kind==='above'?s.current>=ceiling:s.current<=ceiling;
   return {...a,state:hit?'Seuil atteint':'Pas de signal',current:s.current,lastAt:s.lastAt};
  });
 }
