@@ -313,7 +313,7 @@ test('Comparateur AH : cotations futures écartées et données sans date non co
 test('Progression: seuil de dépeçage Classic et plan selon le niveau',()=>{
  assert.equal(T.skinSkillFor(20),100);assert.equal(T.skinSkillFor(32),160);
  assert.equal(T.maxSkinnableLevel(150),30);
- const plan=T.skinningPlan({level:32,professions:{'Dépeçage':{rank:150}},feedMarket:FEED.markets['forever.normal.horde.us']});
+ const plan=T.skinningPlan({level:32,professions:{'Dépeçage':{rank:150}},feedMarket:FEED.markets['forever.normal.horde.us'],now:NOW});
  assert.equal(plan.maxMob,30);
  assert.equal(plan.best.name,'Cuir moyen','94pc > 30pc, accessible à ce niveau');
  assert.equal(plan.tiers.find(t=>t.itemId===4304).reachable,false);
@@ -384,4 +384,18 @@ test('Historique AH: la vue parle d’offre observée sans prétendre identifier
  assert.match(ui,/supplySection\(cur\)/);
  assert.match(ui,/ne prouve pas une vente/);
  assert.match(ui,/deux scans GrimoireSync/);
+});
+
+test('Dépeçage: cours externes datés, quantités vérifiables, aucune cote périmée ou future',()=>{
+ const now=NOW;
+ const plan=row=>T.skinningPlan({level:32,professions:{'Dépeçage':{rank:150}},now,
+  feedMarket:{items:{2319:{row}}}});
+ assert.equal(plan([900,4,now-3600000]).tiers.find(t=>t.itemId===2319).leather.price,900);
+ for(const row of [[900,4,now+3600000],[900,4,now-73*3600000],[900,0,now-3600000],[900,-2,now-3600000],[900,null,now-3600000],[900,4,null],[900,4,'pas une date']]){
+  assert.equal(plan(row).tiers.find(t=>t.itemId===2319).leather,null,'cours externe invalide refusé : '+JSON.stringify(row));
+ }
+ const ui=readFileSync(new URL('../public/binch/ah-trading.js',import.meta.url),'utf8');
+ assert.match(ui,/m\.faction===scope\.faction/,'faction du marché requise pour le dépeçage');
+ assert.match(ui,/m\.region===state\.region/,'région du joueur requise');
+ assert.match(ui,/state\.confirmedMarket===id/,'confirmation du marché requise');
 });
