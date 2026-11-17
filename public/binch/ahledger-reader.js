@@ -26,13 +26,15 @@ function parseQuote(payload,expected,now=Date.now()){
  if(!Number.isFinite(time)||time>now||time<=0)return {ok:false,reason:'Date de relevé absente, invalide ou future.'};
  const floor=Number(x.minBuyout),median=Number(x.median);
  if(!validPrice(floor)&&!validPrice(median))return {ok:false,reason:'Aucun prix positif vérifiable sur cette cotation.'};
+ const credit=attribution(payload.attribution?.url,null);
+ if(!credit)return {ok:false,reason:'Source non créditable : lien AHledger propre à cet objet absent ou invalide.'};
  const ageH=(now-time)/3600000;
  const num=n=>Number.isSafeInteger(n)&&n>=0?n:null;
  return {ok:true,id:expected.itemId,name:String(payload.item?.name||'Objet #'+expected.itemId).slice(0,100),
   observedAt:new Date(time).toISOString(),ageH,stale:ageH>72,minBuyout:validPrice(floor)?floor:null,
   median:validPrice(median)?median:null,median7d:validPrice(Number(x.median7d))?Number(x.median7d):null,
   quantity:num(x.quantity),auctions:num(x.auctions),source:String(x.source||'Relevé tiers').slice(0,80),
-  attribution:attribution(payload.attribution?.url,expected.page)};
+  attribution:credit};
 }
 return {market,lookupUrl,parseQuote};
 });
