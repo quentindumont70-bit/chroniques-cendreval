@@ -493,3 +493,26 @@ test('Cockpit: un accès principal sécurisé et une passerelle pour exporter l 
  assert.match(html,/Aucun transfert automatique/);
  assert.doesNotMatch(html,/autoImportTournee|syncTourneePatients/);
 });
+
+test('V183: Maison follows only open jobs by default, with completed jobs safely retrievable',async()=>{
+ const key='big-cthu-v2-maison-v1';
+ const rows=[
+  {id:'done',name:'Archive fictive',room:'',notes:'',priority:'haute',amount:0,status:'done',due:''},
+  {id:'doing',name:'Chantier en cours',room:'',notes:'',priority:'normale',amount:0,status:'doing',due:''},
+  {id:'todo',name:'À démarrer',room:'',notes:'',priority:'normale',amount:0,status:'todo',due:''}
+ ];
+ const raw=JSON.stringify(rows);
+ const h=await boot('maison.html',{[key]:raw});
+ h.get('filter').value='open';
+ await h.get('filter').fire('change');
+ assert.equal(h.get('jobs').children.length,2);
+ assert.equal(h.get('jobs').children[0].children[0].children[0].children[0].textContent,'Chantier en cours');
+ assert.equal(h.get('total').textContent,3);
+ h.get('filter').value='all';
+ await h.get('filter').fire('change');
+ assert.equal(h.get('jobs').children.length,3);
+ h.get('filter').value='done';
+ await h.get('filter').fire('change');
+ assert.equal(h.get('jobs').children.length,1);
+ assert.equal(h.memory.get(key),raw);
+});
