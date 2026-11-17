@@ -115,3 +115,9 @@ Cette consultation répond au besoin d'accéder aux **marchés EU** sans PC, en 
 - Cela évite de mélanger automatiquement, pour un même objet du même carnet, les prix **US/EU** ou **Normal/JcJ**. Les relevés déjà présents sans ces étiquettes ne sont pas réinterprétés ni effacés.
 - Les relevés manuels non étiquetés ne prouvent toujours pas leur origine exacte. Avant toute spéculation, vérifier le marché déclaré et le contexte du personnage. Il reste nécessaire d'améliorer à terme l'identité des marchés personnels GrimoireSync.
 
+
+## 10. Du sac à la cotation EU/US (17 novembre 2026)
+
+Depuis « Assistant Trading → Mes sacs », chaque objet importé avec un identifiant valide propose « Vérifier le prix EU/US ». Ce bouton ouvre « En direct » et préremplit le formulaire AHledger avec l'identifiant **sans requête, sans import automatique ni écriture dans le carnet**. L'utilisateur vérifie volontairement région, ruleset et faction puis déclenche la consultation. La cotation tierce reste informative ; le fallback vers AHledger est affiché si CORS ou réseau échoue. La banque n'est toujours pas synchronisée.
+
+Test de non-régression : `tests/binch-ah-mobile.test.mjs` (raccourci, validité d'ID, préremplissage, absence de lecture réseau au clic). Cache public `ah-trading.js?v=008`.
