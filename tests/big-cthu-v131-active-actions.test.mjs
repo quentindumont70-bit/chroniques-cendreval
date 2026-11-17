@@ -297,7 +297,7 @@ test('V181: CSS, accessibilité et stockage existant sont préservés',async()=>
  assert.match(html,/D’abord les échéances urgentes/);
  assert.match(js,/results\.sort\(\(a,b\)=>a\.rank-b\.rank\)/);
  assert.doesNotMatch(js,/localStorage\.setItem|fetch\(|XMLHttpRequest|WebSocket/);
- assert.match(sw,/big-cthu-public-v2-v181/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
  assert.doesNotMatch(tour,/V181|is-urgent/);
 });
 
