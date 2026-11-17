@@ -507,7 +507,7 @@ function skinningPlan({level,professions,index,feedMarket}){
  const skill=professionRank(professions,'Dépeçage');
  if(skill==null)return {status:'Dépeçage non importé',tiers:[]};
  const lv=Number(level)||0,cap=maxSkinnableLevel(skill);
- const price=id=>{const e=index?.find({itemId:id});if(e?.stats.sufficient)return {price:e.stats.current,at:e.stats.lastAt,src:'carnet'};const r=feedMarket?.items?.[id]?.row;return r&&isCopper(r[0])?{price:r[0],at:new Date(parseTime(r[2])).toISOString(),src:'flux communautaire'}:null};
+ const price=id=>{const e=index?.find({itemId:id});if(e?.stats.sufficient)return {price:e.stats.current,at:e.stats.lastAt,src:'carnet'};const r=feedMarket?.items?.[id]?.row;const at=Array.isArray(r)?parseTime(r[2]):null;return at&&at<=Date.now()&&isCopper(r[0])&&Number.isSafeInteger(r[1])&&r[1]>0?{price:r[0],at:new Date(at).toISOString(),src:'flux communautaire'}:null};
  const tiers=LEATHER_TIERS.map(t=>{
   const lo=t.mobs[0],hi=Math.min(t.mobs[1],lv+3,cap);
   const reachable=lv>0&&hi>=lo&&lo<=lv+3;
