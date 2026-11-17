@@ -93,13 +93,13 @@ test('V145: les captures à traiter apparaissent sans écriture ni copie',async(
  const items=f.collect().items;
  assert.equal(items.length,2);
  assert.deepEqual(items.map(x=>x.kind),['Captures','Captures']);
- assert.deepEqual(items.map(x=>x.url),['./capture.html#list','./capture.html#list']);
+ assert.deepEqual(items.map(x=>x.url),['./capture.html#capture=one','./capture.html#capture=two']);
  assert.deepEqual(items.map(x=>x.next),['À traiter dans Capture','À envoyer vers Agenda']);
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
  f.ctx.testRender();
  const link=f.nodes.get('activePulseList').children[0];
- assert.equal(link.href,'./capture.html#list');
+ assert.equal(link.href,'./capture.html#capture=one');
  assert.equal(link.children[1].textContent,'Rappeler le plombier fictif');
 });
 
@@ -382,7 +382,39 @@ test('V186: Agenda peut cibler son événement sans migration, accès réseau ni
  assert.match(html,/\.event\.is-focused\{/);
  assert.match(html,/scrollIntoView\(\{block:'center'\}\)/);
  assert.match(js,/\.\/agenda\.html#event=/);
- assert.match(sw,/big-cthu-public-v2-v186/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
  assert.doesNotMatch(js,/localStorage\.setItem|fetch\(|XMLHttpRequest|WebSocket/);
  assert.doesNotMatch(tour,/V186|\.event\.is-focused/);
+});
+
+
+test('V187: une note Capture ouverte se retrouve directement sans copie ni transfert implicite',async()=>{
+ const f=await fixture({[K.captures]:JSON.stringify([
+  {id:'appel & plombier',title:'Contacter le plombier',target:'inbox',status:'new'},
+  {id:'prochaine',title:'Autre capture',target:'task',status:'new'},
+  {id:'archive',title:'Capture faite',target:'inbox',status:'done'}
+ ])});
+ const d=f.collect();
+ assert.deepEqual(d.items.map(x=>x.title),['Contacter le plombier','Autre capture']);
+ assert.deepEqual(d.items.map(x=>x.url),['./capture.html#capture=appel%20%26%20plombier','./capture.html#capture=prochaine']);
+ assert.equal(d.total,2);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
+
+test('V187: une capture ancienne sans identifiant conserve la navigation générale',async()=>{
+ const f=await fixture({[K.captures]:JSON.stringify([{title:'Fiche historique',target:'inbox',status:'new'}])});
+ assert.deepEqual(f.collect().items.map(x=>x.url),['./capture.html#list']);
+ assert.equal(f.writes(),0);
+});
+
+test('V187: Capture cible un élément sans modifier les mécanismes de transmission protégés',async()=>{
+ const [html,sw,js,tour]=await Promise.all(['capture.html','sw.js','active-pulse.js','tournee-complete.html'].map(read));
+ assert.match(html,/new URLSearchParams\(window\.location\.hash\.slice\(1\)\)\.get\('capture'\)/);
+ assert.match(html,/\.item\.is-focused\{/);
+ assert.match(html,/scrollIntoView\(\{block:'center'\}\)/);
+ assert.match(js,/\.\/capture\.html#capture=/);
+ assert.match(sw,/big-cthu-public-v2-v187/);
+ assert.doesNotMatch(js,/localStorage\.setItem|fetch\(|XMLHttpRequest|WebSocket/);
+ assert.doesNotMatch(tour,/V187|\.item\.is-focused/);
 });
