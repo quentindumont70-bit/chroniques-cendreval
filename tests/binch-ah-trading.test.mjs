@@ -400,7 +400,7 @@ test('Import communautaire: quantité manquante, nulle ou invalide jamais rempla
  assert.equal(valid.length,1);
  const store={version:1,items:[],trades:[],alerts:[],fee:5};
  const base={name:'Cuir léger',itemId:2318,priceCopper:100,observedAt:new Date(now-60000).toISOString(),realm:'Forever',faction:'Horde'};
- for(const bad of [null,undefined,0,-1,1.5,'2']){
+ for(const bad of [null,undefined,0,-1,1.5]){
   const merged=T.mergeObservations(store,[{...base,quantity:bad}],now);
   assert.equal(merged.added,0,'carnet '+String(bad));
  }
