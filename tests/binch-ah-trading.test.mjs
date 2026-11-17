@@ -208,6 +208,55 @@ test('Radar AH : capital et profondeur vérifiés, pas de faux ordre d’achat',
  assert.match(brief.lines.join(' '),/Sous surveillance, sans conseil d’achat/);
 });
 
+test('Radar AH : source historique non signée et origines mélangées ne deviennent pas un ordre d’achat',()=>{
+ const rich=T.budgetPlan({capital:1000,reservePct:40,maxItemPct:30});
+ const source=(type)=>{
+  const st=store([['Dent',5,[100,100,100,100,100,100,60]]]);
+  st.items[0].history.forEach((h,i)=>{
+   if(type==='external'){h.source='auctionhouse.fyi';h.market='forever.normal.horde.us';}
+   if(type==='manual'){h.source='Saisie';}
+   if(type==='mixed'&&i===0){h.source='Saisie';}
+  });
+  return T.marketIndex(st,'forever|Horde',NOW);
+ };
+ const scan=T.opportunities({index:source('scan'),budget:rich})[0];
+ const external=T.opportunities({index:source('external'),budget:rich})[0];
+ const manual=T.opportunities({index:source('manual'),budget:rich})[0];
+ const mixed=T.opportunities({index:source('mixed'),budget:rich})[0];
+ assert.equal(scan.status,'Achat à étudier');
+ assert.equal(scan.sourceKind,'scan');
+ for(const [o,kind] of [[external,'community'],[manual,'manual'],[mixed,'mixed']]){
+  assert.ok(o,'une décote non certifiée reste visible pour surveillance');
+  assert.equal(o.status,'Surveillance');
+  assert.equal(o.sourceKind,kind);
+  assert.match(o.warnings.join(' '),/non certifiés|mélangées/);
+ }
+ assert.equal(T.observationOrigin({source:T.SCAN_SOURCE}),'scan');
+ assert.equal(T.observationOrigin({source:'Saisie'}),'manual');
+ assert.equal(T.observationOrigin({source:'aucune',region:'eu'}),'community');
+ assert.equal(T.observationOrigin({source:'auctionhouse.fyi'}),'community');
+ assert.equal(T.filterOpportunities([scan,external,manual,mixed],{source:'scan'},NOW).length,1);
+ assert.equal(T.filterOpportunities([scan,external,manual,mixed],{source:'community'},NOW)[0].status,'Surveillance');
+ assert.equal(T.filterOpportunities([scan,external,manual,mixed],{source:'mixed'},NOW)[0].sourceKind,'mixed');
+ assert.equal(T.filterOpportunities([scan,external,manual,mixed],{status:'buy'},NOW).length,1);
+ assert.equal(T.filterOpportunities([scan,external,manual,mixed],{status:'watch'},NOW).length,3);
+ assert.equal(T.filterOpportunities([scan,external,manual,mixed],{ageH:6},NOW).length,4);
+ assert.equal(T.filterOpportunities([scan,external,manual,mixed],{ageH:6},NOW+7*3600000).length,0);
+ assert.equal(T.filterOpportunities([scan],{},NOW-60000).length,0,'aucun cours futur');
+ assert.equal(T.filterOpportunities([scan],{},NOW).length,1,'la fonction ne mutile pas les opportunités');
+});
+test('Radar UI : filtres persistés, origine affichée et aucune fausse élévation du signal',()=>{
+ const ui=readFileSync(new URL('../public/binch/ah-trading.js',import.meta.url),'utf8');
+ assert.match(ui,/id="bt-radar-source"/);
+ assert.match(ui,/id="bt-radar-age"/);
+ assert.match(ui,/id="bt-radar-status"/);
+ assert.match(ui,/T\.filterOpportunities\(c\.opps/);
+ assert.match(ui,/if\(e\.target\.id==='bt-radar-source'\)/);
+ assert.match(ui,/if\(e\.target\.id==='bt-radar-age'\)/);
+ assert.match(ui,/if\(e\.target\.id==='bt-radar-status'\)/);
+ assert.match(ui,/sourceNames\[o\.sourceKind\]/);
+ assert.match(ui,/les filtres n’ajoutent jamais de prix/i);
+});
 test('Revente, journal et alertes: aucune valeur fabriquée',()=>{
  const st=store([['Dent',5,[100,100,100,100,100,100,200]]]);
  const index=T.marketIndex(st,'forever|Horde',NOW);
