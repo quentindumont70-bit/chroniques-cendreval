@@ -503,11 +503,11 @@ const LEATHER_TIERS=[{itemId:2318,hide:783,name:'Cuir léger',mobs:[1,27]},{item
 const skinSkillFor=level=>level<=10?1:level<=20?(level-10)*10:level*5;
 const maxSkinnableLevel=skill=>{let lv=1;for(let l=1;l<=63;l++)if(skinSkillFor(l)<=skill)lv=l;return lv};
 function professionRank(professions,label){const keys=PROFESSION_ALIASES[label]||[norm(label)];for(const [n,v] of Object.entries(professions||{}))if(keys.includes(norm(n)))return Number(v?.rank??v)||0;return null}
-function skinningPlan({level,professions,index,feedMarket}){
+function skinningPlan({level,professions,index,feedMarket,now=Date.now()}){
  const skill=professionRank(professions,'Dépeçage');
  if(skill==null)return {status:'Dépeçage non importé',tiers:[]};
  const lv=Number(level)||0,cap=maxSkinnableLevel(skill);
- const price=id=>{const e=index?.find({itemId:id});if(e?.stats.sufficient)return {price:e.stats.current,at:e.stats.lastAt,src:'carnet'};const r=feedMarket?.items?.[id]?.row;const at=Array.isArray(r)?parseTime(r[2]):null;return at&&at<=Date.now()&&isCopper(r[0])&&Number.isSafeInteger(r[1])&&r[1]>0?{price:r[0],at:new Date(at).toISOString(),src:'flux communautaire'}:null};
+ const price=id=>{const e=index?.find({itemId:id});if(e?.stats.sufficient)return {price:e.stats.current,at:e.stats.lastAt,src:'carnet'};const r=feedMarket?.items?.[id]?.row;const at=Array.isArray(r)?parseTime(r[2]):null;return at&&at<=now&&now-at<=72*HOUR&&isCopper(r[0])&&Number.isSafeInteger(r[1])&&r[1]>0?{price:r[0],at:new Date(at).toISOString(),src:'flux communautaire'}:null};
  const tiers=LEATHER_TIERS.map(t=>{
   const lo=t.mobs[0],hi=Math.min(t.mobs[1],lv+3,cap);
   const reachable=lv>0&&hi>=lo&&lo<=lv+3;
