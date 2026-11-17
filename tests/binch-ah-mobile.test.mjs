@@ -13,3 +13,11 @@ test('Trading is offered as a customizable mobile shortcut and navigates to the 
   assert.match(html,/mobile-nav\.js\?v=004/);
   assert.match(html,/ah-trading\.js\?v=004/);
 });
+
+test('Trading accepts future supported AH feed formats through the shared parser', () => {
+  const ui=read('ah-trading.js'),core=read('ah-trading-core.js'),collector=readFileSync(new URL('../scripts/collect-ah-feed.mjs', import.meta.url),'utf8');
+  assert.match(ui,/if\(!T\.feedSummary\(f\)\)throw Error/);
+  assert.match(core,/binch-ah-feed-v1/);
+  assert.match(core,/binch-ah-feed-v2/);
+  assert.match(collector,/binch-ah-feed-v2/);
+});
