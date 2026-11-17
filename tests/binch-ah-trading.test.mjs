@@ -141,6 +141,35 @@ test('Opportunités: décote étayée, plafond d’exposition et profondeur, rie
  assert.ok(o[0].risks.length>=0);
 });
 
+test('Radar AH : capital et profondeur vérifiés, pas de faux ordre d’achat',()=>{
+ const idx=T.marketIndex(store([['Dent',5,[100,100,100,100,100,100,60]]]),'forever|Horde',NOW);
+ const rich=T.budgetPlan({capital:1000,reservePct:40,maxItemPct:30});
+ const buy=T.opportunities({index:idx,budget:rich});
+ assert.equal(buy.length,1);
+ assert.equal(buy[0].status,'Achat à étudier');
+ assert.equal(buy[0].qty,5);
+ assert.equal(buy[0].stressedUnitMargin,Math.floor(90*0.95)-60);
+ assert.equal(buy[0].margin,5*(95-60));
+ assert.equal(T.opportunities({index:idx,budget:T.budgetPlan({capital:1000,reservePct:40,maxItemPct:5})}).length,0,
+  'capital trop faible pour une seule unité : ne pas proposer un ordre d’achat de 1 par défaut');
+ const unknownCapital=T.opportunities({index:idx});
+ assert.equal(unknownCapital[0].status,'Surveillance');
+ assert.match(unknownCapital[0].warnings.join(' '),/Capital disponible non renseigné/);
+ const manual=T.marketIndex(store([['Dent',5,[100,100,100,100,100,100,60],{scan:false}]]),'forever|Horde',NOW);
+ const watch=T.opportunities({index:manual,budget:rich})[0];
+ assert.equal(watch.status,'Surveillance');
+ assert.equal(watch.qty,null,'sans profondeur confirmée, aucune quantité supposée');
+ assert.match(watch.warnings.join(' '),/Quantité au meilleur prix inconnue/);
+ const falling=T.marketIndex(store([['Descente',6,[250,240,230,200,170,130,80]]]),'forever|Horde',NOW);
+ const decline=T.opportunities({index:falling,budget:rich})[0];
+ assert.equal(decline.status,'Surveillance','une chute déjà installée ne doit pas être annoncée comme une bonne affaire');
+ assert.match(decline.warnings.join(' '),/Baisse antérieure/);
+ const oneDay=T.marketIndex(store([['Rapide',7,[100,100,100,100,100,100,60],{start:'2026-11-16T04:00:00Z',stepH:1}]]),'forever|Horde',NOW);
+ assert.equal(T.opportunities({index:oneDay,budget:rich})[0].status,'Surveillance','3 jours distincts nécessaires');
+ const brief=T.faithBrief({opps:unknownCapital,scope:'forever|Horde'});
+ assert.match(brief.lines.join(' '),/Sous surveillance, sans conseil d’achat/);
+});
+
 test('Revente, journal et alertes: aucune valeur fabriquée',()=>{
  const st=store([['Dent',5,[100,100,100,100,100,100,200]]]);
  const index=T.marketIndex(st,'forever|Horde',NOW);

@@ -70,13 +70,13 @@ function scopeBanner(c){
 function vDashboard(c){
  const count=d=>c.bags.filter(b=>b.decision===d).length;
  const stockAH=c.bags.reduce((n,b)=>n+(b.ahNetTotal||0),0),stockVendor=c.bags.reduce((n,b)=>n+(b.vendorTotal||0),0);
- const actions=[...c.bags.filter(b=>['Vendre à l’AH','Transformer'].includes(b.decision)).slice(0,3).map(b=>b.decision+' : '+b.name+' ×'+b.count),...c.opps.slice(0,2).map(o=>'Achat à étudier : '+o.name+' à '+coin(o.price)),...c.resale.filter(r=>r.gain>0).slice(0,2).map(r=>'Revendre : '+r.item)];
+ const actions=[...c.bags.filter(b=>['Vendre à l’AH','Transformer'].includes(b.decision)).slice(0,3).map(b=>b.decision+' : '+b.name+' ×'+b.count),...c.opps.filter(o=>o.status==='Achat à étudier').slice(0,2).map(o=>'Achat à étudier : '+o.name+' à '+coin(o.price)),...c.resale.filter(r=>r.gain>0).slice(0,2).map(r=>'Revendre : '+r.item)];
  return '<div class="bt-kpis">'+
   kpi('Capital',c.capital?coin(c.capital.value):'—',c.capital?c.capital.src:'importe GrimoireSync ou saisis-le')+
   kpi('Réserve conservée',c.budget?coin(c.budget.reserve):'—',state.reservePct+' % du capital')+
   kpi('Valeur des sacs seulement (net AH)',stockAH?coin(stockAH):'—','marchand : '+coin(stockVendor))+
   kpi('Objets à vendre / garder',count('Vendre à l’AH')+' / '+count('Garder'),count('Transformer')+' à transformer · '+count('Données insuffisantes')+' sans cote')+
-  kpi('Opportunités étayées',String(c.opps.length),'décote ≥ 15 %, relevé < 24 h')+
+  kpi('Achats à étudier',String(c.opps.filter(o=>o.status==='Achat à étudier').length),c.opps.filter(o=>o.status!=='Achat à étudier').length+' décote(s) à surveiller')+
   kpi('Résultat réalisé (FIFO)',coin(c.ledger.realized||0),'d’après tes opérations déclarées')+'</div>'+
   '<h3>Priorités du moment</h3>'+(actions.length?'<ol class="bt-list">'+actions.map(a=>'<li>'+esc(a)+'</li>').join('')+'</ol>':empty('Données insuffisantes pour proposer une action. Lance <code>/grimoire scan</code> à l’hôtel des ventes, fais <code>/reload</code>, puis importe GrimoireSync.lua dans « Données ».'))+
   '<h3>Marchés en mouvement</h3>'+moversTable(T.movers(c.index));
@@ -96,10 +96,13 @@ function vBags(c){
 const riskList=s=>{const r=[];if(s.volatility>=25)r.push('volatilité '+Math.round(s.volatility)+' %');if(s.ageH>=24)r.push('relevé > 24 h');if(s.n<5)r.push(s.n+' relevés');return r};
 function vRadar(c){
  const buy=c.opps.length?'<div class="bt-cards">'+c.opps.slice(0,24).map(o=>card({title:o.name,price:o.price,reference:o.reference,qty:o.qty,margin:o.margin??o.unitMargin,risks:o.risks,confidence:o.confidence,at:o.lastAt,
-  extra:'<p>Décote '+pct(-o.discount)+' · marge unitaire après commission '+coin(o.unitMargin)+' · quantité limitée par : '+esc(o.limitedBy)+'.</p>',
-  actions:'<button type="button" data-bt-sim="'+esc(JSON.stringify({buy:o.price,sell:o.reference,qty:o.qty||1}))+'">Simuler</button><button type="button" data-bt-decide="'+esc(o.name)+'" data-bt-action="Acheter" data-bt-ref="'+o.price+'" data-bt-exp="'+o.reference+'" data-bt-qty="'+(o.qty||1)+'">Noter ma décision</button>'})).join('')+'</div>':empty('Aucune décote suffisamment étayée (≥ 15 % sous la médiane, ≥ 3 relevés, < 24 h, volatilité < 40 %). C’est un résultat, pas une panne.');
+  extra:'<p class="bt-decision"><strong>'+esc(o.status||'Surveillance')+'</strong> · décote '+pct(-o.discount)+' · marge unitaire théorique après commission '+coin(o.unitMargin)+'.</p>'+
+   '<p>Si la revente se fait 10 % sous la médiane historique : '+coin(o.stressedUnitMargin)+' par unité, avant dépôts et invendus. Quantité limitée par : '+esc(o.limitedBy)+'.</p>'+
+   (o.status!=='Achat à étudier'?'<p class="bt-note">Signal d’observation uniquement : '+esc((o.warnings||[]).join(' · '))+'.</p>':'<p class="bt-note">Même avec profondeur connue, la vitesse de vente reste non prouvée. Vérifie l’AH en jeu.</p>'),
+  actions:'<button type="button" data-bt-sim="'+esc(JSON.stringify({buy:o.price,sell:o.reference,qty:o.qty||1}))+'">Simuler</button>'+
+   (o.status==='Achat à étudier'?'<button type="button" data-bt-decide="'+esc(o.name)+'" data-bt-action="Acheter" data-bt-ref="'+o.price+'" data-bt-exp="'+o.reference+'" data-bt-qty="'+o.qty+'">Noter ma décision</button>':'') })).join('')+'</div>':empty('Aucune décote suffisamment étayée (≥ 15 % sous la médiane, ≥ 3 relevés, < 24 h, volatilité < 40 %). C’est un résultat, pas une panne.');
  const res=c.resale.length?'<div class="bt-table"><table><thead><tr><th>Position</th><th>Unités</th><th>Coût unitaire</th><th>Cours</th><th>Gain net estimé</th><th>Statut</th></tr></thead><tbody>'+c.resale.map(r=>'<tr><td>'+esc(r.item)+'</td><td>'+r.remaining+'</td><td>'+coin(r.unitCost)+'</td><td>'+(r.current?coin(r.current):'—')+'</td><td>'+(r.gain!=null?coin(r.gain):'—')+'</td><td>'+esc(r.status)+'</td></tr>').join('')+'</tbody></table></div>':empty('Aucune position ouverte dans ton registre d’achats.');
- return '<h3>Achats sous-évalués</h3>'+buy+'<h3>Reventes possibles de mes positions</h3>'+res+'<h3>Variations</h3>'+moversTable(T.movers(c.index));
+ return '<h3>Achats sous-évalués</h3><p class="bt-note">« Achat à étudier » exige capital, profondeur observée, au moins 3 jours d’historique et absence de forte chute antérieure. Les autres décotes restent en surveillance.</p>'+buy+'<h3>Reventes possibles de mes positions</h3>'+res+'<h3>Variations</h3>'+moversTable(T.movers(c.index));
 }
 function chart(rows){
  if(rows.length<2)return empty('Au moins deux relevés datés sont nécessaires pour tracer une courbe.');
@@ -224,7 +227,7 @@ function vLive(c){
    return '<td'+(low&&x?.market===low?' class="bt-up"':'')+'>'+cell+'</td>';
   }).join('')+'</tr>';
  }).join('')+'</tbody></table></div>';
- const top=[...c.bags.filter(b=>['Vendre à l’AH','Transformer','Garder'].includes(b.decision)).slice(0,4).map(b=>b.decision+' : '+b.name+' ×'+b.count+(b.price?' (cours '+coin(b.price)+')':'')),...c.opps.slice(0,3).map(o=>'Achat à étudier : '+o.name+' à '+coin(o.price)+' (médiane '+coin(o.reference)+')')];
+ const top=[...c.bags.filter(b=>['Vendre à l’AH','Transformer','Garder'].includes(b.decision)).slice(0,4).map(b=>b.decision+' : '+b.name+' ×'+b.count+(b.price?' (cours '+coin(b.price)+')':'')),...c.opps.filter(o=>o.status==='Achat à étudier').slice(0,3).map(o=>'Achat à étudier : '+o.name+' à '+coin(o.price)+' (médiane '+coin(o.reference)+')')];
  const g=mk?gate(c):{ok:false,reason:'Choisis un marché.'},regionHas=markets.some(m=>m.meta.region===state.region);
  const controls='<div class="bt-form"><label class="bt-field">Région de ton compte<select id="bt-region"><option value="">Non renseignée</option>'+['eu','us'].map(r=>'<option value="'+r+'"'+(state.region===r?' selected':'')+'>'+r.toUpperCase()+'</option>').join('')+'</select></label><label class="bt-field">Marché à afficher<select id="bt-feed-market"><option value="">Choisir…</option>'+markets.map(m=>'<option value="'+esc(m.market)+'"'+(m.market===mk?' selected':'')+'>'+esc(m.label)+'</option>').join('')+'</select></label><button type="button" id="bt-feed-refresh">Actualiser</button></div>'+
   (mk?'<label class="bt-check"><input type="checkbox" id="bt-feed-confirm"'+(state.confirmedMarket===mk?' checked':'')+'> Je confirme que « '+esc(T.MARKET_LABEL(mk,feed.markets[mk].meta))+' » est bien mon marché</label><label class="bt-check"><input type="checkbox" id="bt-feed-auto"'+(state.autoFeed?' checked':'')+'> Intégrer ce marché à mon carnet</label><p class="'+(g.ok?'bt-honesty':'bt-alert')+'">Intégration : '+esc(g.ok?'active':'bloquée')+' — '+esc(g.reason)+'</p>':'')+

@@ -270,17 +270,40 @@ function risksOf(s){
 }
 function opportunities({index,fee=5,budget=null,minDiscount=15}){
  const r=feeRate(fee),out=[];
+ // Le capital déclaré sert de garde-fou : jamais proposer un achat impossible
+ // simplement parce qu'une médiane historique est supérieure au cours du jour.
+ const cap=budget?Math.max(0,Math.min(Number(budget.perItemCap)||0,Number(budget.deployable)||0)):null;
  for(const {item,stats:s} of index.all()){
   if(!s.sufficient||s.confidence==='Insuffisante'||s.ageH>=24||s.discount==null||s.discount<minDiscount)continue;
   if(s.volatility!=null&&s.volatility>=40)continue;
-  const resaleNet=Math.floor(s.median*(1-r)),unitMargin=resaleNet-s.current;if(unitMargin<=0)continue;
-  const floorQty=Number(s.last.qtyAtFloor)||null;
-  let qty=floorQty||null,limitedBy=floorQty?'quantité au plancher du dernier scan':'aucune profondeur connue : quantité à fixer toi-même';
-  if(budget&&qty){const byCap=Math.floor(Math.min(budget.perItemCap,budget.deployable)/s.current);if(byCap<qty){qty=byCap;limitedBy='plafond d’exposition par objet'}}
+  const resaleNet=Math.floor(s.median*(1-r)),unitMargin=resaleNet-s.current;
+  if(unitMargin<=0||!Number.isFinite(s.current)||s.current<=0)continue;
+  if(cap!==null&&cap<s.current)continue; // impossible d'acheter une seule unité en respectant la réserve
+  const floorQty=Number.isSafeInteger(Number(s.last?.qtyAtFloor))&&Number(s.last.qtyAtFloor)>0
+   ?Number(s.last.qtyAtFloor):null;
+  let qty=floorQty,limitedBy=floorQty?'quantité au plancher du dernier scan':'profondeur inconnue : ne pas supposer de quantité disponible';
+  if(cap!==null&&qty!==null){
+   const byCap=Math.floor(cap/s.current);
+   if(byCap<qty){qty=byCap;limitedBy='plafond d’exposition par objet'}
+  }
+  if(qty===0)continue;
+  // Une forte décote n'est pas une preuve de rebond ni de liquidité.
+  const trendRisk=s.priorTrend!=null&&s.priorTrend<=-10;
+  const warnings=[];
+  if(!budget)warnings.push('Capital disponible non renseigné');
+  if(floorQty===null)warnings.push('Quantité au meilleur prix inconnue');
+  if(s.days<3)warnings.push('Historique de moins de trois jours distincts');
+  if(trendRisk)warnings.push('Baisse antérieure : risque de poursuite de la chute');
+  if(s.confidence==='Faible')warnings.push('Confiance statistique faible');
+  const actionable=!!budget&&qty!==null&&qty>=1&&s.days>=3&&!trendRisk&&s.confidence!=='Faible';
+  const stressedSell=Math.floor(s.median*0.9);
+  const stressedUnitMargin=Math.floor(stressedSell*(1-r))-s.current;
   out.push({name:item.name,itemId:item.itemId||null,price:s.current,reference:s.median,discount:s.discount,unitMargin,qty,limitedBy,
-   margin:qty?unitMargin*qty:null,risks:risksOf(s),confidence:s.confidence,lastAt:s.lastAt,source:s.last.source});
+   margin:qty?unitMargin*qty:null,stressedUnitMargin,status:actionable?'Achat à étudier':'Surveillance',
+   warnings,risks:[...risksOf(s),...warnings],confidence:s.confidence,lastAt:s.lastAt,source:s.last.source});
  }
- return out.sort((a,b)=>(b.margin??b.unitMargin)-(a.margin??a.unitMargin));
+ return out.sort((a,b)=>(a.status===b.status?0:a.status==='Achat à étudier'?-1:1)||
+  (b.margin??b.unitMargin)-(a.margin??a.unitMargin));
 }
 function movers(index,threshold=10){
  return index.all().filter(e=>e.stats.trend!=null&&Math.abs(e.stats.trend)>=threshold).map(e=>({name:e.item.name,trend:e.stats.trend,current:e.stats.current,median:e.stats.median,volatility:e.stats.volatility,confidence:e.stats.confidence,lastAt:e.stats.lastAt})).sort((a,b)=>Math.abs(b.trend)-Math.abs(a.trend));
@@ -337,7 +360,7 @@ function faithBrief({bags=[],opps=[],crafts=[],budget=null,scope,dataNote}){
  if(keep.length)lines.push('À garder : '+keep.map(b=>b.name+' (cours '+Math.round(b.stats.discount)+' % sous sa médiane) '+cite(b.name,b.lastAt,b.stats.last.source)).join(', ')+'.');
  const tr=crafts.filter(c=>c.status==='ok'&&c.transformGain>0).slice(0,2);
  if(tr.length)lines.push('À transformer : '+tr.map(c=>c.recipe.output.name+' (+'+coin(c.transformGain)+' par fabrication) '+cite(c.recipe.output.name,c.outputAt,c.recipe.reference)).join(', ')+'.');
- if(opps.length){const o=opps[0];lines.push('Meilleure décote observée : '+o.name+' à '+coin(o.price)+' contre une médiane de '+coin(o.reference)+' '+cite(o.name,o.lastAt,o.source)+'. Confiance '+o.confidence.toLowerCase()+(o.risks.length?' ; risques : '+o.risks.join(', ').toLowerCase():'')+'.')}
+ if(opps.length){const o=opps[0];lines.push((o.status==='Achat à étudier'?'Achat à étudier, après vérification en jeu':'Sous surveillance, sans conseil d’achat')+' : '+o.name+' à '+coin(o.price)+' contre une médiane de '+coin(o.reference)+' '+cite(o.name,o.lastAt,o.source)+'. Confiance '+o.confidence.toLowerCase()+(o.risks.length?' ; risques : '+o.risks.join(', ').toLowerCase():'')+'.')}
  if(budget)lines.push('Capital : '+coin(budget.capital)+', réserve conservée '+coin(budget.reserve)+', plafond par objet '+coin(budget.perItemCap)+'.');
  const insufficient=bags.filter(b=>b.decision==='Données insuffisantes').length;
  if(insufficient)lines.push(insufficient+' objet(s) de tes sacs restent sans cote fiable : un /grimoire scan à l’hôtel des ventes les couvrira.');
