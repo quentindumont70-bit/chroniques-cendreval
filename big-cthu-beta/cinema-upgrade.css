@@ -391,3 +391,13 @@ html[data-cthu-theme="medical"] .captionbar b{color:#8afaff}
   background-color:var(--cinema-glass);
  }
 }
+
+/* V181 — urgent real-world actions first, without a second dashboard list. */
+html[data-cthu-theme] .active-pulse-item.is-urgent{
+ border-color:var(--cinema-warm);
+ background:linear-gradient(110deg,var(--cinema-glass),var(--cinema-soft));
+ box-shadow:inset 3px 0 0 var(--cinema-warm),0 8px 24px var(--cinema-shadow);
+}
+html[data-cthu-theme] .active-pulse-item.is-urgent:focus-visible{
+ outline:3px solid var(--cinema-highlight);outline-offset:3px;
+}
