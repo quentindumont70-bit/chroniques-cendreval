@@ -148,12 +148,14 @@ function vSim(c){
 }
 function simCompute(){
  const f=$('bt-sim');if(!f)return;const d=new FormData(f);
- const r=T.simulate({buy:gold(d.get('buy')),sell:gold(d.get('sell')),qty:Number(d.get('qty')),fee:Number(String(d.get('fee')).replace(',','.')),deposit:gold(d.get('deposit'))||0,unsoldShare:Number(d.get('unsold'))/100,priceDropPct:Number(d.get('drop')),extraDeposits:gold(d.get('extra'))||0});
+ const deposit=gold(d.get('deposit')||'0'),extra=gold(d.get('extra')||'0');
+ if(deposit===null||extra===null){$('bt-sim-out').textContent='Dépôts invalides : utilise des montants positifs ou 0.';return}
+ const r=T.simulate({buy:gold(d.get('buy')),sell:gold(d.get('sell')),qty:Number(d.get('qty')),fee:Number(String(d.get('fee')).replace(',','.')),deposit,unsoldShare:Number(d.get('unsold'))/100,priceDropPct:Number(d.get('drop')),extraDeposits:extra});
  $('bt-sim-out').innerHTML=r?kpi('Investissement',coin(r.invest),'achat total')+kpi('Revente nette',coin(r.net),'commission '+coin(r.cut))+kpi('Résultat',coin(r.profit),'après dépôts')+kpi('Rendement',pct(r.roi),'sur capital engagé')+kpi('Seuil de rentabilité',coin(r.breakEven),'prix de vente unitaire minimal')+kpi('Scénario prudent : trésorerie',coin(r.stress.cashflow),r.stress.sold+' vendue(s) · '+r.stress.unsold+' invendue(s) · prix '+coin(r.stress.salePrice))+
  kpi('Marge sur ventes simulées',coin(r.stress.matchedMargin),'coût des unités vendues + dépôts perdus')+
  kpi('Stock encore immobilisé (coût)',coin(r.stress.heldCost),r.stress.unsold+' unité(s) restant à revendre')+
  kpi('Prix pour récupérer toute la mise',r.stress.breakEvenSold==null?'—':coin(r.stress.breakEvenSold),'si seules '+r.stress.sold+' unité(s) sont vendues')+
- '<p class="bt-note">Scénario hypothétique : les invendus restent en stock, sans valeur de revente garantie. Le flux de trésorerie inclut leur coût d’achat ; la marge des unités vendues ne le compte pas comme une perte réalisée. Dépôts et commission inclus, sans prédire de ventes futures.</p>':'<p class="bt-empty">Renseigne un prix d’achat, un prix de vente et une quantité entière.</p>';
+ '<p class="bt-note">Scénario hypothétique : les invendus restent en stock, sans valeur de revente garantie. Le flux de trésorerie inclut leur coût d’achat ; la marge des unités vendues ne le compte pas comme une perte réalisée. Dépôts et commission inclus, sans prédire de ventes futures.</p>':'<p class="bt-empty">Renseigne des prix, une quantité entière et une commission valide (0 à 20 %).</p>';
 }
 function vCrafts(c){
  const profs=Object.entries(c.ch.professions);
