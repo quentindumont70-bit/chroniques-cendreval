@@ -176,6 +176,37 @@ function itemStats(item,now=Date.now()){
   volatility,trend,priorTrend,discount,depthChange,score,confidence,freshness,sufficient:n>=3&&ageH<72,sources:[...new Set(rows.map(x=>x.source))]};
 }
 
+/* ---------- 4b. Offre réellement observée entre deux scans complets ---------- */
+/** Deux instantanés de l'addon (même objet et même marché local), jamais de ventes présumées.
+ * La baisse du stock visible peut provenir d'expirations ou d'annulations.
+ * Ne compare ni saisies manuelles, ni flux communautaires, ni données périmées.
+ */
+function supplyChange(item,now=Date.now()){
+ const snapshots=(Array.isArray(item?.history)?item.history:[]).map(h=>{
+  const t=parseTime(h.at),quantity=Number(h.quantity),listings=Number(h.listings),price=Number(h.price);
+  if(h.source!==SCAN_SOURCE||!t||t>now||
+     !Number.isSafeInteger(quantity)||quantity<1||quantity>1e9||
+     !Number.isSafeInteger(listings)||listings<1||listings>1e8||
+     !isCopper(price))return null;
+  return {at:new Date(t).toISOString(),t,quantity,listings,price,
+   market:String(h.market||''),region:String(h.region||'')};
+ }).filter(Boolean).sort((a,b)=>a.t-b.t);
+ if(snapshots.length<2)return null;
+ const latest=snapshots[snapshots.length-1];
+ if(now-latest.t>72*HOUR)return null;
+ const prior=snapshots.slice(0,-1).reverse().find(p=>
+  p.t<latest.t&&latest.t-p.t<=7*24*HOUR&&p.market===latest.market&&p.region===latest.region);
+ if(!prior)return null;
+ return {
+  fromAt:prior.at,toAt:latest.at,hours:(latest.t-prior.t)/HOUR,
+  from:prior.quantity,to:latest.quantity,
+  change:latest.quantity-prior.quantity,changePct:100*(latest.quantity-prior.quantity)/prior.quantity,
+  listingsFrom:prior.listings,listingsTo:latest.listings,listingsChange:latest.listings-prior.listings,
+  floorFrom:prior.price,floorTo:latest.price,floorChangePct:100*(latest.price-prior.price)/prior.price,
+  source:SCAN_SOURCE
+ };
+}
+
 /* ---------- 5. Simulation de marge ---------- */
 function simulate({buy,sell,qty=1,fee=5,deposit=0,unsoldShare=0}={}){
  const b=Number(buy),s=Number(sell),q=Number(qty),d=Math.max(0,Number(deposit)||0),u=clamp(Number(unsoldShare)||0,0,1),r=feeRate(fee);
@@ -452,5 +483,5 @@ function skinningPlan({level,professions,index,feedMarket}){
 }
 
 return {FEED_URL,MARKET_LABEL,marketMeta,canMergeFeed,feedObservations,crossMarket,feedSummary,LEATHER_TIERS,skinSkillFor,maxSkinnableLevel,skinningPlan,SCAN_SOURCE,COMMUNITY_SOURCE,LEATHER,CONVERSIONS,coin,median,weightedMedian,weightedMean,extractPayload,parseGrimoire,aggregateListings,scanObservations,parseCommunity,
- mergeObservations,itemStats,simulate,hasProfession,marketIndex,evaluateRecipe,craftAnalysis,bagAdvice,budgetPlan,opportunities,movers,resaleCandidates,farmTargets,journalReview,evaluateAlerts,faithBrief};
+ mergeObservations,itemStats,supplyChange,simulate,hasProfession,marketIndex,evaluateRecipe,craftAnalysis,bagAdvice,budgetPlan,opportunities,movers,resaleCandidates,farmTargets,journalReview,evaluateAlerts,faithBrief};
 });
