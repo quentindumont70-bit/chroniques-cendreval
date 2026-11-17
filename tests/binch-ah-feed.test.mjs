@@ -31,3 +31,29 @@ test('Blizzard: inactif sans configuration, agrégation, maison indisponible sig
  const m=ok.markets['blizzard.eu.1.6'];
  assert.equal(m.meta.region,'eu');assert.equal(m.meta.faction,'Horde');assert.deepEqual(m.items[2318].row,[31,3,5]);
 });
+
+import {readFileSync as readPublicSource} from 'node:fs';
+import {runInNewContext} from 'node:vm';
+
+test('Lecteur public: prix/quantité/date invalides refusés avant affichage',async()=>{
+ const source=readPublicSource(new URL('../public/binch/ah-public-snapshots.js',import.meta.url),'utf8');
+ const marker='const start=()=>setTimeout(mount,0);';
+ assert.ok(source.includes(marker),'point de test du lecteur public disponible');
+ const market='forever.normal.horde.us',item=2318,now=Date.now();
+ const read=async(data)=>{
+  const context={
+   document:{readyState:'loading',addEventListener(){}},
+   fetch:async()=>({ok:true,json:async()=>data}),
+   AbortController,setTimeout,clearTimeout,Date
+  };
+  runInNewContext(source.replace(marker,'globalThis.__readSnapshot=read;\\n'+marker).replace('\\n'+marker,'\n'+marker),context);
+  return context.__readSnapshot(market,item);
+ };
+ const payload=row=>({market,item,row});
+ assert.equal((await read(payload([500,8,now-60000]))).row[0],500);
+ assert.equal((await read(payload([null,null,now-60000]))).row[0],null);
+ for(const row of [[500,-2,now-60000],[-1,8,now-60000],[500,1.2,now-60000],[500,8,0],[500,8,now+7200000],[500,8,null]]){
+  await assert.rejects(read(payload(row)),/invalides/,'rejet : '+JSON.stringify(row));
+ }
+ await assert.rejects(read({market:'forever.pvp.horde.us',item,row:[500,8,now-60000]}),/inattendue/);
+});
