@@ -243,3 +243,28 @@ Tests : `tests/binch-ah-trading.test.mjs`. Fichiers navigateur : `ah-trading-cor
 8. Alertes de prix adaptées aux données réellement disponibles.
 9. Faith, Druide farouche, suivi quêtes et expérience de leveling.
 10. Bêta complète et configuration GM pour le frère.
+
+## 17. Radar AH : provenance, historique mixte et filtres (17 novembre 2026)
+
+Dans **Assistant Trading → Radar**, les signaux d'achat décotés peuvent être filtrés sans recalculer ou inventer les prix : **provenance** (toutes, scan personnel, source communautaire/externe, saisie, historique mixte), **fraîcheur** (6 h / 24 h) et **statut** (tous, achat à étudier, surveillance). Les préférences sont mémorisées localement dans l'état existant de l'Assistant Trading. Aucun changement du carnet de données.
+
+La provenance est déterminée à partir des observations retenues pour les statistiques (maximum 120 relevés). Elle prend la valeur **mixte** si des observations de plusieurs familles de sources composent la médiane historique. Les relevés communautaires, saisies manuelles et séries mixtes **ne peuvent plus produire un signal « Achat à étudier »**, même si une quantité au plancher est présente ; ils demeurent consultables comme **Surveillance**, à confirmer par un scan personnel. Seuls les historiques **exclusivement estampillés GrimoireSync** peuvent satisfaire le critère de provenance de l'achat, sous réserve de tous les contrôles antérieurs de capital, quantité, tendance, confiance et fraîcheur.
+
+**Limite :** la provenance d'un relevé dans un export est une chaîne de texte, **pas une preuve cryptographique de provenance**. L'outil ne certifie ni l'authenticité d'un fichier ni l'exécution réelle d'un scan ; ce garde-fou évite uniquement de traiter les sources déjà identifiées comme manuelles ou externes comme des scans.
+
+Les filtres sont **purement locaux** et ne modifient jamais le statut « Surveillance » en « Achat à étudier ». La sélection **moins de 6 h** sert à écarter des cours plus anciens ; la détection des décotes demeure limitée aux relevés de moins de 24 h.
+
+Modules : `BinchTrading.observationOrigin()`, `BinchTrading.filterOpportunities()` et `BinchTrading.itemStats().sourceKind`. Interface : `ah-trading-core.js?v=009`, `ah-trading.js?v=015`. Tests : `tests/binch-ah-trading.test.mjs`, filtres de provenance / statut / âge et sources mixtes.
+
+### Prochaine Golipette — dix chantiers
+
+1. Tester les nouveaux filtres sur le navigateur mobile avec des relevés réels.
+2. Vérifier la cohérence de deux vrais scans GrimoireSync et leurs identités de marché.
+3. Tester les prix AH européens à la demande (accès API et CORS).
+4. Protéger l'analyse contre les marchés identifiés seulement par royaume/faction sans région.
+5. Préparer la lecture de banque comme module distinct des sacs.
+6. Enrichir le journal des dépôts/commissions réellement payés pour préciser le profit.
+7. Fiabiliser les recettes métiers Forever par sources et niveaux requis.
+8. Définir des alertes sur franchissement de seuil, uniquement quand les observations sont disponibles.
+9. Poursuivre Faith et les itinéraires / talents Druide farouche.
+10. Livrer la bêta de guilde à partager avec le frère et ses outils GM.
