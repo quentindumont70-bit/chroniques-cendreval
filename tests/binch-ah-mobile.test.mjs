@@ -11,7 +11,8 @@ test('Trading is offered as a customizable mobile shortcut and navigates to the 
   assert.match(mobile,/target\.click\(\)/);
   assert.match(trading,/dataset\.page\s*=\s*'trading'/);
   assert.match(html,/mobile-nav\.js\?v=004/);
-  assert.match(html,/ah-trading\.js\?v=004/);
+  assert.match(html,/ah-trading\.js\?v=005/);
+  assert.match(html,/ah-trading-core\.js\?v=004/);
 });
 
 test('Trading accepts future supported AH feed formats through the shared parser', () => {
@@ -20,4 +21,13 @@ test('Trading accepts future supported AH feed formats through the shared parser
   assert.match(core,/binch-ah-feed-v1/);
   assert.match(core,/binch-ah-feed-v2/);
   assert.match(collector,/binch-ah-feed-v2/);
+});
+
+
+test('Trading comparateur ne surligne que les cotations récentes de la bonne région/faction',()=>{
+ const ui=read('ah-trading.js');
+ assert.match(ui,/comparable=cm\.filter\(x=>x\.price!=null&&x\.fresh&&x\.region===state\.region&&x\.faction===c\.scope\?\.faction\)/);
+ assert.match(ui,/comparable\.length>=2/);
+ assert.match(ui,/périmé, non comparable/);
+ assert.match(ui,/Les cours périmés sont visibles, mais exclus de la comparaison/);
 });
