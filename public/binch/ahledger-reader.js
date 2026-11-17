@@ -30,10 +30,16 @@ function parseQuote(payload,expected,now=Date.now()){
  if(!credit)return {ok:false,reason:'Source non créditable : lien AHledger propre à cet objet absent ou invalide.'};
  const ageH=(now-time)/3600000;
  const num=n=>Number.isSafeInteger(n)&&n>=0?n:null;
+ // AHledger: volume vendu / jour estimé à partir des scans, pas ventes réalisées garanties.
+ const sales=payload.sales&&typeof payload.sales==='object'?payload.sales:null;
+ const rate=sales?.estimatedPerDay==null?null:Number(sales.estimatedPerDay);
+ const windowDays=sales?.windowDays==null?null:Number(sales.windowDays);
+ const estimatedSalesPerDay=Number.isFinite(rate)&&rate>=0&&rate<=1000000000?rate:null;
+ const salesWindowDays=Number.isInteger(windowDays)&&windowDays>=1&&windowDays<=30?windowDays:null;
  return {ok:true,id:expected.itemId,name:String(payload.item?.name||'Objet #'+expected.itemId).slice(0,100),
   observedAt:new Date(time).toISOString(),ageH,stale:ageH>72,minBuyout:validPrice(floor)?floor:null,
   median:validPrice(median)?median:null,median7d:validPrice(Number(x.median7d))?Number(x.median7d):null,
-  quantity:num(x.quantity),auctions:num(x.auctions),source:String(x.source||'Relevé tiers').slice(0,80),
+  quantity:num(x.quantity),auctions:num(x.auctions),estimatedSalesPerDay,salesWindowDays,source:String(x.source||'Relevé tiers').slice(0,80),
   attribution:credit};
 }
 return {market,lookupUrl,parseQuote};
