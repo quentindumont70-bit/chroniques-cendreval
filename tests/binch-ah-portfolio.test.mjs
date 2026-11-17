@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import '../public/binch/ah-portfolio-core.js';
 const ledger=globalThis.BinchAHPortfolio?.ledger;
 test('Bourse: FIFO purchased lots, realized gain and residual cost',()=>{
@@ -79,4 +80,16 @@ test('Trading: invalid dates, future sales and missing cost never become liquidi
  assert.equal(p.unmatched,1);
  assert.equal(p.roi,null);
  assert.equal(p.realized,0);
+});
+
+test('Trading UI: 30-day declared sales report is connected and cache-refreshed',()=>{
+ const ui=readFileSync(new URL('../public/binch/ah-trading.js',import.meta.url),'utf8');
+ const html=readFileSync(new URL('../public/binch/index.html',import.meta.url),'utf8');
+ assert.match(ui,/tradePerformance\?\.\(ledger\)/);
+ assert.match(ui,/tradePerformanceSection\(c\.performance\)/);
+ assert.match(ui,/Ventes déclarées/);
+ assert.match(ui,/Ce n’est ni le volume réel de l’AH/);
+ assert.match(ui,/unités vendues/);
+ assert.match(html,/ah-portfolio-core\.js\?v=003/);
+ assert.match(html,/ah-trading\.js\?v=012/);
 });
