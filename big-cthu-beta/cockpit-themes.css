@@ -597,3 +597,8 @@ html[data-cthu-theme] body[data-cthu-area] :is(button,a,input,select,textarea):f
 #activePulseCategory:focus-visible,#activePulseToggle:focus-visible{outline:3px solid var(--cthu-accent,#86f3de);outline-offset:3px}
 #activePulseToggle{min-height:44px;max-width:100%;white-space:normal;text-align:center}
 @media(max-width:700px){#activePulseCategory{width:100%}.active-pulse-item{min-height:72px}}
+
+/* V206: urgency remains distinguishable without relying on color alone. */
+.active-pulse-item.is-urgent{border-width:2px;border-style:solid}
+.active-pulse-item.is-urgent small::before{content:"À surveiller · ";font-weight:800}
+@media(forced-colors:active){.active-pulse-item.is-urgent{outline:2px solid Highlight;outline-offset:2px}#activePulseCategory{border:1px solid CanvasText}}
