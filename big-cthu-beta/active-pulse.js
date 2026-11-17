@@ -21,7 +21,7 @@ function read(key){
   return {rows,bad:false};
  }catch(e){return {rows:[],bad:true}}
 }
-function collect(expanded=false,limit=8){
+function collect(expanded=false,limit=8,kind='all'){
  const now=new Date();
  const today=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
  const clock=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
@@ -48,14 +48,16 @@ function collect(expanded=false,limit=8){
    const rank=due&&due<=today?1:due&&due<=near?1.5:x.priority==='haute'?2:x.status==='doing'?3:6;
    return {id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.name,rank,due,status:x.status,next:(due?'Date cible : '+due+(notes?' · ':''):'')+notes};
   }).sort((a,b)=>a.rank-b.rank||(a.due||'9999').localeCompare(b.due||'9999')||(a.status==='doing'?0:1)-(b.status==='doing'?0:1));
-  if(source.kind==='Musique')selected=rows.filter(x=>x&&x.mode==='musique'&&['active','planned'].includes(x.status)&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.title,rank:x.status==='active'?5:7,next:typeof x.note==='string'?x.note.slice(0,120):''}));
+  if(source.kind==='Musique')selected=rows.filter(x=>x&&x.mode==='musique'&&['active','planned'].includes(x.status)&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140) .sort((a,b)=>(a.status==='active'?0:1)-(b.status==='active'?0:1)||String(b.date||'').localeCompare(String(a.date||''))).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.title,rank:x.status==='active'?5:7,next:typeof x.note==='string'?x.note.slice(0,120):''}));
   if(source.kind==='Jeux')selected=rows.filter(x=>x&&x.done===false&&typeof x.game==='string'&&x.game.length<=60&&typeof x.text==='string'&&x.text.trim()&&x.text.length<=180).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=80?x.id:'',title:x.game,rank:9,next:x.text}));
   counts[source.kind]=selected.length;
   urgentTotal+=selected.filter(item=>item.rank<=2).length;
   urgentCompact+=selected.slice(0,source.limit).filter(item=>item.rank<=2).length;
   total+=selected.length;
   compactVisible+=Math.min(selected.length,source.limit);
-  for(const item of selected.slice(0,expanded?limit:source.limit))results.push({...item,kind:source.kind,url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.kind==='Agenda'&&item.id?'./agenda.html#event='+encodeURIComponent(item.id):source.kind==='Captures'&&item.id?'./capture.html#capture='+encodeURIComponent(item.id):source.kind==='Priorités'&&item.id?'#priority-'+encodeURIComponent(item.id):source.kind==='Musique'&&item.id?'./musique.html#studio='+encodeURIComponent(item.id):source.kind==='Stock'&&item.id?'./garde-manger.html#food='+encodeURIComponent(item.id):source.kind==='Jeux'&&item.id?'#session='+encodeURIComponent(item.id):source.url});
+  // In urgency view, select urgent rows BEFORE limiting each module.
+  const shown=kind==='Urgentes'?selected.filter(item=>item.rank<=2):selected;
+  for(const item of shown.slice(0,expanded?limit:source.limit))results.push({...item,kind:source.kind,url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.kind==='Agenda'&&item.id?'./agenda.html#event='+encodeURIComponent(item.id):source.kind==='Captures'&&item.id?'./capture.html#capture='+encodeURIComponent(item.id):source.kind==='Priorités'&&item.id?'#priority-'+encodeURIComponent(item.id):source.kind==='Musique'&&item.id?'./musique.html#studio='+encodeURIComponent(item.id):source.kind==='Stock'&&item.id?'./garde-manger.html#food='+encodeURIComponent(item.id):source.kind==='Jeux'&&item.id?'#session='+encodeURIComponent(item.id):source.url});
  }
  counts.Urgentes=urgentTotal;
  return {items:results.sort((a,b)=>a.rank-b.rank),warnings,total,compactVisible,counts,urgentCompact};
@@ -69,7 +71,7 @@ function node(tag,text,className){
 let expanded=false,selectedKind='all',pageSize=8;
 function render(){
  const root=$('activePulseList');if(!root)return;
- const {items,warnings,total,compactVisible,counts,urgentCompact}=collect(expanded,pageSize);
+ const {items,warnings,total,compactVisible,counts,urgentCompact}=collect(expanded,pageSize,selectedKind);
  const visible=selectedKind==='all'?items:selectedKind==='Urgentes'?items.filter(item=>item.rank<=2):items.filter(item=>item.kind===selectedKind);
  const available=selectedKind==='all'?total:(counts[selectedKind]||0);
  const compact=selectedKind==='all'?compactVisible:selectedKind==='Urgentes'?urgentCompact:Math.min(available,2);
