@@ -117,3 +117,6 @@ html[data-cthu-theme="organic"] body[data-cthu-area="musique"] .studio-edit .pro
 body[data-cthu-area="musique"] .studio-edit-input:focus-visible{
  outline:3px solid var(--studio-accent);outline-offset:3px;
 }
+
+/* V189 — selected music project opened from cockpit. */
+body[data-cthu-area="musique"] .project:target,body[data-cthu-area="musique"] .project.is-deep-linked{outline:3px solid var(--studio-accent);outline-offset:3px;scroll-margin-block:100px}
