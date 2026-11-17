@@ -385,3 +385,18 @@ test('Historique AH: la vue parle d’offre observée sans prétendre identifier
  assert.match(ui,/ne prouve pas une vente/);
  assert.match(ui,/deux scans GrimoireSync/);
 });
+
+test('Alertes AH: seuil invalide, cours futur et cours ancien jamais présentés comme atteints',()=>{
+ const item={stats:{last:{price:100},current:100,ageH:2,lastAt:'2026-11-16T10:00:00Z'}};
+ const index={find:()=>item};
+ const a=(ceiling,kind='below')=>T.evaluateAlerts([{name:'Cuir',ceiling,kind}],index)[0].state;
+ assert.equal(a(100),'Seuil atteint');
+ assert.equal(a(100,'above'),'Seuil atteint');
+ for(const invalid of [null,undefined,0,-1,1.4,Number.POSITIVE_INFINITY,'absent']){
+  assert.equal(a(invalid),'Seuil invalide','seuil '+String(invalid));
+ }
+ assert.equal(a(100,'unknown'),'Seuil invalide');
+ assert.equal(T.evaluateAlerts([{name:'Cuir',ceiling:100}],{find:()=>({stats:{...item.stats,ageH:-1}})})[0].state,'Date du relevé invalide');
+ assert.equal(T.evaluateAlerts([{name:'Cuir',ceiling:100}],{find:()=>({stats:{...item.stats,ageH:25}})})[0].state,'Relevé trop ancien');
+ assert.equal(T.evaluateAlerts([{name:'Cuir',ceiling:100}],{find:()=>({stats:{...item.stats,current:0}})})[0].state,'Aucun relevé');
+});
