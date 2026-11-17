@@ -386,9 +386,15 @@ function feedObservations(feed,market,{realm,now=Date.now()}={}){
 /** Comparaison d'un objet entre tous les marchés du flux (information, pas d'arbitrage automatique). */
 function crossMarket(feed,itemId,now=Date.now()){
  if(!validFeed(feed))return [];
- return Object.entries(feed.markets).map(([m,v])=>{const r=v.items?.[itemId]?.row;const t=r?parseTime(r[2]):null;
-  return {market:m,label:MARKET_LABEL(m,v.meta),region:marketMeta(m,v.meta).region,price:r&&isCopper(r[0])?r[0]:null,quantity:r&&Number.isSafeInteger(r[1])?r[1]:null,at:t&&t<=now?new Date(t).toISOString():null,ageH:t?(now-t)/HOUR:null}})
-  .sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));
+ return Object.entries(feed.markets).map(([m,v])=>{
+  const r=v.items?.[itemId]?.row,t=r?parseTime(r[2]):null,validTime=t&&t<=now;
+  const meta=marketMeta(m,v.meta),price=validTime&&r&&isCopper(r[0])?r[0]:null;
+  const ageH=validTime?(now-t)/HOUR:null;
+  // Afficher un vieux cours est utile pour l'historique, jamais pour qualifier un meilleur achat.
+  return {market:m,label:MARKET_LABEL(m,v.meta),region:meta.region,faction:meta.faction,price,
+   quantity:r&&Number.isSafeInteger(r[1])?r[1]:null,at:validTime?new Date(t).toISOString():null,
+   ageH,fresh:price!==null&&ageH<=72};
+ }).sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));
 }
 function feedSummary(feed,now=Date.now()){
  if(!validFeed(feed))return null;

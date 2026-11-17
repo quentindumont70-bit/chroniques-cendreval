@@ -61,7 +61,7 @@ function card({title,price,reference,qty,margin,risks,confidence,at,extra='',act
 }
 function scopeBanner(c){
  if(!c.scope)return '<p class="bt-alert">Choisis d’abord ton royaume et ta faction dans l’onglet « Bourse d’Azeroth » (ou importe un scan ci-dessous) : sans marché identifié, aucun conseil n’est produit.</p>';
- return '<p class="bt-honesty">Marché : <b>'+esc(c.scope.realm)+' · '+esc(c.scope.faction)+'</b> · '+c.index.items.length+' objets suivis, '+c.fresh+' relevés de moins de 24 h · dernier scan GrimoireSync : '+(c.lastScan?esc(when(c.lastScan)):'aucun')+'. <b>Pas de flux temps réel</b> : WoW Forever n’expose pas d’API d’hôtel des ventes, les cours viennent de tes scans et relevés.</p>';
+ return '<p class="bt-honesty">Marché : <b>'+esc(c.scope.realm)+' · '+esc(c.scope.faction)+'</b> · '+c.index.items.length+' objets suivis, '+c.fresh+' relevés de moins de 24 h · dernier scan GrimoireSync : '+(c.lastScan?esc(when(c.lastScan)):'aucun')+'. <b>Pas de cours temps réel garanti</b> : les prix disponibles viennent de scans et de relevés datés. Un fournisseur Blizzard Forever existe à titre expérimental dans le collecteur, sans garantie de disponibilité.</p>';
 }
 
 /* ---------- vues ---------- */
@@ -165,12 +165,19 @@ function skinHtml(c){
 }
 function vLive(c){
  const sum=T.feedSummary(feed),mk=feedMarketId();
- const head='<p class="bt-honesty">Flux communautaire auctionhouse.fyi, republié toutes les 3 h par La Binch et relu ici toutes les 10 minutes. Les prix dépendent des scans d’autres joueurs : <b>ce n’est pas un flux temps réel</b>. Ton propre <code>/grimoire scan</code> reste la source la plus fraîche.</p>';
+ const head='<p class="bt-honesty">Flux de relevés : auctionhouse.fyi (marchés US) et, seulement si configurée, API Blizzard Forever expérimentale. Publication planifiée toutes les 3 h, relecture ici toutes les 10 minutes. Les prix dépendent des scans d’autres joueurs : <b>ce n’est pas un flux temps réel</b>. Ton propre <code>/grimoire scan</code> reste la source la plus fraîche.</p>';
  if(!sum)return head+empty(feedStatus||'Flux pas encore disponible (il sera publié après fusion de la PR et premier passage du collecteur).')+'<button type="button" id="bt-feed-refresh">Réessayer</button>';
  const markets=sum.markets;
  const ids=[...new Set(markets.flatMap(m=>Object.keys(feed.markets[m.market].items||{})))];
- const table='<div class="bt-table"><table><thead><tr><th>Objet</th>'+markets.map(m=>'<th>'+esc(m.label)+'</th>').join('')+'</tr></thead><tbody>'+ids.map(id=>{const cm=T.crossMarket(feed,Number(id)),low=cm.find(x=>x.price!=null)?.market;
-  return '<tr><td>'+esc(feed.names?.[id]?.n||'Objet '+id)+'</td>'+markets.map(m=>{const x=cm.find(y=>y.market===m.market);return '<td'+(x?.market===low&&markets.length>1?' class="bt-up"':'')+'>'+(x?.price!=null?coin(x.price)+'<br><small>'+x.quantity+' u.</small>':'—')+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table></div>';
+ const table='<div class="bt-table"><table><thead><tr><th>Objet</th>'+markets.map(m=>'<th>'+esc(m.label)+'</th>').join('')+'</tr></thead><tbody>'+ids.map(id=>{
+  const cm=T.crossMarket(feed,Number(id)),comparable=cm.filter(x=>x.price!=null&&x.fresh&&x.region===state.region&&x.faction===c.scope?.faction);
+  const low=comparable.length>=2?comparable[0].market:null;
+  return '<tr><td>'+esc(feed.names?.[id]?.n||'Objet '+id)+'</td>'+markets.map(m=>{
+   const x=cm.find(y=>y.market===m.market);
+   const cell=x?.price!=null?coin(x.price)+'<br><small>'+esc(when(x.at))+' · '+(x.fresh?'relevé récent':'périmé, non comparable')+'</small>':'—';
+   return '<td'+(low&&x?.market===low?' class="bt-up"':'')+'>'+cell+'</td>';
+  }).join('')+'</tr>';
+ }).join('')+'</tbody></table></div>';
  const top=[...c.bags.filter(b=>['Vendre à l’AH','Transformer','Garder'].includes(b.decision)).slice(0,4).map(b=>b.decision+' : '+b.name+' ×'+b.count+(b.price?' (cours '+coin(b.price)+')':'')),...c.opps.slice(0,3).map(o=>'Achat à étudier : '+o.name+' à '+coin(o.price)+' (médiane '+coin(o.reference)+')')];
  const g=mk?gate(c):{ok:false,reason:'Choisis un marché.'},regionHas=markets.some(m=>m.meta.region===state.region);
  const controls='<div class="bt-form"><label class="bt-field">Région de ton compte<select id="bt-region"><option value="">Non renseignée</option>'+['eu','us'].map(r=>'<option value="'+r+'"'+(state.region===r?' selected':'')+'>'+r.toUpperCase()+'</option>').join('')+'</select></label><label class="bt-field">Marché à afficher<select id="bt-feed-market"><option value="">Choisir…</option>'+markets.map(m=>'<option value="'+esc(m.market)+'"'+(m.market===mk?' selected':'')+'>'+esc(m.label)+'</option>').join('')+'</select></label><button type="button" id="bt-feed-refresh">Actualiser</button></div>'+
@@ -180,7 +187,7 @@ function vLive(c){
   '<div class="bt-kpis">'+kpi('Flux publié',when(sum.generatedAt),'collecteur GitHub')+markets.map(m=>kpi(m.label,m.scanAt?when(m.scanAt):'—',m.items+' objets · '+m.contributors7d+' contributeur(s) / 7 j')).join('')+'</div>'+
   '<h3>Conseils du moment pour '+esc(c.ch.pseudo)+(c.ch.level?' (niveau '+c.ch.level+')':'')+'</h3>'+(top.length?'<ol class="bt-list">'+top.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol>':empty('Pas encore de conseil étayé : il faut au moins 3 relevés par objet (le flux en apporte jusqu’à 8 par passage).'))+
   '<h3>Que dépecer maintenant ?</h3>'+skinHtml(c)+
-  '<h3>Comparaison des hôtels des ventes</h3><p class="bt-note">Le moins cher est en vert. Information seulement : les objets ne passent pas d’un serveur ou d’une faction à l’autre sans échange réel.</p>'+table+(feedStatus?'<p class="bt-note">'+esc(feedStatus)+'</p>':'');
+  '<h3>Comparaison des hôtels des ventes</h3><p class="bt-note">Le moins cher est en vert seulement si au moins deux relevés récents (72 h maximum) concernent ta région et ta faction. Les cours périmés sont visibles, mais exclus de la comparaison. Aucun transfert automatique entre serveurs ou factions.</p>'+table+(feedStatus?'<p class="bt-note">'+esc(feedStatus)+'</p>':'');
 }
 async function loadFeed(force){
  try{
