@@ -186,7 +186,7 @@ async function loadFeed(force){
  try{
   const res=await fetch(T.FEED_URL+(force?'?t='+Date.now():''),{cache:force?'no-store':'default'});
   if(!res.ok)throw Error(res.status===404?'Flux pas encore publié (collecteur actif après fusion de la PR).':'Flux indisponible (HTTP '+res.status+').');
-  const f=await res.json();if(f?.format!=='binch-ah-feed-v1')throw Error('Flux au format inattendu.');
+  const f=await res.json();if(!T.feedSummary(f))throw Error('Flux au format inattendu.');
   feed=f;write('binch.ah.feed.cache.v1',f);feedStatus='';
  }catch(e){feedStatus=(e.message||'Flux injoignable')+(feed?' Dernière copie locale affichée.':'')}
  mergeFeed();render();
