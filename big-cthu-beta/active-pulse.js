@@ -33,6 +33,7 @@ function collect(expanded=false){
  const near=[nearDate.getFullYear(),String(nearDate.getMonth()+1).padStart(2,'0'),String(nearDate.getDate()).padStart(2,'0')].join('-');
  const results=[];
  let warnings=0,total=0,compactVisible=0;
+ const counts={};
  for(const source of SOURCES){
   const {rows,bad}=read(source.key);
   if(bad){warnings++;continue}
@@ -49,11 +50,12 @@ function collect(expanded=false){
   }).sort((a,b)=>a.rank-b.rank||(a.due||'9999').localeCompare(b.due||'9999')||(a.status==='doing'?0:1)-(b.status==='doing'?0:1));
   if(source.kind==='Musique')selected=rows.filter(x=>x&&x.mode==='musique'&&['active','planned'].includes(x.status)&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.title,rank:x.status==='active'?5:7,next:typeof x.note==='string'?x.note.slice(0,120):''}));
   if(source.kind==='Jeux')selected=rows.filter(x=>x&&x.done===false&&typeof x.game==='string'&&x.game.length<=60&&typeof x.text==='string'&&x.text.trim()&&x.text.length<=180).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=80?x.id:'',title:x.game,rank:9,next:x.text}));
+  counts[source.kind]=selected.length;
   total+=selected.length;
   compactVisible+=Math.min(selected.length,source.limit);
   for(const item of selected.slice(0,expanded?8:source.limit))results.push({...item,kind:source.kind,url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.kind==='Agenda'&&item.id?'./agenda.html#event='+encodeURIComponent(item.id):source.kind==='Captures'&&item.id?'./capture.html#capture='+encodeURIComponent(item.id):source.kind==='Priorités'&&item.id?'#priority-'+encodeURIComponent(item.id):source.kind==='Musique'&&item.id?'./musique.html#studio='+encodeURIComponent(item.id):source.kind==='Stock'&&item.id?'./garde-manger.html#food='+encodeURIComponent(item.id):source.kind==='Jeux'&&item.id?'#session='+encodeURIComponent(item.id):source.url});
  }
- return {items:results.sort((a,b)=>a.rank-b.rank),warnings,total,compactVisible};
+ return {items:results.sort((a,b)=>a.rank-b.rank),warnings,total,compactVisible,counts};
 }
 function node(tag,text,className){
  const x=document.createElement(tag);
@@ -61,15 +63,18 @@ function node(tag,text,className){
  if(className)x.className=className;
  return x;
 }
-let expanded=false;
+let expanded=false,selectedKind='all';
 function render(){
  const root=$('activePulseList');if(!root)return;
- const {items,warnings,total,compactVisible}=collect(expanded);
+ const {items,warnings,total,compactVisible,counts}=collect(expanded);
+ const visible=selectedKind==='all'?items:items.filter(item=>item.kind===selectedKind);
+ const available=selectedKind==='all'?total:(counts[selectedKind]||0);
+ const compact=selectedKind==='all'?compactVisible:Math.min(available,2);
  root.replaceChildren();
- const count=$('activePulseCount');if(count)count.textContent=total===items.length?total+' actions retrouvées':total+' actions · '+items.length+' affichées';
+ const count=$('activePulseCount');if(count)count.textContent=available===visible.length?available+' actions retrouvées':available+' actions · '+visible.length+' affichées';
  const heroCount=$('cinemaPulseCount');if(heroCount)heroCount.textContent=total===0?(warnings?'Certaines actions indisponibles':'Aucune action en attente'):total+' action'+(total>1?'s':'')+' à reprendre';
- if(!items.length)root.append(node('p',warnings?'Certaines données sont illisibles : impossible de garantir que tout est à jour.':'Aucune action en attente dans tes modules locaux. Tu peux simplement continuer ta journée.','muted'));
- for(const item of items){
+ if(!visible.length)root.append(node('p',warnings?'Certaines données sont illisibles : impossible de garantir que tout est à jour.':selectedKind==='all'?'Aucune action en attente dans tes modules locaux. Tu peux simplement continuer ta journée.':'Aucune action en attente dans cette catégorie.','muted'));
+ for(const item of visible){
   const link=node('a','','active-pulse-item'+(item.rank<=1?' is-urgent':''));
   link.href=item.url;
   link.append(node('small',item.kind),node('strong',item.title));
@@ -77,9 +82,10 @@ function render(){
   root.append(link);
  }
  const toggle=$('activePulseToggle');
- if(toggle){toggle.hidden=total<=compactVisible;toggle.textContent=expanded?'Afficher moins':'Afficher plus d’actions';toggle.onclick=()=>{expanded=!expanded;render()}}
+ if(toggle){toggle.hidden=available<=compact;toggle.textContent=expanded?'Afficher moins':'Afficher plus d’actions';toggle.setAttribute('aria-expanded',expanded?'true':'false');toggle.onclick=()=>{expanded=!expanded;render()}}
+ const category=$('activePulseCategory');if(category){category.value=selectedKind;category.onchange=()=>{selectedKind=category.value;expanded=false;render()}}
  const status=$('activePulseStatus');
- if(status)status.textContent=warnings?'Certaines données locales sont illisibles ; aucune n’a été modifiée.':'Rappels lus localement, sans copie ni synchronisation.';
+ if(status)status.textContent=warnings?'Certaines données locales sont illisibles ; aucune n’a été modifiée.':available>visible.length?'Affichage de '+visible.length+' sur '+available+' actions. Rappels lus localement, sans copie.':'Rappels lus localement, sans copie ni synchronisation.';
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render,{once:true});else render();
 window.addEventListener('pageshow',render);

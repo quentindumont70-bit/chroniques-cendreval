@@ -445,3 +445,21 @@ test('V194–V197: cockpit mobile compact, ancres accessibles et cache public re
  assert.match(html,/id="activePulseToggle"/);
  assert.doesNotMatch(sw,/tidel_|Topaze|localStorage|indexedDB/);
 });
+
+// V198–V200: filtering is read-only and the returned count remains exact.
+test('V198–V200: counts par catégorie, filtre accessible et aucune écriture',async()=>{
+ const f=await fixture({[K.tasks]:JSON.stringify([
+ {id:'p1',text:'Priorité 1',done:false},{id:'p2',text:'Priorité 2',done:false},{id:'p3',text:'Priorité 3',done:false}]),
+ [K.gaming]:JSON.stringify([{id:'g1',game:'WoW',text:'Pex',done:false}])});
+ const d=f.collect();
+ assert.equal(d.counts['Priorités'],3);
+ assert.equal(d.counts['Jeux'],1);
+ assert.equal(d.items.length,3);
+ const extended=JSON.parse(JSON.stringify(f.ctx.testCollect(true)));
+ assert.equal(extended.items.length,4);
+ const html=await read('index.html');
+ assert.match(html,/id="activePulseCategory"/);
+ assert.match(html,/id="activePulseToggle"[^>]*aria-expanded="false"/);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
