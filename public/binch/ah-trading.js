@@ -203,10 +203,10 @@ function vFaith(c){
  return '<div class="bt-faith"><p class="bt-faith-intro">Faith, intendante marchande : je ne reformule que les calculs ci-dessus, sans rien inventer.</p>'+f.lines.map(l=>'<p>'+esc(l)+'</p>').join('')+(f.refs.length?'<h3>Références</h3><ol class="bt-refs">'+f.refs.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ol>':'')+'</div>';
 }
 function feedMarketId(){const ids=Object.keys(feed?.markets||{});return state.feedMarket&&ids.includes(state.feedMarket)?state.feedMarket:null}
-function regionMarket(){const id=feedMarketId();if(!id)return null;const m=T.marketMeta(id,feed.markets[id].meta);return m.region&&m.region===state.region&&state.confirmedMarket===id?feed.markets[id]:null}
+function regionMarket(scope){const id=feedMarketId();if(!id||!scope?.faction)return null;const m=T.marketMeta(id,feed.markets[id].meta);return m.region&&m.region===state.region&&state.confirmedMarket===id&&m.faction===scope.faction?feed.markets[id]:null}
 function gate(c){const id=feedMarketId();return T.canMergeFeed({userRegion:state.region,confirmedMarket:state.confirmedMarket,marketId:id,marketInfo:id?feed.markets[id].meta:null,scopeFaction:c.scope?.faction,enabled:state.autoFeed})}
 function skinHtml(c){
- const plan=T.skinningPlan({level:c.ch.level,professions:c.ch.professions,index:c.index,feedMarket:regionMarket()});
+ const plan=T.skinningPlan({level:c.ch.level,professions:c.ch.professions,index:c.index,feedMarket:regionMarket(c.scope)});
  if(plan.status!=='ok')return empty('Dépeçage non importé : importe GrimoireSync.lua pour obtenir un plan selon ton niveau.');
  const best=plan.best?'<p class="bt-decision">Priorité : '+esc(plan.best.name)+' — '+coin(plan.best.leather.price)+' l’unité ('+esc(plan.best.leather.src)+', '+esc(when(plan.best.leather.at))+'), monstres niveau '+plan.best.mobRange.join('–')+'.</p>':'<p class="bt-alert">Aucun cuir accessible n’a de cote connue : données insuffisantes.</p>';
  return '<p class="bt-note">Niveau '+(plan.level||'inconnu')+' · Dépeçage '+plan.skill+' → monstres dépeçables jusqu’au niveau '+plan.maxMob+(plan.nextSkill?' (niveau '+plan.nextSkill.mobLevel+' à '+plan.nextSkill.skill+' de compétence)':'')+'. Règle et tranches de niveaux Classic, à confirmer sur Forever.</p>'+best+
