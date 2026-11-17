@@ -426,8 +426,8 @@ function mount(){
   if(e.target.id==='bt-radar-source'){state.radarSource=['all','scan','community','manual','mixed'].includes(e.target.value)?e.target.value:'all';save();render()}
   if(e.target.id==='bt-radar-age'){state.radarAgeH=e.target.value==='6'?6:24;save();render()}
   if(e.target.id==='bt-radar-status'){state.radarStatus=['all','buy','watch'].includes(e.target.value)?e.target.value:'all';save();render()}
-  if(e.target.id==='bt-feed-market'){state.feedMarket=e.target.value||null;save();render()}
-  if(e.target.id==='bt-region'){state.region=e.target.value||null;save();render()}
+  if(e.target.id==='bt-feed-market'){const next=e.target.value||null;if(next!==state.feedMarket){state.feedMarket=next;state.confirmedMarket=null;state.autoFeed=false}save();render()}
+  if(e.target.id==='bt-region'){const next=e.target.value||null;if(next!==state.region){state.region=next;state.confirmedMarket=null;state.autoFeed=false}save();render()}
   if(e.target.id==='bt-feed-confirm'){state.confirmedMarket=e.target.checked?feedMarketId():null;save();mergeFeed();render()}
   if(e.target.id==='bt-feed-auto'){state.autoFeed=e.target.checked;save();mergeFeed();render()}
  });
