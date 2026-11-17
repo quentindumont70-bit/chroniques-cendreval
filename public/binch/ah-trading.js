@@ -265,7 +265,7 @@ function vLive(c){
  const markets=sum.markets;
  const ids=[...new Set(markets.flatMap(m=>Object.keys(feed.markets[m.market].items||{})))];
  const table='<div class="bt-table"><table><thead><tr><th>Objet</th>'+markets.map(m=>'<th>'+esc(m.label)+'</th>').join('')+'</tr></thead><tbody>'+ids.map(id=>{
-  const cm=T.crossMarket(feed,Number(id)),comparable=cm.filter(x=>x.price!=null&&x.fresh&&x.region===state.region&&x.faction===c.scope?.faction);
+  const cm=T.crossMarket(feed,Number(id)),comparable=T.comparableQuotes(feed,cm,mk,state.region,c.scope?.faction);
   const low=comparable.length>=2?comparable[0].market:null;
   return '<tr><td>'+esc(feed.names?.[id]?.n||'Objet '+id)+'</td>'+markets.map(m=>{
    const x=cm.find(y=>y.market===m.market);
@@ -282,7 +282,7 @@ function vLive(c){
   '<div class="bt-kpis">'+kpi('Flux publié',when(sum.generatedAt),'collecteur GitHub')+markets.map(m=>kpi(m.label,m.scanAt?when(m.scanAt):'—',m.items+' objets · '+m.contributors7d+' contributeur(s) / 7 j')).join('')+'</div>'+
   '<h3>Conseils du moment pour '+esc(c.ch.pseudo)+(c.ch.level?' (niveau '+c.ch.level+')':'')+'</h3>'+(top.length?'<ol class="bt-list">'+top.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol>':empty('Pas encore de conseil étayé : il faut au moins 3 relevés par objet (le flux en apporte jusqu’à 8 par passage).'))+
   '<h3>Que dépecer maintenant ?</h3>'+skinHtml(c)+
-  '<h3>Comparaison des hôtels des ventes</h3><p class="bt-note">Le moins cher est en vert seulement si au moins deux relevés récents (72 h maximum) concernent ta région et ta faction. Les cours périmés sont visibles, mais exclus de la comparaison. Aucun transfert automatique entre serveurs ou factions.</p>'+table+(feedStatus?'<p class="bt-note">'+esc(feedStatus)+'</p>':'');
+  '<h3>Comparaison des hôtels des ventes</h3><p class="bt-note">Le moins cher est en vert seulement si au moins deux relevés récents (72 h maximum) concernent la même région, faction, règleset, maison et fournisseur que le marché choisi et confirmé. Les autres marchés restent indicatifs, sans arbitrage ni transfert automatique.</p>'+table+(feedStatus?'<p class="bt-note">'+esc(feedStatus)+'</p>':'');
 }
 async function loadFeed(force){
  try{
