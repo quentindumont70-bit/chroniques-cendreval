@@ -583,3 +583,11 @@ html[data-cthu-theme="medical"] body[data-cthu-area] .lead h1{
 html[data-cthu-theme] body[data-cthu-area] :is(button,a,input,select,textarea):focus-visible{
  outline:3px solid var(--cthu-accent);outline-offset:3px;
 }
+
+/* V194–V195: compact mobile cockpit, thumb-sized action and reliable deep-link position. */
+@media (max-width:700px){
+ #activePulse > p.muted:not(#activePulseStatus),#nextSession > p.muted{display:none}
+ #activePulse,#nextSession,#priorities{scroll-margin-top:calc(85px + env(safe-area-inset-top,0px))}
+ #activePulseToggle{min-height:44px;max-width:100%}
+ .active-pulse-item{min-height:70px}
+}
