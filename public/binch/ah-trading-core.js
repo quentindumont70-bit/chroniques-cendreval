@@ -152,10 +152,19 @@ function mergeObservations(store,rows,now=Date.now()){
 }
 
 /* ---------- 4. Statistiques et confiance ---------- */
+/** La provenance reste informative : le texte « source » est importé et non signé. */
+function observationOrigin(row){
+ const source=String(row?.source||'').trim();
+ if(source===SCAN_SOURCE)return 'scan';
+ if(row?.market||row?.region||/auctionhouse\.fyi|blizzard|ahledger/i.test(source))return 'community';
+ return 'manual';
+}
 function itemStats(item,now=Date.now()){
  const rows=(Array.isArray(item?.history)?item.history:[]).map(x=>({...x,t:parseTime(x.at),ref:isCopper(Number(x.ask10))?Number(x.ask10):Number(x.price)}))
   .filter(x=>isCopper(Number(x.price))&&x.t&&x.t<=now).sort((a,b)=>a.t-b.t).slice(-MAX_HISTORY);
  const n=rows.length,last=rows[n-1]||null,refs=rows.map(x=>x.ref);
+ const origins=[...new Set(rows.map(observationOrigin))];
+ const sourceKind=origins.length>1?'mixed':origins[0]||'manual';
  const med=median(refs),wmean=weightedMean(rows.map(x=>({value:x.ref,weight:Number(x.quantity)||1})));
  const ageH=last?(now-last.t)/HOUR:Infinity,days=new Set(rows.map(x=>new Date(x.t).toISOString().slice(0,10))).size;
  const mad=n>=3?median(refs.map(v=>Math.abs(v-med))):null,volatility=med&&mad!=null?100*mad/med:null;
@@ -173,7 +182,7 @@ function itemStats(item,now=Date.now()){
  const confidence=n<3?'Insuffisante':score>=70?'Élevée':score>=45?'Moyenne':score>=25?'Faible':'Insuffisante';
  const freshness=!last?'Aucun relevé':ageH<6?'Frais (< 6 h)':ageH<24?'Du jour (< 24 h)':ageH<72?'Ancien (< 3 j)':'Périmé (> 3 j)';
  return {n,days,last,lastAt:last?new Date(last.t).toISOString():null,ageH,current,median:med,weightedMean:wmean,low:n?Math.min(...refs):null,high:n?Math.max(...refs):null,
-  volatility,trend,priorTrend,discount,depthChange,score,confidence,freshness,sufficient:n>=3&&ageH<72,sources:[...new Set(rows.map(x=>x.source))]};
+  volatility,trend,priorTrend,discount,depthChange,score,confidence,freshness,sufficient:n>=3&&ageH<72,sourceKind,sourceKinds:origins,sources:[...new Set(rows.map(x=>x.source))]};
 }
 
 /* ---------- 4b. Offre réellement observée entre deux scans complets ---------- */
@@ -338,15 +347,30 @@ function opportunities({index,fee=5,budget=null,minDiscount=15}){
   if(s.days<3)warnings.push('Historique de moins de trois jours distincts');
   if(trendRisk)warnings.push('Baisse antérieure : risque de poursuite de la chute');
   if(s.confidence==='Faible')warnings.push('Confiance statistique faible');
-  const actionable=!!budget&&qty!==null&&qty>=1&&s.days>=3&&!trendRisk&&s.confidence!=='Faible';
+  if(s.sourceKind!=='scan')warnings.push(s.sourceKind==='mixed'?'Sources historiques mélangées : vérifier la comparabilité des prix':'Profondeur et prix non certifiés par un scan GrimoireSync personnel');
+  const actionable=!!budget&&qty!==null&&qty>=1&&s.days>=3&&!trendRisk&&s.confidence!=='Faible'&&s.sourceKind==='scan';
   const stressedSell=Math.floor(s.median*0.9);
   const stressedUnitMargin=Math.floor(stressedSell*(1-r))-s.current;
   out.push({name:item.name,itemId:item.itemId||null,price:s.current,reference:s.median,discount:s.discount,unitMargin,qty,limitedBy,
-   margin:qty?unitMargin*qty:null,stressedUnitMargin,status:actionable?'Achat à étudier':'Surveillance',
+   margin:qty?unitMargin*qty:null,stressedUnitMargin,sourceKind:s.sourceKind,status:actionable?'Achat à étudier':'Surveillance',
    warnings,risks:[...risksOf(s),...warnings],confidence:s.confidence,lastAt:s.lastAt,source:s.last.source});
  }
  return out.sort((a,b)=>(a.status===b.status?0:a.status==='Achat à étudier'?-1:1)||
   (b.margin??b.unitMargin)-(a.margin??a.unitMargin));
+}
+/** Filtres du radar, sans mutation ni recalcul de prix : n'élèvent jamais une surveillance au rang d'achat. */
+function filterOpportunities(opps,{source='all',ageH=24,status='all'}={},now=Date.now()){
+ const allowedSources=['all','scan','community','manual','mixed'];
+ const src=allowedSources.includes(source)?source:'all';
+ const st=['all','buy','watch'].includes(status)?status:'all';
+ const maxAge=ageH===6?6:24;
+ return (Array.isArray(opps)?opps:[]).filter(o=>{
+  if(src!=='all'&&o.sourceKind!==src)return false;
+  if(st==='buy'&&o.status!=='Achat à étudier')return false;
+  if(st==='watch'&&o.status!=='Surveillance')return false;
+  const t=Date.parse(o.lastAt||'');
+  return Number.isFinite(t)&&t>0&&t<=now&&now-t<maxAge*HOUR;
+ });
 }
 function movers(index,threshold=10){
  return index.all().filter(e=>e.stats.trend!=null&&Math.abs(e.stats.trend)>=threshold).map(e=>({name:e.item.name,trend:e.stats.trend,current:e.stats.current,median:e.stats.median,volatility:e.stats.volatility,confidence:e.stats.confidence,lastAt:e.stats.lastAt})).sort((a,b)=>Math.abs(b.trend)-Math.abs(a.trend));
@@ -495,5 +519,5 @@ function skinningPlan({level,professions,index,feedMarket}){
 }
 
 return {FEED_URL,MARKET_LABEL,marketMeta,canMergeFeed,feedObservations,crossMarket,feedSummary,LEATHER_TIERS,skinSkillFor,maxSkinnableLevel,skinningPlan,SCAN_SOURCE,COMMUNITY_SOURCE,LEATHER,CONVERSIONS,coin,median,weightedMedian,weightedMean,extractPayload,parseGrimoire,aggregateListings,scanObservations,parseCommunity,
- mergeObservations,itemStats,supplyChange,simulate,hasProfession,marketIndex,evaluateRecipe,craftAnalysis,bagAdvice,budgetPlan,opportunities,movers,resaleCandidates,farmTargets,journalReview,evaluateAlerts,faithBrief};
+ mergeObservations,itemStats,supplyChange,simulate,hasProfession,marketIndex,evaluateRecipe,craftAnalysis,bagAdvice,budgetPlan,opportunities,filterOpportunities,observationOrigin,movers,resaleCandidates,farmTargets,journalReview,evaluateAlerts,faithBrief};
 });
