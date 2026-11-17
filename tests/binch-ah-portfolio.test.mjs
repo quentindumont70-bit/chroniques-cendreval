@@ -90,6 +90,65 @@ test('Trading UI: 30-day declared sales report is connected and cache-refreshed'
  assert.match(ui,/Ventes déclarées/);
  assert.match(ui,/Ce n’est ni le volume réel de l’AH/);
  assert.match(ui,/Unités vendues et saisies/);
- assert.match(html,/ah-portfolio-core\.js\?v=003/);
- assert.match(html,/ah-trading\.js\?v=015/);
+ assert.match(html,/ah-portfolio-core\.js\?v=004/);
+ assert.match(html,/ah-trading\.js\?v=016/);
+});
+
+test('Journal AH : dépôts perdus déduits du FIFO à coût connu, dépenses orphelines séparées',()=>{
+ const {tradePerformance}=globalThis.BinchAHPortfolio;
+ const trades=[
+  {id:'a',kind:'buy',item:'Cuir léger',scope:'forever|Horde',qty:3,price:1000,at:'2026-11-14T10:00:00Z'},
+  {id:'b',kind:'sell',item:'Cuir léger',scope:'forever|Horde',qty:5,price:2000,fee:5,depositLost:500,at:'2026-11-16T10:00:00Z'}
+ ];
+ const before=JSON.stringify(trades),book=ledger(trades,5);
+ assert.equal(book.realized,2400);
+ assert.equal(book.depositsLost,500);
+ assert.equal(book.matchedDeposits,300);
+ assert.equal(book.unmatchedDeposits,200);
+ assert.equal(book.receipts,9000);
+ const sale=book.sales[0];
+ assert.equal(sale.net,9500);
+ assert.equal(sale.netAfterDeposits,9000);
+ assert.equal(sale.proceedsMatched,5700);
+ assert.equal(sale.cost,3000);
+ assert.equal(sale.matchedDeposit,300);
+ assert.equal(sale.unmatchedDeposit,200);
+ assert.equal(sale.margin,2400);
+ assert.equal(JSON.stringify(trades),before,'les opérations enregistrées ne sont jamais mutées');
+ const p=tradePerformance(book,{now:Date.parse('2026-11-17T10:00:00Z')});
+ assert.equal(p.realized,2400);
+ assert.equal(p.roi,100*2400/3300,'rendement calculé sur achat + dépôts réellement perdus');
+ assert.equal(p.depositsLost,500);
+ assert.equal(p.matchedDeposits,300);
+ assert.equal(p.unmatchedDeposits,200);
+ assert.equal(p.rows[0].depositsLost,500);
+ assert.equal(p.rows[0].matchedDeposits,300);
+});
+test('Journal AH : anciennes ventes sans dépôt restent inchangées et frais invalides écartés',()=>{
+ const buy={kind:'buy',item:'Peau',qty:1,price:1000,at:'2026-11-14T10:00:00Z'};
+ const sold={kind:'sell',item:'Peau',qty:1,price:2000,fee:5,at:'2026-11-15T10:00:00Z'};
+ const legacy=ledger([buy,sold],5);
+ assert.equal(legacy.realized,900);
+ assert.equal(legacy.depositsLost,0);
+ assert.equal(legacy.sales[0].matchedDeposit,0);
+ assert.equal(globalThis.BinchAHPortfolio.tradePerformance(legacy,{now:Date.parse('2026-11-17T10:00:00Z')}).realized,900);
+ const bad=ledger([buy,{...sold,depositLost:-1},{...sold,depositLost:1.5},{...sold,depositLost:'oops'}]);
+ assert.equal(bad.sales.length,0);
+ assert.equal(bad.invalid.length,3);
+ assert.equal(bad.remainingUnits,1);
+ const unrelated=ledger([{...buy,depositLost:100},{...sold,depositLost:0}],5);
+ assert.equal(unrelated.realized,900,'un dépôt présent sur un achat est ignoré');
+});
+test('Journal AH : affichage et formulaire du montant réellement perdu',()=>{
+ const ui=readFileSync(new URL('../public/binch/ah-trading.js',import.meta.url),'utf8');
+ const html=readFileSync(new URL('../public/binch/index.html',import.meta.url),'utf8');
+ assert.match(ui,/Dépôts réellement perdus \(or, vente uniquement\)/);
+ assert.match(ui,/name="depositLost"/);
+ assert.match(ui,/depositLost=kind==='sell'/);
+ assert.match(ui,/kind==='sell'\?\{depositLost\}:\{\}/);
+ assert.match(ui,/Dépôts réellement perdus/);
+ assert.match(ui,/coin\(p\.matchedDeposits\)/);
+ assert.match(ui,/coin\(x\.depositsLost\)/);
+ assert.match(html,/ah-portfolio-core\.js\?v=004/);
+ assert.match(html,/ah-trading\.js\?v=016/);
 });

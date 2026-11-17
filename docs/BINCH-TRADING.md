@@ -268,3 +268,33 @@ Modules : `BinchTrading.observationOrigin()`, `BinchTrading.filterOpportunities(
 8. Définir des alertes sur franchissement de seuil, uniquement quand les observations sont disponibles.
 9. Poursuivre Faith et les itinéraires / talents Druide farouche.
 10. Livrer la bêta de guilde à partager avec le frère et ses outils GM.
+
+## 18. Dépôts perdus réellement consignés dans le Journal (17 novembre 2026)
+
+Dans **Assistant Trading → Journal**, une vente peut comporter le montant en or des **dépôts d’enchères effectivement perdus**, relevé dans le jeu. Le champ est optionnel et ignoré pour les achats. Il ne s’agit pas d’une estimation automatique : un dépôt restitué lors d’une vente réussie ne doit pas être saisi comme perdu.
+
+Le carnet partagé `binch.ah.market.v1` conserve la nouvelle propriété facultative `depositLost` en **cuivre entier** sur les ventes uniquement. Les anciennes opérations sans ce champ restent compatibles et se calculent avec un dépôt perdu de zéro ; aucune migration destructive n'est effectuée.
+
+Le moteur `BinchAHPortfolio.ledger()` applique les pertes de dépôts au FIFO, sans inventer les prix d'achat absents :
+
+- **Dépôt associé à un achat connu** : fraction du dépôt ventilée au prorata des unités de la vente rattachées à un achat FIFO. Elle est retranchée de la marge réalisée et incluse au dénominateur du rendement.
+- **Dépôt lié aux unités sans coût d’achat connu** : comptabilisé séparément dans les frais réellement payés, mais n'entre pas dans le bénéfice FIFO calculable faute de prix de revient.
+- **Recettes après dépôts** : chiffre de la vente après commission puis déduction du dépôt réellement perdu.
+- **ROI FIFO** : `bénéfice net FIFO / (coût des achats rapprochés + dépôts perdus rapprochés)`. Ne reflète pas les autres frais non saisis.
+
+Le rapport des 30 derniers jours présente dépôts totaux, frais affectés au FIFO, frais non rapprochés et résultat par objet. Les valeurs invalides sont refusées ; aucune transaction dans WoW n'est effectuée.
+
+Fichiers : `ah-portfolio-core.js?v=004`, `ah-trading.js?v=016`, `tests/binch-ah-portfolio.test.mjs`. Les tests couvrent notamment les ventes partielles, les anciens enregistrements, l'absence de coût connu, l'immutabilité et les dépôts invalides.
+
+### Golipette — dix prochaines priorités
+
+1. Faire vérifier en conditions réelles sur iPhone la saisie d'une vente et de ses dépôts perdus.
+2. Vérifier deux scans AH GrimoireSync effectués sur WoW Forever.
+3. Confirmer le parcours API européenne AH et les éventuelles limitations CORS.
+4. Renforcer l'identité de marché au niveau région, serveur, faction et maison.
+5. Tester l'import de la banque dans une zone séparée des sacs.
+6. Comparer les dépôts réellement perdus avec les simulations d'invendus.
+7. Valider les recettes métiers et matériaux sur WoW Forever, et non seulement les références Classic.
+8. Fiabiliser les alertes sur prix observés et la fraîcheur des sources.
+9. Développer l'assistant Faith, les talents et parcours Druide farouche.
+10. Terminer la bêta partageable au frère, avec espace GM et identité visuelle propre à chaque thème.
