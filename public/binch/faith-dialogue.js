@@ -22,7 +22,7 @@ function context(){
  const market=read('binch.ah.market.v1',{}),realm=String(scope.realm||'').trim().toLocaleLowerCase('fr'),faction=['Horde','Alliance'].includes(scope.faction)?scope.faction:'';
  const scoped=Array.isArray(market.items)?market.items.filter(x=>(x.scope||'legacy')===(realm&&faction?realm+'|'+faction:'legacy')):[];
  const manual=window.BinchMarketBridge?.snapshot(read('binch.market.v1',{}),market,{realm,faction});
- return {name:name||'Aventurier',className:clean(p.classe||'',40),spec:clean(d.spec||d.specialization||p.specialization||'',55),level:Number.isInteger(level)&&level>0&&level<=60?level:null,same,zone:clean(same?last.zone:d.zone||'',75),date:same?last.updated:null,realm,faction,prices:scoped,manualMarket:manual,quests:same&&Array.isArray(last.questLog)?last.questLog:[],tasks:Array.isArray(roster)?roster.filter(x=>x.status!=='done'):[],gear:same&&Array.isArray(last.equipment)?last.equipment:[]};
+ return {name:name||'Aventurier',className:clean(p.classe||'',40),spec:clean(d.spec||d.specialization||p.specialization||'',55),level:Number.isInteger(level)&&level>0&&level<=60?level:null,same,zone:clean(same?last.zone:d.zone||'',75),date:same?(last.updated||last.at||last.date||null):null,realm,faction,prices:scoped,manualMarket:manual,quests:same&&Array.isArray(last.questLog)?last.questLog:[],tasks:Array.isArray(roster)?roster.filter(x=>x.status!=='done'):[],gear:same&&Array.isArray(last.equipment)?last.equipment:[]};
 }
 const PRIORITY_RE=/que faire|quoi faire|prochain(?:e)? (?:objectif|action|qu[êe]te)|priorit[ée]|par quoi commencer|ordre du jour|plan d.aventure|leveling maintenant/;
 const PROFILE_RE=/mon profil|mon personnage|qui suis.je|quel(?:le)? (?:est )?mon niveau|quel niveau|quelle zone|o[ùu] suis.je/;
