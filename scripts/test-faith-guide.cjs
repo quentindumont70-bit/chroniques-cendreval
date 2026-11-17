@@ -21,5 +21,5 @@ assert.equal(guide.priorities(null).page,null);
 assert.equal(guide.priorities({next:{title:'Tâche',page:'javascript:alert(1)'}}).page,null);
 assert.match(guide.profile({name:'Test',className:'Druide',level:16,same:true,date:'2026-11-17T09:00:00Z'},Date.parse('2026-11-17T11:00:00Z')),/2 h depuis la sauvegarde/);
 assert.match(guide.profile({name:'Test',same:false}),/profil manuel/);
-assert.doesNotMatch(guide.profile({name:'Test',same:false}),/import GrimoireSync correspondant/);
+assert.doesNotMatch(guide.profile({name:'Test',same:false}),/Source : import GrimoireSync correspondant/);
 console.log('Faith Guide : 9 contrôles validés');
