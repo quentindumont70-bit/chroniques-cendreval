@@ -418,3 +418,18 @@ test('V187: Capture cible un élément sans modifier les mécanismes de transmis
  assert.doesNotMatch(js,/localStorage\.setItem|fetch\(|XMLHttpRequest|WebSocket/);
  assert.doesNotMatch(tour,/V187|\.item\.is-focused/);
 });
+
+test('V192: affiche davantage d’actions uniquement sur demande sans écriture',async()=>{
+ const f=await fixture({[K.tasks]:JSON.stringify([
+  {id:'a',text:'Première',done:false},
+  {id:'b',text:'Deuxième',done:false},
+  {id:'c',text:'Troisième',done:false}
+ ])});
+ assert.equal(f.collect().items.length,2);
+ assert.equal(f.ctx.testCollect(true).items.length,3);
+ assert.equal(f.collect().compactVisible,2);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+ const html=await read('index.html');
+ assert.match(html,/id="activePulseToggle"/);
+});
