@@ -76,11 +76,11 @@ function tradePerformance(book,{now=Date.now(),days=30}={}){
   sold+=quantity;matched+=covered;unmatched+=unknown;realized+=profit;cost+=basis;proceeds+=net;depositsLost+=deposit;matchedDeposits+=appliedDeposit;unmatchedDeposits+=unknownDeposit;operations++;
  }
  const rows=[...groups.values()].map(g=>({...g,
-  roi:g.cost>0?100*g.realized/g.cost:null,
+  roi:g.cost+g.matchedDeposits>0?100*g.realized/(g.cost+g.matchedDeposits):null,
   unitProfit:g.matched>0?g.realized/g.matched:null
  })).sort((a,b)=>b.realized-a.realized||b.matched-a.matched||a.item.localeCompare(b.item,'fr'));
  return {days:windowDays,operations,sold,matched,unmatched,realized,cost,proceeds,depositsLost,matchedDeposits,unmatchedDeposits,
-  roi:cost>0?100*realized/cost:null,excluded,rows};
+  roi:cost+matchedDeposits>0?100*realized/(cost+matchedDeposits):null,excluded,rows};
 }
 return {ledger,tradePerformance};
 });
