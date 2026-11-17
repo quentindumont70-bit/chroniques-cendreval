@@ -264,3 +264,39 @@ test('V178: real Maison work is visible first; high priority breaks ties and lin
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
 });
+
+test('V181: les vraies urgences passent devant les DDM et les loisirs sans doublon',async()=>{
+ const iso=n=>{const d=new Date();d.setDate(d.getDate()+n);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+ const f=await fixture({
+  [K.pantry]:JSON.stringify([
+   {id:'ddm',name:'Conserve fictive',kind:'DDM',date:iso(-25)},
+   {id:'dlc',name:'Produit DLC fictif',kind:'DLC',date:iso(-1)}
+  ]),
+  [K.agenda]:JSON.stringify([{id:'rdv',title:'Rendez-vous ce jour',date:iso(0),category:'perso'}]),
+  [K.tasks]:JSON.stringify([{id:'t',text:'Rappeler un artisan',done:false}]),
+  [K.maison]:JSON.stringify([{id:'h',name:'Chantier en cours',status:'doing',priority:'haute'}]),
+  [K.musique]:JSON.stringify([{id:'m',mode:'musique',title:'Idée de mix',status:'planned',date:iso(0)}])
+ });
+ const result=f.collect();
+ assert.deepEqual(result.items.map(x=>x.title),[
+  'Produit DLC fictif','Rendez-vous ce jour','Rappeler un artisan',
+  'Chantier en cours','Idée de mix','Conserve fictive'
+ ]);
+ assert.equal(result.total,6);
+ assert.equal(new Set(result.items.map(x=>x.title)).size,6);
+ f.ctx.testRender();
+ assert.match(f.nodes.get('activePulseList').children[0].className,/is-urgent/);
+ assert.equal(f.nodes.get('activePulseCount').textContent,'6 actions retrouvées');
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
+
+test('V181: CSS, accessibilité et stockage existant sont préservés',async()=>{
+ const [html,css,js,sw,tour]=await Promise.all(['index.html','cinema-upgrade.css','active-pulse.js','sw.js','tournee-complete.html'].map(read));
+ assert.match(css,/\.active-pulse-item\.is-urgent:focus-visible/);
+ assert.match(html,/D’abord les échéances urgentes/);
+ assert.match(js,/results\.sort\(\(a,b\)=>a\.rank-b\.rank\)/);
+ assert.doesNotMatch(js,/localStorage\.setItem|fetch\(|XMLHttpRequest|WebSocket/);
+ assert.match(sw,/big-cthu-public-v2-v181/);
+ assert.doesNotMatch(tour,/V181|is-urgent/);
+});
