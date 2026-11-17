@@ -105,13 +105,13 @@ function scanObservations(scan,filter){
 const FYI_MARKET=/^forever\.(normal|pvp|rp)\.(horde|alliance)\.us$/;
 function parseCommunity(json,{name,realm,now=Date.now()}={}){
  const d=typeof json==='string'?JSON.parse(json):json;
- if(!d||!FYI_MARKET.test(String(d.market))||!Number.isSafeInteger(Number(d.item)))throw Error('Réponse auctionhouse.fyi non reconnue (champs market et item attendus).');
+ if(!d||!FYI_MARKET.test(String(d.market))||!Number.isSafeInteger(Number(d.item))||Number(d.item)<1)throw Error('Réponse auctionhouse.fyi non reconnue (champs market et item attendus).');
  const faction=String(d.market).includes('.horde.')?'Horde':'Alliance',label=clean(name,100)||('Objet '+d.item);
  const rows=[],src=COMMUNITY_SOURCE+' · '+d.market;
  if(Array.isArray(d.row)&&isCopper(d.row[0])&&Number.isSafeInteger(d.row[1])&&d.row[1]>0){const t=parseTime(d.row[2]);if(t&&t<=now)rows.push({name:label,itemId:Number(d.item),priceCopper:d.row[0],quantity:d.row[1],source:src,observedAt:new Date(t).toISOString(),realm:realm||d.market,faction,region:'us',market:String(d.market)})}
  for(const day of Array.isArray(d.days)?d.days:[]){
   const [epochDay,low,,qty]=day,t=Number(epochDay)*DAY+12*HOUR; // milieu de journée UTC, journée close
-  if(!Number.isSafeInteger(epochDay)||!isCopper(low)||!Number.isSafeInteger(qty)||qty<1||t>now)continue;
+  if(!Number.isSafeInteger(epochDay)||epochDay<0||!isCopper(low)||!Number.isSafeInteger(qty)||qty<1||t>now)continue;
   rows.push({name:label,itemId:Number(d.item),priceCopper:low,quantity:qty,source:src+' (plus bas du jour)',observedAt:new Date(t).toISOString(),realm:realm||d.market,faction,region:'us',market:String(d.market)});
  }
  return rows;
