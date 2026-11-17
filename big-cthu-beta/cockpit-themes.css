@@ -602,3 +602,11 @@ html[data-cthu-theme] body[data-cthu-area] :is(button,a,input,select,textarea):f
 .active-pulse-item.is-urgent{border-width:2px;border-style:solid}
 .active-pulse-item.is-urgent small::before{content:"À surveiller · ";font-weight:800}
 @media(forced-colors:active){.active-pulse-item.is-urgent{outline:2px solid Highlight;outline-offset:2px}#activePulseCategory{border:1px solid CanvasText}}
+
+/* V211–V214: search actions in the same local memory, with no new storage. */
+.active-pulse-search{display:flex;flex-wrap:wrap;align-items:end;gap:8px;margin:10px 0}
+.active-pulse-search label{flex:0 0 100%;font-weight:700}
+#activePulseSearch{min-height:44px;flex:1 1 220px;max-width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--cthu-line,#645a7c);background:var(--cthu-surface,rgba(20,18,40,.85));color:inherit;font:inherit}
+#activePulseClear{min-height:44px}
+#activePulseSearch:focus-visible{outline:3px solid var(--cthu-accent,#86f3de);outline-offset:3px}
+@media(max-width:700px){#activePulseSearch{flex-basis:100%}}
