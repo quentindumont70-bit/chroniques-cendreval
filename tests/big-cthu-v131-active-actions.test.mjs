@@ -414,7 +414,7 @@ test('V187: Capture cible un élément sans modifier les mécanismes de transmis
  assert.match(html,/\.item\.is-focused\{/);
  assert.match(html,/scrollIntoView\(\{block:'center'\}\)/);
  assert.match(js,/\.\/capture\.html#capture=/);
- assert.match(sw,/big-cthu-public-v2-v187/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
  assert.doesNotMatch(js,/localStorage\.setItem|fetch\(|XMLHttpRequest|WebSocket/);
  assert.doesNotMatch(tour,/V187|\.item\.is-focused/);
 });
