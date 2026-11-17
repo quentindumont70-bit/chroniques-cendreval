@@ -11,8 +11,8 @@ test('Trading is offered as a customizable mobile shortcut and navigates to the 
   assert.match(mobile,/target\.click\(\)/);
   assert.match(trading,/dataset\.page\s*=\s*'trading'/);
   assert.match(html,/mobile-nav\.js\?v=004/);
-  assert.match(html,/ah-trading\.js\?v=006/);
-  assert.match(html,/ah-trading-core\.js\?v=004/);
+  assert.match(html,/ah-trading\.js\?v=007/);
+  assert.match(html,/ah-trading-core\.js\?v=005/);
 });
 
 test('Trading accepts future supported AH feed formats through the shared parser', () => {

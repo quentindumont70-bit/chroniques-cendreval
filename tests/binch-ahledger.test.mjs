@@ -48,7 +48,7 @@ test('AHledger: UI access is click initiated, no automatic import or persistent 
  const html=readFileSync(new URL('../public/binch/index.html',import.meta.url),'utf8');
  const ui=readFileSync(new URL('../public/binch/ah-trading.js',import.meta.url),'utf8');
  assert.match(html,/ahledger-reader\.js\?v=001/);
- assert.match(html,/ah-trading\.js\?v=006/);
+ assert.match(html,/ah-trading\.js\?v=007/);
  assert.match(ui,/id="bt-ahl-query"/);
  const area=ui.slice(ui.indexOf('async function onAhl('),ui.indexOf('function vLive('));
  assert.match(area,/await fetch\(url,\{signal:ctrl\.signal,cache:'no-store'\}\)/);

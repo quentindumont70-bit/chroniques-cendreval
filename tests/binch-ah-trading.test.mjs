@@ -61,11 +61,27 @@ test('Fusion carnet: compatible binch.ah.market.v1, sans doublon, sans relevé n
  assert.equal(b.added,0,'réimport du même scan sans doublon');
 });
 
+test('Marchés AH : rejeter les mélanges entre rulesets et régions sans altérer le carnet',()=>{
+ const now=NOW,base={name:'Cuir léger',itemId:2318,realm:'Forever',faction:'Horde',priceCopper:120,quantity:25,source:'relevé externe'};
+ const first={...base,market:'forever.normal.horde.us',region:'us',observedAt:'2026-11-16T10:00:00Z'};
+ const a=T.mergeObservations({version:1,items:[],trades:[],alerts:[],fee:5},[first],now);
+ assert.equal(a.added,1);assert.equal(a.store.items[0].history[0].market,first.market);
+ assert.equal(a.store.items[0].history[0].region,'us');
+ const b=T.mergeObservations(a.store,[{...first,market:'forever.pvp.horde.us',observedAt:'2026-11-16T11:00:00Z'}],now);
+ assert.equal(b.added,0);assert.equal(b.marketConflicts,1);
+ assert.equal(b.store.items[0].history.length,1,'historique préservé');
+ const c=T.mergeObservations(a.store,[{...first,region:'eu',observedAt:'2026-11-16T11:00:00Z'}],now);
+ assert.equal(c.added,0);assert.equal(c.marketConflicts,1);
+ const d=T.mergeObservations(a.store,[{...first,priceCopper:150,observedAt:'2026-11-16T11:00:00Z'}],now);
+ assert.equal(d.added,1);assert.equal(d.marketConflicts,0,'même marché accepté');
+});
+
 test('Relevé communautaire collé: row + days convertis, journée future ignorée',()=>{
  const json={market:'forever.normal.horde.us',item:2318,row:[30,15560,Date.parse('2026-11-16T10:00:00Z')],days:[[20772,23,29,15381],[20773,24,30,15560],[20800,1,1,1]],volume:[],now:NOW,live:false};
  const rows=T.parseCommunity(json,{name:'Cuir léger',realm:'Forever',now:NOW});
  assert.equal(rows.length,3);
  assert.ok(rows.every(r=>r.faction==='Horde'&&r.source.startsWith(T.COMMUNITY_SOURCE)));
+ assert.ok(rows.every(r=>r.region==='us'&&r.market==='forever.normal.horde.us'));
  assert.throws(()=>T.parseCommunity({foo:1}),/non reconnue/);
 });
 

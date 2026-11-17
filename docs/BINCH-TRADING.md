@@ -107,3 +107,11 @@ La vue **En direct** propose désormais une consultation individuelle d'un item 
 - Conditions consultées le 17/11/2026 : https://ahledger.com/terms ; une évolution annoncée pour le **10 décembre 2026** impose notamment de respecter le cache et les modalités d'attribution. La Binch ne conserve pas cette donnée tierce. Toute extension future nécessitant un stockage devra être réévaluée avant implémentation.
 
 Cette consultation répond au besoin d'accéder aux **marchés EU** sans PC, en attendant une intégration vérifiée plus large, les scans personnels et les éventuelles autorisations requises.
+
+## 11. Protection contre le mélange entre marchés externes (17 novembre 2026)
+
+- Le carnet La Binch conserve maintenant, pour les **nouveaux** relevés externes, `region` et `market` dans chaque entrée d'historique, sans changer la clé de base locale ni les données existantes.
+- Si une fiche contient des prix explicitement étiquetés pour un autre marché ou une autre région, un nouvel import incompatible est **rejeté pour cet objet** et le compteur de refus est affiché.
+- Cela évite de mélanger automatiquement, pour un même objet du même carnet, les prix **US/EU** ou **Normal/JcJ**. Les relevés déjà présents sans ces étiquettes ne sont pas réinterprétés ni effacés.
+- Les relevés manuels non étiquetés ne prouvent toujours pas leur origine exacte. Avant toute spéculation, vérifier le marché déclaré et le contexte du personnage. Il reste nécessaire d'améliorer à terme l'identité des marchés personnels GrimoireSync.
+

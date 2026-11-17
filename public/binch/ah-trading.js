@@ -244,7 +244,9 @@ function mergeFeed(){
  const scope=scopeOf(),mk=feedMarketId();if(!feed||!scope||!mk)return;
  if(!T.canMergeFeed({userRegion:state.region,confirmedMarket:state.confirmedMarket,marketId:mk,marketInfo:feed.markets[mk].meta,scopeFaction:scope.faction,enabled:state.autoFeed}).ok)return;
  const rows=T.feedObservations(feed,mk,{realm:scope.realm});if(!rows.length)return;
- const out=T.mergeObservations(read(MARKET,{}),rows);if(out.added)try{persistMarket(out.store)}catch{}
+ const out=T.mergeObservations(read(MARKET,{}),rows);
+ if(out.marketConflicts)feedStatus=out.marketConflicts+' relevé(s) refusé(s) : un autre marché ou une autre région est déjà présent dans l’historique de cet objet. Aucun mélange effectué.';
+ if(out.added)try{persistMarket(out.store)}catch{}
 }
 function vData(c){
  const p=pendingScan;
@@ -309,7 +311,7 @@ function onFyi(form){
   if(rows.some(r=>r.faction!==scope.faction))throw Error('Ce relevé concerne l’autre faction que ton marché sélectionné.');
   const out=T.mergeObservations(read(MARKET,{}),rows);persistMarket(out.store);
   state.imports.push({at:new Date().toISOString(),kind:'auctionhouse.fyi',detail:d.get('name')+' · '+out.added+' relevé(s)'});save();
-  status.textContent=out.added+' relevé(s) communautaire(s) ajouté(s).';form.reset();
+  status.textContent=out.added+' relevé(s) communautaire(s) ajouté(s).'+(out.marketConflicts?' '+out.marketConflicts+' refusé(s) : historique d’un autre marché/règleset, aucun mélange.':'');form.reset();
  }catch(e){status.textContent=e instanceof SyntaxError?'JSON invalide : colle la réponse complète.':e.message}
 }
 function onTrade(form){
