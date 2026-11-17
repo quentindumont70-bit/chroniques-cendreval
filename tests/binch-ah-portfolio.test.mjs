@@ -144,7 +144,7 @@ test('Journal AH : affichage et formulaire du montant réellement perdu',()=>{
  const html=readFileSync(new URL('../public/binch/index.html',import.meta.url),'utf8');
  assert.match(ui,/Dépôts réellement perdus \(or, vente uniquement\)/);
  assert.match(ui,/name="depositLost"/);
- assert.match(ui,/depositLost:0/);
+ assert.match(ui,/depositLost=kind==='sell'/);
  assert.match(ui,/kind==='sell'\?\{depositLost\}:\{\}/);
  assert.match(ui,/Dépôts réellement perdus/);
  assert.match(ui,/coin\(p\.matchedDeposits\)/);
