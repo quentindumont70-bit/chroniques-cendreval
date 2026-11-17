@@ -32,7 +32,7 @@ test('V131: retrouve les vraies priorités Maison, musique et prochaine session 
  });
  const d=f.collect();
  assert.deepEqual(d.items.map(x=>x.kind),['Priorités','Maison','Musique','Jeux']);
- assert.deepEqual(d.items.map(x=>x.url),['#priorities','./maison.html#job=a','./musique.html#studio-list','#nextSession']);
+ assert.deepEqual(d.items.map(x=>x.url),['#priority-t','./maison.html#job=a','./musique.html#studio-list','#nextSession']);
  assert.equal(d.warnings,0);
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
