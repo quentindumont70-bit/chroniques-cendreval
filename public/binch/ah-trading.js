@@ -265,7 +265,7 @@ function vLive(c){
  const markets=sum.markets;
  const ids=[...new Set(markets.flatMap(m=>Object.keys(feed.markets[m.market].items||{})))];
  const table='<div class="bt-table"><table><thead><tr><th>Objet</th>'+markets.map(m=>'<th>'+esc(m.label)+'</th>').join('')+'</tr></thead><tbody>'+ids.map(id=>{
-  const cm=T.crossMarket(feed,Number(id)),comparable=T.comparableQuotes(feed,cm,mk,state.region,c.scope?.faction);
+  const cm=T.crossMarket(feed,Number(id)),comparable=T.comparableQuotes(feed,cm,state.confirmedMarket===mk?mk:null,state.region,c.scope?.faction);
   const low=comparable.length>=2?comparable[0].market:null;
   return '<tr><td>'+esc(feed.names?.[id]?.n||'Objet '+id)+'</td>'+markets.map(m=>{
    const x=cm.find(y=>y.market===m.market);
