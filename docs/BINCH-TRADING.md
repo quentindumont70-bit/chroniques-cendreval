@@ -121,3 +121,9 @@ Cette consultation répond au besoin d'accéder aux **marchés EU** sans PC, en 
 Depuis « Assistant Trading → Mes sacs », chaque objet importé avec un identifiant valide propose « Vérifier le prix EU/US ». Ce bouton ouvre « En direct » et préremplit le formulaire AHledger avec l'identifiant **sans requête, sans import automatique ni écriture dans le carnet**. L'utilisateur vérifie volontairement région, ruleset et faction puis déclenche la consultation. La cotation tierce reste informative ; le fallback vers AHledger est affiché si CORS ou réseau échoue. La banque n'est toujours pas synchronisée.
 
 Test de non-régression : `tests/binch-ah-mobile.test.mjs` (raccourci, validité d'ID, préremplissage, absence de lecture réseau au clic). Cache public `ah-trading.js?v=008`.
+
+## 11. Liquidité indicative pour une cotation AHledger (17 novembre 2026)
+
+Le panneau ponctuel « En direct → AHledger » affiche, lorsque la réponse de la source le fournit, `sales.estimatedPerDay` et `sales.windowDays` : estimation d'unités écoulées par jour et fenêtre d'observation. Ce n'est **pas** un journal de ventes réellement conclues par le joueur et ce n'est pas une garantie de revente. Si le champ est absent ou non valide, afficher « Rotation non estimable » ; `0` observé reste distinct de « inconnu ». Données jamais réinjectées automatiquement dans le carnet ou dans le moteur d'opportunités.
+
+Source : https://ahledger.com/developers (endpoint `GET /v1/prices/{market}/{itemId}?range=7d`, volume estimé lorsque l'historique suffit). L'attribution AHledger reste requise à l'affichage. Contrôle : `tests/binch-ahledger.test.mjs` ; JS `ahledger-reader.js?v=002`, `ah-trading.js?v=009`.
