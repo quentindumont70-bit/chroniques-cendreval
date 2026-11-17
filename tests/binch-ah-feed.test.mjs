@@ -46,7 +46,7 @@ test('Lecteur public: prix/quantité/date invalides refusés avant affichage',as
    fetch:async()=>({ok:true,json:async()=>data}),
    AbortController,setTimeout,clearTimeout,Date
   };
-  runInNewContext(source.replace(marker,'globalThis.__readSnapshot=read;\\n'+marker).replace('\\n'+marker,'\n'+marker),context);
+  runInNewContext(source.replace(marker,'globalThis.__readSnapshot=read;\n'+marker),context);
   return context.__readSnapshot(market,item);
  };
  const payload=row=>({market,item,row});
