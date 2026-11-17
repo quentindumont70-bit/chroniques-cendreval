@@ -110,6 +110,43 @@ test('Simulation: commission, dépôt, seuil de rentabilité et ventes partielle
  assert.equal(T.simulate({buy:1,sell:0,qty:1}),null);
 });
 
+test('Simulation de stress AH : invendus, baisse des prix et relistage sans bénéfices fictifs',()=>{
+ const s=T.simulate({buy:1000,sell:2000,qty:10,fee:5,deposit:300,unsoldShare:.5,priceDropPct:10,extraDeposits:200});
+ assert.equal(s.stress.sold,5);
+ assert.equal(s.stress.unsold,5);
+ assert.equal(s.stress.salePrice,1800);
+ assert.equal(s.stress.soldNet,8550);
+ assert.equal(s.stress.heldCost,5000);
+ assert.equal(s.stress.fees,500);
+ assert.equal(s.stress.cashflow,-1950,'achat des invendus encore financé');
+ assert.equal(s.stress.matchedMargin,3050,'la marge sur ventes ne transforme pas le stock en perte réalisée');
+ assert.equal(s.stress.breakEvenSold,Math.ceil(10500/(5*.95)));
+ assert.equal(s.partial.profit,9500-10000-300,'ancien contrat conservé');
+ const full=T.simulate({buy:1000,sell:2000,qty:10,fee:5,deposit:300});
+ assert.equal(full.stress.cashflow,full.profit,'sans décote, relistage ou invendu, les scénarios convergent');
+ assert.equal(full.stress.heldCost,0);
+ const none=T.simulate({buy:1000,sell:2000,qty:10,fee:5,unsoldShare:1});
+ assert.equal(none.stress.sold,0);
+ assert.equal(none.stress.heldCost,10000);
+ assert.equal(none.stress.breakEvenSold,null,'aucun seuil garanti quand personne n’achète');
+ assert.equal(T.simulate({buy:1000,sell:2000,qty:10,deposit:-1}),null);
+ assert.equal(T.simulate({buy:1000,sell:2000,qty:10,extraDeposits:-2}),null);
+ assert.equal(T.simulate({buy:1000,sell:2000,qty:10,priceDropPct:999}).stress.priceDropPct,95);
+ assert.equal(T.simulate({buy:1000,sell:2000,qty:0}),null);
+});
+
+test('Interface simulateur : hypothèses visibles, frais séparés et aucune transaction',()=>{
+ const ui=readFileSync(new URL('../public/binch/ah-trading.js',import.meta.url),'utf8');
+ assert.match(ui,/name="drop"/);
+ assert.match(ui,/name="extra"/);
+ assert.match(ui,/priceDropPct:Number\(d\.get\('drop'\)\)/);
+ assert.match(ui,/extraDeposits:gold\(d\.get\('extra'\)\)/);
+ assert.match(ui,/r\.stress\.cashflow/);
+ assert.match(ui,/r\.stress\.heldCost/);
+ assert.match(ui,/r\.stress\.matchedMargin/);
+ assert.match(ui,/sans valeur de revente garantie/);
+});
+
 test('Sacs: marchand, AH, garder, transformer et données insuffisantes',()=>{
  const st=store([['Cuir léger',2318,[30,30,30,30,30,30,30]],['Cuir moyen',2319,[400,400,400,400,400,400,400]],['Dent',5,[100,100,100,100,100,100,60]],['Bijou',6,[1000,1000,1000,1000,1000,1000,1000]],['Croc',7,[10,10,10,10,10]]]);
  const index=T.marketIndex(st,'forever|Horde',NOW);

@@ -208,13 +208,25 @@ function supplyChange(item,now=Date.now()){
 }
 
 /* ---------- 5. Simulation de marge ---------- */
-function simulate({buy,sell,qty=1,fee=5,deposit=0,unsoldShare=0}={}){
- const b=Number(buy),s=Number(sell),q=Number(qty),d=Math.max(0,Number(deposit)||0),u=clamp(Number(unsoldShare)||0,0,1),r=feeRate(fee);
- if(!(b>=0)||!(s>0)||!Number.isInteger(q)||q<1)return null;
+function simulate({buy,sell,qty=1,fee=5,deposit=0,unsoldShare=0,priceDropPct=0,extraDeposits=0}={}){
+ const b=Number(buy),s=Number(sell),q=Number(qty),d=Number(deposit),extra=Number(extraDeposits),r=feeRate(fee);
+ const u=clamp(Number(unsoldShare)||0,0,1),drop=clamp(Number(priceDropPct)||0,0,95);
+ if(!Number.isSafeInteger(b)||b<0||!Number.isSafeInteger(s)||s<1||
+    !Number.isSafeInteger(q)||q<1||q>100000||
+    !Number.isSafeInteger(d)||d<0||!Number.isSafeInteger(extra)||extra<0||
+    !Number.isSafeInteger(b*q)||!Number.isSafeInteger(s*q))return null;
  const invest=b*q,gross=s*q,cut=Math.floor(gross*r),net=gross-cut,profit=net-invest-d;
- const sold=Math.floor(q*(1-u)),partial=Math.floor(s*sold*(1-r))-invest-d; // invendus : restent en stock, valorisés à zéro ici
+ const sold=Math.floor(q*(1-u)),partial=Math.floor(s*sold*(1-r))-invest-d; // anciens appels : solde de trésorerie, stock restant non revendu
+ const salePrice=Math.max(1,Math.floor(s*(1-drop/100)));
+ const soldGross=sold*salePrice,saleCut=Math.floor(soldGross*r),soldNet=soldGross-saleCut;
+ const unsold=q-sold,heldCost=b*unsold,fees=d+extra;
+ const cashflow=soldNet-invest-fees; // inclut l'argent immobilisé dans le stock non vendu
+ const matchedMargin=soldNet-b*sold-fees; // coût uniquement des unités revendues + dépôts perdus
+ const breakEvenSold=sold>0?Math.ceil((invest+fees)/(sold*(1-r))):null;
  return {invest,gross,cut,net,deposit:d,profit,roi:invest+d>0?100*profit/(invest+d):null,breakEven:Math.ceil((invest+d)/(q*(1-r))),
-  partial:{sold,profit:partial}};
+  partial:{sold,profit:partial},
+  stress:{salePrice,sold,unsold,soldNet,saleCut,heldCost,extraDeposits:extra,fees,cashflow,matchedMargin,
+   breakEvenSold,priceDropPct:drop}};
 }
 
 /* ---------- 6. Catalogue métiers (références Classic, à confirmer sur Forever) ---------- */

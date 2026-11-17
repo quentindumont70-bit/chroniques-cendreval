@@ -209,3 +209,37 @@ Module : `BinchTrading.supplyChange()`, version `ah-trading-core.js?v=007` et `a
 8. Ajouter des alertes sur les données observées, sans promesse de surveillance active.
 9. Développer Faith et les conseils de leveling du Druide farouche.
 10. Préparer le parcours de validation pour le frère et les outils de GM.
+
+## 16. Stress-test d'une spéculation AH (17 novembre 2026)
+
+**Assistant Trading → Simulateur** accepte désormais, en plus du prix d’achat, du prix de revente, de la quantité, de la commission et des dépôts initiaux :
+
+- une proportion d'**invendus** (0–100 %) ;
+- une **baisse hypothétique du prix de revente** (0–95 %, valeur initiale 10 %) ;
+- des **dépôts supplémentaires perdus** à cause des remises en vente.
+
+Le moteur `BinchTrading.simulate()` conserve les champs historiques et fournit un objet `stress` :
+
+- `cashflow` : **solde de trésorerie** après tous les achats, produits réellement simulés, commission et dépôts, y compris le coût des objets **encore en stock** ;
+- `matchedMargin` : **marge sur les seules unités supposées vendues**, déduction faite du coût d'achat de ces unités et des dépôts perdus. Elle **n'enregistre pas la perte du coût d'achat des invendus** ;
+- `heldCost` : coût des unités invendues, **non assimilé à une valeur de marché ni à un encaissement** ;
+- `breakEvenSold` : prix de vente unitaire minimum pour récupérer **toute la mise** sur les seules unités écoulées ; pas de seuil affiché si aucune unité n'est vendue.
+
+Exemple reproductible (montants en cuivre) : achat de 10 × 1 000, revente envisagée à 2 000, cinq invendus, baisse du prix de 10 %, commission de 5 %, dépôts perdus de 300 puis 200. Le modèle donne **–1 950 cuivre de trésorerie**, **+3 050 cuivre de marge sur unités supposées vendues** et **5 000 cuivre de stock toujours immobilisé**. Les trois résultats mesurent des choses différentes et ne doivent pas être additionnés.
+
+**Limitations :** il s'agit de scénarios, jamais de prévisions de demande, de chances de vente ou de profits garantis. L’interface n'ouvre aucune enchère et ne déclenche aucune action en jeu. Les dépôts se saisissent d'après le client WoW Forever et ne sont pas estimés arbitrairement.
+
+Tests : `tests/binch-ah-trading.test.mjs`. Fichiers navigateur : `ah-trading-core.js?v=008`, `ah-trading.js?v=014`.
+
+### Golipette suivante — dix chantiers
+
+1. Vérifier ce simulateur avec des montants et dépôts lus réellement dans Forever.
+2. Tester le rendu du stress-test sur iPhone.
+3. Vérifier le parcours de lecture ponctuelle des cours EU et les limitations CORS.
+4. Valider la capture de deux vrais scans GrimoireSync AH.
+5. Évaluer la synchronisation banque et inventaire séparément.
+6. Ajouter les filtres de provenance et fraîcheur des cotations au Radar.
+7. Recettes et rentabilité métier sourcées Forever, pas extrapolées.
+8. Alertes de prix adaptées aux données réellement disponibles.
+9. Faith, Druide farouche, suivi quêtes et expérience de leveling.
+10. Bêta complète et configuration GM pour le frère.
