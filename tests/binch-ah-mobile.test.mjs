@@ -11,7 +11,7 @@ test('Trading is offered as a customizable mobile shortcut and navigates to the 
   assert.match(mobile,/target\.click\(\)/);
   assert.match(trading,/dataset\.page\s*=\s*'trading'/);
   assert.match(html,/mobile-nav\.js\?v=004/);
-  assert.match(html,/ah-trading\.js\?v=015/);
+  assert.match(html,/ah-trading\.js\?v=016/);
   assert.match(html,/ah-trading-core\.js\?v=009/);
 });
 
