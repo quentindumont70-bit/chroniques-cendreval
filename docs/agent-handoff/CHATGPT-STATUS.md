@@ -1,3 +1,27 @@
+## Golipette Faith — ordre de mission unifié (17 novembre 2026)
+
+Branche isolée `feature/binch-faith-unified-missions-20261117`. Aucun merge de `opencode-golipette`, aucune lecture du client WoW en direct, aucune dépense API. PR à vérifier avant publication.
+
+- Ajout `faith-guide.js` : rendu déterministe des trois premières priorités du plan Ultimate (déduplication, provenances, tâches futures explicitement marquées), profil local avec distinction manuel/import daté, sécurité de la cible de navigation.
+- `faith-dialogue.js` préfère `window.BinchUltimate.getPlan()` (même ordre que l'accueil). Repli fidèle au moteur existant lorsque l'accueil n'est pas monté, y compris `binch.custom.objectives.v1.*`, mode d'aventure et tâches de guilde. Nouveau bouton « Ouvrir l’objectif conseillé » et requêtes « Mon profil » / « Quel est mon niveau ? ».
+- Cache et chargeur de `index.html` raccordés (Faith guide avant dialogue) ; autres modules conservés.
+- `scripts/test-faith-guide.cjs` versionné : doublons, maximum 3 priorités, plan absent, cible non sûre, origine manuelle/import, âge d'import. Tests ciblés JS dans le connecteur exécutés et réussis ; Node/Chrome/iPhone restent à exécuter sur ce commit.
+
+### 10 prochains chantiers (ordre Golipette)
+
+1. **FAIT EN BRANCHE** — Une seule source de plan Faith/accueil.
+2. **FAIT EN BRANCHE** — Objectifs personnels, préférences de parcours et tâches GM dans le repli Faith.
+3. **FAIT EN BRANCHE** — Provenance et fraîcheur du profil importé.
+4. **FAIT EN BRANCHE** — Navigation vers la rubrique de l'objectif sans action en jeu.
+5. **À VALIDER** — Exécuter `node scripts/test-faith-guide.cjs` et `node scripts/check-binch.mjs` sur la branche.
+6. **À VALIDER** — CI, prévisualisation mobile puis GitHub Pages après fusion.
+7. **À FAIRE** — Filtrer les alertes Faith par classe, zone et niveau importé, sans fausse progression.
+8. **À FAIRE** — Prochain point de talent Druide farouche depuis une unique route vérifiée (pas de duplication de Specs OpenCode).
+9. **À FAIRE** — Répertoire sourcé des sorts/maîtres de classe et recommandations d'équipement.
+10. **À FAIRE** — Parcours quêtes/PNJ/donjons/professions, puis recette de validation bêta GM pour le frère.
+
+---
+
 ## ChatGPT — chantier personnel économie / tests (2026-11-10)
 
 - `84c574d8` : `ah-craft.js` complète désormais les prix de revient en recherchant les **observations réellement datées**, avec royaume/faction explicites dans le pont de lecture `market-bridge.js` si le carnet AH ne possède pas de cotation directe. Aucune fusion ou écriture dans les deux registres ; en l'absence de portée, la cotation reste inconnue.
