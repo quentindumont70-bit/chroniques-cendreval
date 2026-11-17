@@ -385,3 +385,24 @@ test('Historique AH: la vue parle d’offre observée sans prétendre identifier
  assert.match(ui,/ne prouve pas une vente/);
  assert.match(ui,/deux scans GrimoireSync/);
 });
+
+test('Flux AH: quantités invalides ignorées (instantané, jour et comparaison)',()=>{
+ const now=Date.parse('2026-11-17T12:00:00Z');
+ const market='forever.normal.horde.us';
+ const feed=(row,days=[])=>({format:'binch-ah-feed-v2',markets:{[market]:{items:{2589:{row,days}}}}});
+ const options={realm:'Forever',now};
+ const valid=[10000,3,now-60000];
+ assert.equal(T.feedObservations(feed(valid),market,options).length,1);
+ for(const quantity of [null,-1,0,1.5,'3',undefined]){
+  const snapshot=feed([10000,quantity,now-60000]);
+  assert.equal(T.feedObservations(snapshot,market,options).length,0,'instant '+String(quantity));
+  const compared=T.crossMarket(snapshot,2589,now)[0];
+  assert.equal(compared.price,null,'invalid price candidate '+String(quantity));
+  assert.equal(compared.quantity,null,'invalid compared quantity '+String(quantity));
+  const daily=feed(null,[[Math.floor((now-86400000)/86400000),10000,null,quantity]]);
+  assert.equal(T.feedObservations(daily,market,options).length,0,'daily '+String(quantity));
+ }
+ assert.equal(T.crossMarket(feed(valid),2589,now)[0].price,10000);
+ assert.equal(T.feedObservations(feed(null,[[Math.floor((now-86400000)/86400000),10000,null,3]]),market,options).length,1);
+ assert.equal(T.feedObservations(feed([10000,3,now+60000]),market,options).length,0);
+});
