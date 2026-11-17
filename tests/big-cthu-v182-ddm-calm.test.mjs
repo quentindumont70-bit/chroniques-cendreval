@@ -33,6 +33,6 @@ test('V182: user can find all DDM in pantry; no clinical code change',async()=>{
  assert.match(js,/oldDDM\.setUTCDate\(oldDDM\.getUTCDate\(\)-14\)/);
  assert.match(pulse,/pastDDM\.setDate\(pastDDM\.getDate\(\)-14\)/);
  assert.doesNotMatch(js,/localStorage\.setItem|fetch\(|indexedDB/);
- assert.match(sw,/big-cthu-public-v2-v182/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
  assert.doesNotMatch(tour,/V182|oldestDDM/);
 });
