@@ -528,3 +528,58 @@ body[data-cthu-area] header .cthu-fast-capture:focus-visible{
 @media(max-width:650px){
  body[data-cthu-area] header .cthu-fast-capture{min-height:48px;padding:10px 12px}
 }
+
+/* V184 — thematic continuity for the existing Maison, Musique and Nutrition tentacles.
+   Presentation only; keep each module's forms, navigation and local storage intact. */
+html[data-cthu-theme] body[data-cthu-area="maison"],
+html[data-cthu-theme] body[data-cthu-area="musique"],
+html[data-cthu-theme] body[data-cthu-area="nutrition"]{
+ --cthu-area-ink:var(--cthu-accent);
+ --cthu-area-edge:var(--cthu-line);
+}
+html[data-cthu-theme] body[data-cthu-area] .hero,
+html[data-cthu-theme] body[data-cthu-area] .lead{
+ border-color:var(--cthu-area-edge);
+ background:var(--cthu-hero);
+ box-shadow:0 20px 65px rgba(0,0,0,.25),inset 0 1px rgba(255,255,255,.08);
+}
+html[data-cthu-theme] body[data-cthu-area] .panel,
+html[data-cthu-theme] body[data-cthu-area] .metric{
+ border-color:var(--cthu-area-edge);
+ background:var(--cthu-surface);
+}
+html[data-cthu-theme="premium"] body[data-cthu-area] .hero,
+html[data-cthu-theme="premium"] body[data-cthu-area] .lead,
+html[data-cthu-theme="premium"] body[data-cthu-area] .panel{
+ border-radius:18px;
+ border-color:rgba(222,194,144,.4);
+}
+html[data-cthu-theme="premium"] body[data-cthu-area] .hero h1,
+html[data-cthu-theme="premium"] body[data-cthu-area] .lead h1{
+ letter-spacing:.02em;text-shadow:0 4px 22px rgba(0,0,0,.38);
+}
+html[data-cthu-theme="organic"] body[data-cthu-area] .hero,
+html[data-cthu-theme="organic"] body[data-cthu-area] .lead{
+ border-radius:36px 14px 37px 15px;
+}
+html[data-cthu-theme="organic"] body[data-cthu-area] .panel{
+ border-radius:26px 11px 27px 13px;
+}
+html[data-cthu-theme="organic"] body[data-cthu-area] .hero h1,
+html[data-cthu-theme="organic"] body[data-cthu-area] .lead h1{
+ letter-spacing:-.045em;
+}
+html[data-cthu-theme="medical"] body[data-cthu-area] .hero,
+html[data-cthu-theme="medical"] body[data-cthu-area] .lead,
+html[data-cthu-theme="medical"] body[data-cthu-area] .panel{
+ border-radius:5px;
+ border-color:rgba(84,231,237,.5);
+ box-shadow:inset 3px 0 0 rgba(70,230,237,.4),0 16px 44px rgba(0,8,19,.3);
+}
+html[data-cthu-theme="medical"] body[data-cthu-area] .hero h1,
+html[data-cthu-theme="medical"] body[data-cthu-area] .lead h1{
+ letter-spacing:.055em;
+}
+html[data-cthu-theme] body[data-cthu-area] :is(button,a,input,select,textarea):focus-visible{
+ outline:3px solid var(--cthu-accent);outline-offset:3px;
+}
