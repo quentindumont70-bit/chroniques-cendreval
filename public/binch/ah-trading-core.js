@@ -108,11 +108,11 @@ function parseCommunity(json,{name,realm,now=Date.now()}={}){
  if(!d||!FYI_MARKET.test(String(d.market))||!Number.isSafeInteger(Number(d.item)))throw Error('Réponse auctionhouse.fyi non reconnue (champs market et item attendus).');
  const faction=String(d.market).includes('.horde.')?'Horde':'Alliance',label=clean(name,100)||('Objet '+d.item);
  const rows=[],src=COMMUNITY_SOURCE+' · '+d.market;
- if(Array.isArray(d.row)&&isCopper(d.row[0])){const t=parseTime(d.row[2]);if(t&&t<=now)rows.push({name:label,itemId:Number(d.item),priceCopper:d.row[0],quantity:Number.isSafeInteger(d.row[1])&&d.row[1]>0?d.row[1]:1,source:src,observedAt:new Date(t).toISOString(),realm:realm||d.market,faction})}
+ if(Array.isArray(d.row)&&isCopper(d.row[0])){const t=parseTime(d.row[2]);if(t&&t<=now)rows.push({name:label,itemId:Number(d.item),priceCopper:d.row[0],quantity:Number.isSafeInteger(d.row[1])&&d.row[1]>0?d.row[1]:1,source:src,observedAt:new Date(t).toISOString(),realm:realm||d.market,faction,region:'us',market:String(d.market)})}
  for(const day of Array.isArray(d.days)?d.days:[]){
   const [epochDay,low,,qty]=day,t=Number(epochDay)*DAY+12*HOUR; // milieu de journée UTC, journée close
   if(!Number.isSafeInteger(epochDay)||!isCopper(low)||t>now)continue;
-  rows.push({name:label,itemId:Number(d.item),priceCopper:low,quantity:Number.isSafeInteger(qty)&&qty>0?qty:1,source:src+' (plus bas du jour)',observedAt:new Date(t).toISOString(),realm:realm||d.market,faction});
+  rows.push({name:label,itemId:Number(d.item),priceCopper:low,quantity:Number.isSafeInteger(qty)&&qty>0?qty:1,source:src+' (plus bas du jour)',observedAt:new Date(t).toISOString(),realm:realm||d.market,faction,region:'us',market:String(d.market)});
  }
  return rows;
 }
@@ -124,6 +124,8 @@ function validObservation(r,now=Date.now()){
  if(name.length<2||!isCopper(price)||!Number.isInteger(qty)||qty<1||qty>1e9||!t||t>now)return null;
  if(!realm||!['Horde','Alliance'].includes(faction))return null; // un relevé sans marché identifié n'est jamais fusionné
  const extra={};
+ if(['eu','us','kr','tw'].includes(r.region))extra.region=r.region;
+ if(typeof r.market==='string'&&/^[a-z0-9._-]{3,100}$/i.test(r.market))extra.market=r.market;
  for(const k of ['listings','ask10','medianAsk','qtyAtFloor'])if(Number.isSafeInteger(Number(r[k]))&&Number(r[k])>=0)extra[k]=Number(r[k]);
  return {name,itemId:Number.isSafeInteger(Number(r.itemId))&&Number(r.itemId)>0?Number(r.itemId):null,price,quantity:qty,at:new Date(t).toISOString(),source:clean(r.source||'Import',120),scope:realm+'|'+faction,extra};
 }
@@ -131,19 +133,22 @@ function validObservation(r,now=Date.now()){
 function mergeObservations(store,rows,now=Date.now()){
  const base=store&&store.version===1&&Array.isArray(store.items)?store:{version:1,items:[],trades:[],alerts:[],fee:5};
  const next={...base,items:base.items.map(x=>({...x,history:Array.isArray(x.history)?x.history.slice():[]}))};
- let added=0,rejected=0,skipped=0;
+ let added=0,rejected=0,skipped=0,marketConflicts=0;
  for(const raw of Array.isArray(rows)?rows:[]){
   const r=validObservation(raw,now);if(!r){rejected++;continue}
   const key=r.scope+'|'+norm(r.name);
   let item=next.items.find(v=>v.key===key)||(r.itemId?next.items.find(v=>v.scope===r.scope&&v.itemId===r.itemId):null);
   if(!item){if(next.items.length>=MAX_ITEMS){skipped++;continue}item={key,scope:r.scope,name:r.name,history:[],last:0,quantity:0,observedAt:'',source:''};next.items.push(item)}
+  // Plusieurs rulesets/régions peuvent avoir le même realm « Forever » : jamais fusionner leurs cotations tierces.
+  if(item.history.some(h=>(r.extra.market&&h.market&&h.market!==r.extra.market)||
+      (r.extra.region&&h.region&&h.region!==r.extra.region))){rejected++;marketConflicts++;continue}
   if(r.itemId&&!item.itemId)item.itemId=r.itemId;
   const sample={price:r.price,quantity:r.quantity,at:r.at,source:r.source,...r.extra};
   if(item.history.some(x=>x.at===sample.at&&x.price===sample.price&&x.source===sample.source))continue;
   item.history.push(sample);item.history.sort((a,b)=>String(a.at).localeCompare(String(b.at)));item.history=item.history.slice(-MAX_HISTORY);added++;
   const last=item.history[item.history.length-1];item.last=last.price;item.quantity=last.quantity;item.observedAt=last.at;item.source=last.source;
  }
- return {store:next,added,rejected,skipped};
+ return {store:next,added,rejected,skipped,marketConflicts};
 }
 
 /* ---------- 4. Statistiques et confiance ---------- */
