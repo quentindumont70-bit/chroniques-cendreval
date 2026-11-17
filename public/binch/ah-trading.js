@@ -194,10 +194,13 @@ async function onAhl(form){
   const quote=AH.parseQuote(await response.json(),{...market,itemId});
   if(!quote.ok){target.innerHTML='<p class="bt-alert">'+esc(quote.reason)+'</p><a href="'+market.page+'" target="_blank" rel="noopener noreferrer">Consulter directement le marché sur AHledger</a>';return}
   const price=n=>n==null?'non renseigné':coin(n);
+  const rate=quote.estimatedSalesPerDay;
+  const liquidity=rate==null?'Rotation non estimable : historique de ventes insuffisant.':'Rotation estimée : '+rate.toLocaleString('fr-FR',{maximumFractionDigits:1})+' unité(s)/jour'+(quote.salesWindowDays?' sur '+quote.salesWindowDays+' jours':'')+'.';
   target.innerHTML='<article class="bt-card"><h4>'+esc(quote.name)+' · '+market.id.toUpperCase()+'</h4>'+
    '<p>Prix le plus bas : <strong>'+price(quote.minBuyout)+'</strong> · médiane : <strong>'+price(quote.median)+'</strong>'+
    ' · médiane sur 7 jours : '+price(quote.median7d)+'.</p>'+
    '<p>Quantité : '+(quote.quantity??'inconnue')+' · annonces : '+(quote.auctions??'inconnues')+' · source : '+esc(quote.source)+' · '+esc(when(quote.observedAt))+'.</p>'+
+   '<p class="bt-note">'+esc(liquidity)+' Estimation AHledger, non une preuve de ventes conclues ni une garantie de revente.</p>'+
    (quote.stale?'<p class="bt-alert">Relevé périmé (plus de 72 h) : pas de conseil d’achat.</p>':'<p class="bt-note">Donnée observée, pas une promesse de vente ni un ordre d’achat.</p>')+
    '<p><a href="'+esc(quote.attribution)+'" target="_blank" rel="noopener noreferrer">Prices from AHledger</a> · <a href="'+market.page+'" target="_blank" rel="noopener noreferrer">Voir le marché</a>.</p></article>';
  }catch(err){
