@@ -179,7 +179,7 @@ function tradePerformanceSection(p){
   kpi('Bénéfice FIFO calculable',coin(p.realized),p.matched+' unité(s), après commission et dépôts perdus rapprochés')+
   kpi('Dépôts réellement perdus',coin(p.depositsLost),coin(p.matchedDeposits)+' imputés au FIFO · '+coin(p.unmatchedDeposits)+' hors bénéfice calculable')+
   kpi('Coût d’achat inconnu',String(p.unmatched)+' unité(s)','exclues du bénéfice, jamais valorisées à zéro')+
-  kpi('Rendement sur coût rapproché',p.roi==null?'—':pct(p.roi),p.roi==null?'aucun coût d’achat connu':'dépôts saisis compris, autres frais non déclarés exclus')+'</div>';
+  kpi('Rendement achat + dépôts rapprochés',p.roi==null?'—':pct(p.roi),p.roi==null?'aucun coût d’achat connu':'dépôts saisis compris, autres frais non déclarés exclus')+'</div>';
  const table='<div class="bt-table"><table><thead><tr><th>Objet</th><th>Vendu</th><th>Coût connu</th><th>Sans coût</th><th>Dépôts perdus</th><th>Bénéfice FIFO</th><th>ROI</th><th>Dernière déclaration</th></tr></thead><tbody>'+
   p.rows.slice(0,40).map(x=>'<tr><td>'+esc(x.item)+'</td><td>'+x.sold+'</td><td>'+x.matched+'</td><td>'+x.unmatched+'</td><td>'+coin(x.depositsLost)+'</td><td>'+coin(x.realized)+'</td><td>'+(x.roi==null?'—':pct(x.roi))+'</td><td>'+esc(when(x.lastSale))+'</td></tr>').join('')+
   '</tbody></table></div>';
