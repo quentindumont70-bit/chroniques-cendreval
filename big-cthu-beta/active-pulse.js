@@ -46,7 +46,7 @@ function collect(){
    const notes=typeof x.notes==='string'?x.notes.slice(0,120):'';
    const rank=due&&due<=today?1:due&&due<=near?1.5:x.priority==='haute'?2:x.status==='doing'?3:6;
    return {id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.name,rank,due,status:x.status,next:(due?'Date cible : '+due+(notes?' · ':''):'')+notes};
-  }).sort((a,b)=>a.rank-b.rank||(a.status==='doing'?0:1)-(b.status==='doing'?0:1)||(a.due||'9999').localeCompare(b.due||'9999'));
+  }).sort((a,b)=>a.rank-b.rank||(a.due||'9999').localeCompare(b.due||'9999')||(a.status==='doing'?0:1)-(b.status==='doing'?0:1));
   if(source.kind==='Musique')selected=rows.filter(x=>x&&x.mode==='musique'&&['active','planned'].includes(x.status)&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).map(x=>({title:x.title,rank:x.status==='active'?5:7,next:typeof x.note==='string'?x.note.slice(0,120):''}));
   if(source.kind==='Jeux')selected=rows.filter(x=>x&&x.done===false&&typeof x.game==='string'&&x.game.length<=60&&typeof x.text==='string'&&x.text.trim()&&x.text.length<=180).map(x=>({title:x.game,rank:9,next:x.text}));
   total+=selected.length;
