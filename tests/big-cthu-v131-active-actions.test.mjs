@@ -414,7 +414,7 @@ test('V187: Capture cible un élément sans modifier les mécanismes de transmis
  assert.match(html,/\.item\.is-focused\{/);
  assert.match(html,/scrollIntoView\(\{block:'center'\}\)/);
  assert.match(js,/\.\/capture\.html#capture=/);
- assert.match(sw,/big-cthu-public-v2-v187/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
  assert.doesNotMatch(js,/localStorage\.setItem|fetch\(|XMLHttpRequest|WebSocket/);
  assert.doesNotMatch(tour,/V187|\.item\.is-focused/);
 });
@@ -432,4 +432,16 @@ test('V192: affiche davantage d’actions uniquement sur demande sans écriture'
  assert.equal(f.network(),0);
  const html=await read('index.html');
  assert.match(html,/id="activePulseToggle"/);
+});
+
+test('V194–V197: cockpit mobile compact, ancres accessibles et cache public renouvelé',async()=>{
+ const [css,sw,html]=await Promise.all(['cockpit-themes.css','sw.js','index.html'].map(read));
+ assert.match(css,/#activePulse > p\.muted:not\(#activePulseStatus\)/);
+ assert.match(css,/#activePulse,#nextSession,#priorities\{scroll-margin-top/);
+ assert.match(css,/#activePulseToggle\{min-height:44px/);
+ assert.match(sw,/const CACHE='big-cthu-public-v2-v196'/);
+ assert.match(sw,/'\.\/active-pulse\.js'/);
+ assert.match(sw,/'\.\/next-session\.js'/);
+ assert.match(html,/id="activePulseToggle"/);
+ assert.doesNotMatch(sw,/tidel_|Topaze|localStorage|indexedDB/);
 });
