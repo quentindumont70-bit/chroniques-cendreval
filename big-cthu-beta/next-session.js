@@ -44,7 +44,7 @@
   const counter=$('ns-count');if(counter)counter.textContent=remaining+' à retrouver';
   if(!rows.length){host.append(el('p','muted','Aucun rappel. Note simplement quoi reprendre quand l’envie de jouer revient.'));return}
   rows.forEach(item=>{
-   const line=el('div','ns-item'+(item.done?' isdone':''));
+   const line=el('div','ns-item'+(item.done?' isdone':''));line.id='session-'+item.id;
    const left=el('div','ns-content');
    left.append(el('strong','ns-game-name',item.game),el('span','ns-note',item.text));
    const actions=el('div','ns-actions');
@@ -63,6 +63,15 @@
    });
    actions.append(done,remove);line.append(left,actions);host.append(line);
   });
+  const hash=typeof location!=='undefined'&&typeof location.hash==='string'?location.hash:'';
+  if(hash.startsWith('#session=')){
+   let id;try{id=decodeURIComponent(hash.slice(9))}catch(e){return}
+   const target=document.getElementById('session-'+id);
+   if(target){target.className+=' is-target';if(typeof target.scrollIntoView==='function'){
+    const jump=()=>target.scrollIntoView({block:'center',behavior:'auto'});
+    if(typeof requestAnimationFrame==='function')requestAnimationFrame(jump);else jump();
+   }}
+  }
  }
  function setup(){
   const form=$('ns-form');if(!form)return;
