@@ -84,11 +84,11 @@ function render(){
  const available=selectedKind==='all'?matchedTotal:selectedKind==='Urgentes'?matchedUrgent:(matchCounts[selectedKind]||0);
  const compact=selectedKind==='all'?matchedCompact:selectedKind==='Urgentes'?matchedUrgentCompact:Math.min(available,2);
  root.replaceChildren();
- const count=$('activePulseCount');if(count)count.textContent=available===visible.length?available+' actions retrouvées':available+' actions · '+visible.length+' affichées';
+ const count=$('activePulseCount');if(count)count.textContent=available===visible.length?available+' action'+(available>1?'s':'')+' retrouvée'+(available>1?'s':''):available+' actions · '+visible.length+' affichées';
  const heroCount=$('cinemaPulseCount');if(heroCount)heroCount.textContent=total===0?(warnings?'Certaines actions indisponibles':'Aucune action en attente'):total+' action'+(total>1?'s':'')+' à reprendre';
- if(!visible.length)root.append(node('p',warnings?'Certaines données sont illisibles : impossible de garantir que tout est à jour.':selectedKind==='all'?'Aucune action en attente dans tes modules locaux. Tu peux simplement continuer ta journée.':'Aucune action en attente dans cette catégorie.','muted'));
+ if(!visible.length)root.append(node('p',warnings?'Certaines données sont illisibles : impossible de garantir que tout est à jour.':searchTerm?'Aucune action ne correspond à la recherche. Efface le filtre pour revenir aux rappels.':selectedKind==='all'?'Aucune action en attente dans tes modules locaux. Tu peux simplement continuer ta journée.':'Aucune action en attente dans cette catégorie.','muted'));
  for(const item of visible){
-  const link=node('a','','active-pulse-item'+(item.rank<=1?' is-urgent':''));
+  const link=node('a','','active-pulse-item'+(item.rank<=2?' is-urgent':''));
   link.href=item.url;
   link.append(node('small',item.kind),node('strong',item.title));
   if(item.next)link.append(node('span',item.next,'active-pulse-next'));
