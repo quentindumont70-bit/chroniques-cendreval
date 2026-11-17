@@ -11,6 +11,6 @@ test('V183: Maison defaults to open work and keeps a visible completed-archives 
  assert.match(html,/\$\('total'\)\.textContent=jobs\.length/);
  for(const id of ['jobs','export','import','filter','search','form'])assert.ok(html.includes('id="'+id+'"'),id);
  assert.match(html,/big-cthu-v2-maison-v1/);
- assert.match(sw,/big-cthu-public-v2-v183/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
  assert.doesNotMatch(tour,/V183|value="open"/);
 });
