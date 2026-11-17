@@ -18,6 +18,7 @@ const toGold=c=>Number.isFinite(c)?(c/10000).toFixed(4):'';
 const defaults=()=>({version:2,region:null,confirmedMarket:null,reservePct:40,maxItemPct:15,capitalOverride:null,feedMarket:null,autoFeed:false,decisions:[],alerts:[],imports:[],grimoire:null,view:'dashboard'});
 let state=Object.assign(defaults(),read(KEY,{}));if(state.version!==2){state.version=2;state.autoFeed=false;state.confirmedMarket=null;state.region=state.region||null} // revue : jamais d’intégration externe sans confirmation
 if(!Array.isArray(state.decisions))state.decisions=[];if(!Array.isArray(state.alerts))state.alerts=[];if(!Array.isArray(state.imports))state.imports=[];
+let lookupItemId=null,lookupItemName='';
 let pendingScan=null,historyItem='',simSeed=null,feed=read('binch.ah.feed.cache.v1',null),feedStatus='',feedTimer=null;
 const save=()=>{state.decisions=state.decisions.slice(-300);state.alerts=state.alerts.slice(-100);state.imports=state.imports.slice(-30);write(KEY,state)};
 
@@ -90,7 +91,7 @@ function vBags(c){
  return '<p class="bt-note">Sacs de '+esc(c.ch.pseudo)+' · source : '+esc(c.ch.inventory.src)+' · '+esc(when(c.ch.inventory.at))+'. <b>Sacs seulement</b> : la banque n’est pas lue par l’addon actuel.</p><div class="bt-cards">'+c.bags.map(b=>card({title:b.name+' ×'+b.count,price:b.price,reference:b.stats?.median??null,qty:b.count,margin:b.ahNetTotal!=null?b.ahNetTotal-b.vendorTotal:null,
   risks:b.stats?.sufficient?riskList(b.stats):[],confidence:b.stats?.confidence,at:b.lastAt,
   extra:'<p class="bt-decision bt-d-'+esc(b.decision.normalize('NFD').replace(/[^a-z]/gi,'').toLowerCase())+'">'+esc(b.decision)+'</p><p>'+esc(b.reasons.join(' '))+'</p><small>Marge affichée = net AH − revente marchand.</small>',
-  actions:b.price?'<button type="button" data-bt-decide="'+esc(b.name)+'" data-bt-action="'+esc(b.decision)+'" data-bt-ref="'+b.price+'" data-bt-qty="'+b.count+'">Noter ma décision</button>':''})).join('')+'</div>';
+  actions:(Number.isSafeInteger(Number(b.itemId))&&Number(b.itemId)>0&&Number(b.itemId)<=1000000?'<button type="button" data-bt-lookup="'+Number(b.itemId)+'" data-bt-lookup-name="'+esc(b.name)+'">Vérifier le prix EU/US</button>':'')+(b.price?'<button type="button" data-bt-decide="'+esc(b.name)+'" data-bt-action="'+esc(b.decision)+'" data-bt-ref="'+b.price+'" data-bt-qty="'+b.count+'">Noter ma décision</button>':'')})).join('')+'</div>';
 }
 const riskList=s=>{const r=[];if(s.volatility>=25)r.push('volatilité '+Math.round(s.volatility)+' %');if(s.ageH>=24)r.push('relevé > 24 h');if(s.n<5)r.push(s.n+' relevés');return r};
 function vRadar(c){
@@ -169,12 +170,12 @@ function ahledgerLookupSection(c){
  const market=AH?.market('eu','normal',faction);
  const link=market?.page||'https://ahledger.com';
  return '<section class="bt-ahl-source"><h3>Prix EU par objet · AHledger</h3>'+
-  '<p class="bt-note">Consultation ponctuelle de prix publics, sans clé API. Choisis la région, le type de serveur et la faction : cela ne modifie pas ton marché La Binch. Aucun achat, import ou enregistrement automatique.</p>'+
+  '<p class="bt-note">Consultation ponctuelle de prix publics, sans clé API. Choisis la région, le type de serveur et la faction : cela ne modifie pas ton marché La Binch. Aucun achat, import ou enregistrement automatique.</p>'+ (lookupItemId?'<p class="bt-honesty">Objet de tes sacs présélectionné : <b>'+esc(lookupItemName)+'</b> (#'+lookupItemId+'). Vérifie le marché avant de demander son cours.</p>':'')+
   '<form id="bt-ahl-query" class="bt-form">'+
   '<label class="bt-field">Région<select name="region"><option value="eu">Europe (EU)</option><option value="us">Amériques (US)</option></select></label>'+
   '<label class="bt-field">Mode<select name="ruleset"><option value="normal">Normal</option><option value="pvp">JcJ</option><option value="rp">RP</option><option value="rppvp">RP JcJ</option></select></label>'+
   '<label class="bt-field">Faction<select name="faction"><option value="horde"'+(faction==='horde'?' selected':'')+'>Horde</option><option value="alliance"'+(faction==='alliance'?' selected':'')+'>Alliance</option></select></label>'+
-  '<label class="bt-field">ID de l’objet WoW<input name="item" type="number" min="1" max="1000000" step="1" required placeholder="Ex. 2318"></label>'+
+  '<label class="bt-field">ID de l’objet WoW<input name="item" type="number" min="1" max="1000000" step="1" required value="'+(lookupItemId||'')+'" placeholder="Ex. 2318"></label>'+
   '<button type="submit">Consulter ce prix</button></form>'+
   '<div id="bt-ahl-result" role="status" aria-live="polite"></div>'+
   '<p class="bt-note">Source tierce gratuite avec attribution. Les prix ne sont ni garantis ni versés dans ton carnet. <a href="'+link+'" target="_blank" rel="noopener noreferrer">Ouvrir le marché Europe · Normal · '+esc(faction==='horde'?'Horde':'Alliance')+' chez AHledger</a> · <a href="https://ahledger.com/developers" target="_blank" rel="noopener noreferrer">API et conditions</a>.</p></section>';
@@ -342,6 +343,11 @@ function mount(){
  tab.addEventListener('click',()=>{nav.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x===tab));main.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x===page));window.scrollTo({top:0,behavior:'auto'});render();loadFeed(false);clearInterval(feedTimer);feedTimer=setInterval(()=>{if(page.classList.contains('active')&&document.visibilityState==='visible')loadFeed(true)},600000)});
  page.addEventListener('click',e=>{
   const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.btLookup){
+   const id=Number(t.dataset.btLookup);if(!Number.isSafeInteger(id)||id<1||id>1000000)return;
+   lookupItemId=id;lookupItemName=String(t.dataset.btLookupName||'Objet #'+id).slice(0,100);
+   state.view='live';save();render();$('bt-ahl-query')?.scrollIntoView({behavior:'auto',block:'start'});return;
+  }
   if(t.dataset.btView){state.view=t.dataset.btView;save();render();return}
   if(t.dataset.btSim){simSeed=JSON.parse(t.dataset.btSim);state.view='sim';render();return}
   if(t.dataset.btDecide){
