@@ -509,3 +509,18 @@ test('V208–V210: urgency selection happens before per-module display cap; acti
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
 });
+
+test('V211–V214: recherche par titre ou prochaine action sans accents ni écriture',async()=>{
+ const f=await fixture({[K.tasks]:JSON.stringify([{id:'a',text:'Café prévu',done:false},{id:'b',text:'Faire des travaux',done:false}]),[K.gaming]:JSON.stringify([{id:'g',game:'WoW',text:'Retrouver le guérisseur',done:false}])});
+ const byTitle=JSON.parse(JSON.stringify(f.ctx.testCollect(false,8,'all','cafe')));
+ assert.deepEqual(byTitle.items.map(x=>x.title),['Café prévu']);
+ assert.equal(byTitle.matchedTotal,1);
+ const byNote=JSON.parse(JSON.stringify(f.ctx.testCollect(false,8,'all','guerisseur')));
+ assert.deepEqual(byNote.items.map(x=>x.title),['WoW']);
+ assert.equal(JSON.parse(JSON.stringify(f.ctx.testCollect(false,8,'all','introuvable'))).matchedTotal,0);
+ const html=await read('index.html');
+ assert.match(html,/id="activePulseSearch"/);
+ assert.match(html,/id="activePulseClear"/);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
