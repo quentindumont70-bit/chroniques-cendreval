@@ -493,3 +493,19 @@ test('V204–V207: urgences regroupées, compteur exact et cache public à jour'
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
 });
+
+test('V208–V210: urgency selection happens before per-module display cap; active music first',async()=>{
+ const days=n=>{const d=new Date();d.setDate(d.getDate()+n);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+ const f=await fixture({
+  [K.pantry]:JSON.stringify([{id:'old',name:'DLC ancienne',kind:'DLC',date:days(-3)},{id:'other',name:'DDM future',kind:'DDM',date:days(2)},{id:'later',name:'DLC semaine',kind:'DLC',date:days(5)}]),
+  [K.musique]:JSON.stringify([{id:'plan',title:'Planifiée récente',mode:'musique',status:'planned',date:days(0)},{id:'doing',title:'Active ancienne',mode:'musique',status:'active',date:days(-3)}])
+ });
+ const d=f.collect();
+ assert.deepEqual(d.items.filter(x=>x.kind==='Musique').map(x=>x.title),['Active ancienne','Planifiée récente']);
+ const urgent=JSON.parse(JSON.stringify(f.ctx.testCollect(false,8,'Urgentes')));
+ assert.ok(urgent.items.every(x=>x.rank<=2));
+ assert.equal(urgent.counts.Urgentes,1);
+ assert.equal(urgent.items.find(x=>x.title==='DLC ancienne').url,'./garde-manger.html#food=old');
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
