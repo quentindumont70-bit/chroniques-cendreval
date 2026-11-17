@@ -76,7 +76,7 @@ function vDashboard(c){
   kpi('Réserve conservée',c.budget?coin(c.budget.reserve):'—',state.reservePct+' % du capital')+
   kpi('Valeur des sacs seulement (net AH)',stockAH?coin(stockAH):'—','marchand : '+coin(stockVendor))+
   kpi('Objets à vendre / garder',count('Vendre à l’AH')+' / '+count('Garder'),count('Transformer')+' à transformer · '+count('Données insuffisantes')+' sans cote')+
-  kpi('Opportunités étayées',String(c.opps.length),'décote ≥ 15 %, relevé < 24 h')+
+  kpi('Achats à étudier',String(c.opps.filter(o=>o.status==='Achat à étudier').length),c.opps.filter(o=>o.status!=='Achat à étudier').length+' décote(s) à surveiller')+
   kpi('Résultat réalisé (FIFO)',coin(c.ledger.realized||0),'d’après tes opérations déclarées')+'</div>'+
   '<h3>Priorités du moment</h3>'+(actions.length?'<ol class="bt-list">'+actions.map(a=>'<li>'+esc(a)+'</li>').join('')+'</ol>':empty('Données insuffisantes pour proposer une action. Lance <code>/grimoire scan</code> à l’hôtel des ventes, fais <code>/reload</code>, puis importe GrimoireSync.lua dans « Données ».'))+
   '<h3>Marchés en mouvement</h3>'+moversTable(T.movers(c.index));
