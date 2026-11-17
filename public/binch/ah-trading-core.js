@@ -68,12 +68,12 @@ function parseGrimoire(text,now=Date.now()){
  const character={name:decode(c[0]),realm:decode(c[1]),level:Number(c[2])||0,classToken:decode(c[3]),faction:decode(c[5]),gold:Number.isSafeInteger(Number(c[7]))&&Number(c[7])>=0?Number(c[7]):null,capturedAt:parseTime(Number(c[8]))};
  const professions={};
  for(const row of (s.P||'').split(';').filter(Boolean)){const [n,rank,max]=row.split(',');const r=Number(rank);if(n&&Number.isFinite(r)&&r>=0&&r<=450)professions[decode(n)]={rank:r,max:Number(max)||null}}
- const inventory=(s.I||'').split(';').filter(Boolean).slice(0,500).map(row=>{const [id,count,bag,slot,quality,vendor,name]=row.split(',');return {id:Number(id),count:Number(count)||1,bag:Number(bag),slot:Number(slot),quality:Number(quality)||0,vendor:Number(vendor)||0,name:decode(name)}}).filter(x=>Number.isSafeInteger(x.id)&&x.id>0);
+ const inventory=(s.I||'').split(';').filter(Boolean).slice(0,500).map(row=>{const [id,count,bag,slot,quality,vendor,name]=row.split(',');return {id:Number(id),count:Number(count),bag:Number(bag),slot:Number(slot),quality:Number(quality)||0,vendor:Number(vendor)||0,name:decode(name)}}).filter(x=>Number.isSafeInteger(x.id)&&x.id>0&&Number.isSafeInteger(x.count)&&x.count>0&&x.count<=1e9);
  let scan=null;
  if(s.AH!==undefined){
   const [realm,faction,ts,total]=(s.AH||'').split(',');
   const at=parseTime(Number(ts));
-  const listings=(s.A||'').split(';').filter(Boolean).map(row=>{const [id,count,buyout,unit,name]=row.split(',');return {id:Number(id),count:Number(count)||1,buyout:Number(buyout),unit:Number(unit),name:decode(name)}}).filter(x=>Number.isSafeInteger(x.id)&&x.id>0&&isCopper(x.unit)&&Number.isInteger(x.count)&&x.count>0);
+  const listings=(s.A||'').split(';').filter(Boolean).map(row=>{const [id,count,buyout,unit,name]=row.split(',');return {id:Number(id),count:Number(count),buyout:Number(buyout),unit:Number(unit),name:decode(name)}}).filter(x=>Number.isSafeInteger(x.id)&&x.id>0&&isCopper(x.unit)&&Number.isSafeInteger(x.count)&&x.count>0&&x.count<=1e9);
   const valid=decode(realm)&&['Horde','Alliance'].includes(decode(faction))&&at&&at>0&&at<=now+5*60000;
   scan={realm:decode(realm),faction:decode(faction),at:at?new Date(at).toISOString():null,declaredTotal:Number(total)||0,listings,valid:!!valid&&listings.length>0,
    problem:!listings.length?'Aucune annonce dans le dernier scan enregistré.':!valid?'Scan sans royaume, faction ou date exploitable.':null};
