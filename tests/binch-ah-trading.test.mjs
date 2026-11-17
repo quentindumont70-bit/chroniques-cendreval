@@ -385,3 +385,21 @@ test('Historique AH: la vue parle d’offre observée sans prétendre identifier
  assert.match(ui,/ne prouve pas une vente/);
  assert.match(ui,/deux scans GrimoireSync/);
 });
+
+test('GrimoireSync: aucune unité inventée pour sacs ou enchères avec quantité invalide',()=>{
+ const p=payload({inventory:[
+  {id:2318,count:3,name:'Cuir léger'},
+  {id:2319,count:0,name:'Cuir moyen'},
+  {id:4234,count:-2,name:'Cuir lourd'},
+  {id:4304,count:1.5,name:'Cuir épais'}],
+  listings:[
+   {id:2318,count:3,unit:100,name:'Cuir léger'},
+   {id:2319,count:0,unit:200,name:'Cuir moyen'},
+   {id:4234,count:-2,unit:300,name:'Cuir lourd'},
+   {id:4304,count:1.5,unit:400,name:'Cuir épais'}]});
+ const g=T.parseGrimoire(lua(p),NOW);
+ assert.deepEqual(g.inventory.map(x=>[x.id,x.count]),[[2318,3]]);
+ assert.equal(g.scan.valid,true,'un scan contenant une annonce valable reste exploitable');
+ assert.deepEqual(g.scan.listings.map(x=>[x.id,x.count]),[[2318,3]]);
+ assert.equal(T.scanObservations(g.scan).length,1);
+});
