@@ -463,3 +463,17 @@ test('V198–V200: counts par catégorie, filtre accessible et aucune écriture'
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
 });
+
+test('V201–V203: expansion progressive jusqu’à 48 par rubrique et accès mobile',async()=>{
+ const input=Array.from({length:30},(_,i)=>({id:'p'+i,text:'Priorité '+i,done:false}));
+ const f=await fixture({[K.tasks]:JSON.stringify(input)});
+ assert.equal(f.collect().items.length,2);
+ assert.equal(JSON.parse(JSON.stringify(f.ctx.testCollect(true,8))).items.length,8);
+ assert.equal(JSON.parse(JSON.stringify(f.ctx.testCollect(true,24))).items.length,24);
+ assert.equal(JSON.parse(JSON.stringify(f.ctx.testCollect(true,48))).items.length,30);
+ const css=await read('cockpit-themes.css');
+ assert.match(css,/#activePulseCategory\{display:block/);
+ assert.match(css,/#activePulseToggle\{min-height:44px/);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
