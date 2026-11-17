@@ -56,6 +56,7 @@ function render(){
  if(!current.length){host.append(element('p','muted','Aucun projet en cours : une idée suffit pour commencer.'));return}
  for(const item of current.slice(0,20)){
   const card=element('article','project'),name=element('strong','',item.title),date=element('small','',item.date+' · '+(item.status==='active'?'En cours':'À démarrer'));
+  card.id='studio-'+item.id;
   card.append(name,date);
   if(item.note)card.append(element('p','',item.note));
   const actions=element('div','project-actions');
@@ -98,6 +99,15 @@ function render(){
   actions.append(done,edit,link);card.append(actions);host.append(card);
  }
  if(current.length>20)host.append(element('p','muted','+'+(current.length-20)+' projets dans l’atelier complet.'));
+ const hash=typeof location!=='undefined'&&typeof location.hash==='string'?location.hash:'';
+ if(hash.startsWith('#studio=')){
+  let id;try{id=decodeURIComponent(hash.slice(8))}catch(e){return}
+  const target=document.getElementById('studio-'+id);if(target)target.classList.add('is-deep-linked');
+  if(target&&typeof target.scrollIntoView==='function'){
+   const jump=()=>target.scrollIntoView({block:'center',behavior:'auto'});
+   if(typeof requestAnimationFrame==='function')requestAnimationFrame(jump);else jump();
+  }
+ }
 }
 function setup(){
  const form=$('studio-form');if(!form)return;
