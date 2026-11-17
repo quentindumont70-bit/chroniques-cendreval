@@ -179,7 +179,9 @@ function ahledgerLookupSection(c){
   '<label class="bt-field">Mode<select name="ruleset"><option value="normal">Normal</option><option value="pvp">JcJ</option><option value="rp">RP</option><option value="rppvp">RP JcJ</option></select></label>'+
   '<label class="bt-field">Faction<select name="faction"><option value="horde"'+(faction==='horde'?' selected':'')+'>Horde</option><option value="alliance"'+(faction==='alliance'?' selected':'')+'>Alliance</option></select></label>'+
   '<label class="bt-field">ID de l’objet WoW<input name="item" type="number" min="1" max="1000000" step="1" required value="'+(lookupItemId||'')+'" placeholder="Ex. 2318"></label>'+
-  '<button type="submit">Consulter ce prix</button></form>'+
+  '<button type="submit">Consulter ce prix</button>'+
+  '<div class="bt-actions">'+[['deals','Bonnes affaires'],['crafting','Craft rentable'],['structure','Liquidité AH'],['signals','Signaux de prix']].map(([tool,label])=>
+   '<a data-bt-market-tool="'+tool+'" href="'+esc(AH?.marketToolUrl(market,tool)||'https://ahledger.com')+'" target="_blank" rel="noopener noreferrer">'+esc(label)+' ↗</a>').join('')+'</div></form>'+
   '<div id="bt-ahl-result" role="status" aria-live="polite"></div>'+
   '<p class="bt-note">Source tierce gratuite avec attribution. Les prix ne sont ni garantis ni versés dans ton carnet. <a href="'+link+'" target="_blank" rel="noopener noreferrer">Ouvrir le marché Europe · Normal · '+esc(faction==='horde'?'Horde':'Alliance')+' chez AHledger</a> · <a href="https://ahledger.com/developers" target="_blank" rel="noopener noreferrer">API et conditions</a>.</p></section>';
 }
@@ -367,6 +369,11 @@ function mount(){
   if(t.id==='bt-scan-cancel'){pendingScan=null;render()}
  });
  page.addEventListener('change',e=>{
+  // Ces liens correspondent au marché réellement choisi dans les sélecteurs, sans fetch ni import.
+  if(e.target.closest('#bt-ahl-query')){
+   const form=$('bt-ahl-query'),d=new FormData(form),m=AH?.market(String(d.get('region')||''),String(d.get('ruleset')||''),String(d.get('faction')||''));
+   form.querySelectorAll('a[data-bt-market-tool]').forEach(a=>{const url=AH?.marketToolUrl(m,a.dataset.btMarketTool);if(url)a.href=url});
+  }
   if(e.target.id==='bt-scan-file'){const f=e.target.files?.[0];e.target.value='';onScanFile(f)}
   if(e.target.id==='bt-history-item'){historyItem=e.target.value;render()}
   if(e.target.id==='bt-feed-market'){state.feedMarket=e.target.value||null;save();render()}
