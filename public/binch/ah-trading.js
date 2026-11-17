@@ -61,7 +61,7 @@ function card({title,price,reference,qty,margin,risks,confidence,at,extra='',act
 }
 function scopeBanner(c){
  if(!c.scope)return '<p class="bt-alert">Choisis d’abord ton royaume et ta faction dans l’onglet « Bourse d’Azeroth » (ou importe un scan ci-dessous) : sans marché identifié, aucun conseil n’est produit.</p>';
- return '<p class="bt-honesty">Marché : <b>'+esc(c.scope.realm)+' · '+esc(c.scope.faction)+'</b> · '+c.index.items.length+' objets suivis, '+c.fresh+' relevés de moins de 24 h · dernier scan GrimoireSync : '+(c.lastScan?esc(when(c.lastScan)):'aucun')+'. <b>Pas de flux temps réel</b> : WoW Forever n’expose pas d’API d’hôtel des ventes, les cours viennent de tes scans et relevés.</p>';
+ return '<p class="bt-honesty">Marché : <b>'+esc(c.scope.realm)+' · '+esc(c.scope.faction)+'</b> · '+c.index.items.length+' objets suivis, '+c.fresh+' relevés de moins de 24 h · dernier scan GrimoireSync : '+(c.lastScan?esc(when(c.lastScan)):'aucun')+'. <b>Pas de cours temps réel garanti</b> : les prix disponibles viennent de scans et de relevés datés. Un fournisseur Blizzard Forever existe à titre expérimental dans le collecteur, sans garantie de disponibilité.</p>';
 }
 
 /* ---------- vues ---------- */
@@ -165,7 +165,7 @@ function skinHtml(c){
 }
 function vLive(c){
  const sum=T.feedSummary(feed),mk=feedMarketId();
- const head='<p class="bt-honesty">Flux communautaire auctionhouse.fyi, republié toutes les 3 h par La Binch et relu ici toutes les 10 minutes. Les prix dépendent des scans d’autres joueurs : <b>ce n’est pas un flux temps réel</b>. Ton propre <code>/grimoire scan</code> reste la source la plus fraîche.</p>';
+ const head='<p class="bt-honesty">Flux de relevés : auctionhouse.fyi (marchés US) et, seulement si configurée, API Blizzard Forever expérimentale. Publication planifiée toutes les 3 h, relecture ici toutes les 10 minutes. Les prix dépendent des scans d’autres joueurs : <b>ce n’est pas un flux temps réel</b>. Ton propre <code>/grimoire scan</code> reste la source la plus fraîche.</p>';
  if(!sum)return head+empty(feedStatus||'Flux pas encore disponible (il sera publié après fusion de la PR et premier passage du collecteur).')+'<button type="button" id="bt-feed-refresh">Réessayer</button>';
  const markets=sum.markets;
  const ids=[...new Set(markets.flatMap(m=>Object.keys(feed.markets[m.market].items||{})))];
