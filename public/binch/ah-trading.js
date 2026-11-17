@@ -263,7 +263,7 @@ function vLive(c){
  const head='<p class="bt-honesty">Flux de relevés : auctionhouse.fyi (marchés US) et, seulement si configurée, API Blizzard Forever expérimentale. Publication planifiée toutes les 3 h, relecture ici toutes les 10 minutes. Les prix dépendent des scans d’autres joueurs : <b>ce n’est pas un flux temps réel</b>. Ton propre <code>/grimoire scan</code> reste la source la plus fraîche.</p>';
  if(!sum)return head+ahledgerLookupSection(c)+empty(feedStatus||'Flux communautaire actuellement indisponible.')+'<button type="button" id="bt-feed-refresh">Réessayer</button>';
  const markets=sum.markets;
- const allIds=[...new Set(markets.flatMap(m=>Object.keys(feed.markets[m.market].items||{})))];
+ const allIds=[...new Set([...Object.keys(feed.markets[mk]?.items||{}),...markets.flatMap(m=>Object.keys(feed.markets[m.market].items||{}))])];
  const ids=allIds.slice(0,150); // limite DOM mobile : le flux complet reste en mémoire sans troncature des données
  const table='<div class="bt-table"><table><thead><tr><th>Objet</th>'+markets.map(m=>'<th>'+esc(m.label)+'</th>').join('')+'</tr></thead><tbody>'+ids.map(id=>{
   const cm=T.crossMarket(feed,Number(id)),comparable=cm.filter(x=>x.price!=null&&x.fresh&&x.region===state.region&&x.faction===c.scope?.faction);
