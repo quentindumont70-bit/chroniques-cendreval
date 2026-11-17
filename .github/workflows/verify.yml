@@ -33,7 +33,7 @@ jobs:
       - name: Exécuter les tests et compiler GitHub Pages
         run: npm test
       - name: Tests AH et navigation mobile de La Binch
-        run: node --test tests/binch-ah-trading.test.mjs tests/binch-ah-feed.test.mjs tests/binch-ah-mobile.test.mjs tests/binch-ahledger.test.mjs
+        run: node --test tests/binch-ah-trading.test.mjs tests/binch-ah-portfolio.test.mjs tests/binch-ah-feed.test.mjs tests/binch-ah-mobile.test.mjs tests/binch-ahledger.test.mjs
       - name: Vérifier la présence de Big Cthu dans le paquet Pages
         run: |
           node scripts/stage-big-cthu-beta.mjs
