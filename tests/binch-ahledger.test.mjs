@@ -63,7 +63,7 @@ test('AHledger: UI access is click initiated, no automatic import or persistent 
  assert.match(ui,/id="bt-ahl-query"/);
  assert.match(ui,/data-bt-market-tool/);
  assert.match(ui,/form\.querySelectorAll\('a\[data-bt-market-tool\]'\)/);
- assert.match(ui,/AH\?\.marketToolUrl\(m,a\.dataset\.btMarketTool\)/);
+ assert.match(ui,/AH\?\.marketToolUrl\?\.\(m,a\.dataset\.btMarketTool\)/);
  const area=ui.slice(ui.indexOf('async function onAhl('),ui.indexOf('function vLive('));
  assert.match(area,/await fetch\(url,\{signal:ctrl\.signal,cache:'no-store'\}\)/);
  assert.doesNotMatch(area,/localStorage|write\(|mergeObservations/);
