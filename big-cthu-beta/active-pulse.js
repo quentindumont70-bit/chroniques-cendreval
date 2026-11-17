@@ -21,7 +21,7 @@ function read(key){
   return {rows,bad:false};
  }catch(e){return {rows:[],bad:true}}
 }
-function collect(expanded=false,limit=8,kind='all'){
+function collect(expanded=false,limit=8,kind='all',term=''){
  const now=new Date();
  const today=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
  const clock=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
@@ -33,7 +33,9 @@ function collect(expanded=false,limit=8,kind='all'){
  const near=[nearDate.getFullYear(),String(nearDate.getMonth()+1).padStart(2,'0'),String(nearDate.getDate()).padStart(2,'0')].join('-');
  const results=[];
  let warnings=0,total=0,compactVisible=0,urgentCompact=0,urgentTotal=0;
- const counts={};
+ const counts={},matchCounts={};
+ let matchedTotal=0,matchedCompact=0,matchedUrgent=0,matchedUrgentCompact=0;
+ const needle=String(term||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
  for(const source of SOURCES){
   const {rows,bad}=read(source.key);
   if(bad){warnings++;continue}
@@ -56,11 +58,17 @@ function collect(expanded=false,limit=8,kind='all'){
   total+=selected.length;
   compactVisible+=Math.min(selected.length,source.limit);
   // In urgency view, select urgent rows BEFORE limiting each module.
-  const shown=kind==='Urgentes'?selected.filter(item=>item.rank<=2):selected;
+  const eligible=kind==='Urgentes'?selected.filter(item=>item.rank<=2):selected;
+  const shown=needle?eligible.filter(item=>(item.title+' '+(item.next||'')).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().includes(needle)):eligible;
+  matchCounts[source.kind]=shown.length;
+  matchedTotal+=shown.length;
+  matchedCompact+=Math.min(shown.length,source.limit);
+  matchedUrgent+=shown.filter(item=>item.rank<=2).length;
+  matchedUrgentCompact+=shown.slice(0,source.limit).filter(item=>item.rank<=2).length;
   for(const item of shown.slice(0,expanded?limit:source.limit))results.push({...item,kind:source.kind,url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.kind==='Agenda'&&item.id?'./agenda.html#event='+encodeURIComponent(item.id):source.kind==='Captures'&&item.id?'./capture.html#capture='+encodeURIComponent(item.id):source.kind==='Priorités'&&item.id?'#priority-'+encodeURIComponent(item.id):source.kind==='Musique'&&item.id?'./musique.html#studio='+encodeURIComponent(item.id):source.kind==='Stock'&&item.id?'./garde-manger.html#food='+encodeURIComponent(item.id):source.kind==='Jeux'&&item.id?'#session='+encodeURIComponent(item.id):source.url});
  }
  counts.Urgentes=urgentTotal;
- return {items:results.sort((a,b)=>a.rank-b.rank),warnings,total,compactVisible,counts,urgentCompact};
+ return {items:results.sort((a,b)=>a.rank-b.rank),warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact};
 }
 function node(tag,text,className){
  const x=document.createElement(tag);
@@ -68,13 +76,13 @@ function node(tag,text,className){
  if(className)x.className=className;
  return x;
 }
-let expanded=false,selectedKind='all',pageSize=8;
+let expanded=false,selectedKind='all',pageSize=8,searchTerm='';
 function render(){
  const root=$('activePulseList');if(!root)return;
- const {items,warnings,total,compactVisible,counts,urgentCompact}=collect(expanded,pageSize,selectedKind);
+ const {items,warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact}=collect(expanded,pageSize,selectedKind,searchTerm);
  const visible=selectedKind==='all'?items:selectedKind==='Urgentes'?items.filter(item=>item.rank<=2):items.filter(item=>item.kind===selectedKind);
- const available=selectedKind==='all'?total:(counts[selectedKind]||0);
- const compact=selectedKind==='all'?compactVisible:selectedKind==='Urgentes'?urgentCompact:Math.min(available,2);
+ const available=selectedKind==='all'?matchedTotal:selectedKind==='Urgentes'?matchedUrgent:(matchCounts[selectedKind]||0);
+ const compact=selectedKind==='all'?matchedCompact:selectedKind==='Urgentes'?matchedUrgentCompact:Math.min(available,2);
  root.replaceChildren();
  const count=$('activePulseCount');if(count)count.textContent=available===visible.length?available+' actions retrouvées':available+' actions · '+visible.length+' affichées';
  const heroCount=$('cinemaPulseCount');if(heroCount)heroCount.textContent=total===0?(warnings?'Certaines actions indisponibles':'Aucune action en attente'):total+' action'+(total>1?'s':'')+' à reprendre';
@@ -89,6 +97,8 @@ function render(){
  const toggle=$('activePulseToggle');
  if(toggle){toggle.hidden=available<=compact;toggle.textContent=expanded?(visible.length<available&&pageSize<48?'Afficher encore':'Afficher moins'):'Afficher plus d’actions';toggle.setAttribute('aria-expanded',expanded?'true':'false');toggle.onclick=()=>{if(!expanded){expanded=true;pageSize=8}else if(visible.length<available&&pageSize<48){pageSize=Math.min(48,pageSize+16)}else{expanded=false;pageSize=8}render()}}
  const category=$('activePulseCategory');if(category){category.value=selectedKind;category.onchange=()=>{selectedKind=category.value;expanded=false;pageSize=8;render()}}
+ const search=$('activePulseSearch');if(search){if(search.value!==searchTerm)search.value=searchTerm;search.oninput=()=>{searchTerm=search.value.slice(0,100);expanded=false;pageSize=8;render()};search.onkeydown=e=>{if(e.key==='Escape'&&searchTerm){searchTerm='';expanded=false;pageSize=8;render()}}}
+ const clear=$('activePulseClear');if(clear){clear.hidden=!searchTerm;clear.onclick=()=>{searchTerm='';expanded=false;pageSize=8;render();if(search&&typeof search.focus==='function')search.focus()}}
  const status=$('activePulseStatus');
  if(status)status.textContent=warnings?'Certaines données locales sont illisibles ; aucune n’a été modifiée.':available>visible.length?'Affichage de '+visible.length+' sur '+available+' actions. Rappels lus localement, sans copie.':'Rappels lus localement, sans copie ni synchronisation.';
 }
