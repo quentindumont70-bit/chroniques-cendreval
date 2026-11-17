@@ -269,7 +269,7 @@ test('V181: les vraies urgences passent devant les DDM et les loisirs sans doubl
  const iso=n=>{const d=new Date();d.setDate(d.getDate()+n);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
  const f=await fixture({
   [K.pantry]:JSON.stringify([
-   {id:'ddm',name:'Conserve fictive',kind:'DDM',date:iso(-25)},
+   {id:'ddm',name:'Conserve fictive',kind:'DDM',date:iso(-5)},
    {id:'dlc',name:'Produit DLC fictif',kind:'DLC',date:iso(-1)}
   ]),
   [K.agenda]:JSON.stringify([{id:'rdv',title:'Rendez-vous ce jour',date:iso(0),category:'perso'}]),
@@ -299,4 +299,20 @@ test('V181: CSS, accessibilité et stockage existant sont préservés',async()=>
  assert.doesNotMatch(js,/localStorage\.setItem|fetch\(|XMLHttpRequest|WebSocket/);
  assert.match(sw,/big-cthu-public-v2-v181/);
  assert.doesNotMatch(tour,/V181|is-urgent/);
+});
+
+test('V182: une DDM dépassée depuis longtemps reste dans la source sans saturer le cockpit',async()=>{
+ const iso=n=>{const d=new Date();d.setDate(d.getDate()+n);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+ const pantry=[
+  {id:'old',name:'DDM 30 jours',kind:'DDM',date:iso(-30)},
+  {id:'recent',name:'DDM 5 jours',kind:'DDM',date:iso(-5)},
+  {id:'dlc',name:'DLC dépassée',kind:'DLC',date:iso(-31)}
+ ];
+ const raw=JSON.stringify(pantry);
+ const f=await fixture({[K.pantry]:raw});
+ assert.deepEqual(f.collect().items.map(x=>x.title),['DLC dépassée','DDM 5 jours']);
+ assert.equal(f.collect().total,2);
+ assert.equal(f.stored.get(K.pantry),raw);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
 });
