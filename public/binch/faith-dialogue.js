@@ -22,20 +22,25 @@ function context(){
  const market=read('binch.ah.market.v1',{}),realm=String(scope.realm||'').trim().toLocaleLowerCase('fr'),faction=['Horde','Alliance'].includes(scope.faction)?scope.faction:'';
  const scoped=Array.isArray(market.items)?market.items.filter(x=>(x.scope||'legacy')===(realm&&faction?realm+'|'+faction:'legacy')):[];
  const manual=window.BinchMarketBridge?.snapshot(read('binch.market.v1',{}),market,{realm,faction});
- return {name:name||'Aventurier',className:clean(p.classe||'',40),spec:clean(d.spec||d.specialization||p.specialization||'',55),level:Number.isInteger(level)&&level>0&&level<=60?level:null,same,zone:clean(same?last.zone:d.zone||'',75),date:same?last.updated:null,realm,faction,prices:scoped,manualMarket:manual,quests:same&&Array.isArray(last.questLog)?last.questLog:[],tasks:Array.isArray(roster)?roster.filter(x=>x.status!=='done'):[],gear:same&&Array.isArray(last.equipment)?last.equipment:[]};
+ return {name:name||'Aventurier',className:clean(p.classe||'',40),spec:clean(d.spec||d.specialization||p.specialization||'',55),level:Number.isInteger(level)&&level>0&&level<=60?level:null,same,zone:clean(same?last.zone:d.zone||'',75),date:same?(last.updated||last.at||last.date||null):null,realm,faction,prices:scoped,manualMarket:manual,quests:same&&Array.isArray(last.questLog)?last.questLog:[],tasks:Array.isArray(roster)?roster.filter(x=>x.status!=='done'):[],gear:same&&Array.isArray(last.equipment)?last.equipment:[]};
 }
-function reply(input,c){
+const PRIORITY_RE=/que faire|quoi faire|prochain(?:e)? (?:objectif|action|qu[êe]te)|priorit[ée]|par quoi commencer|ordre du jour|plan d.aventure|leveling maintenant/;
+const PROFILE_RE=/mon profil|mon personnage|qui suis.je|quel(?:le)? (?:est )?mon niveau|quel niveau|quelle zone|o[ùu] suis.je/;
+function currentPlan(c){
+ const shared=window.BinchUltimate?.getPlan?.();
+ if(shared&&Array.isArray(shared.actions))return shared;
+ const p=read('grimoire.hub.v3',{}),engine=window.BinchJourneyEngine;
+ if(!engine?.generate)return null;
+ const id=[p.data?.pseudo||'aventurier',p.race||'',p.classe||''].map(x=>encodeURIComponent(String(x).trim().toLocaleLowerCase('fr'))).join('.');
+ const settings=read('binch.ultimate.briefing.v1.'+id,{});
+ const objectives=read('binch.custom.objectives.v1.'+id,[]);
+ const jobs=Array.isArray(p.jobs)?p.jobs:Array.isArray(p.metiers)?p.metiers:[];
+ return engine.generate({className:p.classe||'',race:p.race||'',level:c.level||Number(p.data?.level)||1,zone:c.zone||'',imported:c.same,mode:settings.mode||'balanced',discoveries:window.BinchDiscoveries?.recommendations?.()||[],professions:jobs,objectives:Array.isArray(objectives)?objectives:[],guildTasks:c.tasks,completed:Array.isArray(settings.dismissed)?settings.dismissed:[]});
+}
+function reply(input,c,plan){
  const q=input.toLocaleLowerCase('fr');
- // Single prioritization engine for Faith and the home briefing.
- if(/que faire|quoi faire|prochain(?:e)? (?:objectif|action|qu[êe]te)|priorit[ée]|par quoi commencer|ordre du jour|plan d.aventure|leveling maintenant/.test(q)){
-  const p=read('grimoire.hub.v3',{}),discovery=window.BinchDiscoveries?.recommendations?.()||[];
-  const jobs=Array.isArray(p.jobs)?p.jobs:Array.isArray(p.metiers)?p.metiers:[];
-  const engine=window.BinchJourneyEngine;
-  if(!engine?.generate)return 'Le planificateur local est indisponible. Consulte ton Carnet de route et les incontournables.';
-  const settings=read('binch.ultimate.briefing.v1.'+[p.data?.pseudo||'aventurier',p.race||'',p.classe||''].map(x=>encodeURIComponent(String(x).trim().toLocaleLowerCase('fr'))).join('.'),{});
-  const result=engine.generate({className:p.classe||'',race:p.race||'',level:c.level||Number(p.data?.level)||1,zone:c.zone||'',imported:c.same,mode:settings.mode||'balanced',discoveries:discovery,professions:jobs,guildTasks:c.tasks,completed:Array.isArray(settings.dismissed)?settings.dismissed:[]});
-  return result.next?'Selon le carnet de route local : '+result.next.title+'. '+result.next.description+' Rubrique à ouvrir : '+result.next.page+'. Source : '+(result.next.origin||'profil local')+'. '+result.notice:'Aucune prochaine étape sourcée ne ressort du profil. Consulte les incontournables et synchronise ton personnage.';
- }
+ if(PRIORITY_RE.test(q))return window.BinchFaithGuide?.priorities(plan||currentPlan(c),{same:c.same}).text||'Le carnet de route local est momentanément indisponible.';
+ if(PROFILE_RE.test(q))return window.BinchFaithGuide?.profile(c)||'Le profil local est indisponible.';
 
  const knowledge=window.BinchFaithKnowledge?.answer(input,knowledgeRows);
  if(knowledge?.found){
@@ -73,7 +78,7 @@ function persist(entries){const all=read(KEY,{}),id=identity();all[id]=entries.s
 function mount(){
  if($('binch-faith-dialogue'))return true;const host=$('binch-faith-advisor');if(!host)return false;
  const panel=document.createElement('section');panel.id='binch-faith-dialogue';panel.className='binch-faith-dialogue';
- panel.innerHTML='<details id="binch-faith-talk"><summary>Parler à Faith · conseiller local</summary><p>Faith, esprit d’un troll chaman. Les réponses suivent des règles locales et tes derniers imports. Aucune conversation n’est envoyée à une IA ou au Discord.</p><div id="binch-faith-dialogue-history" role="log" aria-live="polite" aria-label="Conversation avec Faith"></div><form id="binch-faith-dialogue-form"><label for="binch-faith-dialogue-input">Question</label><input id="binch-faith-dialogue-input" maxlength="350" required placeholder="Quelles missions de guilde sont urgentes ?"><button type="submit">Demander</button></form><div class="binch-faith-dialogue-actions"><button type="button" data-faith-suggest="Où en sont mes quêtes ?">Quêtes</button><button type="button" data-faith-suggest="Que sais-tu du marché AH ?">Commerce</button><button type="button" data-faith-suggest="Quelles missions de guilde sont urgentes ?">Guilde</button><button type="button" id="binch-faith-dialogue-clear">Effacer l’historique</button></div><small id="binch-faith-dialogue-state">Historique local du personnage. <span id="binch-faith-knowledge-state">Chargement des connaissances sourcées…</span></small></details>';
+ panel.innerHTML='<details id="binch-faith-talk"><summary>Parler à Faith · conseiller local</summary><p>Faith, esprit d’un troll chaman. Les réponses suivent des règles locales et tes derniers imports. Aucune conversation n’est envoyée à une IA ou au Discord.</p><div id="binch-faith-dialogue-history" role="log" aria-live="polite" aria-label="Conversation avec Faith"></div><form id="binch-faith-dialogue-form"><label for="binch-faith-dialogue-input">Question</label><input id="binch-faith-dialogue-input" maxlength="350" required placeholder="Quelles missions de guilde sont urgentes ?"><button type="submit">Demander</button></form><div class="binch-faith-dialogue-actions"><button type="button" data-faith-suggest="Que faire maintenant ?">Ma priorité</button><button type="button" data-faith-suggest="Mon profil">Mon profil</button><button type="button" data-faith-suggest="Où en sont mes quêtes ?">Quêtes</button><button type="button" data-faith-suggest="Que sais-tu du marché AH ?">Commerce</button><button type="button" data-faith-suggest="Quelles missions de guilde sont urgentes ?">Guilde</button><button type="button" id="binch-faith-dialogue-next" hidden>Ouvrir l’objectif conseillé</button><button type="button" id="binch-faith-dialogue-clear">Effacer l’historique</button></div><small id="binch-faith-dialogue-state">Historique local du personnage. <span id="binch-faith-knowledge-state">Chargement des connaissances sourcées…</span></small></details>';
  document.body.append(panel);
  const launcher=document.createElement('button');launcher.type='button';launcher.id='binch-faith-dock';launcher.textContent='Faith · conseils';launcher.setAttribute('aria-controls','binch-faith-dialogue');launcher.setAttribute('aria-expanded','false');
  document.body.append(launcher);
@@ -91,11 +96,24 @@ function mount(){
   for(const msg of rows){const p=document.createElement('p');p.className='faith-line faith-'+msg.who;p.textContent=(msg.who==='user'?'Vous':'Faith')+' : '+msg.text;log.append(p)}
   log.scrollTop=log.scrollHeight;
  }
- function ask(value){const q=clean(value);if(!q)return;let rows=history();rows.push({who:'user',text:q},{who:'faith',text:reply(q,context())});persist(rows);draw()}
+ function ask(value){
+  const q=clean(value);if(!q)return;
+  const c=context(),isPlan=PRIORITY_RE.test(q.toLocaleLowerCase('fr')),plan=isPlan?currentPlan(c):null;
+  const advice=isPlan?window.BinchFaithGuide?.priorities(plan,{same:c.same}):null;
+  const next=$('binch-faith-dialogue-next');next.hidden=!advice?.page;next.dataset.page=advice?.page||'';
+  const rows=history();rows.push({who:'user',text:q},{who:'faith',text:advice?.text||reply(q,c,plan)});persist(rows);draw();
+ }
  $('binch-faith-dialogue-form').onsubmit=e=>{e.preventDefault();ask($('binch-faith-dialogue-input').value);e.target.reset()};
  panel.addEventListener('click',e=>{const b=e.target.closest('[data-faith-suggest]');if(b){$('binch-faith-talk').open=true;ask(b.dataset.faithSuggest)}});
+ $('binch-faith-dialogue-next').onclick=()=>{
+  const next=$('binch-faith-dialogue-next'),page=next.dataset.page||'';
+  if(!/^[a-z-]{2,30}$/.test(page))return;
+  if(typeof window.BinchUltimate?.open==='function')window.BinchUltimate.open(page);
+  else document.querySelector('#app nav.nav [data-page="'+page+'"]')?.click();
+  toggle(false);
+ };
  $('binch-faith-dialogue-clear').onclick=()=>{if(!confirm('Effacer les échanges Faith du personnage courant ?'))return;persist([]);draw()};
- function refresh(){if(lastIdentity!==identity()){lastIdentity=identity();draw()}}
+ function refresh(){if(lastIdentity!==identity()){lastIdentity=identity();const b=$('binch-faith-dialogue-next');b.hidden=true;b.dataset.page='';draw()}}
  document.addEventListener('grimoire:sync',refresh);window.addEventListener('storage',e=>{if(e.key===KEY||e.key==='grimoire.hub.v3')draw()});
  draw();return true;
 }
