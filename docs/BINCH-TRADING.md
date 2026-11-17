@@ -93,3 +93,17 @@ Moteur de calcul sans appel réseau ; seule la vue « En direct » lit le flux G
 8. Métiers et conversions sourcées exclusivement Forever.
 9. Revue qualité mobile et parcours bêta frère/GM.
 10. Revue des résultats réellement vendus et amélioration du moteur de confiance.
+
+## 10. Recherche AH EU à la demande (17 novembre 2026)
+
+La vue **En direct** propose désormais une consultation individuelle d'un item Blizzard sur AHledger, en sélectionnant **région, type de serveur, faction et ID d'objet**.
+
+- Source officielle de l'outil tiers : https://ahledger.com/developers (API `GET /v1/prices/{market}/{itemId}?range=7d`). Les marchés EU sont listés sur https://ahledger.com/markets/forever/normal/horde/eu.
+- L'API annonce un accès **gratuit pour un outil communautaire**, avec lien d'attribution obligatoire et limites de conservation. La Binch attribue chaque réponse via **Prices from AHledger**, et ne persiste pas la réponse : **une seule consultation HTTP après action utilisateur**, `cache: 'no-store'`, pas de tâche programmée, aucun archivage ou import dans `binch.ah.market.v1`. Cela évite de rééditer les données du fournisseur comme notre propre flux.
+- Le résultat précise la source, le marché, l'âge, le minimum, la médiane, la médiane 7 j et les quantités *si elles sont présentes dans la réponse*. L'affichage d'un prix requiert le **lien d'attribution spécifique à l'objet** fourni par l'API ; s'il manque ou pointe ailleurs, la cote est refusée et seul le lien vers le marché externe reste disponible. Au-delà de **72 h**, il est marqué périmé sans suggestion d'achat.
+- L'accès direct au navigateur peut être empêché par CORS ou indisponible : **afficher alors un lien vers le marché AHledger**, sans prix inventé.
+- Il faut confirmer dans le jeu si le personnage est sur **Normal, PvP, RP ou RP PvP**. Le choix de consultation n'altère **pas** le marché du carnet existant. Une valeur US ne remplace pas une cote EU.
+- L'achat, la vente, la récupération de la banque et les scans automatiques en jeu restent désactivés ou non pris en charge. Aucun compte AHledger ni clé n'est demandé.
+- Conditions consultées le 17/11/2026 : https://ahledger.com/terms ; une évolution annoncée pour le **10 décembre 2026** impose notamment de respecter le cache et les modalités d'attribution. La Binch ne conserve pas cette donnée tierce. Toute extension future nécessitant un stockage devra être réévaluée avant implémentation.
+
+Cette consultation répond au besoin d'accéder aux **marchés EU** sans PC, en attendant une intégration vérifiée plus large, les scans personnels et les éventuelles autorisations requises.
