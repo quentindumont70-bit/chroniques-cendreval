@@ -18,4 +18,10 @@ for(const quantity of [null,-1,0,1.5,'3',undefined]){
  assert.equal(T.feedObservations(daily(quantity),market,{realm:'Forever',now}).length,0,'invalid daily quantity '+String(quantity)+' must be ignored');
 }
 assert.equal(T.feedObservations(daily(3),market,{realm:'Forever',now}).length,1,'valid daily quantity must be retained');
-console.log('AH live and daily quantity guards: OK');
+for(const quantity of [null,-1,0,1.5,'3',undefined]){
+ const compare = T.crossMarket(make([10000,quantity,now-60000]),2589,now);
+ assert.equal(compare[0].price,null,'cross-market price must not rank an invalid quantity');
+ assert.equal(compare[0].quantity,null,'cross-market quantity must be unknown');
+}
+assert.equal(T.crossMarket(make([10000,3,now-60000]),2589,now)[0].price,10000,'valid cross-market price retained');
+console.log('AH live, daily, cross-market quantity guards: OK');
