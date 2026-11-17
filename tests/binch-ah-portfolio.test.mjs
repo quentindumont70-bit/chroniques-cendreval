@@ -91,5 +91,5 @@ test('Trading UI: 30-day declared sales report is connected and cache-refreshed'
  assert.match(ui,/Ce n’est ni le volume réel de l’AH/);
  assert.match(ui,/Unités vendues et saisies/);
  assert.match(html,/ah-portfolio-core\.js\?v=003/);
- assert.match(html,/ah-trading\.js\?v=013/);
+ assert.match(html,/ah-trading\.js\?v=014/);
 });
