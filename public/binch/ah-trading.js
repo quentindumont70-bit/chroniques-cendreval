@@ -167,7 +167,7 @@ function vCrafts(c){
 function vWallet(c){
  const b=c.budget;
  return '<form id="bt-budget" class="bt-form"><label class="bt-field">Capital mobilisable (or)<input name="capital" inputmode="decimal" placeholder="'+esc(c.ch.gold?toGold(c.ch.gold.value):'ex. 25')+'" value="'+esc(Number.isSafeInteger(state.capitalOverride)?toGold(state.capitalOverride):'')+'"></label><label class="bt-field">Réserve à conserver (%)<input name="reserve" type="number" min="0" max="100" value="'+esc(state.reservePct)+'"></label><label class="bt-field">Exposition max par objet (%)<input name="cap" type="number" min="1" max="100" value="'+esc(state.maxItemPct)+'"></label><button type="submit">Appliquer</button></form>'+
-  (b?'<div class="bt-kpis">'+kpi('Capital',coin(b.capital),c.capital.src)+kpi('Réserve intouchable',coin(b.reserve),state.reservePct+' %')+kpi('Déployable',coin(b.deployable),'pour l’ensemble des achats')+kpi('Plafond par objet',coin(b.perItemCap),state.maxItemPct+' % du capital')+kpi('Stock acheté (coût)',coin(c.ledger.remainingCost||0),(c.ledger.remainingUnits||0)+' unité(s) en lots FIFO')+kpi('Résultat réalisé',coin(c.ledger.realized||0),'ventes rapprochées d’achats')+'</div>':empty('Capital inconnu : importe GrimoireSync.lua (or du personnage) ou saisis un montant.'))+
+  (b?'<div class="bt-kpis">'+kpi('Capital',coin(b.capital),c.capital.src)+kpi('Réserve intouchable',coin(b.reserve),state.reservePct+' %')+kpi('Déployable',coin(b.deployable),'pour l’ensemble des achats')+kpi('Plafond par objet',coin(b.perItemCap),state.maxItemPct+' % du capital')+kpi('Stock acheté (coût)',coin(c.ledger.remainingCost||0),(c.ledger.remainingUnits||0)+' unité(s) en lots FIFO')+kpi('Résultat réalisé',coin(c.ledger.realized||0),'ventes rapprochées d’achats, dépôts perdus imputés')+'</div>':empty('Capital inconnu : importe GrimoireSync.lua (or du personnage) ou saisis un montant.'))+
   '<h3>Exposition actuelle par objet</h3>'+(c.ledger.positions?.length?'<div class="bt-table"><table><thead><tr><th>Objet</th><th>Unités</th><th>Coût engagé</th><th>Part du capital</th></tr></thead><tbody>'+c.ledger.positions.filter(p=>p.remaining>0).map(p=>'<tr><td>'+esc(p.item)+'</td><td>'+p.remaining+'</td><td>'+coin(p.carryingCost)+'</td><td>'+(b&&b.capital?pct(100*p.carryingCost/b.capital).replace('+',''):'—')+(b&&p.carryingCost>b.perItemCap?' ⚠':'')+'</td></tr>').join('')+'</tbody></table></div>':empty('Aucune position : déclare tes achats dans le journal ou la Bourse d’Azeroth.'));
 }
 function tradePerformanceSection(p){
@@ -176,18 +176,19 @@ function tradePerformanceSection(p){
  if(!p.operations)return '<h3>Ventes déclarées · 30 derniers jours</h3>'+note+empty('Aucune vente datée et saisie sur cette période.');
  const overview='<div class="bt-kpis">'+
   kpi('Unités vendues et saisies',String(p.sold),p.operations+' déclaration(s) sur '+p.days+' jours')+
-  kpi('Bénéfice FIFO calculable',coin(p.realized),p.matched+' unité(s) rapprochée(s) d’un achat')+
+  kpi('Bénéfice FIFO calculable',coin(p.realized),p.matched+' unité(s), après commission et dépôts perdus rapprochés')+
+  kpi('Dépôts réellement perdus',coin(p.depositsLost),coin(p.matchedDeposits)+' imputés au FIFO · '+coin(p.unmatchedDeposits)+' hors bénéfice calculable')+
   kpi('Coût d’achat inconnu',String(p.unmatched)+' unité(s)','exclues du bénéfice, jamais valorisées à zéro')+
-  kpi('Rendement sur coût rapproché',p.roi==null?'—':pct(p.roi),p.roi==null?'aucun coût d’achat connu':'hors dépôts et autres frais non déclarés')+'</div>';
- const table='<div class="bt-table"><table><thead><tr><th>Objet</th><th>Vendu</th><th>Coût connu</th><th>Sans coût</th><th>Bénéfice FIFO</th><th>ROI</th><th>Dernière déclaration</th></tr></thead><tbody>'+
-  p.rows.slice(0,40).map(x=>'<tr><td>'+esc(x.item)+'</td><td>'+x.sold+'</td><td>'+x.matched+'</td><td>'+x.unmatched+'</td><td>'+coin(x.realized)+'</td><td>'+(x.roi==null?'—':pct(x.roi))+'</td><td>'+esc(when(x.lastSale))+'</td></tr>').join('')+
+  kpi('Rendement sur coût rapproché',p.roi==null?'—':pct(p.roi),p.roi==null?'aucun coût d’achat connu':'dépôts saisis compris, autres frais non déclarés exclus')+'</div>';
+ const table='<div class="bt-table"><table><thead><tr><th>Objet</th><th>Vendu</th><th>Coût connu</th><th>Sans coût</th><th>Dépôts perdus</th><th>Bénéfice FIFO</th><th>ROI</th><th>Dernière déclaration</th></tr></thead><tbody>'+
+  p.rows.slice(0,40).map(x=>'<tr><td>'+esc(x.item)+'</td><td>'+x.sold+'</td><td>'+x.matched+'</td><td>'+x.unmatched+'</td><td>'+coin(x.depositsLost)+'</td><td>'+coin(x.realized)+'</td><td>'+(x.roi==null?'—':pct(x.roi))+'</td><td>'+esc(when(x.lastSale))+'</td></tr>').join('')+
   '</tbody></table></div>';
  return '<h3>Ventes déclarées · '+p.days+' derniers jours</h3>'+note+overview+table+
   (p.excluded?'<p class="bt-note">'+p.excluded+' déclaration(s) écartée(s) : date ou données incohérentes.</p>':'');
 }
 function vJournal(c){
  const rev=T.journalReview({decisions:state.decisions,trades:c.trades,index:c.index,fee:c.fee});
- return '<form id="bt-trade" class="bt-form"><label class="bt-field">Opération réelle<select name="kind"><option value="buy">Achat</option><option value="sell">Vente</option></select></label><label class="bt-field">Objet<input name="item" required maxlength="100"></label><label class="bt-field">Quantité<input name="qty" type="number" min="1" value="1" required></label><label class="bt-field">Prix unitaire (or)<input name="price" inputmode="decimal" required></label><button type="submit">Déclarer</button></form><p class="bt-note">Les opérations sont ajoutées au registre de la Bourse d’Azeroth (même carnet) pour comparer prévisions et résultats.</p>'+
+ return '<form id="bt-trade" class="bt-form"><label class="bt-field">Opération réelle<select name="kind"><option value="buy">Achat</option><option value="sell">Vente</option></select></label><label class="bt-field">Objet<input name="item" required maxlength="100"></label><label class="bt-field">Quantité<input name="qty" type="number" min="1" value="1" required></label><label class="bt-field">Prix unitaire (or)<input name="price" inputmode="decimal" required></label><label class="bt-field">Dépôts réellement perdus (or, vente uniquement)<input name="depositLost" inputmode="decimal" value="0" placeholder="0"></label><button type="submit">Déclarer</button></form><p class="bt-note">Les opérations sont ajoutées au registre de la Bourse d’Azeroth (même carnet). Indique uniquement les dépôts réellement perdus sur la vente, pas le dépôt restitué par le jeu. Pour un achat, ce champ est ignoré. Une dépense dont le coût d’achat est inconnu reste hors bénéfice FIFO.</p>'+
   tradePerformanceSection(c.performance)+
   (rev.length?'<div class="bt-table"><table><thead><tr><th>Date</th><th>Décision</th><th>Référence</th><th>Attendu</th><th>Ventes réelles</th><th>Écart</th><th>Cours actuel</th><th>Bilan</th><th></th></tr></thead><tbody>'+rev.slice().reverse().map(d=>'<tr><td>'+esc(when(d.at))+'</td><td>'+esc(d.action+' · '+d.item+' ×'+d.qty)+'</td><td>'+coin(d.reference)+'</td><td>'+(d.expected?coin(d.expected):'—')+'</td><td>'+(d.realizedQty?d.realizedQty+' à '+coin(d.realizedAvg):'—')+'</td><td>'+pct(d.realizedVsExpected)+'</td><td>'+(d.marketNow?coin(d.marketNow)+' ('+pct(d.marketVsReference)+')':'—')+'</td><td>'+esc(d.outcome)+'</td><td><button type="button" data-bt-del-decision="'+esc(d.id)+'" aria-label="Supprimer">×</button></td></tr>').join('')+'</tbody></table></div>':empty('Aucune décision notée. Utilise « Noter ma décision » depuis les sacs ou le radar.'));
 }
@@ -368,10 +369,13 @@ function onFyi(form){
 }
 function onTrade(form){
  const d=new FormData(form),price=gold(d.get('price')),qty=Number(d.get('qty')),item=String(d.get('item')||'').trim().slice(0,100),scope=scopeOf();
+ const kind=d.get('kind')==='sell'?'sell':'buy',rawDeposit=String(d.get('depositLost')??'').trim();
+ const depositLost=kind==='sell'?(rawDeposit===''?0:gold(rawDeposit)):0;
+ if(kind==='sell'&&depositLost===null)return alert('Dépôts perdus invalides : saisis un montant en or positif, ou 0.');
  if(!item||!price||!Number.isInteger(qty)||qty<1)return;
  const store=read(MARKET,{version:1,items:[],trades:[],alerts:[],fee:5});store.trades=Array.isArray(store.trades)?store.trades:[];
  if(store.trades.length>=400)return alert('Registre plein (400 opérations).');
- store.trades.push({id:uid(),kind:d.get('kind')==='sell'?'sell':'buy',item,qty,price,scope:scope?.id||'legacy',fee:Number(store.fee??5),at:new Date().toISOString()});
+ store.trades.push({id:uid(),kind,item,qty,price,scope:scope?.id||'legacy',fee:Number(store.fee??5),...(kind==='sell'?{depositLost}:{}),at:new Date().toISOString()});
  persistMarket(store);form.reset();render();
 }
 function render(){
