@@ -148,6 +148,14 @@ document.addEventListener('DOMContentLoaded',()=>{
  document.getElementById('druid-preset').addEventListener('click',()=>{r.value='Tauren';c.value='Druide';selected=['Herboristerie','Alchimie'];refresh()});
  document.getElementById('warlock-preset').addEventListener('click',()=>{r.value='MortVivant';c.value='Démoniste';selected=['Ingénierie','Enchantement'];refresh()});
  document.getElementById('lite').addEventListener('click',event=>{const active=document.documentElement.dataset.detail!=='lite';document.documentElement.dataset.detail=active?'lite':'rich';event.currentTarget.setAttribute('aria-pressed',String(active))});
+ // Read-only deep links for CI screenshots; only whitelist existing options.
+ try{
+  const query=new URLSearchParams(location.search);
+  const rq=query.get('race'),cq=query.get('classe'),jobsQuery=query.get('jobs');
+  if([...r.options].some(o=>o.value===rq))r.value=rq;
+  if([...c.options].some(o=>o.value===cq))c.value=cq;
+  if(jobsQuery!==null)selected=[...new Set(jobsQuery.split(',').filter(j=>buttons.some(b=>b.dataset.job===j)))].slice(0,2);
+ }catch{}
  refresh();
 });
 </script>
