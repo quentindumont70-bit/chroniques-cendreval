@@ -51,7 +51,7 @@ test('V243: mobile rescue page is intentionally read only, private and cached',a
  assert.match(page,/\.\/tournee-diagnostic-local\.js/);
  assert.doesNotMatch(page,/localStorage\.setItem|localStorage\.removeItem|indexedDB\.deleteDatabase|fetch\s*\(|sendBeacon\s*\(/);
  assert.doesNotMatch(src,/localStorage\.setItem|localStorage\.removeItem|fetch\s*\(|sendBeacon\s*\(/);
- assert.match(worker,/const CACHE='big-cthu-public-v2-v243'/);
+ assert.match(worker,/const CACHE='big-cthu-public-v2-v244'/);
  assert.match(worker,/'\.\/tournee-diagnostic\.html'/);
  assert.match(worker,/'\.\/tournee-diagnostic-local\.js'/);
 });

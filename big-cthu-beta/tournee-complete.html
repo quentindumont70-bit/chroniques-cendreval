@@ -525,20 +525,20 @@ body.tournee-locked #tour-save-strip{display:none}
 </head>
 <body class="tournee-locked tournee-checking"><section id="tour-security-gate" hidden>
 <a href="./index.html">← Retour au cockpit Big Cthu</a>
-<h1>Récupérer une ancienne sauvegarde (facultatif)</h1>
+<h1>Retrouver mes patients</h1>
 <button id="tour-recovery-close" type="button">← Retour à Tournée</button>
 <p class="info" id="tour-saved-status">Vérification de ta sauvegarde chiffrée sur cet appareil…</p>
 <p>Tournée s'ouvre directement sans code ni phrase secrète. Cet écran est réservé au cas où tu veux récupérer d'anciennes données déjà chiffrées. L'ancien coffre et les sauvegardes ne sont jamais effacés.</p>
-<label for="tour-pass">Phrase secrète utilisée pour la restauration</label>
+<label for="tour-pass">Ancienne phrase de sauvegarde (si nécessaire)</label>
 <input id="tour-pass" type="password" autocomplete="current-password" minlength="12" placeholder="Ta phrase secrète">
-<button id="tour-open">Récupérer l’ancien coffre dans Tournée</button>
+<button id="tour-open">Retrouver mes patients</button>
 <details style="margin-top:14px"><summary style="cursor:pointer">Importer une sauvegarde JSON ou un coffre chiffré (uniquement si cet espace est vide)</summary>
 <label for="tour-file">Sauvegarde Tournée : JSON classique ou coffre chiffré complet</label><input type="file" id="tour-file" accept=".json,application/json">
 <button id="tour-import">Importer dans Tournée complète</button></details>
 <p id="tour-error" role="status"></p>
 <p>Attention : le déverrouillage automatique signifie que toute personne ayant accès à ce navigateur peut ouvrir Tournée. Protège l'accès à ton iPhone. Si un coffre chiffré existe déjà, l'import d'un autre JSON est bloqué pour éviter son écrasement. Les données restent chiffrées dans ce navigateur, mais cette version web n'est pas un hébergement HDS certifié. Conserve ta sauvegarde d'origine et l'application historique pour les soins.</p>
 </section>
-<div id="tour-save-strip" data-state="saved" aria-label="Sauvegarde locale de Tournée"><div id="tour-save-summary"><span id="tour-save-text" role="status" aria-live="polite">Données chiffrées enregistrées sur cet appareil.</span><button type="button" id="tour-save-retry" hidden>Réessayer</button><button type="button" id="tour-save-menu" aria-expanded="false" aria-controls="tour-save-actions" onclick="tourSaveMenuToggle()">⋯ Outils</button></div><div id="tour-save-actions" hidden><span id="tour-network-state" aria-live="off" title="État réseau, indépendant de la sauvegarde locale">Connexion à déterminer</span><div class="tour-save-buttons"><button type="button" id="tour-vault-export">Copie chiffrée locale</button><button type="button" id="tour-portable-export">Exporter une sauvegarde complète JSON</button><button type="button" id="tour-absence-open">Absences &amp; modifications</button><button type="button" id="tour-lock">Sauvegarder</button><button type="button" id="tour-recovery-launch" hidden>Récupérer mes anciennes données</button></div></div></div>
+<div id="tour-save-strip" data-state="saved" aria-label="Sauvegarde locale de Tournée"><div id="tour-save-summary"><span id="tour-save-text" role="status" aria-live="polite">Données chiffrées enregistrées sur cet appareil.</span><button type="button" id="tour-save-retry" hidden>Réessayer</button><button type="button" id="tour-recovery-direct" hidden>Retrouver mes patients</button><button type="button" id="tour-save-menu" aria-expanded="false" aria-controls="tour-save-actions" onclick="tourSaveMenuToggle()">⋯ Outils</button></div><div id="tour-save-actions" hidden><span id="tour-network-state" aria-live="off" title="État réseau, indépendant de la sauvegarde locale">Connexion à déterminer</span><div class="tour-save-buttons"><button type="button" id="tour-vault-export">Copie chiffrée locale</button><button type="button" id="tour-portable-export">Exporter une sauvegarde complète JSON</button><button type="button" id="tour-absence-open">Absences &amp; modifications</button><button type="button" id="tour-lock">Sauvegarder</button><button type="button" id="tour-recovery-launch" hidden>Récupérer mes anciennes données</button></div></div></div>
 <section id="tour-absence-panel" hidden aria-label="Absences et modifications de Tournée">
 <div class="ap-inner">
 <div class="ap-closebar"><button id="ap-close" type="button">← Retour à Tournée</button><span class="ap-caption">Journal local chiffré</span></div>
@@ -1831,10 +1831,10 @@ function urgOpen(pid){const p=P.find(x=>x.id===pid),tx=urgText(p);document.getEl
 function pinHash(s){let h=2166136261;const t="tidel"+s;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619)}return String(h>>>0)}
 /* V240: code PIN visuel désactivé par défaut, coffre AES-GCM toujours actif. */
 const TQ_PIN_OPTIN="tq_pin_screen_optin_v240";
-function tqPinScreenEnabled(){return st.get(TQ_PIN_OPTIN,false)===true&&!!st.get("pin","")}
+function tqPinScreenEnabled(){return false}
 function tqPinScreenOff(){st.set(TQ_PIN_OPTIN,false);document.getElementById("lk")?.classList.remove("on");toast("Écran PIN supplémentaire désactivé");render()}
-function tqPinScreenOn(){if(!st.get("pin","")){pinForm();return}st.set(TQ_PIN_OPTIN,true);toast("Écran PIN réactivé");render()}
-function lockBlock(){const saved=!!st.get("pin",""),on=tqPinScreenEnabled();return `<div class="blk"><div class="lab">🔒 Écran PIN supplémentaire</div><div class="sub" style="margin-bottom:10px">${on?"Le code PIN est actif sur cet appareil.":"Le verrouillage PIN répété est désactivé, comme demandé. Tu peux utiliser Tournée directement sur ton téléphone."} Le coffre des données patients reste chiffré, indépendamment de ce code.</div><div class="acts">${on?`<button class="btn" onclick="tqPinScreenOff()">Désactiver le PIN supplémentaire</button><button class="btn ghost" onclick="pinOff()">Effacer le code PIN</button><button class="btn ghost" onclick="lockNow()">Verrouiller maintenant</button>`:`<button class="btn" onclick="tqPinScreenOn()">${saved?"Réactiver le PIN":"Créer un code PIN facultatif"}</button>`}</div></div>`}
+function tqPinScreenOn(){toast("Aucun PIN supplémentaire : Tournée reste accessible directement")}
+function lockBlock(){return ''}
 function pinForm(){document.getElementById("pki").innerHTML=`<div class="grab"></div><h3>Code de l'appli</h3><label class="fl">Nouveau code (4 chiffres)<input type="password" id="pn1" inputmode="numeric" maxlength="4" autocomplete="off"></label><label class="fl">Confirmer<input type="password" id="pn2" inputmode="numeric" maxlength="4" autocomplete="off"></label><button class="btn" style="width:100%;justify-content:center;margin-top:12px" onclick="pinSave()">Enregistrer</button>`;document.getElementById("pk").classList.add("on")}
 function pinSave(){const a=document.getElementById("pn1").value,b=document.getElementById("pn2").value;if(!/^\d{4}$/.test(a)){toast("4 chiffres exactement");return}if(a!==b){toast("Les deux codes diffèrent");return}st.set("pin",pinHash(a));st.set(TQ_PIN_OPTIN,true);closePk();toast("Code enregistré et verrouillage PIN activé");render()}
 function pinOff(){st.set("pin","");st.set(TQ_PIN_OPTIN,false);document.getElementById("lk")?.classList.remove("on");toast("Code PIN retiré");render()}
@@ -2274,9 +2274,11 @@ async function autoOpenTournee(){
  }
 }
 function showLegacyRecovery(){
- const button=document.getElementById('tour-recovery-launch');
+ const button=document.getElementById('tour-recovery-launch'),direct=document.getElementById('tour-recovery-direct');
  button.hidden=false;
- saveStatus('saved','Tournée ouverte directement. Une ancienne sauvegarde chiffrée existe aussi sur cet appareil : récupération facultative.');
+ const empty=recoverySpaceEmpty(secureState);
+ if(direct)direct.hidden=!empty;
+ saveStatus('saved',empty?'Ancienne sauvegarde détectée (récupération facultative). La liste active est vide : touche « Retrouver mes patients ».':'Tournée ouverte. Une ancienne sauvegarde est également conservée sur cet appareil.');
 }
 const PORTABLE_FORMAT='bigcthu-tournee-complete-portable-v1';
 function validPortableState(state){
@@ -2335,11 +2337,29 @@ async function recoverOldVault(fileMode){
     state=await decryptRecord(JSON.stringify(candidate),password);
    }else state=fillFromBackup(candidate);
   }else{
-   if(password.length<12)throw Error('Cet ancien coffre était chiffré : sa phrase secrète est nécessaire uniquement pour récupérer ses données.');
    const old=localStorage.getItem(ORIGINAL_KEY),previous=localStorage.getItem(PREVIOUS_KEY);
-   if(old&&SECURE_KEY!==ORIGINAL_KEY)state=await decryptRecord(old,password);
-   else if(previous){const saved=await decryptRecord(previous,password);state=fillFromBackup(saved.data)}
-   else throw Error('Aucun ancien coffre local à récupérer. Tu peux sélectionner un fichier JSON ci-dessus.');
+   const candidates=[];
+   if(old&&SECURE_KEY!==ORIGINAL_KEY)candidates.push({raw:old,legacy:false});
+   if(previous)candidates.push({raw:previous,legacy:true});
+   if(!candidates.length)throw Error('Aucun ancien coffre local à récupérer. Tu peux sélectionner un fichier JSON ci-dessus.');
+   const device=await recalledDeviceKey().catch(()=>null);
+   let openedEmpty=false;
+   for(const candidate of candidates){
+    let unpacked=null;
+    try{
+     const info=JSON.parse(candidate.raw);
+     if(device&&device.v===1&&device.salt===info.salt&&device.key){
+      try{unpacked=await decryptWithDeviceKey(candidate.raw,device.key)}catch(_){}
+     }
+     if(!unpacked&&password.length>=12)unpacked=await decryptRecord(candidate.raw,password);
+     if(!unpacked)continue;
+     const possible=candidate.legacy?fillFromBackup(unpacked.data):unpacked;
+     if(!validVaultState(possible))continue;
+     if(JSON.parse(possible.tidel_Pl).length>0){state=possible;break}
+     openedEmpty=true;
+    }catch(_){/* Essayer l'autre sauvegarde sans effacer quoi que ce soit. */}
+   }
+   if(!state)throw Error(openedEmpty?'Les sauvegardes ouvertes ne contiennent aucune fiche patient. Aucune donnée modifiée.':'Les sauvegardes sont présentes, mais leur clé n’est pas disponible ici. Saisis une seule fois l’ancienne phrase de sauvegarde, ou retrouve l’appareil qui les ouvrait. Aucune donnée effacée.');
   }
   if(!validVaultState(state))throw Error('Sauvegarde incompatible. Aucun changement.');
   const previousState=secureState;
@@ -2835,6 +2855,7 @@ async function login(fileMode){if(typeof secureBooted!=='undefined'&&secureBoote
  }catch(err){report('Ouverture impossible : '+(err?.message||'mot de passe ou fichier invalide'))}}
 document.getElementById('tour-open').addEventListener('click',()=>login(false));
 document.getElementById('tour-recovery-launch').addEventListener('click',()=>{document.getElementById('tour-security-gate').hidden=false});
+ document.getElementById('tour-recovery-direct').addEventListener('click',()=>{document.getElementById('tour-security-gate').hidden=false;report('Essaie directement « Retrouver mes patients » ; l’ancienne phrase ne sera demandée que si la clé locale est indisponible.');});
 document.getElementById('tour-recovery-close').addEventListener('click',()=>{document.getElementById('tour-security-gate').hidden=true});
 document.getElementById('tour-import').addEventListener('click',()=>login(true));
 document.getElementById('tour-saved-status').textContent=localStorage.getItem(SECURE_KEY)?'Une Tournée complète chiffrée est disponible. Utilise la même phrase secrète.':localStorage.getItem(PREVIOUS_KEY)?'✅ Ta sauvegarde chiffrée précédente est détectée. Utilise la même phrase secrète : les patients seront transférés dans l’application complète.':'Aucune sauvegarde locale détectée ici. Sélectionne ton fichier JSON.';
