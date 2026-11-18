@@ -156,6 +156,27 @@
 @media(prefers-reduced-motion:reduce){
  #onboarding #class-choices .choice::before{transition:none!important;transform:none!important}
 }
+/* Beta iPhone/accessibility: prefer readable static cards on constrained screens. */
+html[data-binch-detail=lite] #onboarding{
+ background-image:linear-gradient(130deg,#09191d,#152529)!important;
+}
+html[data-binch-detail=lite] #onboarding #class-choices .choice::before{
+ background-image:linear-gradient(160deg,#254339,#122129)!important;
+ transition:none!important;transform:none!important;
+}
+html[data-binch-detail=lite] #onboarding .choice{box-shadow:none!important}
+@media(prefers-contrast:more){
+ #onboarding .choice{border-width:2px;color:#fff}
+ #onboarding .choice small{color:#f1fff6}
+ #onboarding #class-choices .choice::before{
+  background-image:linear-gradient(180deg,#09201fc7,#07151cf5 55%),var(--br-choice-art);
+ }
+}
+@media(max-width:350px){
+ #onboarding .onboard-card{padding:18px 9px}
+ #onboarding #class-choices .choice{min-height:177px;padding:94px 8px 10px}
+ #onboarding #class-choices .choice small{font-size:.67rem}
+}
 @media(forced-colors:active){
  #onboarding .choice,#onboarding #class-choices .choice{background:Canvas!important;color:CanvasText;border-color:CanvasText}
  #onboarding #class-choices .choice::before,#onboarding #class-choices .choice::after,
