@@ -162,3 +162,35 @@ Les scènes nouvelles sont renaissance-feral-constellation.svg, renaissance-work
 10. Organiser les essais réels et obtenir la validation explicite avant intégration et déploiement.
 
 Aucune action utilisateur requise pour cette passe. Branche conservée en brouillon, sans dépense ni déploiement.
+
+## P7 — création de personnage illustrée et revue mobile (18 novembre)
+
+Nouvelle livraison sur la PR #234 sans changement du moteur de personnages :
+
+1. Le choix de classe comporte les **9 panoramas** originaux, un par classe existante.
+2. Chaque carte de classe reprend le blason SVG authentiquement créé pour La Binch.
+3. Le panorama de fond du parcours suit le choix visuel de la classe grâce au CSS, sans écriture supplémentaire dans le profil.
+4. Les huit peuples existants sont groupés visuellement par étiquettes Horde / Alliance d'après leur appartenance déjà déclarée dans le code.
+5. Les deux cartes de métiers Minage et Ingénierie gagnent leurs propres emblèmes.
+6. Les boutons du créateur annoncent correctement leur état sélectionné via aria-pressed, y compris après régénération de la grille par le moteur original.
+7. Flèches gauche/droite et Home/End déplacent le focus dans les trois grilles sans sélectionner involontairement une option.
+8. Composition adaptée aux écrans 850, 530 et 350 px ; le texte explique qu'il faut faire défiler les neuf classes sur téléphone.
+9. Mode léger, contraste renforcé, couleurs forcées, focus clavier et réduction du mouvement préservés.
+10. Création d'un atelier autonome de choix des classes, sans lecture ni écriture du profil, et de captures headless desktop/mobile dans les artefacts CI.
+
+Code : visual-renaissance-onboarding.css, visual-renaissance-onboarding.js et renaissance-onboarding-atelier.html, chargés dans index.html. Le test Node est tests/binch-visual-renaissance-onboarding.test.mjs.
+
+### Dix chantiers suivants
+
+1. Vérifier les CI de la version P7 et le rapport des captures.
+2. Vérifier l'ergonomie réelle de la grille 2 colonnes sur iPhone.
+3. Vérifier que les sceaux et descriptions restent lisibles sur écran 320 px.
+4. Confirmer que l'étape des métiers reste utilisable sans masquer le bouton Continuer.
+5. Examiner le panorama Farouche et sa lisibilité par-dessus les widgets.
+6. Contrôler les neuf paysages sous différentes ambiances.
+7. Valider le fonctionnement des 6 portails depuis le téléphone.
+8. Vérifier le mode léger sur iPhone et sans réseau après chargement initial.
+9. Préparer les captures de toutes les étapes du parcours personnage pour revue.
+10. Faire revoir et autoriser le déploiement bêta, sans fusion prématurée.
+
+La PR reste DRAFT, aucune fusion ni publication publique automatique. Le contrôle CI valide le code et des captures headless, pas le confort réel sur un appareil.
