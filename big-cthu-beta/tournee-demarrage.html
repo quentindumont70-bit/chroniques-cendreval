@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1420">
+<meta name="description" content="Premiers pas dans Tournée : comprendre sa journée, les post-it datés et la sauvegarde en cinq étapes sans aucune donnée réelle.">
+<title>Premiers pas · Tournée</title>
+<style>
+:root{color-scheme:dark;--bg:#08121e;--panel:#102334;--panel2:#142b40;--line:#2e4b60;--text:#eaf5f8;--muted:#abc0ca;--accent:#74f5dd;--amber:#ffca80}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse 75% 40% at 80% -5%,#124f55 0%,transparent 80%),linear-gradient(145deg,#08121e,#0e1b2a 72%);font:16px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);min-height:100vh}
+a{color:var(--accent)}a:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:4px}header,main,footer{width:min(880px,calc(100% - 32px));margin:auto}
+header{padding:28px 0 12px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{font-size:13px;font-weight:800;letter-spacing:.19em;text-transform:uppercase;color:var(--accent)}.back{padding:12px 16px;border:1px solid var(--line);border-radius:14px;color:var(--text);text-decoration:none;font-size:14px;min-height:44px;display:inline-flex;align-items:center}
+.hero{margin-top:30px;padding:30px;border:1px solid #27666d;border-radius:25px;background:linear-gradient(145deg,#183c4c,#112333 65%);box-shadow:0 24px 64px #0005}.eyebrow{color:var(--accent);font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase}.hero h1{font-size:clamp(30px,6vw,55px);line-height:1.07;letter-spacing:-.045em;margin:12px 0}.hero p{font-size:17px;max-width:660px;color:#d0e2e7}.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px}.pill{border:1px solid #46727a;border-radius:99px;padding:8px 12px;font-size:12px;color:#d0f4eb;font-weight:700}
+.notice{padding:18px 20px;background:#283024;border-left:4px solid var(--amber);border-radius:12px;margin:18px 0;color:#f7e5c9;font-size:14px}
+h2{font-size:clamp(21px,4vw,30px);line-height:1.2;letter-spacing:-.025em}.intro{margin:34px 0 20px;color:var(--muted)}
+.steps{display:grid;gap:16px}.step{background:linear-gradient(115deg,var(--panel),#112434);border:1px solid var(--line);border-radius:20px;padding:24px}.steptop{display:flex;align-items:center;gap:14px}.num{width:44px;height:44px;min-width:44px;border-radius:13px;background:#174b53;color:var(--accent);display:grid;place-items:center;font-weight:900}.step h3{font-size:21px;line-height:1.2;margin:0}.step p{color:#d0e1e6;margin:16px 0}.step small{display:block;color:var(--muted)}.mock{margin-top:15px;display:grid;gap:9px;border:1px solid #426276;background:var(--bg);border-radius:14px;padding:14px}.mockhead{display:flex;justify-content:space-between;gap:8px;color:var(--accent);font-weight:800;font-size:12px}.mockline{background:var(--panel2);border-radius:9px;padding:10px 12px;font-size:13px}.mockline span{color:var(--muted);font-size:12px}.action{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;min-height:44px;border-radius:13px;background:var(--accent);color:#08212a;text-decoration:none;font-weight:800;margin-top:10px}.action.secondary{background:transparent;color:var(--accent);border:1px solid #3d7779}.muted{color:var(--muted)}
+.checkpoint{margin-top:28px;padding:24px;border-radius:20px;border:1px solid #376d6d;background:linear-gradient(120deg,#143738,#112636)}.checkpoint h2{margin-top:0}.checkpoint p{color:#d6e6e9}.faq{margin:30px 0}.faq details{border-bottom:1px solid var(--line);padding:6px 0}.faq summary{cursor:pointer;font-weight:800;padding:13px 4px;min-height:44px}.faq p{color:var(--muted);padding:0 4px}
+footer{padding:28px 0 45px;color:var(--muted);font-size:12px}footer a{color:var(--accent)}@media(max-width:520px){header{align-items:flex-start}.hero{margin-top:14px;padding:22px}.step{padding:18px}.back{font-size:12px;padding:10px}.pill{font-size:11px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header><div class="brand">Tournée · Field Operations</div><a class="back" href="./tournee-complete.html">← Revenir à Tournée</a></header>
+<main>
+<section class="hero" aria-labelledby="intro-title">
+ <div class="eyebrow">Guide autonome · V256</div>
+ <h1 id="intro-title">Prendre ses marques, sans toucher aux dossiers.</h1>
+ <p>Cinq étapes pour comprendre les gestes essentiels. Les exemples sont <strong>entièrement fictifs</strong> : cette page ne crée aucun patient, aucune note et aucune sauvegarde dans ton application.</p>
+ <div class="pills"><span class="pill">5 étapes</span><span class="pill">Aucune connexion requise après installation</span><span class="pill">Sans donnée personnelle</span></div>
+</section>
+<p class="notice"><strong>Important :</strong> ce guide reste une démonstration. Pour une vraie modification, retourne dans Tournée et confirme l'enregistrement. Ne teste jamais une restauration sur ton seul coffre contenant des patients réels.</p>
+<h2 class="intro">Le parcours essentiel</h2>
+<div class="steps">
+<section class="step" id="etape-1">
+ <div class="steptop"><span class="num">01</span><h3>Identifier le bon espace</h3></div>
+ <p>Sur iPhone, l'icône installée sur l'écran d'accueil et Safari peuvent utiliser des stockages distincts. Ouvre Tournée depuis ton icône habituelle ; dans <strong>Mes sauvegardes</strong>, regarde l'indication « application installée » ou « navigateur ».</p>
+ <small>À retenir : aucun transfert automatique entre Safari et l'icône.</small>
+ <a class="action secondary" href="./installation-iphone.html">Guide d'installation iPhone</a>
+</section>
+<section class="step" id="etape-2">
+ <div class="steptop"><span class="num">02</span><h3>Lire sa journée d'un coup d'œil</h3></div>
+ <p>La page Tournée donne les passages du jour, la progression, les prochaines visites et les rappels. Change la date pour voir une autre journée, puis reviens aujourd'hui.</p>
+ <div class="mock" aria-label="Exemple fictif de journée"><div class="mockhead"><span>Journée d'exemple</span><span>0 / 2 passages</span></div><div class="mockline">08:00 · Visite fictive A <span>· Non réalisée</span></div><div class="mockline">09:30 · Visite fictive B <span>· Non réalisée</span></div></div>
+ <small>Ces deux visites n'existent que dans cette illustration : rien n'a été ajouté à ta tournée.</small>
+</section>
+<section class="step" id="etape-3">
+ <div class="steptop"><span class="num">03</span><h3>Comprendre les post-it datés</h3></div>
+ <p>Chaque date a son post-it. « Préparer la sacoche » le jeudi ne doit pas apparaître automatiquement le vendredi. Les boutons <strong>Ajouter</strong>, <strong>Modifier</strong> et <strong>×</strong> agissent sur le jour affiché.</p>
+ <div class="mock" aria-label="Exemple fictif de post-it"><div class="mockhead"><span>Jeudi · Post-it</span><span>1 rappel</span></div><div class="mockline">− Préparer la sacoche <span>· Exemple seulement</span></div></div>
+ <small>Un texte encore en cours de saisie n'est pas une sauvegarde. Valide « Ajouter » ou « OK » avant de fermer l'application.</small>
+</section>
+<section class="step" id="etape-4">
+ <div class="steptop"><span class="num">04</span><h3>Consigner une absence, sans toucher à Topaze</h3></div>
+ <p>Dans <strong>⋯ Outils → Absences &amp; modifications</strong>, indique le jour, le patient et le motif. Le journal sert à préparer un rapprochement <strong>manuel</strong> : il ne supprime pas de soins dans Topaze et ne crée aucune facture.</p>
+ <div class="mock" aria-label="Exemple fictif d'un signalement"><div class="mockhead"><span>Journal fictif</span><span>À rapprocher</span></div><div class="mockline">Patient fictif · Passage non réalisé <span>· Aucune donnée transmise</span></div></div>
+</section>
+<section class="step" id="etape-5">
+ <div class="steptop"><span class="num">05</span><h3>Préparer sa sortie de secours</h3></div>
+ <p>Dans <strong>Mes sauvegardes</strong>, utilise <strong>Télécharger ma sauvegarde complète</strong>. Vérifie ensuite le fichier en le sélectionnant à l'étape de restauration, sans restaurer sur un coffre déjà rempli. Tournée peut comparer le fichier avec le coffre local.</p>
+ <p><strong>Attention :</strong> le fichier JSON contient des données de santé lisibles. Protège-le hors GitHub, hors messagerie non sécurisée et hors stockage partagé. Une copie téléchargée sur le même iPhone ne suffit pas à se protéger contre sa perte.</p>
+ <small>Aucune sauvegarde cloud automatique n'est disponible dans cette bêta.</small>
+</section>
+</div>
+<section class="checkpoint"><h2>Tu sais désormais où regarder.</h2><p>Le point le plus important n'est pas de cocher cinq cases : c'est de distinguer <strong>un rappel enregistré</strong>, <strong>un brouillon</strong> et <strong>une copie extérieure vérifiée</strong>.</p><a class="action" href="./tournee-complete.html">Ouvrir ma tournée</a></section>
+<section class="faq" aria-labelledby="faq-title"><h2 id="faq-title">Questions courantes</h2>
+ <details><summary>Est-ce que ce guide importe des patients fictifs ?</summary><p>Non. Il ne lit pas, ne modifie pas et n'enregistre pas de données patients. Les exemples sont du texte statique.</p></details>
+ <details><summary>Si je ferme de force l'application pendant une saisie ?</summary><p>Un ajout ou une modification non validée peut disparaître. Pour le conserver durablement, utilise les boutons de validation et vérifie l'état d'enregistrement.</p></details>
+ <details><summary>Est-ce que Tournée fonctionne hors ligne ?</summary><p>Les pages publiques prévues pour la consultation hors ligne sont mises en cache après un premier chargement en ligne réussi. Le comportement sur ton iPhone doit être vérifié avant d'en dépendre en tournée.</p></details>
+ <details><summary>La sauvegarde se fait-elle automatiquement sur un autre appareil ?</summary><p>Non. Le coffre chiffré est local. Il faut exporter une copie protégée et contrôler qu'elle existe hors de l'appareil.</p></details>
+</section>
+</main>
+<footer>Version privée de Tournée · Ce guide pédagogique ne contient aucune information clinique et ne remplace pas une vérification de sauvegarde réelle. <a href="./tournee-complete.html">Retour à l'application</a>.</footer>
+</body>
+</html>
