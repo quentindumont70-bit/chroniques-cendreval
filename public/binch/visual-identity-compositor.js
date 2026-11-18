@@ -182,6 +182,12 @@ function attach(){
   hero.prepend(layer);
  }
  const cinematic=document.querySelector('#binch-adventure-home .binch-character-card');
+ const portfolio=document.querySelector('#binch-adventure-home .binch-kicker')?.parentElement;
+ if(portfolio&&!document.getElementById('binch-p10-expo')){
+  const link=el('a','binch-p10-expo','Contempler les neuf sanctuaires ✦');
+  link.id='binch-p10-expo';link.href='./renaissance-p10-showcase.html';
+  portfolio.append(link);
+ }
  if(cinematic&&!cinematic.querySelector('.binch-identity-composition')){
   const layer=el('div','binch-identity-composition');layer.setAttribute('aria-hidden','true');
   layer.append(el('div','binch-identity-landscape'),el('div','binch-identity-architecture'),el('div','binch-identity-aura'),el('div','binch-identity-professions'));
