@@ -385,3 +385,32 @@ test('Historique AH: la vue parle d’offre observée sans prétendre identifier
  assert.match(ui,/ne prouve pas une vente/);
  assert.match(ui,/deux scans GrimoireSync/);
 });
+
+test('Import communautaire: quantité manquante, nulle ou invalide jamais remplacée par une unité',()=>{
+ const now=NOW;
+ const market='forever.normal.horde.us';
+ const row=(quantity)=>({market,item:2318,row:[100,quantity,now-60000],days:[]});
+ assert.equal(T.parseCommunity(row(3),{realm:'Forever',now}).length,1);
+ for(const bad of [null,undefined,0,-1,1.5,'3']){
+  assert.equal(T.parseCommunity(row(bad),{realm:'Forever',now}).length,0,'instantané '+String(bad));
+  const d={market,item:2318,row:null,days:[[Math.floor((now-86400000)/86400000),100,null,bad]]};
+  assert.equal(T.parseCommunity(d,{realm:'Forever',now}).length,0,'journalier '+String(bad));
+ }
+ const valid=T.parseCommunity({market,item:2318,row:null,days:[[Math.floor((now-86400000)/86400000),100,null,3]]},{realm:'Forever',now});
+ assert.equal(valid.length,1);
+ const store={version:1,items:[],trades:[],alerts:[],fee:5};
+ const base={name:'Cuir léger',itemId:2318,priceCopper:100,observedAt:new Date(now-60000).toISOString(),realm:'Forever',faction:'Horde'};
+ for(const bad of [null,undefined,0,-1,1.5]){
+  const merged=T.mergeObservations(store,[{...base,quantity:bad}],now);
+  assert.equal(merged.added,0,'carnet '+String(bad));
+ }
+ assert.equal(T.mergeObservations(store,[{...base,quantity:3}],now).added,1);
+});
+
+test('Import AH public: identifiant positif et date journalière plausible requis',()=>{
+ const market='forever.normal.horde.us';
+ for(const item of [0,-1,null]){
+  assert.throws(()=>T.parseCommunity({market,item,row:[100,3,NOW-1000]},{realm:'Forever',now:NOW}),/non reconnue/);
+ }
+ assert.equal(T.parseCommunity({market,item:2318,row:null,days:[[-1,100,null,3]]},{realm:'Forever',now:NOW}).length,0);
+});
