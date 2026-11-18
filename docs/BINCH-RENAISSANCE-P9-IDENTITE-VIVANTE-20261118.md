@@ -1,6 +1,6 @@
 # La Binch — Golipette P9 · Identité vivante
 
-18 novembre 2026 · Branche \`feature/binch-visual-renaissance-20261118\` · PR #234 **DRAFT**
+18 novembre 2026 · Branche `feature/binch-visual-renaissance-20261118` · PR #234 **DRAFT**
 
 ## Objectif produit
 
@@ -10,24 +10,24 @@ L’interface ne doit plus appliquer un simple recoloring. La race sculpte l’a
 
 | Chantier | État / preuve dans le dépôt |
 |---|---|
-| 1. « Profil actif » cliquable | Le badge est désormais un bouton natif dans \`index.html\` et ouvre un dialogue. |
-| 2. Reconfiguration sans reset | \`visual-identity-compositor.js\` propose peuple, classe, 0–2 métiers dans le dialogue « Reforger ton identité ». |
+| 1. « Profil actif » cliquable | Le badge est désormais un bouton natif dans `index.html` et ouvre un dialogue. |
+| 2. Reconfiguration sans reset | `visual-identity-compositor.js` propose peuple, classe, 0–2 métiers dans le dialogue « Reforger ton identité ». |
 | 3. Aperçu avant validation | Décor + scène + architecture et signature sont calculés pour le brouillon local ; l’application réelle n’est pas modifiée avant « Appliquer ». |
-| 4. Sauvegarde transactionnelle | \`commit\` conserve \`data\`, \`checks\`, \`map\` et les champs additionnels du même profil ; seule l’identité est changée. Rechargement contrôlé après sauvegarde. |
+| 4. Sauvegarde transactionnelle | `commit` conserve `data`, `checks`, `map` et les champs additionnels du même profil ; seule l’identité est changée. Rechargement contrôlé après sauvegarde. |
 | 5. Identité raciale réelle | Huit tracés SVG architecturaux distincts, construits à partir de paths statiques originaux : voûtes humaines, forge naine, bosquet elfe, engrenages gnomes, camp orc, nécropole réprouvée, totems taurens, masque troll. Les contours et la géométrie des cartes changent aussi. |
 | 6. Identité de classe | Neuf vrais paysages vectoriels existants réutilisés, plus 9 comportements d’aura / lumière distincts sur la scène. Pas de duplication de scène recolorée. |
 | 7. Accents métiers | Neuf métiers reconnus, deux signatures maximum, micro-effets spécifiques et rares (feuille, rouage, étincelles, runes), statiques ou inactifs en mode léger / mouvement réduit. |
 | 8. Interface cohérente | Rendu intégré au hero initial, à la scène cinématique si disponible, aux cartes d’accueil, au chapitre et aux onglets actifs. |
 | 9. Accessibilité/performance de la passe | Illustrations raciales SVG intégrées sans nouvelle requête réseau ; fonds des classes en cache lorsqu’ils sont identiques. Dialogue natif, état aria-pressed, cibles tactiles, mobile 2 colonnes, retour du focus ; animations désactivables. |
-| 10. Régression CI | \`tests/binch-visual-identity-compositor.test.mjs\` teste 8/9/9 variations, deux identités contrastées, l’aperçu sans écriture, la persistance de données et les garde-fous. Test raccordé à \`.github/workflows/verify.yml\`. |
+| 10. Régression CI | `tests/binch-visual-identity-compositor.test.mjs` teste 8/9/9 variations, deux identités contrastées, l’aperçu sans écriture, la persistance de données et les garde-fous. Test raccordé à `.github/workflows/verify.yml`. |
 
 ### Intégration
 
-- \`public/binch/visual-identity-compositor.js\` : \`RACES\`, \`CLASSES\`, \`JOBS\`, \`compose\`, \`commit\`, dialogue et montage visuel.
-- \`public/binch/visual-identity-compositor.css\` : profondeur, architectures, scènes, signatures, animations rares, responsive.
-- \`public/binch/index.html\` : bouton « Profil actif » et inclusion du moteur.
-- La clé existante \`grimoire.hub.v3\` est la **seule** source du profil. Aucun clone de base ou re-synchronisation distante.
-- Aucun achat, aucune transaction, aucune fusion à \`main\`, aucun déploiement GitHub Pages.
+- `public/binch/visual-identity-compositor.js` : `RACES`, `CLASSES`, `JOBS`, `compose`, `commit`, dialogue et montage visuel.
+- `public/binch/visual-identity-compositor.css` : profondeur, architectures, scènes, signatures, animations rares, responsive.
+- `public/binch/index.html` : bouton « Profil actif » et inclusion du moteur.
+- La clé existante `grimoire.hub.v3` est la **seule** source du profil. Aucun clone de base ou re-synchronisation distante.
+- Aucun achat, aucune transaction, aucune fusion à `main`, aucun déploiement GitHub Pages.
 
 ### Ce qui ne doit pas être confondu
 
@@ -53,3 +53,12 @@ La prévisualisation extérieure raw.githack peut afficher un écran d’avertis
 - Pas de changement du nom, du niveau, des objectifs, du rôle ni des données métiers non visuelles lorsque le profil est reforgé.
 - Pas de création automatique de personnage WoW ni de synchronisation fictive.
 - Pas de fusion, pas de coût et pas de dépendance réseau supplémentaire pour les couches architecturales.
+
+## Passe P9.1 — premiers panoramas héroïques
+
+Deux scènes vectorielles 1920×1080 originales et plus détaillées remplacent les panoramas plats dans le moteur composite :
+
+- `renaissance-p9-hero-druid.svg` : sanctuaire forestier, clair de lune, arbre ancestral, totem tauren, esprit félin et particules.
+- `renaissance-p9-hero-warlock.svg` : nécropole gothique, éclipse, portail runique, brumes et signature occulte.
+
+Elles sont branchées sur les deux surfaces d'accueil (hero initial et carte cinématique) tout en conservant les données et les boutons existants. Le fichier de tests P9 vérifie leur présence et leur raccordement. 28 SVG Renaissance sont désormais contrôlés dans la CI. Il reste à faire valider leur qualité visuelle sur un écran réel et à produire les sept scènes suivantes au même niveau.
