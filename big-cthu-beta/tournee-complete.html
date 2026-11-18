@@ -588,7 +588,7 @@ const st={get(k,d){try{const v=TOUR_STORE.getItem("tidel_"+k);return v==null?d:J
 
 /* ===== Golipette: weekly clinical cycle exceptions, inside the existing encrypted vault ===== */
 const TQ_WEEK_KEY="tidel_cyc_week_override_v1";
-let tqBusy=false,tqPending=null;
+let tqBusy=false,tqPending=null,tqWeekState={patient:"",week:"",mode:"ch",open:false};
 function tqWeeks(strict){
  if(!TQ){if(strict)throw Error("Outil de planning non chargé. Recharge Tournée.");return []}
  const raw=TOUR_STORE.getItem(TQ_WEEK_KEY);
@@ -627,12 +627,12 @@ async function tqSaveWeeks(entries){
  const next=TQ.update(before,entries);
  const old=TOUR_STORE.getItem(TQ_WEEK_KEY);
  await tqCommitVaultKey(TQ_WEEK_KEY,JSON.stringify(next),old);
- render();
+ render();tqWeekFormRefresh();toast("Semaine enregistrée dans le coffre.");
 }
 async function tqDeleteWeek(pid,week){
  const before=tqWeeks(true),next=before.filter(x=>!(x.pid===pid&&x.week===week));
  await tqCommitVaultKey(TQ_WEEK_KEY,JSON.stringify(next),TOUR_STORE.getItem(TQ_WEEK_KEY));
- render();
+ render();tqWeekFormRefresh();toast("Exception supprimée ; cycle habituel rétabli.");
 }
 function tqCycleDays(p,mode,days){
  if(!TQ||!p)return null;
@@ -662,13 +662,13 @@ async function tqApplyWeeks(entries,confirmation){
 /* ===== Réglage manuel des semaines, sans passer par une conversation ===== */
 function tqWeekBlock(){
  if(!TQ)return '<div class="tq-week">Éditeur local indisponible. Recharge la page pour réessayer.</div>';
- const base=TQ.monday(TODAY),next=TQ.add(base,7),opts=P.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.n)+'</option>').join('');
+ const base=TQ.monday(TODAY),next=TQ.add(base,7),opts=P.map(p=>'<option value="'+esc(p.id)+'" '+(p.id===tqWeekState.patient?"selected":"")+'>'+esc(p.n)+'</option>').join('');
  return '<section class="tq-week" aria-label="Changer les semaines chimio et Granocytes">'+
- '<details id="tq-week-editor"><summary>🧪 Changer une semaine chimio / Granocytes</summary>'+
+ '<details id="tq-week-editor" '+(tqWeekState.open?"open":"")+' ontoggle="tqWeekState.open=this.open"><summary>🧪 Changer une semaine chimio / Granocytes</summary>'+
  '<p>Choisis le patient, la semaine, le traitement et les jours. Ces exceptions sont temporaires, dans ton coffre chiffré, sans modifier le cycle de fond.</p>'+
  '<div class="tq-week-grid"><label>Patient<select id="tq-week-patient" onchange="tqWeekFormRefresh()"><option value="">Choisir une fiche</option>'+opts+'</select></label>'+
- '<label>Semaine<select id="tq-week-start" onchange="tqWeekFormRefresh()"><option value="'+base+'">Cette semaine · '+base+'</option><option value="'+next+'">Semaine prochaine · '+next+'</option></select></label>'+
- '<label>Type<select id="tq-week-mode" onchange="tqWeekFormRefresh()"><option value="ch">Chimio</option><option value="gr">Granocytes</option></select></label></div>'+
+ '<label>Semaine<select id="tq-week-start" onchange="tqWeekFormRefresh()"><option value="'+base+'" '+(tqWeekState.week===base?"selected":"")+'>Cette semaine · '+base+'</option><option value="'+next+'" '+(tqWeekState.week===next?"selected":"")+'>Semaine prochaine · '+next+'</option></select></label>'+
+ '<label>Type<select id="tq-week-mode" onchange="tqWeekFormRefresh()"><option value="ch" '+(tqWeekState.mode==="ch"?"selected":"")+'>Chimio</option><option value="gr" '+(tqWeekState.mode==="gr"?"selected":"")+'>Granocytes</option></select></label></div>'+
  '<fieldset class="tq-week-days"><legend>Jours de passage (à vérifier)</legend>'+
  [1,2,3,4,5,6,0].map(n=>'<label><input type="checkbox" class="tq-week-day" value="'+n+'">'+JC[n]+'</label>').join('')+'</fieldset>'+
  '<div class="tq-actions"><button type="button" onclick="tqWeekSaveManual()">Prévisualiser et appliquer</button>'+
@@ -679,6 +679,7 @@ function tqWeekBlock(){
 function tqWeekFormRefresh(){
  const select=document.getElementById("tq-week-patient"),week=document.getElementById("tq-week-start"),mode=document.getElementById("tq-week-mode");
  if(!select||!week||!mode)return;
+ tqWeekState={patient:select.value,week:week.value,mode:mode.value,open:true};
  const p=P.find(x=>x.id===select.value),ov=p?tqOverride(p,week.value):null;
  const days=ov&&ov.mode===mode.value?ov.days:TQ.cycleDays(p&&p.cyc,mode.value);
  document.querySelectorAll(".tq-week-day").forEach(box=>{box.checked=!!days&&days.includes(Number(box.value))});
@@ -796,7 +797,7 @@ async function tqChatApply(){
   }
   if(plan.type==="cycle"){
    const applied=await tqApplyWeeks(plan.entries);
-   tqChatSay(applied?"✓ Semaines enregistrées et tournée recalculée.":"Modification annulée.");
+   tqChatSay(applied?"✓ Semaines enregistrées et tournée recalculée.":"Modification annulée.");if(applied)toast("✓ Planning des deux semaines enregistré.");
    return;
   }
  }catch(e){tqChatSay("⚠ "+e.message);toast("Modification non enregistrée.")}
