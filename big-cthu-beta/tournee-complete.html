@@ -438,7 +438,7 @@ body:not(.tournee-locked) #tour-security-gate:not([hidden]){position:fixed;inset
 #tour-save-strip[data-state="error"]{position:sticky;top:0;z-index:60}
 #tour-save-strip[data-state="error"] #tour-save-text{max-height:none}
 #tour-save-strip button:focus-visible{outline:3px solid #d4ffdf;outline-offset:2px}
-@media(max-width:560px){#tour-save-strip{padding:4px 10px;font-size:12px}#tour-save-summary{gap:5px;min-height:42px}#tour-save-menu{min-width:84px}#tour-save-text{font-size:12px}.tour-save-buttons{display:grid;grid-template-columns:1fr}.tour-save-buttons button{width:100%;text-align:left}}
+@media(max-width:560px){#tour-save-summary{flex-wrap:wrap}#tour-save-text{flex:1 1 100%}#tour-recovery-direct{flex:1 1 auto}#tour-save-strip{padding:4px 10px;font-size:12px}#tour-save-summary{gap:5px;min-height:42px}#tour-save-menu{min-width:84px}#tour-save-text{font-size:12px}.tour-save-buttons{display:grid;grid-template-columns:1fr}.tour-save-buttons button{width:100%;text-align:left}}
 #tour-save-strip[data-state="error"]{background:#5c2531;color:#fff2f2}
 #tour-network-state{font-weight:700;font-size:12px;border:1px solid currentColor;border-radius:999px;padding:4px 9px}
 #tour-network-state[data-online="false"]{background:#45350e;color:#fff0b5}
@@ -2887,7 +2887,7 @@ document.addEventListener('freeze',saveIfPending);
 window.addEventListener('blur',saveIfPending);
 window.addEventListener('pageshow',resumeTournee);
 window.addEventListener('focus',resumeTournee);
-autoOpenTournee();
+autoOpenTournee().then(opened=>{if(opened&&location.hash==='#import-json')openTourRecovery();});
 </script>
 </body>
 </html>
