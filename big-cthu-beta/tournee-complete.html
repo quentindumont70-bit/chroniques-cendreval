@@ -1375,7 +1375,7 @@ async function tqStickyFlushDrafts(){
  const newField=document.getElementById('tq-sticky-new');
  if(newField&&newField.value.trim())throw Error('Nouveau rappel en cours : valide « Ajouter » avant actualisation.');
  const editField=document.getElementById('tq-sticky-edit');
- if(editField&&tqStickyEditing)throw Error('Rappel en cours de modification : valide « OK » avant actualisation.');
+ if(editField)throw Error('Rappel en cours de modification : valide « OK » avant actualisation.');
  if(tqStickySavePromise)await tqStickySavePromise;
  for(const [d,raw] of Object.entries(tqStickyDrafts)){
   if(!TQ||!TQ.validDay(d))throw Error('Date de rappel invalide : actualisation annulée.');
