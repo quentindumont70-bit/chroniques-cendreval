@@ -188,6 +188,12 @@ function attach(){
   link.id='binch-p10-expo';link.href='./renaissance-p10-showcase.html';
   portfolio.append(link);
  }
+ if(portfolio&&!document.getElementById('binch-shaaby-premium-expo')){
+  const premium=el('a','binch-p10-expo binch-shaaby-premium-expo','Découvrir le sanctuaire premium de Shaaby ✧');
+  premium.id='binch-shaaby-premium-expo';premium.href='./shaaby-mulgore-premium.html';
+  premium.setAttribute('aria-label','Ouvrir la maquette artistique premium de Shaaby dans Mulgore');
+  portfolio.append(premium);
+ }
  if(cinematic&&!cinematic.querySelector('.binch-identity-composition')){
   const layer=el('div','binch-identity-composition');layer.setAttribute('aria-hidden','true');
   layer.append(el('div','binch-identity-landscape'),el('div','binch-identity-architecture'),el('div','binch-identity-aura'),el('div','binch-identity-professions'));
