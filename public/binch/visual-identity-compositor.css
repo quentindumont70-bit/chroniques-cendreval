@@ -1,0 +1,202 @@
+/* BINCH P9 — world = class, architecture = race, finishing = professions.
+   Original vector architecture remains crisp at any DPI, zero requests for race ornaments. */
+:root{
+ --br-race-matter:#28332f;--br-race-metal:#d4b278;
+ --br-class-light:#dca77d;--br-class-aura:#8f392b;
+ --br-class-world:url("./renaissance-world-warrior.svg");
+ --br-race-art:none;--br-job-glyph:"";--br-second-glyph:"";
+}
+#binch-profile-trigger.identity{
+ appearance:none;font:inherit;cursor:pointer;color:inherit;
+ text-align:left;transition:box-shadow .2s,border-color .2s,transform .2s;
+}
+#binch-profile-trigger.identity:hover{
+ border-color:var(--br-class-light);box-shadow:0 0 0 2px color-mix(in srgb,var(--br-race-metal) 25%,transparent),0 8px 22px #0007;
+ transform:translateY(-2px);
+}
+#binch-profile-trigger.identity:focus-visible{outline:3px solid #ffe9b8;outline-offset:4px}
+#binch-profile-trigger.identity::after{content:"✎";font-size:1rem;color:var(--br-race-metal);padding-left:9px}
+#page-hub>.hero,#page-hub .hero,
+#binch-adventure-home .binch-character-card{
+ position:relative;isolation:isolate;overflow:hidden;
+ border-color:color-mix(in srgb,var(--br-race-metal) 60%,#3c443c);
+}
+#page-hub .hero{
+ min-height:345px;
+ background:linear-gradient(125deg,var(--br-race-matter),#091219);
+ box-shadow:inset 0 1px color-mix(in srgb,var(--br-race-metal) 38%,transparent),0 25px 65px #0009;
+}
+#page-hub .hero .hero-copy,#page-hub .hero .hero-sigil{
+ position:relative;z-index:2;
+}
+#page-hub .hero .hero-copy{max-width:min(64%,590px)}
+#page-hub .hero .hero-sigil{
+ color:var(--br-class-light);text-shadow:0 0 38px var(--br-class-aura),0 3px 11px #000c;
+}
+.binch-identity-composition{
+ position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;
+ border-radius:inherit;contain:paint;
+}
+.binch-identity-landscape,.binch-identity-architecture,.binch-identity-aura,.binch-identity-professions{
+ position:absolute;inset:0;pointer-events:none;
+}
+.binch-identity-landscape{
+ background-image:linear-gradient(90deg,#071219f7 0%,#071519e6 36%,#0819215e 83%),var(--br-class-world);
+ background-position:center,center 45%;background-size:cover;
+ filter:saturate(1.15) contrast(1.1);
+}
+.binch-identity-architecture{
+ background-image:var(--br-race-art);
+ background-repeat:no-repeat;background-size:auto 115%;background-position:right -28px bottom -55px;
+ opacity:.56;filter:drop-shadow(0 0 16px #000c);
+ mix-blend-mode:screen;
+}
+.binch-identity-aura{
+ background:radial-gradient(ellipse at 78% 22%,color-mix(in srgb,var(--br-class-aura) 34%,transparent),transparent 57%),
+ linear-gradient(0deg,color-mix(in srgb,var(--br-race-matter) 60%,transparent),transparent 60%);
+}
+.binch-identity-professions{font:2.4rem Georgia,serif;color:var(--br-class-light);text-shadow:0 0 19px var(--br-class-aura);}
+.binch-identity-professions::before,.binch-identity-professions::after{
+ content:var(--br-job-glyph);position:absolute;right:13%;bottom:11%;
+ opacity:.58;filter:drop-shadow(0 0 11px var(--br-class-aura));
+}
+.binch-identity-professions::after{content:var(--br-second-glyph);right:8%;bottom:33%;font-size:.67em;opacity:.43}
+#binch-adventure-home .binch-identity-composition .binch-identity-architecture{
+ background-position:right bottom;opacity:.22;
+}
+#binch-adventure-home .binch-identity-composition .binch-identity-professions{opacity:.7}
+/* Race-specific *structural* language: the vector silhouettes are different, not re-colours. */
+html[data-br-race=human] #page-hub .hero{border-radius:9px;outline:1px solid #d7ba8040;outline-offset:-9px}
+html[data-br-race=dwarf] #page-hub .hero{border-radius:3px 18px 3px 18px;border-width:3px}
+html[data-br-race=elf] #page-hub .hero{border-radius:52px 5px 52px 5px}
+html[data-br-race=gnome] #page-hub .hero{border-radius:24px;border-style:double;border-width:4px}
+html[data-br-race=orc] #page-hub .hero{border-radius:0 30px 0 30px;border-left-width:7px}
+html[data-br-race=forsaken] #page-hub .hero{border-radius:3px 32px 3px 32px;border-top-style:dashed}
+html[data-br-race=tauren] #page-hub .hero{border-radius:42px 42px 12px 12px;border-bottom-width:5px}
+html[data-br-race=troll] #page-hub .hero{border-radius:12px 36px 6px 36px;border-right-width:5px}
+html[data-br-race=elf] .binch-identity-architecture{opacity:.75;transform:scale(1.06)}
+html[data-br-race=orc] .binch-identity-architecture,
+html[data-br-race=dwarf] .binch-identity-architecture{opacity:.64;mix-blend-mode:normal}
+html[data-br-race=forsaken] .binch-identity-aura{
+ background:linear-gradient(15deg,#09252c88,transparent 65%),radial-gradient(ellipse at 70% 22%,#8ecbb366,transparent 60%);
+}
+html[data-br-race=tauren] .binch-identity-architecture{opacity:.68;filter:drop-shadow(0 10px 10px #0b1512)}
+html[data-br-class=druid] .binch-identity-aura{
+ background:radial-gradient(circle at 82% 18%,#c4e8a544,transparent 23%),radial-gradient(ellipse at 65% 85%,#153e2ecc,transparent 65%);
+}
+html[data-br-class=warlock] .binch-identity-aura{
+ background:radial-gradient(circle at 78% 44%,transparent 0 90px,#a56dc744 92px 95px,transparent 97px),radial-gradient(ellipse at 84% 45%,#46225b99,transparent 58%);
+}
+html[data-br-class=shaman] .binch-identity-aura{
+ background:linear-gradient(128deg,transparent 60%,#7fdaef55 61%,transparent 62%),radial-gradient(ellipse at 72% 70%,#0a4f7a99,transparent);
+}
+html[data-br-class=mage] .binch-identity-aura{
+ background:radial-gradient(circle at 78% 42%,transparent 0 76px,#a7d4ff44 78px 80px,transparent 83px),radial-gradient(ellipse at 80% 45%,#40377d99,transparent 65%);
+}
+html[data-br-class=rogue] .binch-identity-aura{background:linear-gradient(115deg,#071016a0 30%,transparent 58%,#07131c88)}
+html[data-br-class=paladin] .binch-identity-aura{background:radial-gradient(ellipse at 80% 8%,#fde3b388,transparent 44%)}
+html[data-br-class=priest] .binch-identity-aura{background:radial-gradient(ellipse at 78% 3%,#fff0d477,transparent 40%)}
+html[data-br-class=warrior] .binch-identity-aura{background:linear-gradient(135deg,transparent 68%,#e7ac6844 69%,transparent 70%)}
+html[data-br-class=hunter] .binch-identity-aura{background:linear-gradient(5deg,#153f3388,transparent 60%)}
+/* Small profession signatures: animation is deliberately rare and opt-out friendly. */
+html[data-br-jobs~="leaves"] .binch-identity-professions::before{animation:binch-leaf-drift 15s ease-in-out infinite}
+html[data-br-jobs~="clock"] .binch-identity-professions::before{animation:binch-gear-turn 25s linear infinite}
+html[data-br-jobs~="sparks"] .binch-identity-professions::before{animation:binch-spark-light 11s ease-in-out infinite}
+html[data-br-jobs~="runes"] .binch-identity-professions::before{animation:binch-spark-light 14s ease-in-out infinite}
+@keyframes binch-leaf-drift{0%,70%,100%{transform:translate(0,0) rotate(0);opacity:.3}84%{transform:translate(-25px,-27px) rotate(14deg);opacity:.8}}
+@keyframes binch-gear-turn{to{transform:rotate(360deg)}}
+@keyframes binch-spark-light{0%,77%,100%{opacity:.25;transform:scale(.9)}88%{opacity:.88;transform:scale(1.2)}}
+/* Reforge: dedicated transactional preview; never mutates live game fields. */
+.binch-reforge-dialog{
+ width:min(1020px,calc(100vw - 18px));max-width:1020px;max-height:min(92dvh,1000px);
+ padding:0;color:#f4e9d2;background:#0d191c;
+ border:1px solid #c5a77e;border-radius:22px;box-shadow:0 25px 100px #000f;
+ overscroll-behavior:contain;
+}
+.binch-reforge-dialog::backdrop{background:#01080cdc;backdrop-filter:blur(8px)}
+.binch-reforge-frame{padding:clamp(18px,3vw,33px)}
+.binch-reforge-header{display:flex;align-items:start;justify-content:space-between;gap:16px}
+.binch-reforge-header h2{
+ font:700 clamp(1.7rem,4vw,2.7rem) Georgia,serif;
+ color:#f9dcaa;margin:0;line-height:1.15;
+}
+.binch-reforge-close{
+ color:#f0d7aa;background:#223134;border:1px solid #7a8071;
+ border-radius:40px;padding:9px 14px;min-height:44px;cursor:pointer;
+}
+.binch-reforge-frame>p{color:#becbc4;max-width:68ch;line-height:1.6}
+.binch-reforge-preview{
+ --br-preview-world:url("./renaissance-world-druid.svg");
+ --br-preview-race:none;--br-preview-metal:#b4e28f;--br-preview-aura:#448d5f;
+ position:relative;isolation:isolate;overflow:hidden;
+ min-height:190px;padding:28px;
+ display:flex;flex-direction:column;align-items:start;justify-content:end;gap:14px;
+ border:2px solid var(--br-preview-metal);border-radius:18px;
+ background-image:linear-gradient(90deg,#071419ec,#071619ad 70%,#0716194d),var(--br-preview-world);
+ background-size:cover;background-position:center center;
+ box-shadow:inset 0 0 36px #0008,0 18px 40px #0008;
+}
+.binch-reforge-preview::before{
+ content:"";position:absolute;inset:-25px;z-index:-1;pointer-events:none;
+ background:var(--br-preview-race) right center/auto 105% no-repeat;
+ opacity:.6;filter:drop-shadow(0 4px 10px var(--br-preview-aura));
+}
+.binch-reforge-preview .binch-reforge-emblem{
+ font:3.4rem Georgia,serif;color:var(--br-preview-metal);text-shadow:0 0 25px var(--br-preview-aura);
+}
+.binch-reforge-preview .binch-reforge-summary{font:700 clamp(1.12rem,3vw,1.7rem) Georgia,serif;text-shadow:0 3px 12px #000;color:#ffecca}
+.binch-reforge-set{border:0;min-width:0;padding:0;margin:23px 0 0}
+.binch-reforge-set legend{font:700 1.08rem Georgia,serif;color:#e7c38a;padding:0;margin:0 0 9px}
+.binch-reforge-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.binch-reforge-choice{
+ appearance:none;cursor:pointer;min-height:65px;min-width:0;
+ display:flex;align-items:center;gap:10px;text-align:left;
+ background:linear-gradient(130deg,#26352f,#142228);color:#f3e6cf;
+ border:1px solid #4f6b66;border-radius:10px;padding:10px;
+ font:600 .88rem system-ui,sans-serif;word-break:normal;
+}
+.binch-reforge-glyph{font:1.5rem Georgia,serif;color:#e5c38a;min-width:23px;text-align:center}
+.binch-reforge-choice:hover{border-color:#efd49f;box-shadow:inset 0 0 19px #e5c38a16}
+.binch-reforge-choice.selected,.binch-reforge-choice[aria-pressed=true]{
+ border-color:#e6c88d;background:linear-gradient(120deg,#344d41,#23302b);
+ box-shadow:inset 0 0 0 1px #e6c88d6e,0 0 16px #e9c68224;
+}
+.binch-reforge-dialog button:focus-visible{outline:3px solid #ffe9b8;outline-offset:3px}
+.binch-reforge-footer{
+ display:flex;gap:11px;justify-content:flex-end;flex-wrap:wrap;
+ position:sticky;bottom:-1px;padding:18px 0 3px;margin-top:15px;
+ background:linear-gradient(#0d191cce,#0d191c);
+}
+.binch-reforge-footer button{
+ min-height:48px;padding:11px 17px;border-radius:9px;cursor:pointer;
+ font-weight:750;border:1px solid #9f987a;
+}
+.binch-reforge-cancel{color:#e1d1b5;background:#283137}
+.binch-reforge-apply{color:#151b16;background:linear-gradient(120deg,#f9e4af,#c49c5f)}
+.binch-reforge-error{color:#ffc2a1!important}
+@media(max-width:720px){
+ #page-hub .hero{min-height:405px}
+ #page-hub .hero .hero-copy{max-width:100%;text-shadow:0 2px 7px #000c}
+ #page-hub .hero .hero-sigil{opacity:.5}
+ .binch-identity-landscape{background-image:linear-gradient(180deg,#071519e9,#071519b5 73%,#071519df),var(--br-class-world)}
+ .binch-identity-architecture{opacity:.4;background-size:auto 83%;background-position:right bottom}
+ .binch-reforge-options{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .binch-reforge-frame{padding:17px 13px}
+ .binch-reforge-dialog{max-height:94dvh}
+ .binch-reforge-preview{min-height:155px;padding:17px}
+}
+@media(max-width:390px){.binch-reforge-choice{font-size:.79rem;gap:6px;padding:9px 7px}}
+@media(prefers-reduced-motion:reduce){
+ .binch-identity-professions::before,.binch-identity-professions::after{animation:none!important}
+ #binch-profile-trigger.identity{transition:none!important;transform:none!important}
+}
+html[data-binch-detail=lite] .binch-identity-aura,
+html[data-binch-detail=lite] .binch-identity-professions{display:none}
+html[data-binch-detail=lite] .binch-identity-architecture{opacity:.22;filter:none;mix-blend-mode:normal}
+html[data-binch-detail=lite] #page-hub .hero{box-shadow:none}
+html[data-binch-detail=lite] .binch-reforge-preview::before{filter:none}
+@media(forced-colors:active){
+ .binch-reforge-dialog,.binch-reforge-choice,#binch-profile-trigger.identity{border:2px solid CanvasText!important;background:Canvas!important;color:CanvasText!important}
+ .binch-reforge-choice[aria-pressed=true]{outline:3px solid Highlight}
+ .binch-identity-composition{display:none}
+}
