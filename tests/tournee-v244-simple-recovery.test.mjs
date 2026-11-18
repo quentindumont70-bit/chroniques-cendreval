@@ -14,9 +14,9 @@ test('V248: PIN supprimé, aucun champ ni texte de déverrouillage dans Tournée
 test('V248: formulaire JSON disponible depuis la vraie application',async()=>{
  const html=await read('tournee-complete.html');
  assert.match(html,/id="tour-recovery-direct">Mes sauvegardes/);
- assert.match(html,/id="tour-recovery-launch">Importer mes patients \(JSON\)/);
+ assert.match(html,/id="tour-recovery-launch">Sauvegarder \/ restaurer/);
  assert.match(html,/id="tour-file" accept="\.json,application\/json"/);
- assert.match(html,/id="tour-import" type="button">2 · Importer le JSON dans cette application/);
+ assert.match(html,/id="tour-import" type="button">Restaurer sur cet appareil/);
  assert.match(html,/document\.getElementById\('tour-import'\)\.addEventListener\('click',\(\)=>login\(true\)\)/);
  assert.match(html,/location\.hash==='#import-json'/);
  assert.match(html,/function openTourRecovery\(\)/);
