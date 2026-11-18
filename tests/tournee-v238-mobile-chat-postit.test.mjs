@@ -110,3 +110,15 @@ test('V238: no real patient details or Topaze automation hardcoded in helper',()
  assert.doesNotMatch(helperText,/Fillon|Bernard|Topaze|patient named|https?:\/\//i);
  assert.match(html,/Tournée · Application principale/);
 });
+
+
+test('Tournée V239: cache hors ligne rafraîchi et nouveau helper présent dans les assets',async()=>{
+ const sw=await read('sw.js');
+ assert.match(sw,/const CACHE='big-cthu-public-v2-v239'/);
+ assert.match(sw,/'\.\/tournee-complete\.html'/);
+ assert.match(sw,/'\.\/tournee-quick-core\.js'/);
+ const [helper,html]=await Promise.all(['tournee-quick-core.js','tournee-complete.html'].map(read));
+ assert.doesNotMatch(helper,/\bfetch\s*\(|XMLHttpRequest|WebSocket/);
+ assert.match(html,/function tqWeekWarning\(\)/);
+ assert.match(html,/function tqStickyDraft\(el\)/);
+});
