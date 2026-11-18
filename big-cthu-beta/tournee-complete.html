@@ -466,6 +466,42 @@ body.tournee-locked #tour-save-strip{display:none}
 #pki:has(#qas){padding-bottom:max(16px,env(safe-area-inset-bottom,0px))}
 #tour-absence-panel #ap-topaze-note{white-space:pre-wrap;background:#151329;border:1px solid #655680;border-radius:12px;padding:12px;overflow-wrap:anywhere}
 @media(max-width:600px){#tour-absence-panel .ap-grid,#tour-absence-panel #ap-period-report{grid-template-columns:1fr}#tour-absence-panel .ap-inner{padding:13px}#tour-absence-panel button{width:100%}#tour-absence-panel .ap-closebar button{width:auto}#tour-absence-panel .ap-entry{padding:11px}}
+
+/* Mobile sticky notes, per-week cycle overrides and offline assistant. */
+.tq-sticky{position:relative;margin:12px 0 16px;padding:14px 15px 15px;background:#fff3a6;color:#3d341b;border:1px solid #decf79;border-radius:4px 15px 13px 6px;box-shadow:3px 5px 0 rgba(90,70,19,.12),0 7px 19px rgba(45,34,8,.09);transform:rotate(-.25deg)}
+.tq-sticky:before{content:"";position:absolute;right:0;top:0;border-width:0 21px 21px 0;border-style:solid;border-color:transparent var(--bg) transparent transparent;opacity:.5}
+.tq-sticky-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:800;margin-bottom:8px}
+.tq-sticky textarea{width:100%;min-height:70px;max-height:200px;resize:vertical;border:1px solid #d4bf62;border-radius:7px;background:rgba(255,255,255,.45);color:#332b15;font:inherit;padding:10px;line-height:1.45}
+.tq-sticky .sub{color:#5a4b23}
+.tq-sticky button,.tq-chat button,.tq-week button{min-height:44px}
+.tq-sticky .tq-meta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-top:7px}
+.tq-sticky .tq-meta button{border:1px solid #9d893e;border-radius:10px;background:#fff6c4;color:#3d341b;padding:8px 14px;font-weight:700}
+.tq-note-icon{display:block;font-size:10px;color:#8c6810;line-height:1}
+.tq-chat,.tq-week{margin:13px 0;padding:13px;border:1px solid var(--line);background:var(--card);border-radius:var(--r);box-shadow:var(--sh)}
+.tq-chat h3,.tq-week h3{font-size:16px;margin:0 0 7px;color:var(--ink)}
+.tq-chat p,.tq-week p{font-size:12px;line-height:1.5;color:var(--mut);margin:4px 0 8px}
+.tq-chat-form{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.tq-chat-form input{flex:1 1 190px;min-width:0;font-size:15px;min-height:46px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:10px}
+.tq-chat-form button,.tq-week button{border-radius:10px;border:1px solid var(--line);font-weight:700;padding:10px 12px;background:var(--soft);color:var(--ink)}
+.tq-chat-output{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--bg2);border-radius:9px;padding:10px;margin-top:8px;font-size:13px;line-height:1.5;color:var(--ink)}
+.tq-chat-output:empty{display:none}
+.tq-preview{display:flex;flex-direction:column;gap:8px;margin-top:9px}
+.tq-preview:empty{display:none}
+.tq-preview button{background:var(--acc);color:var(--acc-ink);border-radius:10px;border:0;min-height:44px;padding:9px 13px;font-weight:800}
+.tq-week details{margin-top:7px}
+.tq-week summary{cursor:pointer;font-weight:800;min-height:44px;display:flex;align-items:center}
+.tq-week-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.tq-week-grid label{min-width:0;font-size:12px;font-weight:700;display:flex;flex-direction:column;gap:4px}
+.tq-week select{max-width:100%;width:100%;min-height:44px;padding:7px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;font:inherit}
+.tq-week-days{border:0;margin:9px 0;padding:0;display:flex;flex-wrap:wrap;gap:5px}
+.tq-week-days legend{font-size:12px;font-weight:700;margin-bottom:7px}
+.tq-week-days label{display:inline-flex;gap:4px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:12px;font-weight:700;min-height:44px}
+.tq-week-days input{accent-color:var(--acc);width:18px;height:18px}
+.tq-week .tq-actions{display:flex;gap:7px;flex-wrap:wrap}
+.tq-week .tq-actions button{flex:1 1 130px}
+.tq-week .tq-status{margin-top:8px;font-size:12px;white-space:pre-wrap;color:var(--ink)}
+.tq-guide{font-size:12px;color:var(--mut);line-height:1.5}
+@media(max-width:520px){.tq-week-grid{grid-template-columns:1fr}.tq-chat-form input{flex-basis:100%}.tq-week .tq-actions button{flex-basis:100%}}
 </style>
 </head>
 <body class="tournee-locked tournee-checking"><section id="tour-security-gate" hidden>
@@ -540,8 +576,10 @@ body.tournee-locked #tour-save-strip{display:none}
 <div class="toast" id="toast"></div>
 <div class="nb" id="nb"></div>
 <div class="lb" id="lb" onclick="this.classList.remove('on')"><img id="lbi" alt=""></div>
+<script src="./tournee-quick-core.js"></script>
 <script type="text/plain" id="tour-source-js">
 let P=[];
+const TQ=window.TOURNEE_QUICK;
 try{const l=JSON.parse(TOUR_STORE.getItem("tidel_Pl")||"null");if(Array.isArray(l)&&l.length)P=l}catch(e){}
 const PH={};
 const THEMES=[["auto","Auto","Suit le téléphone","linear-gradient(90deg,#edf3f4 50%,#0a0f15 50%)","#0b6e69","#fff"],["lagon","Lagon","Clair, apaisant","#edf3f4","#0b6e69","#fff"],["nuit","Nuit","Tournée à l'aube","#0a0f15","#62b4ff","#141d27"],["aube","Aube","Chaud, éditorial","#f8f0e6","#b9502a","#fffaf3"],["foret","Forêt","Doux, naturel","#ecf1e8","#3c7448","#fbfcf8"],["neon","Néon","Breakcore mode","#0c0612","#ff3ea5","#180d25"],["soleil","Plein soleil","Contraste max","#ffffff","#000000","#ffe600"],["sakura","Sakura","Cerisiers en fleurs","#fbeef2","#c2185b","#fff8fa"],["espace","Espace","Étoiles filantes","#070a1f","#9d8cff","#121a3a"],["tropiques","Tropiques","Lagon, frangipaniers","#e9f7f3","#00897b","#fffdf6"],["volcan","Volcan","Piton de la Fournaise","#140b0a","#ff6a2b","#22130f"],["marin","Marin","Lagon et petits poissons","#c9f1f0","#0097a7","#f4fdfc"],["aurore","Aurore boréale","Voiles verts et violets","#06121a","#3dffb5","#0e1f2a"],["pluie","Pluie lo-fi","Nuit de pluie en ville","#12131c","#ffb86b","#1c1e2b"],["arcade","Arcade","Rétro 8-bit","#0d0221","#f15bb5","#1a0b38"]];
