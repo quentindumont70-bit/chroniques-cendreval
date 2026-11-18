@@ -701,10 +701,10 @@ function header(){
 function viewTour(){
  const L=list(day),D=doneSet(),nx=ROUT()?nxT(L):L.find(p=>!D.includes(p.id)),nd=L.filter(p=>D.includes(p.id)).length;
  const pct=L.length?Math.round(nd/L.length*100):0;
- let h=`<div class="chw"><button class="chip nav" onclick="shiftW(-1)" aria-label="Semaine précédente">‹</button><div class="chips sc">${CHR().map(d=>`<button class="chip ${d===day?"on":""} ${d===TODAY?"today":""} ${remOf(d)?"rp":""}" onclick="chipKeep=this.parentNode.scrollLeft;day='${d}';render()">${JC[DT(d).getDay()]}<em>${DT(d).getDate()}</em><small>${list(d).length}</small></button>`).join("")}</div><button class="chip nav" onclick="shiftW(1)" aria-label="Semaine suivante">›</button></div>${day!==TODAY?`<button class="tdy" onclick="day=TODAY;render()">↩ Revenir à aujourd'hui</button>`:""}${remBanner()}`;
+ let h=`<div class="chw"><button class="chip nav" onclick="shiftW(-1)" aria-label="Semaine précédente">‹</button><div class="chips sc">${CHR().map(d=>`<button class="chip ${d===day?"on":""} ${d===TODAY?"today":""} ${remOf(d)?"rp":""}" data-tq-day="${d}" onclick="chipKeep=this.parentNode.scrollLeft;day='${d}';render()" title="Afficher le post-it et la tournée du jour">${JC[DT(d).getDay()]}<em>${DT(d).getDate()}</em><small>${list(d).length}</small><span class="tq-note-icon" aria-hidden="true">${tqStickyText(d).trim()?"📝":"▧"}</span></button>`).join("")}</div><button class="chip nav" onclick="shiftW(1)" aria-label="Semaine suivante">›</button></div>${day!==TODAY?`<button class="tdy" onclick="day=TODAY;render()">↩ Revenir à aujourd'hui</button>`:""}${remBanner()}`;
  h+=`<div class="hi"><span>${greet()} 👋</span><button onclick="askWho()">${who()?"Changer":"Ton prénom ?"}</button></div>`;
  h+=ordoChip();h+=bkChip();h+=suspBlock();h+=absBanner();h+=bdayBanner();h+=veilleBanner();
- h+=dayBand();
+ h+=dayBand();h+=tqPostitBlock();
  h+=`${ROUT()?heroR(L,nx):`<div class="hero"><div class="ring" style="--p:${pct}"><b>${nd}/${L.length}</b></div><div style="min-width:0">${nx?`<div class="k">À suivre · ${nx.h.replace(" fin","")}</div><div class="big">${nx.n}</div><div class="sub">${nx.a}</div>${lateChip(nx)}`:L.length?`<div class="k">Terminé</div><div class="big">Tournée bouclée 🎉</div><div class="sub">Pense aux transmissions.</div>`:`<div class="k">Repos</div><div class="big">Aucun passage</div>`}</div></div>`}${L.length?`<button class="btn go" onclick="fmI=null;focusMode()">▶ Mode tournée<span>plein écran, patient par patient</span></button>${routeUrl()?`<a class="btn ghost route" href="${routeUrl()}" target="_blank" rel="noopener">${IC.nav}Itinéraire des prochains arrêts</a>`:""}`:""}${vigilBlock()}${endBlock(L)||tasksBlock(L)}${memoBlock(L)}${bilanCard()}`;
  h+=`${!ROUT()&&st.get("swhint",0)<3&&L.length?(st.set("swhint",st.get("swhint",0)+1),`<div class="hint">Astuce : glisse une carte vers la droite pour la valider</div>`):""}${chBlock()}<div class="row2"><span>${L.length} passages · 6h45 → 11h</span></div>`;
  let last="",nowDone=day!==TODAY;
@@ -920,6 +920,69 @@ function memoForm(pid){document.getElementById("pki").innerHTML=`<div class="gra
  <label class="fl">Patient (facultatif)<select id="mpid"><option value="">Toute la journée</option>${P.map(p=>`<option value="${p.id}" ${p.id===pid?"selected":""}>${p.n}</option>`).join("")}</select></label>
  <label class="fl">Note<textarea id="mtx" placeholder="Ex. passer à la pharmacie récupérer le traitement"></textarea></label>
  <div class="acts"><button class="btn" style="flex:1;justify-content:center" onclick="addMemo()">Ajouter</button><button class="btn ghost" onclick="closePk()">Annuler</button></div>`;document.getElementById("pk").classList.add("on")}
+
+/* ===== Post-it local par date, dans les mêmes memos chiffrés que le pense-bête ===== */
+const TQ_STICKY_ID="tq-postit";
+function tqStickyRows(d,strict){
+ const raw=TOUR_STORE.getItem("tidel_memo_"+d);
+ if(raw===null)return [];
+ try{
+  const rows=JSON.parse(raw);
+  if(!Array.isArray(rows)||rows.length>500||rows.filter(x=>x&&x.k===TQ_STICKY_ID).length>1)throw Error("Pense-bête invalide");
+  return rows;
+ }catch(e){
+  if(strict)throw Error("Les pense-bêtes de ce jour sont illisibles. Aucun élément ne sera écrasé.");
+  return [];
+ }
+}
+function tqStickyText(d){
+ const note=tqStickyRows(d,false).find(x=>x&&x.k===TQ_STICKY_ID);
+ return note&&typeof note.t==="string"?note.t:"";
+}
+async function tqSaveStickyText(d,text){
+ if(!TQ||!TQ.validDay(d)||typeof text!=="string"||text.length>1000)throw Error("Date ou note invalide (1000 caractères maximum).");
+ const key="tidel_memo_"+d,old=TOUR_STORE.getItem(key),rows=tqStickyRows(d,true),value=text.trim();
+ const previous=tqStickyText(d);
+ if(value===previous.trim())return false;
+ const without=rows.filter(x=>x&&x.k!==TQ_STICKY_ID),next=value?without.concat({k:TQ_STICKY_ID,p:null,t:value}):without;
+ await tqCommitVaultKey(key,JSON.stringify(next),old);
+ return true;
+}
+function tqPostitBlock(){
+ const content=tqStickyText(day);
+ return '<section class="tq-sticky" aria-label="Post-it du '+esc(short(day))+'">'+
+ '<div class="tq-sticky-head"><span>🗒️ Post-it · '+esc(rel(day))+' '+esc(short(day))+'</span><span class="sub">sur cet appareil</span></div>'+
+ '<label class="sub" for="tq-sticky-text">Détails rapides de cette journée</label>'+
+ '<textarea id="tq-sticky-text" data-day="'+day+'" maxlength="1000" placeholder="Ex. prise de sang, rendez-vous, matériel à prendre..." onblur="tqStickySave()" aria-describedby="tq-sticky-status">'+esc(content)+'</textarea>'+
+ '<div class="tq-meta"><span id="tq-sticky-status" class="sub" role="status" aria-live="polite">Enregistrement local en quittant le champ</span>'+
+ '<button type="button" onclick="tqStickySave()">✓ Enregistrer</button></div></section>';
+}
+async function tqStickySave(){
+ const el=document.getElementById("tq-sticky-text");
+ if(!el)return;
+ const d=el.dataset.day,txt=el.value;
+ const status=document.getElementById("tq-sticky-status");
+ try{
+  if(status)status.textContent="Chiffrement et sauvegarde en cours…";
+  const changed=await tqSaveStickyText(d,txt);
+  if(status)status.textContent=changed?"✓ Post-it enregistré dans le coffre":"✓ Post-it déjà à jour";
+  const chip=document.querySelector('[data-tq-day="'+d+'"] .tq-note-icon');
+  if(chip)chip.textContent=txt.trim()?"📝":"▧";
+ }catch(e){if(status)status.textContent="⚠ "+e.message;toast("Post-it non enregistré, réessaie depuis cette page.")}
+}
+async function tqAddToPostit(d,line){
+ if(!TQ||!TQ.validDay(d)||typeof line!=="string"||!line.trim())throw Error("Note invalide");
+ const previous=tqStickyText(d),combined=[previous,line.trim()].filter(Boolean).join("\n");
+ if(combined.length>1000)throw Error("Post-it plein (1000 caractères maximum). Modifie-le directement pour libérer de la place.");
+ await tqSaveStickyText(d,combined);
+}
+function tqFocusSticky(d){
+ if(!TQ||!TQ.validDay(d))return;
+ day=d;tab="tour";render();
+ const el=document.getElementById("tq-sticky-text");
+ if(el){el.scrollIntoView({block:"center",behavior:"smooth"});el.focus({preventScroll:true})}
+}
+
 function memoBlock(L){const M=memos(day);
  return `<div class="memos">${M.map(m=>{const p=m.p&&P.find(x=>x.id===m.p),dn=memoDone(day,m.k);return `<div class="memo ${dn?"d":""}"><button class="mini" onclick="togMemo('${day}','${m.k}')">${IC.chk}</button><div style="flex:1;min-width:0"><div>${esc(m.t)}</div>${p?`<div class="sub">${p.n}</div>`:""}</div>${m.fixe?`<span class="pin" title="Note du titulaire">📌</span>`:`<button class="x" onclick="delMemo('${day}','${m.k}')" aria-label="Supprimer">×</button>`}</div>`}).join("")}<button class="addm" onclick="memoForm()">＋ Ajouter un pense-bête pour ${rel(day).toLowerCase()==="aujourd'hui"?"aujourd'hui":short(day)}</button></div>`}
 function memoTag(p){const n=memos(day).filter(m=>m.p===p.id&&!memoDone(day,m.k));return n.map(m=>`<span class="tag memo-t">📌 ${esc(m.t)}</span>`).join("")}
