@@ -2312,6 +2312,12 @@ function readPortableVault(candidate){
  return candidate.data;
 }
 
+function recoveryPatientListEmpty(state){
+ try{
+  const patients=JSON.parse(state?.tidel_Pl||'null');
+  return Array.isArray(patients)&&patients.length===0;
+ }catch(_){return false}
+}
 function recoverySpaceEmpty(state){
  try{
   if(!state||typeof state!=='object'||!Array.isArray(JSON.parse(state.tidel_Pl||'null')))return false;
@@ -2324,7 +2330,7 @@ function recoverySpaceEmpty(state){
 }
 async function recoverOldVault(fileMode){
  try{
-  if(!recoverySpaceEmpty(secureState))throw Error('Tournée contient déjà des données. Récupération bloquée pour ne rien écraser.');
+  if(!recoveryPatientListEmpty(secureState))throw Error('La liste actuelle contient déjà des patients. Récupération bloquée pour ne rien écraser. Aucun changement effectué.');
   const password=document.getElementById('tour-pass').value;
   let state;
   if(fileMode){
@@ -2362,8 +2368,15 @@ async function recoverOldVault(fileMode){
    if(!state)throw Error(openedEmpty?'Les sauvegardes ouvertes ne contiennent aucune fiche patient. Aucune donnée modifiée.':'Les sauvegardes sont présentes, mais leur clé n’est pas disponible ici. Saisis une seule fois l’ancienne phrase de sauvegarde, ou retrouve l’appareil qui les ouvrait. Aucune donnée effacée.');
   }
   if(!validVaultState(state))throw Error('Sauvegarde incompatible. Aucun changement.');
+  // Restaurer les fiches et le suivi ancien sans écraser les éventuels
+  // réglages, post-it ou rubriques non vides créés depuis sur cet appareil.
   const previousState=secureState;
-  secureState=Object.assign(Object.create(null),state);secureGen++;
+  const combined=Object.assign(Object.create(null),state);
+  for(const [key,value] of Object.entries(previousState)){
+   if(key==='tidel_Pl')continue;
+   if(value!==undefined && !['','[]','{}','null'].includes(value))combined[key]=value;
+  }
+  secureState=combined;secureGen++;
   try{await ensureVaultSaved()}
   catch(e){
    secureState=previousState;secureGen++;

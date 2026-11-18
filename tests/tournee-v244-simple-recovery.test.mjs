@@ -29,7 +29,7 @@ test('V245: new recovery does not upload patient data and offline shell is refre
  assert.ok(recover.length>500);
  assert.doesNotMatch(recover,/fetch\s*\(|sendBeacon\s*\(|\.clear\s*\(|removeItem\s*\(/);
  const worker=await read('sw.js');
- assert.match(worker,/const CACHE='big-cthu-public-v2-v246'/);
+ assert.match(worker,/const CACHE='big-cthu-public-v2-v247'/);
  assert.match(worker,/'\.\/tournee-complete\.html'/);
 });
 
@@ -41,4 +41,19 @@ test('V246: separate rescue route avoids the cached old page and opens recovery 
  assert.match(rescue,/if\(!recoverySpaceEmpty\(secureState\)\)throw Error/);
  const worker=await read('sw.js');
  assert.match(worker,/'\.\/tournee-secours-v246\.html'/);
+});
+
+test('V247: empty patient list may import JSON while keeping nonempty local notes',async()=>{
+ const html=await read('tournee-complete.html');
+ assert.match(html,/function recoveryPatientListEmpty\(state\)/);
+ assert.match(html,/if\(!recoveryPatientListEmpty\(secureState\)\)throw Error/);
+ assert.match(html,/if\(key==='tidel_Pl'\)continue/);
+ assert.match(html,/if\(value!==undefined && !\['','\[\]','\{\}','null'\]\.includes\(value\)\)combined\[key\]=value/);
+ const importer=await read('tournee-import-v247.html');
+ assert.match(importer,/<details open style="margin-top:14px"/);
+ assert.match(importer,/id="tour-import">2 · Restaurer les patients depuis ce fichier/);
+ assert.match(importer,/autoOpenTournee\(\)\.then\(opened=>\{if\(opened\)/);
+ assert.doesNotMatch(importer,/tournee-idel-sauvegarde-2026-11-13\.json/);
+ const worker=await read('sw.js');
+ assert.match(worker,/'\.\/tournee-import-v247\.html'/);
 });
