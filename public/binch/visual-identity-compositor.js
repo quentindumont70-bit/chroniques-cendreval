@@ -52,7 +52,7 @@ function compose(input){
  const p=clean(input),r=RACES[p.race],c=CLASSES[p.classe],j=p.jobs.map(x=>JOBS[x]);
  return {profile:p,race:r,classe:c,jobs:j,
   vars:{'--br-race-matter':r.matter,'--br-race-metal':r.metal,'--br-race-art':raceArt(p.race),
-  '--br-class-light':c.light,'--br-class-aura':c.aura,'--br-class-world':'url("./'+c.scene+'")',
+  '--br-class-light':c.light,'--br-vital-aura':c.aura,'--br-class-world':'url("./'+c.scene+'")',
   '--br-job-glyph':JSON.stringify(j[0]?.glyph||''),'--br-second-glyph':JSON.stringify(j[1]?.glyph||'')},
   signature:r.name+' · '+c.name+(j.length?' · '+j.map(x=>x.name).join(' / '):'')};
 }
