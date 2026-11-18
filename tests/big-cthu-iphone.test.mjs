@@ -54,7 +54,7 @@ test('iPhone: les principales tentacules portent le même manifeste et activent 
   assert.match(source,/src="\.\/mobile-boot\.js" defer/,page);
  }
  const boot=await read('mobile-boot.js');
- assert.match(boot,/worker\.register\('\.\/sw\.js'\)/);
+ assert.match(boot,/worker\.register\('\.\/sw\.js'(?:,\{updateViaCache:'none'\})?\)/);
 });
 
 test('iPhone: le service worker contient les ressources publiques requises',async()=>{
