@@ -81,7 +81,7 @@ test('Renaissance : image originale, accessibilité mobile et animation réduite
 
  assert.ok(html.indexOf('./visual-renaissance.css?v=001')>html.indexOf('./ultimate-identities.css?v=001'),'design loaded after class theme');
  assert.ok(html.indexOf('./visual-renaissance.js?v=004')>html.indexOf('./player-home.js'),'home mounted before visual enhancement');
- assert.equal(html.match(/\.\/visual-renaissance\.js\?v=003/g)?.length,1);
+ assert.equal(html.match(/\.\/visual-renaissance\.js\?v=004/g)?.length,1);
 });
 test('Renaissance P2 : neuf vrais paysages originaux distincts branchés aux neuf classes',()=>{
  const css=source('visual-renaissance.css');
@@ -173,7 +173,8 @@ test('Mode graphique léger: préférence locale réversible sans altérer les s
  assert.ok(css.includes('var(--br-world-art)'));
  const js=source('visual-renaissance.js');
  assert.ok(js.includes('Mode léger — économiser les effets graphiques'));
- assert.ok(!js.includes('grimoire.hub.v3'),'presentation must not write to profile');
+ assert.ok(js.includes("getItem('grimoire.hub.v3')"),'gallery may read the class to choose an illustration');
+ assert.ok(!js.includes("setItem('grimoire.hub.v3'"),'visual controls must never write to a game profile');
 });
 
 test('Micro-interactions : apparition unique du butin et des pages, jamais en mode léger ou mouvement réduit',()=>{
