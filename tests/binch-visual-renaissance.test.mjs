@@ -78,7 +78,7 @@ test('Renaissance : image originale, accessibilité mobile et animation réduite
 
  assert.ok(html.indexOf('./visual-renaissance.css?v=001')>html.indexOf('./ultimate-identities.css?v=001'),'design loaded after class theme');
  assert.ok(html.indexOf('./visual-renaissance.js?v=003')>html.indexOf('./player-home.js'),'home mounted before visual enhancement');
- assert.equal(html.match(/\.\/visual-renaissance\.js\?v=001/g)?.length,1);
+ assert.equal(html.match(/\.\/visual-renaissance\.js\?v=003/g)?.length,1);
 });
 test('Renaissance P2 : neuf vrais paysages originaux distincts branchés aux neuf classes',()=>{
  const css=source('visual-renaissance.css');
