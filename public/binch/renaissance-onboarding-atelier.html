@@ -1,0 +1,41 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>La Binch Renaissance — Atelier de création</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#0d1c22;color:#f7e9d8}
+*{box-sizing:border-box}body{margin:0}#onboarding{min-height:100dvh;display:grid;place-items:center;padding:30px 14px;background:linear-gradient(110deg,#07141be9,#0a1c20d8),url("./renaissance-citadel.svg") center/cover}
+#onboarding .onboard-card{padding:clamp(18px,3vw,30px);margin:0 auto;max-width:1060px;background:linear-gradient(140deg,#182e2bf0,#0b1921f7);border:1px solid #d4b27e;border-radius:22px;box-shadow:0 26px 90px #000c}
+#onboarding .onboard-card>p{color:#c9ddd0;line-height:1.55;max-width:68ch}
+#onboarding .onboard-card h1{font:700 clamp(2rem,4vw,3.25rem) Georgia,serif;color:#ffebc5;margin:10px 0}
+#onboarding .eyebrow{font-size:.76rem;letter-spacing:.2em;text-transform:uppercase;color:#e9c68a;font-weight:800}
+#onboarding .choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px}
+#onboarding .choice{display:flex;flex-direction:column;cursor:pointer}
+#onboarding .choice strong,#onboarding .choice small{display:block}
+#onboarding .choice .sigil{font:32px Georgia,serif}
+#onboarding .choice.selected{border-color:#ffe9b6}
+#preview-state{margin-top:18px;padding-top:14px;border-top:1px solid #c1ab796b;font-size:.83rem;color:#dbe8db}
+#preview-state strong{color:#ffe5ac}
+@media(max-width:730px){#onboarding{padding:12px}#onboarding .choices{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
+@media(forced-colors:active){#onboarding .onboard-card{border-color:CanvasText;background:Canvas}}
+</style>
+<link rel="stylesheet" href="./visual-renaissance-onboarding.css?v=001"></head>
+<body><main id="onboarding"><section class="onboard-card">
+<div class="eyebrow">La Binch · Atelier graphique · Prévisualisation sans compte</div>
+<h1>Quelle force guide ta main ?</h1>
+<p>Les neuf classes réelles, leurs sceaux originaux et leurs paysages. Choisis une classe pour comparer les ambiances. Cette prévisualisation ne crée ni ne modifie de personnage WoW.</p>
+<div id="class-choices" class="choices" role="group" aria-label="Sélection graphique des neuf classes">
+<button type="button" class="choice" aria-pressed="false" data-classe="Guerrier"><span class="sigil" aria-hidden="true">⚔</span><strong>Guerrier</strong><small>Maîtrise des armes et courage au front</small></button>
+<button type="button" class="choice" aria-pressed="false" data-classe="Paladin"><span class="sigil" aria-hidden="true">✧</span><strong>Paladin</strong><small>Lumière, protection et devoir</small></button>
+<button type="button" class="choice" aria-pressed="false" data-classe="Chasseur"><span class="sigil" aria-hidden="true">➶</span><strong>Chasseur</strong><small>Instinct, précision et compagnon fidèle</small></button>
+<button type="button" class="choice" aria-pressed="false" data-classe="Voleur"><span class="sigil" aria-hidden="true">✦</span><strong>Voleur</strong><small>Ombre, contrôle et frappe décisive</small></button>
+<button type="button" class="choice" aria-pressed="false" data-classe="Prêtre"><span class="sigil" aria-hidden="true">✢</span><strong>Prêtre</strong><small>Foi, soins et puissance spirituelle</small></button>
+<button type="button" class="choice" aria-pressed="false" data-classe="Chaman"><span class="sigil" aria-hidden="true">ϟ</span><strong>Chaman</strong><small>Éléments, totems et soutien</small></button>
+<button type="button" class="choice" aria-pressed="false" data-classe="Mage"><span class="sigil" aria-hidden="true">✣</span><strong>Mage</strong><small>Savoir arcanique et contrôle</small></button>
+<button type="button" class="choice" aria-pressed="false" data-classe="Démoniste"><span class="sigil" aria-hidden="true">⬡</span><strong>Démoniste</strong><small>Pouvoir interdit et serviteurs</small></button>
+<button type="button" class="choice selected" aria-pressed="true" data-classe="Druide"><span class="sigil" aria-hidden="true">❧</span><strong>Druide</strong><small>Métamorphose et équilibre naturel</small></button>
+</div>
+<p id="preview-state" role="status">Décor affiché : <strong>Druide</strong> — simple prévisualisation graphique, sans sauvegarde.</p>
+</section></main>
+<script>
+const grid=document.getElementById('class-choices'),status=document.getElementById('preview-state');
+grid.addEventListener('click',e=>{const b=e.target.closest('button[data-classe]');if(!b)return;grid.querySelectorAll('button[data-classe]').forEach(x=>{const active=x===b;x.classList.toggle('selected',active);x.setAttribute('aria-pressed',String(active))});status.textContent='Décor affiché : '+b.dataset.classe+' — simple prévisualisation graphique, sans sauvegarde.'});
+grid.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;const a=[...grid.querySelectorAll('button')],i=a.indexOf(document.activeElement);if(i<0)return;const n=e.key==='Home'?0:e.key==='End'?a.length-1:(i+(e.key==='ArrowRight'?1:-1)+a.length)%a.length;a[n].focus();e.preventDefault()});
+</script></body></html>
