@@ -183,3 +183,28 @@ html[data-binch-detail=lite] #onboarding .choice{box-shadow:none!important}
  #onboarding #job-choices .choice::before{display:none}
  #onboarding .choice.selected{outline:3px solid Highlight}
 }
+
+/* P10: full cinematic original class scenes, including in the *real* initial wizard. */
+#onboarding #class-choices [data-classe="Druide"]{--br-choice-art:url("./renaissance-p9-hero-druid.svg")}
+#onboarding:has(#class-choices [data-classe="Druide"].selected){--br-selected-world:url("./renaissance-p9-hero-druid.svg")}
+#onboarding #class-choices [data-classe="Démoniste"]{--br-choice-art:url("./renaissance-p9-hero-warlock.svg")}
+#onboarding:has(#class-choices [data-classe="Démoniste"].selected){--br-selected-world:url("./renaissance-p9-hero-warlock.svg")}
+#onboarding #class-choices [data-classe="Guerrier"]{--br-choice-art:url("./renaissance-p10-hero-warrior.svg")}
+#onboarding:has(#class-choices [data-classe="Guerrier"].selected){--br-selected-world:url("./renaissance-p10-hero-warrior.svg")}
+#onboarding #class-choices [data-classe="Paladin"]{--br-choice-art:url("./renaissance-p10-hero-paladin.svg")}
+#onboarding:has(#class-choices [data-classe="Paladin"].selected){--br-selected-world:url("./renaissance-p10-hero-paladin.svg")}
+#onboarding #class-choices [data-classe="Chasseur"]{--br-choice-art:url("./renaissance-p10-hero-hunter.svg")}
+#onboarding:has(#class-choices [data-classe="Chasseur"].selected){--br-selected-world:url("./renaissance-p10-hero-hunter.svg")}
+#onboarding #class-choices [data-classe="Voleur"]{--br-choice-art:url("./renaissance-p10-hero-rogue.svg")}
+#onboarding:has(#class-choices [data-classe="Voleur"].selected){--br-selected-world:url("./renaissance-p10-hero-rogue.svg")}
+#onboarding #class-choices [data-classe="Prêtre"]{--br-choice-art:url("./renaissance-p10-hero-priest.svg")}
+#onboarding:has(#class-choices [data-classe="Prêtre"].selected){--br-selected-world:url("./renaissance-p10-hero-priest.svg")}
+#onboarding #class-choices [data-classe="Chaman"]{--br-choice-art:url("./renaissance-p10-hero-shaman.svg")}
+#onboarding:has(#class-choices [data-classe="Chaman"].selected){--br-selected-world:url("./renaissance-p10-hero-shaman.svg")}
+#onboarding #class-choices [data-classe="Mage"]{--br-choice-art:url("./renaissance-p10-hero-mage.svg")}
+#onboarding:has(#class-choices [data-classe="Mage"].selected){--br-selected-world:url("./renaissance-p10-hero-mage.svg")}
+#onboarding #class-choices .choice::before{background-position:center;background-size:cover;will-change:auto}
+
+@media(max-width:530px){#onboarding #class-choices .choice::before{background-position:65% center}}
+
+@media(prefers-reduced-motion:reduce){#onboarding #class-choices .choice::before{transition:none!important;transform:none!important}}
