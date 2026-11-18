@@ -85,6 +85,17 @@ button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #ffe
 html[data-detail="lite"] .architecture,html[data-detail="lite"] .profession-orbit,html[data-detail="lite"] .aura{display:none}
 html[data-detail="lite"] .stage::before{filter:none}
 @media(max-width:760px){.controlboard{grid-template-columns:1fr}.stage{min-height:550px}.stage::before{background-image:linear-gradient(180deg,#07131ac9,#07141b61 25%,#07141bd9 74%),var(--world)}.stagecopy{bottom:25px;left:23px;right:23px}.profession-orbit{right:35px;bottom:250px;font-size:2.2rem}.ribbon{top:20px;left:20px}.architecture{inset:0 0 0 35%;background-size:auto 43%;background-position:right bottom 8%;opacity:.12}.top{padding-top:15px}}
+@media(max-width:760px){
+ .intro{margin:0 0 12px;gap:7px}
+ .intro .eyebrow{font-size:.64rem;letter-spacing:.14em}
+ .intro h1{font-size:clamp(1.65rem,6.2vw,2.15rem);margin:6px 0 4px}
+ .intro p{font-size:.8rem;line-height:1.43;max-width:36ch}
+ .intro .status{display:none}
+ .stage{min-height:510px}
+ .ribbon{font-size:.62rem;letter-spacing:.11em}
+ .stagecopy{bottom:21px}
+ .top{padding-top:12px;padding-bottom:12px}
+}
 @media(max-width:410px){.jobgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.stage{min-height:490px}.crest img{width:43px;height:43px}}
 @media(prefers-reduced-motion:reduce){.profession-orbit span:first-child{animation:none!important}}
 @media(forced-colors:active){.controlboard section,.stage,.job,select{border:2px solid CanvasText;background:Canvas;color:CanvasText}.stage::before,.architecture,.aura{display:none}.job[aria-pressed=true]{outline:3px solid Highlight}}
@@ -94,7 +105,7 @@ html[data-detail="lite"] .stage::before{filter:none}
 <body>
 <header class="top"><div class="logo">LA BINCH <em>Renaissance · Atelier cinématique P10</em></div><a href="./index.html">Ouvrir le compagnon</a></header>
 <main>
-<section class="intro"><div><div class="eyebrow">La forge des héritages · Neuf mondes uniques</div><h1>Ton identité. Ton sanctuaire.</h1><p>Superpose l’architecture de ton peuple, le monde de ta classe et les signatures de tes métiers. Ce laboratoire n’enregistre rien dans ton profil WoW.</p></div><div class="status">Édition P10 · Œuvres originales locales<br>8 architectures · 9 mondes · 9 métiers</div></section>
+<section class="intro"><div><div class="eyebrow">La forge des héritages · Neuf mondes uniques</div><h1>Ton identité. Ton sanctuaire.</h1><p>Race, classe et métiers forgent ton sanctuaire. Aperçu seulement : ton profil ne sera pas modifié.</p></div><div class="status">Édition P10 · Œuvres originales locales<br>8 architectures · 9 mondes · 9 métiers</div></section>
 <section id="stage-root" data-race="tauren" data-class="druid" class="stage" role="img" aria-label="Prévisualisation du sanctuaire personnel">
 <div class="architecture" aria-hidden="true"></div><div class="aura" aria-hidden="true"></div><div class="ribbon">Azeroth · Sanctuaire personnel</div>
 <div class="stagecopy"><div class="crest"><img id="seal" src="./renaissance-sigil-druid.svg" alt="" width="52" height="52"><strong id="class-name">Druide · Forêt des anciens</strong></div><h2 id="scene-title">Sanctuaire des Racines</h2><p id="scene-intro">Héritage tauren, puissance du Druide, rites d’Herboristerie et d’Alchimie.</p><span class="eyebrow" id="scene-signature">Tauren · Druide · Herboristerie / Alchimie</span></div>
