@@ -38,6 +38,21 @@ test('P9: 8 architectures raciales × 9 scènes/classes × 9 signatures de méti
  assert.equal(classArt.size,9,'each class uses a distinct vector landscape');
 });
 
+test('P9: two pilot cinematic artworks are bundled and selected by class',()=>{
+ const {api}=harness();
+ const druid=api.compose({race:'Tauren',classe:'Druide'});
+ const warlock=api.compose({race:'MortVivant',classe:'Démoniste'});
+ assert.match(druid.vars['--br-class-world'],/renaissance-p9-hero-druid\.svg/);
+ assert.match(warlock.vars['--br-class-world'],/renaissance-p9-hero-warlock\.svg/);
+ for(const file of ['renaissance-p9-hero-druid.svg','renaissance-p9-hero-warlock.svg']){
+  const svg=read(file);
+  assert.ok(svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg"'));
+  assert.ok(svg.includes('width="1920" height="1080"'));
+  assert.ok(svg.includes('</svg>'));
+  assert.ok(!svg.includes('<image '),'no external media');
+ }
+});
+
 test('P9: composite identity differs structurally, not merely via colour',()=>{
  const {api}=harness();
  const a=api.compose({race:'Tauren',classe:'Druide',jobs:['Herboristerie','Alchimie']});
