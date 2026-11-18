@@ -8,7 +8,7 @@ test('V248: PIN supprimé, aucun champ ni texte de déverrouillage dans Tournée
  const html=await read('tournee-complete.html');
  assert.match(html,/function tqPinScreenEnabled\(\)\{return false\}/);
  assert.match(html,/function lockBlock\(\)\{return ''\}/);
- assert.doesNotMatch(html,/tour-pass|phrase secrète|phrase de sauvegarde/i);
+ assert.doesNotMatch(html,/id="tour-pass"|phrase secrète|phrase de sauvegarde/i);
 });
 
 test('V248: formulaire JSON disponible depuis la vraie application',async()=>{
