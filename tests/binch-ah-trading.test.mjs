@@ -140,7 +140,7 @@ test('Interface simulateur : hypothèses visibles, frais séparés et aucune tra
  assert.match(ui,/name="drop"/);
  assert.match(ui,/name="extra"/);
  assert.match(ui,/priceDropPct:Number\(d\.get\('drop'\)\)/);
- assert.match(ui,/extraDeposits:gold\(d\.get\('extra'\)\)/);
+ assert.match(ui,/extraDeposits:extra/);
  assert.match(ui,/r\.stress\.cashflow/);
  assert.match(ui,/r\.stress\.heldCost/);
  assert.match(ui,/r\.stress\.matchedMargin/);
@@ -384,4 +384,16 @@ test('Historique AH: la vue parle d’offre observée sans prétendre identifier
  assert.match(ui,/supplySection\(cur\)/);
  assert.match(ui,/ne prouve pas une vente/);
  assert.match(ui,/deux scans GrimoireSync/);
+});
+
+test('Simulation AH: commission invalide ou dépôt mal saisi ne doivent pas devenir un bénéfice fictif',()=>{
+ for(const fee of [-1,20.1,25,100,Number.POSITIVE_INFINITY,NaN]){
+  assert.equal(T.simulate({buy:100,sell:300,qty:2,fee}),null,'commission '+String(fee));
+ }
+ assert.equal(T.simulate({buy:100,sell:300,qty:2,fee:0}).profit,400);
+ assert.equal(T.simulate({buy:100,sell:300,qty:2,fee:20}).profit,280);
+ const ui=readFileSync(new URL('../public/binch/ah-trading.js',import.meta.url),'utf8');
+ assert.match(ui,/if\(deposit===null\|\|extra===null\)/);
+ assert.match(ui,/Dépôts invalides/);
+ assert.match(ui,/commission valide \(0 à 20 %\)/);
 });

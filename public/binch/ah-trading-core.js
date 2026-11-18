@@ -218,9 +218,9 @@ function supplyChange(item,now=Date.now()){
 
 /* ---------- 5. Simulation de marge ---------- */
 function simulate({buy,sell,qty=1,fee=5,deposit=0,unsoldShare=0,priceDropPct=0,extraDeposits=0}={}){
- const b=Number(buy),s=Number(sell),q=Number(qty),d=Number(deposit),extra=Number(extraDeposits),r=feeRate(fee);
+ const b=Number(buy),s=Number(sell),q=Number(qty),d=Number(deposit),extra=Number(extraDeposits),rawFee=Number(fee),r=feeRate(fee);
  const u=clamp(Number(unsoldShare)||0,0,1),drop=clamp(Number(priceDropPct)||0,0,95);
- if(!Number.isSafeInteger(b)||b<0||!Number.isSafeInteger(s)||s<1||
+ if(!Number.isFinite(rawFee)||rawFee<0||rawFee>20||!Number.isSafeInteger(b)||b<0||!Number.isSafeInteger(s)||s<1||
     !Number.isSafeInteger(q)||q<1||q>100000||
     !Number.isSafeInteger(d)||d<0||!Number.isSafeInteger(extra)||extra<0||
     !Number.isSafeInteger(b*q)||!Number.isSafeInteger(s*q))return null;
