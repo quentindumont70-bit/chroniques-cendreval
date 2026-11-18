@@ -33,8 +33,25 @@ function read(){try{let v=JSON.parse(localStorage.getItem(KEY));return v&&typeof
 let state=read();if(!guides.some(g=>g.id===state.id))state.id='druid-feral';
 if(state.filter&&state.filter!=='all'&&guides.some(g=>g.cls===state.filter)&&!guides.some(g=>g.id===state.id&&g.cls===state.filter))state.id=guides.find(g=>g.cls===state.filter).id;
 let levelLocked=Number.isInteger(state.level)&&state.level>=10&&state.level<=60;
+const PROGRESS_PREFIX='binch.specs.progress.v1.';
+function progressKey(){
+ try{
+  const p=JSON.parse(localStorage.getItem('grimoire.hub.v3'))||{},d=p.data||{};
+  const name=String(d.pseudo||'').trim().toLocaleLowerCase('fr'),cls=String(p.classe||''),last=JSON.parse(localStorage.getItem('grimoire.bridge.last'))||{},syncedRealm=String(last.name||'').trim().toLocaleLowerCase('fr')===name?last.realm:null,realm=String(d.realm||p.realm||syncedRealm||'non-renseigné').trim().toLocaleLowerCase('fr');
+  if(!name||cls!=='Druide')return null;
+  return PROGRESS_PREFIX+[name,realm,p.race||'',cls].map(x=>encodeURIComponent(String(x))).join('.');
+ }catch{return null}
+}
+function progress(){
+ const key=progressKey();if(!key)return {confirmedThrough:9};
+ try{const v=JSON.parse(localStorage.getItem(key));return {confirmedThrough:Number.isSafeInteger(v?.confirmedThrough)&&v.confirmedThrough>=9&&v.confirmedThrough<=60?v.confirmedThrough:9}}catch{return {confirmedThrough:9}}
+}
+function confirmProgress(lvl){
+ const key=progressKey();if(!key||!Number.isSafeInteger(lvl)||lvl<9||lvl>60)return false;
+ try{localStorage.setItem(key,JSON.stringify({confirmedThrough:lvl,updatedAt:new Date().toISOString()}));return true}catch{return false}
+}
 function importedLevel(){
- try{const p=JSON.parse(localStorage.getItem('grimoire.hub.v3'))||{},l=JSON.parse(localStorage.getItem('grimoire.bridge.last'))||{},n=String(p.data?.pseudo||'').trim().toLowerCase(),match=n&&n===String(l.name||'').trim().toLowerCase(),level=Number(match?l.level:p.data?.level);return Number.isInteger(level)?Math.max(10,Math.min(60,level)):10}catch{return 10}
+ try{const p=JSON.parse(localStorage.getItem('grimoire.hub.v3'))||{},l=JSON.parse(localStorage.getItem('grimoire.bridge.last'))||{},n=String(p.data?.pseudo||'').trim().toLowerCase(),realm=String(p.data?.realm||p.realm||'').trim().toLowerCase(),importRealm=String(l.realm||'').trim().toLowerCase(),match=n&&n===String(l.name||'').trim().toLowerCase()&&(!realm||!importRealm||realm===importRealm),level=Number(match?l.level:p.data?.level);return Number.isInteger(level)?Math.max(10,Math.min(60,level)):10}catch{return 10}
 }
 function level(){return levelLocked?state.level:importedLevel()}
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch{}document.dispatchEvent(new Event('binch:specs-change'))}
@@ -57,11 +74,12 @@ function render(){
   $('binch-specs-pin-state').textContent=state.pinned?'Build épinglé dans le bandeau flottant.':'Bandeau non épinglé.';
   renderPinned();return;
  }
- const pts=Math.max(0,lvl-9),n=nextPoint(lvl);
+ const pts=Math.max(0,lvl-9),n=nextPoint(lvl),confirmed=progress().confirmedThrough;
  const owned=build(lvl);
- route.innerHTML='<div class="binch-specs-progress"><strong>'+pts+' / 51 points · niveau '+lvl+'</strong><span>'+ (n?'Prochain point au niveau '+n.level+' : '+esc(n.name)+' ('+n.rank+'/'+n.max+')':'Progression terminée : 51 points')+'</span></div>'+
+ route.innerHTML='<div class="binch-specs-progress"><strong>'+pts+' / 51 points proposés · niveau '+lvl+'</strong><span>'+ (n?'Prochain point au niveau '+n.level+' : '+esc(n.name)+' ('+n.rank+'/'+n.max+')':'Progression terminée : 51 points')+'</span></div>'+
+ '<div class="binch-specs-progress-actions"><p>Plan indicatif seulement : les talents réellement dépensés ne sont pas lus dans WoW. Confirmés manuellement jusqu’au niveau '+(confirmed>9?confirmed:'—')+'.</p><button type="button" id="binch-specs-confirm"'+(!progressKey()?' disabled title="Crée ton personnage Druide dans le profil"':'')+'>J’ai placé les points du plan jusqu’au niveau '+lvl+'</button><button type="button" id="binch-specs-reset"'+(!progressKey()?' disabled':'')+'>Réinitialiser mon suivi</button></div>'+
  '<div class="binch-specs-steps">'+DRUID_ROUTE.map(step=>{
-  const taken=rankAt(step,lvl),done=taken===step[3],future=lvl<step[0];
+  const taken=rankAt(step,lvl),done=taken===step[3]&&confirmed>=step[1],future=lvl<step[0];
   return '<article class="binch-specs-step'+(done?' is-done':future?' is-future':' is-current')+'"><span class="binch-specs-range">'+step[0]+(step[1]!==step[0]?'–'+step[1]:'')+'</span><div><strong>'+esc(step[2])+'</strong><small>'+esc(step[4])+'</small></div><b>'+taken+'/'+step[3]+'</b></article>';
  }).join('')+'</div><p class="binch-specs-sources">Ordre de leveling adapté du guide ForeverSpec du 6 novembre, à confronter au calculateur et à Icy Veins. Félin au niveau 20, ours dès le 10. Attention : certains talents peuvent être réorganisés par hotfix.</p>';
  $('binch-specs-pin-state').textContent=state.pinned?'Build épinglé dans le bandeau flottant.':'Bandeau non épinglé.';
@@ -84,6 +102,7 @@ function mount(){
  $('binch-specs-class').innerHTML='<option value="all">Toutes les classes</option>'+[...new Set(guides.map(g=>g.cls))].map(x=>'<option value="'+x+'">'+x+'</option>').join('');
  $('binch-specs-class').value=state.filter||'all';
  button.onclick=()=>{document.querySelectorAll('#app nav.nav button[data-page]').forEach(x=>x.classList.toggle('active',x===button));document.querySelectorAll('#app main .page').forEach(x=>x.classList.toggle('active',x===page));scrollTo({top:0,behavior:'auto'});render()};
+ $('binch-specs-route').addEventListener('click',e=>{if(e.target.id==='binch-specs-confirm'){if(confirmProgress(level()))render()}else if(e.target.id==='binch-specs-reset'){if(confirmProgress(9))render()}});
  $('binch-specs-cards').onclick=e=>{const b=e.target.closest('[data-spec-id]');if(!b)return;state.id=b.dataset.specId;persist();render()};
  $('binch-specs-class').onchange=e=>{state.filter=e.target.value;const selected=current();if(state.filter!=='all'&&selected.cls!==state.filter){const first=guides.find(g=>g.cls===state.filter);if(first)state.id=first.id}persist();render()};
  $('binch-specs-level').onchange=e=>{const n=Number(e.target.value);if(!Number.isInteger(n)||n<10||n>60){render();return}state.level=n;levelLocked=true;persist();render()};

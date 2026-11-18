@@ -1,0 +1,106 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {runInNewContext} from 'node:vm';
+
+function probe(file,marker,bindings,rows={}){
+ const source=readFileSync(new URL('../public/binch/'+file,import.meta.url),'utf8');
+ assert.ok(source.includes(marker),file+' probe insertion point');
+ const storage=new Map(Object.entries(rows));
+ const localStorage={getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,String(v)),removeItem:k=>storage.delete(k),key:i=>[...storage.keys()][i]??null,get length(){return storage.size}};
+ const sandbox={localStorage,document:{readyState:'loading',addEventListener(){}},window:{}};
+ runInNewContext(source.replace(marker,'globalThis.__probe={'+bindings+'};\n'+marker),sandbox,{filename:file});
+ return Object.assign(sandbox.__probe,{_storage:storage});
+}
+
+test('Sauvegarde portable: conserve Faith, talents et AH sans exporter le dernier import brut',()=>{
+ const marker="if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();";
+ const b=probe('local-backup.js',marker,'eligible,validValue,collect',{
+  'grimoire.hub.v3':'{"data":{"pseudo":"Bobinch"}}',
+  'binch.faith.goal.v1':'class',
+  'binch.specs.focus.v1':'{"id":"druid-feral","pinned":true}',
+  'binch.ah.trading.v1':'{"view":"dashboard"}',
+  'binch.leveling.log.v1.bobinch.tauren.druide':'[]',
+  'binch.specs.progress.v1.bobinch.forever.tauren.druide':'{"confirmedThrough":27}',
+  'grimoire.bridge.last':'{"name":"Bobinch","inventory":[{"id":1,"count":4}]}',
+  'binch.ah.feed.cache.v1':'{"stale":true}',
+  'binch.guild.invalid.v1':'not-json'
+ });
+ const rows=b.collect();
+ assert.equal(rows['binch.faith.goal.v1'],'class');
+ assert.equal(JSON.parse(rows['binch.specs.focus.v1']).id,'druid-feral');
+ assert.equal(JSON.parse(rows['binch.ah.trading.v1']).view,'dashboard');
+ assert.ok(rows['binch.leveling.log.v1.bobinch.tauren.druide']);
+ assert.equal(JSON.parse(rows['binch.specs.progress.v1.bobinch.forever.tauren.druide']).confirmedThrough,27);
+ assert.equal(rows['grimoire.bridge.last'],undefined);
+ assert.equal(rows['binch.ah.feed.cache.v1'],undefined);
+ assert.equal(rows['binch.guild.invalid.v1'],undefined);
+ assert.equal(b.validValue('binch.faith.goal.v1','not-an-option'),false);
+ assert.equal(b.validValue('binch.faith.goal.v1','balanced'),true);
+ assert.equal(b.eligible('constructor'),false);
+});
+
+test('Faith: farouche pex distinct du tank, stocks invalides exclus, royaume respecté',()=>{
+ const marker="if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();";
+ const profile={race:'Tauren',classe:'Druide',data:{pseudo:'Bobinch',level:32,realm:'Forever',spec:'Farouche'}};
+ const last={name:'Bobinch',realm:'Forever',level:32,zone:'Orneval',inventory:[
+  {id:2770,count:4},{id:2770,count:0},{id:2770,count:-3},{id:2835,count:'non numérique'}]};
+ const f=probe('faith-strategist.js',marker,'snapshot,recommendations',{
+  'grimoire.hub.v3':JSON.stringify(profile),'grimoire.bridge.last':JSON.stringify(last)
+ });
+ const p=f.snapshot();
+ assert.equal(p.same,true);
+ assert.equal(p.copper,4);
+ assert.equal(p.stones,0);
+ assert.equal(p.zone,'Orneval');
+ const choices=f.recommendations(p,'class');
+ assert.ok(choices.some(x=>x.title==='Suivre le build Farouche — pex'&&x.page==='specs'));
+ assert.ok(!choices.some(x=>x.title==='Préparer ton équipement tank'));
+ const mismatch=probe('faith-strategist.js',marker,'snapshot',{
+  'grimoire.hub.v3':JSON.stringify(profile),
+  'grimoire.bridge.last':JSON.stringify({...last,realm:'Autre serveur'})
+ });
+ assert.equal(mismatch.snapshot().same,false);
+ assert.equal(mismatch.snapshot().copper,0);
+});
+
+test('Guide Druide: points proposés distincts des points réellement confirmés',()=>{
+ const marker="if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();";
+ const hub={race:'Tauren',classe:'Druide',data:{pseudo:'Bobinch',realm:'Forever',level:32}};
+ const p=probe('specs-guide.js',marker,'progressKey,progress,confirmProgress,nextPoint',{
+  'grimoire.hub.v3':JSON.stringify(hub)
+ });
+ const key=p.progressKey();
+ assert.ok(key?.startsWith('binch.specs.progress.v1.'));
+ assert.equal(p.progress().confirmedThrough,9,'sans action manuelle, rien n’est déclaré comme dépensé');
+ assert.equal(p.confirmProgress(32),true);
+ assert.equal(p.progress().confirmedThrough,32);
+ assert.equal(p.confirmProgress(61),false);
+ assert.equal(p.progress().confirmedThrough,32);
+ p._storage.set('grimoire.hub.v3',JSON.stringify({...hub,data:{...hub.data,pseudo:'Autre Druide'}}));
+ assert.equal(p.progress().confirmedThrough,9,'la progression ne fuit pas entre personnages');
+ p._storage.set('grimoire.hub.v3',JSON.stringify(hub));
+ assert.equal(p.progress().confirmedThrough,32);
+ assert.equal(p.confirmProgress(9),true,'le suivi peut être remis à zéro sans perdre le build');
+ assert.equal(p.progress().confirmedThrough,9);
+ const source=readFileSync(new URL('../public/binch/specs-guide.js',import.meta.url),'utf8');
+ assert.ok(source.includes('done=taken===step[3]&&confirmed>=step[1]'));
+ assert.ok(source.includes('les talents réellement dépensés ne sont pas lus dans WoW'));
+});
+
+test('Talents Druide: royaumes distincts, import de niveau uniquement depuis le bon personnage',()=>{
+ const marker="if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();";
+ const profile={classe:'Druide',race:'Tauren',data:{pseudo:'Bobinch',level:26,realm:'Forever'}};
+ const p=probe('specs-guide.js',marker,'progressKey,importedLevel',{
+  'grimoire.hub.v3':JSON.stringify(profile),
+  'grimoire.bridge.last':JSON.stringify({name:'Bobinch',realm:'Autre',level:60})
+ });
+ assert.equal(p.importedLevel(),26,'un import d’un autre royaume ne modifie pas le niveau');
+ p._storage.set('grimoire.bridge.last',JSON.stringify({name:'Bobinch',realm:'Forever',level:33}));
+ assert.equal(p.importedLevel(),33,'l’import correspondant peut actualiser le niveau');
+ const withoutRealm={...profile,data:{pseudo:'Bobinch',level:26}};
+ p._storage.set('grimoire.hub.v3',JSON.stringify(withoutRealm));
+ const keyForever=p.progressKey();
+ p._storage.set('grimoire.bridge.last',JSON.stringify({name:'Bobinch',realm:'Autre',level:33}));
+ assert.notEqual(p.progressKey(),keyForever,'les progrès manuels ne se croisent pas entre royaumes');
+});
