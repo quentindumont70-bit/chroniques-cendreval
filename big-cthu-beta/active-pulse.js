@@ -37,42 +37,61 @@ function collect(expanded=false,limit=8,kind='all',term='',pinned=[]){
  const results=[];
  let warnings=0,total=0,compactVisible=0,urgentCompact=0,urgentTotal=0;
  const counts={},matchCounts={};
+ const period=(source,item)=>{
+  if(source.kind==='Priorités')return 'today';
+  if(!['Stock','Agenda','Maison'].includes(source.kind))return 'undated';
+  const day=item.due||item.date||'';
+  return !day?'undated':day<today?'late':day===today?'today':day<=stop?'week':'later';
+ };
+ let todayTotal=0,weekTotal=0,undatedTotal=0;
+ let matchedToday=0,matchedWeek=0,matchedUndated=0;
+ let compactToday=0,compactWeek=0,compactUndated=0;
  let matchedTotal=0,matchedCompact=0,matchedUrgent=0,matchedUrgentCompact=0;
  const needle=String(term||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
  for(const source of SOURCES){
   const {rows,bad}=read(source.key);
   if(bad){warnings++;continue}
   let selected=[];
-  if(source.kind==='Stock')selected=rows.filter(x=>x&&typeof x.name==='string'&&x.name.trim()&&x.name.length<=90&&validDate(x.date)&&x.date<=stop&&['DLC','DDM'].includes(x.kind)&&(x.kind==='DLC'||x.date>=oldestDDM)).sort((a,b)=>(a.kind==='DLC'?0:1)-(b.kind==='DLC'?0:1)||a.date.localeCompare(b.date)).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.name,rank:x.kind==='DLC'?(x.date<=today?0:x.date<=near?1:5):8,next:x.kind+' · '+(x.date<today?(x.kind==='DLC'?'Date limite dépassée : ':'DDM dépassée, qualité à vérifier : '):'Échéance : ')+x.date}));
-  if(source.kind==='Agenda')selected=rows.filter(x=>x&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=120&&validDate(x.date)&&x.date>=today&&x.date<=stop&&(!x.time||/^([01]\d|2[0-3]):[0-5]\d$/.test(x.time))&&(x.date>today||!x.time||x.time>=clock)).sort((a,b)=>(a.date+' '+(a.time||'00:00')).localeCompare(b.date+' '+(b.time||'00:00'))).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.title,rank:x.date===today?1:4,next:'Le '+x.date+(x.time?' · '+x.time:'')}));
+  if(source.kind==='Stock')selected=rows.filter(x=>x&&typeof x.name==='string'&&x.name.trim()&&x.name.length<=90&&validDate(x.date)&&x.date<=stop&&['DLC','DDM'].includes(x.kind)&&(x.kind==='DLC'||x.date>=oldestDDM)).sort((a,b)=>(a.kind==='DLC'?0:1)-(b.kind==='DLC'?0:1)||a.date.localeCompare(b.date)).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.name,date:x.date,rank:x.kind==='DLC'?(x.date<=today?0:x.date<=near?1:5):8,next:x.kind+' · '+(x.date<today?(x.kind==='DLC'?'Date limite dépassée : ':'DDM dépassée, qualité à vérifier : '):'Échéance : ')+x.date}));
+  if(source.kind==='Agenda')selected=rows.filter(x=>x&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=120&&validDate(x.date)&&x.date>=today&&x.date<=stop&&(!x.time||/^([01]\d|2[0-3]):[0-5]\d$/.test(x.time))&&(x.date>today||!x.time||x.time>=clock)).sort((a,b)=>(a.date+' '+(a.time||'00:00')).localeCompare(b.date+' '+(b.time||'00:00'))).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.title,date:x.date,rank:x.date===today?1:4,next:'Le '+x.date+(x.time?' · '+x.time:'')}));
   if(source.kind==='Captures')selected=rows.filter(x=>x&&x.status==='new'&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.title,rank:4,next:x.target==='agenda'?'À envoyer vers Agenda':x.target==='task'?'À envoyer vers Priorités':'À traiter dans Capture'}));
   if(source.kind==='Priorités')selected=rows.filter(x=>x&&typeof x.text==='string'&&x.text.trim()&&x.text.length<=160&&!x.done).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.text,rank:2,next:''}));
   if(source.kind==='Maison')selected=rows.filter(x=>x&&typeof x.name==='string'&&x.name.trim()&&x.name.length<=120&&['todo','doing'].includes(x.status)).map(x=>{
    const due=validDate(x.due)?x.due:'';
-   const notes=typeof x.notes==='string'?x.notes.slice(0,120):'';
+   const notes=typeof x.notes==='string'?x.notes.slice(0,180):'';
    const rank=due&&due<=today?1:due&&due<=near?1.5:x.priority==='haute'?2:x.status==='doing'?3:6;
    return {id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.name,rank,due,status:x.status,next:(due?'Date cible : '+due+(notes?' · ':''):'')+notes};
   }).sort((a,b)=>a.rank-b.rank||(a.due||'9999').localeCompare(b.due||'9999')||(a.status==='doing'?0:1)-(b.status==='doing'?0:1));
-  if(source.kind==='Musique')selected=rows.filter(x=>x&&x.mode==='musique'&&['active','planned'].includes(x.status)&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140) .sort((a,b)=>(a.status==='active'?0:1)-(b.status==='active'?0:1)||String(b.date||'').localeCompare(String(a.date||''))).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.title,rank:x.status==='active'?5:7,next:typeof x.note==='string'?x.note.slice(0,120):''}));
+  if(source.kind==='Musique')selected=rows.filter(x=>x&&x.mode==='musique'&&['active','planned'].includes(x.status)&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140) .sort((a,b)=>(a.status==='active'?0:1)-(b.status==='active'?0:1)||String(b.date||'').localeCompare(String(a.date||''))).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.title,rank:x.status==='active'?5:7,next:typeof x.note==='string'?x.note.slice(0,180):''}));
   if(source.kind==='Jeux')selected=rows.filter(x=>x&&x.done===false&&typeof x.game==='string'&&x.game.length<=60&&typeof x.text==='string'&&x.text.trim()&&x.text.length<=180).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=80?x.id:'',title:x.game,rank:9,next:x.text}));
   counts[source.kind]=selected.length;
+  todayTotal+=selected.filter(item=>['late','today'].includes(period(source,item))).length;
+  weekTotal+=selected.filter(item=>['late','today','week'].includes(period(source,item))).length;
+  undatedTotal+=selected.filter(item=>period(source,item)==='undated').length;
   urgentTotal+=selected.filter(item=>item.rank<=2).length;
   urgentCompact+=selected.slice(0,source.limit).filter(item=>item.rank<=2).length;
   total+=selected.length;
   compactVisible+=Math.min(selected.length,source.limit);
   // In urgency view, select urgent rows BEFORE limiting each module.
-  const eligible=kind==='Urgentes'?selected.filter(item=>item.rank<=2):selected;
+  const eligible=kind==='Urgentes'?selected.filter(item=>item.rank<=2):kind==='Aujourd’hui'?selected.filter(item=>['late','today'].includes(period(source,item))):kind==='Semaine'?selected.filter(item=>['late','today','week'].includes(period(source,item))):kind==='Sans date'?selected.filter(item=>period(source,item)==='undated'):selected;
   const shown=needle?eligible.filter(item=>(item.title+' '+(item.next||'')).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().includes(needle)):eligible;
   matchCounts[source.kind]=shown.length;
+  matchedToday+=shown.filter(item=>['late','today'].includes(period(source,item))).length;
+  matchedWeek+=shown.filter(item=>['late','today','week'].includes(period(source,item))).length;
+  matchedUndated+=shown.filter(item=>period(source,item)==='undated').length;
+  compactToday+=shown.slice(0,source.limit).filter(item=>['late','today'].includes(period(source,item))).length;
+  compactWeek+=shown.slice(0,source.limit).filter(item=>['late','today','week'].includes(period(source,item))).length;
+  compactUndated+=shown.slice(0,source.limit).filter(item=>period(source,item)==='undated').length;
   matchedTotal+=shown.length;
   matchedCompact+=Math.min(shown.length,source.limit);
   matchedUrgent+=shown.filter(item=>item.rank<=2).length;
   matchedUrgentCompact+=shown.slice(0,source.limit).filter(item=>item.rank<=2).length;
   const ordered=shown.slice().sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||Number(pinnedItem(source,b))-Number(pinnedItem(source,a)));
-  for(const item of ordered.slice(0,expanded?limit:source.limit))results.push({...item,kind:source.kind,favoriteKey:favoriteKey(source,item),favorite:pinnedItem(source,item),url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.kind==='Agenda'&&item.id?'./agenda.html#event='+encodeURIComponent(item.id):source.kind==='Captures'&&item.id?'./capture.html#capture='+encodeURIComponent(item.id):source.kind==='Priorités'&&item.id?'#priority-'+encodeURIComponent(item.id):source.kind==='Musique'&&item.id?'./musique.html#studio='+encodeURIComponent(item.id):source.kind==='Stock'&&item.id?'./garde-manger.html#food='+encodeURIComponent(item.id):source.kind==='Jeux'&&item.id?'#session='+encodeURIComponent(item.id):source.url});
+  for(const item of ordered.slice(0,expanded?limit:source.limit))results.push({...item,timeGroup:period(source,item),kind:source.kind,favoriteKey:favoriteKey(source,item),favorite:pinnedItem(source,item),url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.kind==='Agenda'&&item.id?'./agenda.html#event='+encodeURIComponent(item.id):source.kind==='Captures'&&item.id?'./capture.html#capture='+encodeURIComponent(item.id):source.kind==='Priorités'&&item.id?'#priority-'+encodeURIComponent(item.id):source.kind==='Musique'&&item.id?'./musique.html#studio='+encodeURIComponent(item.id):source.kind==='Stock'&&item.id?'./garde-manger.html#food='+encodeURIComponent(item.id):source.kind==='Jeux'&&item.id?'#session='+encodeURIComponent(item.id):source.url});
  }
  counts.Urgentes=urgentTotal;
- return {items:results.sort((a,b)=>a.rank-b.rank),warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact};
+ counts['Aujourd’hui']=todayTotal;counts.Semaine=weekTotal;counts['Sans date']=undatedTotal;
+ return {items:results.sort((a,b)=>a.rank-b.rank),warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact,matchedToday,matchedWeek,matchedUndated,compactToday,compactWeek,compactUndated};
 }
 function node(tag,text,className){
  const x=document.createElement(tag);
@@ -85,10 +104,10 @@ function render(){
  const root=$('activePulseList');if(!root)return;
  const pins=window.BigCthuActionFavorites;
  const pinState=pins?pins.read():{ids:[],blocked:false};
- const {items,warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact}=collect(expanded,pageSize,selectedKind,searchTerm,pinState.ids);
- const visible=(selectedKind==='all'?items:selectedKind==='Urgentes'?items.filter(item=>item.rank<=2):items.filter(item=>item.kind===selectedKind)).slice().sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||Number(b.favorite)-Number(a.favorite)||a.rank-b.rank);
- const available=selectedKind==='all'?matchedTotal:selectedKind==='Urgentes'?matchedUrgent:(matchCounts[selectedKind]||0);
- const compact=selectedKind==='all'?matchedCompact:selectedKind==='Urgentes'?matchedUrgentCompact:Math.min(available,2);
+ const {items,warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact,matchedToday,matchedWeek,matchedUndated,compactToday,compactWeek,compactUndated}=collect(expanded,pageSize,selectedKind,searchTerm,pinState.ids);
+ const visible=(selectedKind==='all'?items:selectedKind==='Urgentes'?items.filter(item=>item.rank<=2):selectedKind==='Aujourd’hui'?items.filter(item=>['late','today'].includes(item.timeGroup)):selectedKind==='Semaine'?items.filter(item=>['late','today','week'].includes(item.timeGroup)):selectedKind==='Sans date'?items.filter(item=>item.timeGroup==='undated'):items.filter(item=>item.kind===selectedKind)).slice().sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||Number(b.favorite)-Number(a.favorite)||a.rank-b.rank);
+ const available=selectedKind==='all'?matchedTotal:selectedKind==='Urgentes'?matchedUrgent:selectedKind==='Aujourd’hui'?matchedToday:selectedKind==='Semaine'?matchedWeek:selectedKind==='Sans date'?matchedUndated:(matchCounts[selectedKind]||0);
+ const compact=selectedKind==='all'?matchedCompact:selectedKind==='Urgentes'?matchedUrgentCompact:selectedKind==='Aujourd’hui'?compactToday:selectedKind==='Semaine'?compactWeek:selectedKind==='Sans date'?compactUndated:Math.min(available,2);
  root.replaceChildren();
  const count=$('activePulseCount');if(count)count.textContent=available===visible.length?available+' action'+(available>1?'s':'')+' retrouvée'+(available>1?'s':''):available+' actions · '+visible.length+' affichées';
  const heroCount=$('cinemaPulseCount');if(heroCount)heroCount.textContent=total===0?(warnings?'Certaines actions indisponibles':'Aucune action en attente'):total+' action'+(total>1?'s':'')+' à reprendre';
@@ -96,13 +115,16 @@ function render(){
  for(const item of visible){
   const link=node('a','','active-pulse-item'+(item.rank<=2?' is-urgent':''));
   link.href=item.url;
-  link.append(node('small',(item.favorite?'★ ':'')+item.kind),node('strong',item.title));
+  const timeLabel=item.timeGroup==='late'?'En retard · ':item.timeGroup==='today'&&item.kind!=='Priorités'?'Aujourd’hui · ':item.timeGroup==='week'?'Cette semaine · ':'';
+  link.append(node('small',(item.favorite?'★ ':'')+timeLabel+item.kind),node('strong',item.title));
   if(item.next)link.append(node('span',item.next,'active-pulse-next'));
   root.append(link);
  }
  const toggle=$('activePulseToggle');
  if(toggle){toggle.hidden=available<=compact;toggle.textContent=expanded?(visible.length<available&&pageSize<48?'Afficher encore':'Afficher moins'):'Afficher plus d’actions';toggle.setAttribute('aria-expanded',expanded?'true':'false');toggle.onclick=()=>{if(!expanded){expanded=true;pageSize=8}else if(visible.length<available&&pageSize<48){pageSize=Math.min(48,pageSize+16)}else{expanded=false;pageSize=8}render()}}
  const category=$('activePulseCategory');if(category){category.value=selectedKind;category.onchange=()=>{selectedKind=category.value;expanded=false;pageSize=8;render()}}
+ const fast=[['activePulseToday','Aujourd’hui'],['activePulseWeek','Semaine']];
+ for(const [id,kind] of fast){const button=$(id);if(!button)continue;button.setAttribute('aria-pressed',selectedKind===kind?'true':'false');button.onclick=()=>{selectedKind=selectedKind===kind?'all':kind;expanded=false;pageSize=8;render()}}
  const search=$('activePulseSearch');if(search){if(search.value!==searchTerm)search.value=searchTerm;search.oninput=()=>{searchTerm=search.value.slice(0,100);expanded=false;pageSize=8;render()};search.onkeydown=e=>{if(e.key==='Escape'&&searchTerm){searchTerm='';expanded=false;pageSize=8;render()}}}
  const clear=$('activePulseClear');if(clear){clear.hidden=!searchTerm;clear.onclick=()=>{searchTerm='';expanded=false;pageSize=8;render();if(search&&typeof search.focus==='function')search.focus()}}
  const pinPick=$('activePulsePinPick'),pinButton=$('activePulsePinButton'),pinStatus=$('activePulsePinStatus');
