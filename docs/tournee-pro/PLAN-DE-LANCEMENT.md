@@ -36,7 +36,7 @@ Le prix mensuel doit payer un avantage concret (mises à jour stables, accompagn
 | 1 | **Centre de sauvegarde unique** | local ≠ externe, export, import et aperçu sans identité, pas de jargon ni formulaire de code | P0 | **V250 implémenté, CI à vérifier** |
 | 2 | **Mises à jour sûres** | actualiser seulement après confirmation de la sauvegarde locale ; refuser sinon | P0 | **V250 implémenté, CI à vérifier** |
 | 3 | **Restauration démontrable** | round-trip sur 1/24/500 patients FICTIFS, sans modification des notes ni écrasement | P0 | **V251 : tests automatisés + vérification fichier ; iOS réel encore à valider** |
-| 4 | **Un seul parcours installé** | distinguer explicitement PWA installée/Safari, migration guidée, jamais de copie implicite | P0 | À construire |
+| 4 | **Un seul parcours installé** | distinguer explicitement PWA installée/Safari, migration guidée, jamais de copie implicite | P0 | **V252 : identification visible de l'espace ; transfert guidé encore à construire** |
 | 5 | **Refonte UI terrain** | accueil utile en 5 secondes, contraste iPhone, une action principale par écran, états vides | P1 | À construire |
 | 6 | **Cœur métier fiable** | rappels journaliers, cycles, absences, modifications et journal sans régression | P1 | Existant à consolider |
 | 7 | **Onboarding et exemples** | prise en main ≤5 min avec données fictives et import explicite | P1 | À construire |
@@ -85,3 +85,7 @@ Sources réglementaires officielles : https://www.cnil.fr/fr/rgpd-et-professionn
 Une copie JSON portable peut être sélectionnée dans « Mes sauvegardes » pour vérifier **sur l'appareil** que les patients et toutes les rubriques enregistrées correspondent exactement au coffre actuel. Aucun nom n'est montré pendant le contrôle. Si des changements existent, l'interface annonce que la copie est ancienne. Les anciennes sauvegardes V95 sans empreinte restent compatibles ; la comparaison repose sur l'égalité exacte des clés/valeurs du coffre.
 
 **Limite impérative :** cette vérification confirme le contenu du fichier sélectionné à cet instant ; elle n'est ni une sauvegarde distante, ni une garantie que ce fichier sera accessible après perte de l'iPhone. Ne jamais afficher « sauvegarde cloud active ». Les tests de bout en bout utilisent uniquement des dossiers fictifs, y compris un jeu de 500 fiches, les post-it par date, les absences et la détection des fichiers corrompus.
+
+### Golipette V252 — identifier le bon espace
+
+L'écran « Mes sauvegardes » précise s'il est ouvert dans une application installée sur l'écran d'accueil ou dans un navigateur. Il rappelle que ces espaces peuvent être séparés : un fichier exporté doit être choisi dans le bon espace, **sans synchronisation automatique supposée**. Il ne lit aucun autre navigateur, ne transmet aucune donnée et ne lance aucune migration cachée.
