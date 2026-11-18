@@ -563,9 +563,10 @@ body.tournee-locked #tour-save-strip{display:none}
 <button id="tour-recovery-close" type="button">← Revenir à ma tournée</button>
 <p class="tour-backup-intro">Un seul endroit pour vérifier les données de cet appareil, créer une copie et restaurer un fichier.</p>
 <div class="tour-backup-grid">
-<section class="tour-backup-card"><h2>1 · Sur cet iPhone</h2>
+<section class="tour-backup-card"><h2>1 · Cet espace de stockage</h2>
 <p class="tour-backup-status" id="tour-saved-status" role="status">Lecture des données locales…</p>
-<p>Les modifications sont enregistrées automatiquement sur cet appareil. <strong>Ce stockage n'est pas une copie de secours</strong> et ne suit pas les autres navigateurs.</p></section>
+<p id="tour-storage-surface" role="status" aria-live="polite">Identification de cet espace…</p>
+<p>Les modifications sont enregistrées automatiquement ici. <strong>Ce stockage n'est pas une copie de secours</strong>. Safari, un navigateur intégré et l’application ajoutée à l’écran d’accueil peuvent avoir des données distinctes.</p></section>
 <section class="tour-backup-card"><h2>2 · Conserver une copie</h2>
 <p>Ce fichier JSON complet permet de restaurer les patients sur un autre appareil. Il contient des données de santé <strong>lisibles</strong> : conserve-le dans un endroit privé et protégé, jamais sur GitHub.</p>
 <button id="tour-portable-export" type="button">Télécharger ma sauvegarde complète</button>
@@ -3031,16 +3032,22 @@ document.getElementById('tour-open').addEventListener('click',()=>login(false));
 function tourPatientCountFrom(state){
  try{const list=JSON.parse(state?.tidel_Pl||'[]');return Array.isArray(list)?list.length:0}catch(_){return 0}
 }
+function tourAppSurfaceLabel(){
+ const media=typeof window!=='undefined'&&typeof window.matchMedia==='function'
+  &&window.matchMedia('(display-mode: standalone)').matches;
+ const ios=typeof navigator!=='undefined'&&navigator.standalone===true;
+ return media||ios?'Application installée sur l’écran d’accueil':'Navigateur web ouvert actuellement';
+}
 function openTourRecovery(){
- const patients=tourPatientCountFrom(secureState);
+ const patients=tourPatientCountFrom(secureState),surface=tourAppSurfaceLabel();
  document.getElementById('tour-saved-status').textContent=patients
-  ? patients+' fiche(s) présentes dans cette application, enregistrées localement.'
+  ? patients+' fiche(s) présentes dans cet espace, enregistrées localement.'
   : 'Aucune fiche dans cet espace actif. Les anciens coffres restent conservés.';
+ document.getElementById('tour-storage-surface').textContent='Espace utilisé : '+surface+
+  '. Les données d’un autre navigateur ou raccourci ne sont pas synchronisées ici. Pour les transférer, utilise un fichier JSON complet.';
  document.getElementById('tour-security-gate').hidden=false;
  report('');
 }
-// Comparaison exacte et locale des valeurs : la petite empreinte FNV de l'export
-// détecte une erreur de fichier, mais ne sert pas de preuve de sécurité.
 function tourBackupEquivalent(a,b){
  if(!validPortableState(a)||!validPortableState(b))return false;
  const left=Object.keys(a).sort(),right=Object.keys(b).sort();

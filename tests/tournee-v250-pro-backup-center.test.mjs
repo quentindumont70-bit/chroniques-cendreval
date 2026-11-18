@@ -12,6 +12,7 @@ async function previewFixture({currentPatients=[],file,fill}={}){
  const local={tidel_Pl:JSON.stringify(currentPatients)};
  const elements={
   'tour-saved-status':{textContent:''},
+  'tour-storage-surface':{textContent:''},
   'tour-backup-preview':{textContent:''},
   'tour-file':{addEventListener(){},files:file?[{size:512,async text(){return typeof file==='string'?file:JSON.stringify(file)}}]:[]},
   'tour-security-gate':{hidden:true}
