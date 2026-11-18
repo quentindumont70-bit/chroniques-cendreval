@@ -111,7 +111,7 @@ function navigation(id){
 }
 function navigate(id){
  const tab=navigation(id);if(!tab)return false;
- tab.click();window.scrollTo?.({top:0,behavior:'auto'});if(id==='command')$('binch-faith-advisor')?.scrollIntoView?.({block:'start',behavior:'smooth'});return true;
+ tab.click();window.scrollTo?.({top:0,behavior:'auto'});if(id==='command'){const reduced=detail==='lite'||Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches);$('binch-faith-advisor')?.scrollIntoView?.({block:'start',behavior:reduced?'auto':'smooth'});}return true;
 }
 function ambienceSelector(){
  const host=document.createElement('div');host.id='binch-renaissance-ambiences';host.className='binch-renaissance-ambiences';host.setAttribute('role','group');host.setAttribute('aria-label','Ambiance du décor');
