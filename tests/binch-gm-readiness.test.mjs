@@ -71,10 +71,10 @@ test('Tableau GM: participants uniques, surcapacités et échéances malformées
   ]};
  const events=[{id:'e1',title:'Donjon',kind:'Donjon',size:3,date,time:'20:00',attendees:members,done:false},
   {id:'e2',title:'Faussé',kind:'Donjon',size:5,date:'2026-02-30',time:'20:00',attendees:[],done:false}];
- const gm=load('gm-watchboard.js','stamp,snapshot,roleCounts,missing,summary',{
+ const gm=load('gm-watchboard.js','stamp,snapshot,roleCounts,missing,summary,actionPlan',{
   'binch.guild.events.v1':JSON.stringify(events),
   'binch.guild.planner.v1':JSON.stringify({requests:[request]}),
-  'binch.guild.delegations.v1':'[{"title":"Préparer les potions","status":"doing"}]'
+  'binch.guild.delegations.v1':'[{"title":"Préparer les potions","status":"blocked"}]'
  });
  const s=gm.snapshot();
  assert.equal(s.upcoming.length,1,'date erronée exclue');
@@ -86,5 +86,23 @@ test('Tableau GM: participants uniques, surcapacités et échéances malformées
  assert.equal(overflow.excess,1);
  const summary=gm.summary(s);
  assert.ok(summary.includes('doublon(s) à vérifier'));
+ const actions=gm.actionPlan(s);
+ assert.ok(actions.some(x=>x.label.includes('Dédoublonner')));
+ assert.ok(actions.some(x=>x.label.includes('Approvisionnement')&&x.detail.includes('3 unité(s)')));
+ assert.ok(actions.some(x=>x.label.includes('Débloquer')));
  assert.ok(!summary.includes('Invalid Date'));
+});
+
+test('Checklist GM : besoins de groupes explicites sans statut WoW inventé',()=>{
+ const gm=load('gm-watchboard.js','actionPlan');
+ const event={kind:'Donjon',title:'Mortemines',size:5,attendees:[
+  {name:'DPS-1',status:'Confirmé',role:'DPS'},
+  {name:'DPS-2',status:'Confirmé',role:'DPS'}
+ ]};
+ const fake={upcoming:[event],requests:[],fulfillment:[],tasks:[]};
+ const tasks=gm.actionPlan(fake);
+ assert.ok(tasks.some(t=>t.label.includes('Inscrits à confirmer')&&t.detail.includes('3 place')));
+ assert.ok(tasks.some(t=>t.label.includes('Tank à confirmer')));
+ assert.ok(tasks.some(t=>t.label.includes('Soigneur à confirmer')));
+ assert.ok(tasks.every(t=>!t.detail.includes('synchronisé dans WoW')));
 });
