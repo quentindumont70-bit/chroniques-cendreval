@@ -1,7 +1,19 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#071317"><title>La Binch Renaissance — Atelier des identités vivantes</title>
-<link rel="preload" as="image" href="./renaissance-p9-hero-druid.svg">
+<script>
+// P10 fast first paint: preload exactly the selected scene, never the other eight.
+(()=>{
+ const scene={Guerrier:'renaissance-p10-hero-warrior.svg',Paladin:'renaissance-p10-hero-paladin.svg',
+  Chasseur:'renaissance-p10-hero-hunter.svg',Voleur:'renaissance-p10-hero-rogue.svg',
+  'Prêtre':'renaissance-p10-hero-priest.svg',Chaman:'renaissance-p10-hero-shaman.svg',
+  Mage:'renaissance-p10-hero-mage.svg','Démoniste':'renaissance-p9-hero-warlock.svg',
+  Druide:'renaissance-p9-hero-druid.svg'};
+ const picked=new URLSearchParams(location.search).get('classe')||'Druide';
+ const link=document.createElement('link');link.rel='preload';link.as='image';
+ link.href='./'+(scene[picked]||scene.Druide);document.head.append(link);
+})();
+</script>
 <style>
 :root{color-scheme:dark;font-family:Inter,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;--metal:#cbaa75;--light:#bce4a5;--aura:#398d64;--world:url("./renaissance-p9-hero-druid.svg");--architecture:none;--matter:#1e392e;background:#070e16;color:#f7ead6}
 *{box-sizing:border-box}
