@@ -2,7 +2,7 @@
 (()=>{'use strict';
 const KEY='binch.visual.ambience.v1';
 const AMBIENCES=[['dusk','Crépuscule','☀'],['moon','Nuit lunaire','☾'],['embers','Braises','✷']];
-const PORTALS=[['progression','Carte d’expédition','Ton prochain horizon','✥'],['specs','Grimoire des talents','Maîtriser ta classe','✧'],['metiers','Atelier des métiers','Recettes et ressources','⚒'],['gm','Salle du conseil','Préparer la guilde','⚑']];
+const PORTALS=[['progression','Carte d’expédition','Ton prochain horizon','✥'],['specs','Grimoire des talents','Maîtriser ta classe','✧'],['metiers','Atelier des métiers','Recettes et ressources','⚒'],['gm','Salle du conseil','Préparer la guilde','⚑'],['command','Oracle Faith','Ton prochain conseil','✺'],['tresors','Reliquaire','Tes trouvailles','✦']];
 const $=id=>document.getElementById(id);
 function readAmbience(){try{const v=localStorage.getItem(KEY);return AMBIENCES.some(x=>x[0]===v)?v:'dusk'}catch{return 'dusk'}}
 let ambience=readAmbience();
@@ -20,7 +20,7 @@ function navigation(id){
 }
 function navigate(id){
  const tab=navigation(id);if(!tab)return false;
- tab.click();window.scrollTo?.({top:0,behavior:'auto'});return true;
+ tab.click();window.scrollTo?.({top:0,behavior:'auto'});if(id==='command')$('binch-faith-advisor')?.scrollIntoView?.({block:'start',behavior:'smooth'});return true;
 }
 function ambienceSelector(){
  const host=document.createElement('div');host.id='binch-renaissance-ambiences';host.className='binch-renaissance-ambiences';host.setAttribute('role','group');host.setAttribute('aria-label','Ambiance du décor');
@@ -63,6 +63,13 @@ function start(){
 }
 document.addEventListener('binch:adventure-ready',mount);
 document.addEventListener('DOMContentLoaded',refreshPortals); // other deferred modules may create tabs later
+document.addEventListener('binch:adventure-ready',()=>{
+ const nav=document.querySelector('#app nav.nav');
+ if(nav&&typeof MutationObserver==='function'){
+  const observer=new MutationObserver(refreshPortals);
+  observer.observe(nav,{childList:true});
+ }
+});
 document.addEventListener('binch:profile-change',applyAmbience);
 document.addEventListener('grimoire:sync',applyAmbience);
 window.addEventListener('storage',e=>{if(e.key===KEY){ambience=readAmbience();applyAmbience()}});
