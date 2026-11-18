@@ -1344,18 +1344,53 @@ async function tqStickyUndoDelete(){
   tqStickyUndo=null;tqStickyRefresh(undo.d,"✓ Suppression annulée.");
  }catch(e){tqStickyRefresh(undo.d,"⚠ "+e.message)}
 }
+// Sérialiser les validations de la zone multiligne, sans jamais dupliquer le stockage.
+let tqStickySavePromise=null;
 async function tqStickySave(el){
  el=el||document.getElementById("tq-sticky-text");
  if(!el)return;
- const d=el.dataset.day,txt=el.value;
+ const d=el.dataset.day,txt=el.value,prior=tqStickySavePromise;
  const status=el.closest('.tq-sticky')?.querySelector('#tq-sticky-status');
- try{
-  if(status)status.textContent="Enregistrement en cours…";
-  const changed=await tqSaveStickyText(d,tqStickyLines(txt).join("\n"));
-  if(Object.prototype.hasOwnProperty.call(tqStickyDrafts,d)&&tqStickyDrafts[d]===txt)delete tqStickyDrafts[d];
-  tqStickyEditing=null;tqStickyUndo=null;
-  tqStickyRefresh(d,changed?"✓ Post-it enregistré pour ce jour":"✓ Post-it déjà à jour");
- }catch(e){if(status)status.textContent="⚠ "+e.message;toast("Post-it non enregistré : réessaie depuis cette page.")}
+ const job=(async()=>{
+  if(prior)await prior;
+  try{
+   if(status)status.textContent="Enregistrement en cours…";
+   const changed=await tqSaveStickyText(d,tqStickyLines(txt).join("\n"));
+   if(Object.prototype.hasOwnProperty.call(tqStickyDrafts,d)&&tqStickyDrafts[d]===txt)delete tqStickyDrafts[d];
+   tqStickyEditing=null;tqStickyUndo=null;
+   tqStickyRefresh(d,changed?"✓ Post-it enregistré pour ce jour":"✓ Post-it déjà à jour");
+  }catch(e){
+   if(status)status.textContent="⚠ "+e.message;
+   toast("Post-it non enregistré : réessaie depuis cette page.");
+  }
+ })();
+ tqStickySavePromise=job;
+ try{await job}finally{if(tqStickySavePromise===job)tqStickySavePromise=null}
+}
+// Avant toute actualisation, vider les brouillons encore en mémoire.
+// En cas d'échec, rejeter : l'utilisateur conserve son écran, jamais de rechargement forcé.
+async function tqStickyFlushDrafts(){
+ // Un champ encore en cours de saisie n'est pas un rappel enregistré.
+ // Ne jamais recharger l'app avant que l'utilisateur ait validé Ajouter ou OK.
+ const newField=document.getElementById('tq-sticky-new');
+ if(newField&&newField.value.trim())throw Error('Nouveau rappel en cours : valide « Ajouter » avant actualisation.');
+ const editField=document.getElementById('tq-sticky-edit');
+ if(editField)throw Error('Rappel en cours de modification : valide « OK » avant actualisation.');
+ if(tqStickySavePromise)await tqStickySavePromise;
+ for(const [d,raw] of Object.entries(tqStickyDrafts)){
+  if(!TQ||!TQ.validDay(d))throw Error('Date de rappel invalide : actualisation annulée.');
+  if(tqStickyPending(d))await tqSaveStickyText(d,tqStickyLines(raw).join("\n"));
+  if(tqStickyDrafts[d]===raw)delete tqStickyDrafts[d];
+ }
+ if(Object.keys(tqStickyDrafts).some(d=>tqStickyPending(d)))
+  throw Error('Des rappels sont encore en cours de modification : actualisation annulée.');
+}
+if(typeof window!=='undefined'){
+ window.tourneeSavePostitDrafts=tqStickyFlushDrafts;
+ document.addEventListener('visibilitychange',()=>{
+  if(document.hidden&&Object.keys(tqStickyDrafts).length)
+   tqStickyFlushDrafts().catch(saveFailure);
+ });
 }
 async function tqAddToPostit(d,line){
  if(!TQ||!TQ.validDay(d)||typeof line!=="string"||!line.trim())throw Error("Note invalide");
@@ -3046,6 +3081,7 @@ document.getElementById('tour-lock').addEventListener('click',lockTourSafely);
 function report(message){document.getElementById('tour-error').textContent=message}
 window.tourneeSafeRefresh=async()=>{
  if(!secureBooted||!secureKey)throw Error('Stockage local indisponible : actualisation annulée.');
+ if(typeof window.tourneeSavePostitDrafts==='function')await window.tourneeSavePostitDrafts();
  await ensureVaultSaved();
  if(secureSavedGen!==secureGen)throw Error('Enregistrement incomplet : actualisation annulée.');
  location.reload();
