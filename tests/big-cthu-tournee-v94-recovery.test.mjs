@@ -97,7 +97,7 @@ test('V248: import JSON visible directement sur la PWA sans champ de code',async
  const page=await html();
  assert.match(page,/id="tour-security-gate" hidden/);
  assert.match(page,/id="tour-recovery-launch">Importer mes patients \(JSON\)/);
- assert.match(page,/id="tour-recovery-direct">Importer mon JSON/);
+ assert.match(page,/id="tour-recovery-direct">Mes sauvegardes/);
  assert.match(page,/id="tour-file" accept="\.json,application\/json"/);
  assert.match(page,/id="tour-import" type="button">2 · Importer le JSON dans cette application/);
  assert.match(page,/location\.hash==='#import-json'/);
