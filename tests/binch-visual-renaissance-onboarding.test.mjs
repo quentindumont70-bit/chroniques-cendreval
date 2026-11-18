@@ -26,7 +26,7 @@ test('Création de personnage : les neuf arts correspondent aux vraies classes d
  for(const job of ['mining','engineering'])assert.ok(css.includes('renaissance-profession-'+job+'.svg'));
  assert.ok(css.includes(':has(#class-choices .choice.selected)'),'selected class changes backdrop');
  assert.ok(html.includes('id="race-choices"')&&html.includes('id="class-choices"')&&html.includes('id="job-choices"'));
- assert.ok(html.includes('./visual-renaissance-onboarding.css?v=001'));
+ assert.ok(html.includes('./visual-renaissance-onboarding.css?v=002'));
  assert.ok(html.includes('./visual-renaissance-onboarding.js?v=001'));
 });
 
@@ -77,6 +77,10 @@ test('Création de personnage : petits écrans, contraste et mouvement réduit',
  assert.ok(css.includes('@media(max-width:530px)'));
  assert.ok(css.includes('@media(max-width:360px)'));
  assert.ok(css.includes('prefers-reduced-motion:reduce'));
+ assert.ok(css.includes('prefers-contrast:more'));
+ assert.ok(css.includes('html[data-binch-detail=lite] #onboarding'));
+ assert.ok(css.includes('@media(max-width:350px)'));
+
  assert.ok(css.includes('forced-colors:active'));
  assert.ok(css.includes(':focus-visible'));
  assert.ok(js.includes("observe(group,{childList:true})"));
@@ -97,7 +101,7 @@ test('Atelier sans profil : les neuf choix réels restent visibles et capturable
  assert.ok(gallery.includes('role="status"'));
  assert.ok(gallery.includes('aria-pressed="true"'));
  assert.ok(gallery.includes("grid.addEventListener('keydown'"));
- assert.ok(gallery.includes('./visual-renaissance-onboarding.css?v=001'));
+ assert.ok(gallery.includes('./visual-renaissance-onboarding.css?v=002'));
  assert.ok(!gallery.includes('localStorage'));
  assert.ok(!gallery.includes('fetch('));
  assert.ok(workflow.includes('creation-classe-desktop.png'));
