@@ -25,8 +25,8 @@ test('Interface Renaissance : arrière-plan de classe et présentations sans éc
  assert.ok(css.includes('#page-tresors .binch-treasure-card'));
  assert.ok(css.includes('#page-gm .binch-gm-watch-event strong'));
  assert.ok(css.includes('#binch-specs-pinned:not([hidden])'));
- assert.ok(html.includes('./visual-renaissance-finale.css?v=001'));
- assert.ok(html.lastIndexOf('./visual-renaissance-finale.css?v=001')>html.indexOf('./visual-renaissance-dock.css?v=002'));
+ assert.ok(html.includes('./visual-renaissance-finale.css?v=002'));
+ assert.ok(html.lastIndexOf('./visual-renaissance-finale.css?v=002')>html.indexOf('./visual-renaissance-dock.css?v=002'));
  assert.ok(!css.includes('localStorage'));
  assert.ok(!css.includes('fetch('));
 });
@@ -41,4 +41,21 @@ test('Renaissance finale : écrans étroits, mouvement réduit, mode léger et c
  assert.ok(css.includes('#page-specs #binch-specs-cards{grid-template-columns:1fr}'));
  assert.ok(css.includes('#page-specs #binch-specs .binch-specs-steps{grid-template-columns:1fr}'));
  assert.ok(css.includes('background-image:linear-gradient(#0b191d,#0b1218)'));
+});
+
+test('Douze builds réels ont chacun un blason original de leur classe',()=>{
+ const css=read('visual-renaissance-finale.css');
+ const source=read('specs-guide.js');
+ const cards=[
+  ['druid-feral','druid'],['druid-bear','druid'],['druid-cat','druid'],['druid-resto','druid'],
+  ['hunter-bm','hunter'],['warrior-arms','warrior'],['mage-frost','mage'],['shaman-enh','shaman'],
+  ['warlock-aff','warlock'],['rogue-combat','rogue'],['priest-shadow','priest'],['paladin-ret','paladin']
+ ];
+ for(const [id,cls] of cards){
+  assert.ok(source.includes("id:'"+id+"'"),'existing guide '+id);
+  assert.ok(css.includes('.binch-spec-card[data-spec-id="'+id+'"]'),'card selector '+id);
+  assert.ok(css.includes('renaissance-sigil-'+cls+'.svg'),'class art for '+cls);
+ }
+ assert.ok(css.includes('prefers-reduced-motion:reduce'));
+ assert.ok(css.includes('forced-colors:active'));
 });
