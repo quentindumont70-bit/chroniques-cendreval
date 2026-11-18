@@ -124,8 +124,8 @@ test('P9: no third job, duplicate, unknown key or arbitrary CSS/HTML input may e
 test('P9: header and profile reset point to same forge; accessibility, FX opt-out and mobile rules exist',()=>{
  const html=read('index.html'),css=read('visual-identity-compositor.css'),js=read('visual-identity-compositor.js');
  assert.match(html,/id="binch-profile-trigger" type="button"/);
- assert.match(html,/visual-identity-compositor\.css\?v=001/);
- assert.match(html,/visual-identity-compositor\.js\?v=001/);
+ assert.match(html,/visual-identity-compositor\.css\?v=002/);
+ assert.match(html,/visual-identity-compositor\.js\?v=002/);
  assert.match(js,/rebuild\.onclick=event=>/);
  assert.match(js,/modal\.showModal\(\)/);
  assert.match(js,/aria-pressed/);
