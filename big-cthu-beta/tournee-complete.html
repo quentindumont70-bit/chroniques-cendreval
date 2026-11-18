@@ -849,7 +849,7 @@ function viewTour(){
  let h=`<div class="chw"><button class="chip nav" onclick="shiftW(-1)" aria-label="Semaine précédente">‹</button><div class="chips sc">${CHR().map(d=>`<button class="chip ${d===day?"on":""} ${d===TODAY?"today":""} ${remOf(d)?"rp":""}" data-tq-day="${d}" onclick="chipKeep=this.parentNode.scrollLeft;day='${d}';render()" title="Afficher le post-it et la tournée du jour">${JC[DT(d).getDay()]}<em>${DT(d).getDate()}</em><small>${list(d).length}</small><span class="tq-note-icon" aria-hidden="true">${tqStickyText(d).trim()?"📝":"▧"}</span></button>`).join("")}</div><button class="chip nav" onclick="shiftW(1)" aria-label="Semaine suivante">›</button></div>${day!==TODAY?`<button class="tdy" onclick="day=TODAY;render()">↩ Revenir à aujourd'hui</button>`:""}${remBanner()}`;
  h+=`<div class="hi"><span>${greet()} 👋</span><button onclick="askWho()">${who()?"Changer":"Ton prénom ?"}</button></div>`;
  h+=tqChatBlock();h+=tqWeekBlock();h+=ordoChip();h+=bkChip();h+=suspBlock();h+=absBanner();h+=bdayBanner();h+=veilleBanner();
- h+=dayBand();h+=tqPostitBlock();
+ h+=dayBand();h+=tqPostitBlock();h+=tqChatBlock();h+=tqWeekBlock();
  h+=`${ROUT()?heroR(L,nx):`<div class="hero"><div class="ring" style="--p:${pct}"><b>${nd}/${L.length}</b></div><div style="min-width:0">${nx?`<div class="k">À suivre · ${nx.h.replace(" fin","")}</div><div class="big">${nx.n}</div><div class="sub">${nx.a}</div>${lateChip(nx)}`:L.length?`<div class="k">Terminé</div><div class="big">Tournée bouclée 🎉</div><div class="sub">Pense aux transmissions.</div>`:`<div class="k">Repos</div><div class="big">Aucun passage</div>`}</div></div>`}${L.length?`<button class="btn go" onclick="fmI=null;focusMode()">▶ Mode tournée<span>plein écran, patient par patient</span></button>${routeUrl()?`<a class="btn ghost route" href="${routeUrl()}" target="_blank" rel="noopener">${IC.nav}Itinéraire des prochains arrêts</a>`:""}`:""}${vigilBlock()}${endBlock(L)||tasksBlock(L)}${memoBlock(L)}${bilanCard()}`;
  h+=`${!ROUT()&&st.get("swhint",0)<3&&L.length?(st.set("swhint",st.get("swhint",0)+1),`<div class="hint">Astuce : glisse une carte vers la droite pour la valider</div>`):""}${chBlock()}<div class="row2"><span>${L.length} passages · 6h45 → 11h</span></div>`;
  let last="",nowDone=day!==TODAY;
@@ -1127,6 +1127,172 @@ function tqFocusSticky(d){
  day=d;tab="tour";render();
  const el=document.getElementById("tq-sticky-text");
  if(el){el.scrollIntoView({block:"center",behavior:"smooth"});el.focus({preventScroll:true})}
+}
+
+
+/* ===== Weekly cycle editor: current and following calendar weeks, no changes to the default cycle ===== */
+function tqWeekDate(n){return TQ.add(TQ.monday(TODAY),n*7)}
+function tqWeekRow(idx){
+ const title=idx===0?"Cette semaine":"Semaine prochaine";
+ const week=tqWeekDate(idx);
+ return '<div class="tq-week-slot" data-week="'+esc(week)+'">'+
+ '<label>'+title+' · '+esc(short(week))+' → '+esc(short(TQ.add(week,6)))+
+ '<select id="tq-mode-'+idx+'" aria-label="'+title+'" onchange="tqWeekModeChanged('+idx+')">'+
+ '<option value="auto">Cycle habituel (sans exception)</option><option value="ch">Semaine chimio</option><option value="gr">Semaine Granocytes</option></select></label>'+
+ '<fieldset class="tq-week-days" id="tq-days-'+idx+'"><legend>Jours de passage</legend>'+
+ [1,2,3,4,5,6,0].map(d=>'<label><input type="checkbox" data-day="'+d+'">'+JC[d]+'</label>').join('')+
+ '</fieldset></div>';
+}
+function tqWeekBlock(){
+ if(!TQ)return '<div class="tq-week">Gestion des cycles indisponible. Recharge la page.</div>';
+ const cycles=P.filter(p=>p&&p.id&&p.cyc&&Array.isArray(p.cyc.ch)&&Array.isArray(p.cyc.gr));
+ return '<section class="tq-week" aria-label="Exceptions ponctuelles de chimio et Granocytes">'+
+ '<details id="tq-week-details"><summary>🔁 Modifier les semaines chimio / Granocytes</summary>'+
+ '<p>Choisis un patient déjà suivi. Ici, tu peux inverser ponctuellement ses deux semaines, ou modifier précisément les jours de passage sans casser son cycle normal. Les modifications restent dans ton coffre chiffré.</p>'+
+ '<label class="fl" for="tq-week-patient">Patient avec cycle enregistré<select id="tq-week-patient" onchange="tqWeekFill()"><option value="">Choisir un patient</option>'+
+ cycles.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.n)+'</option>').join('')+'</select></label>'+
+ '<div class="tq-week-grid">'+tqWeekRow(0)+tqWeekRow(1)+'</div>'+
+ '<div class="tq-actions"><button type="button" onclick="tqWeekApply()">✓ Enregistrer les deux semaines</button>'+
+ '<button type="button" onclick="tqWeekInvert()">⇄ Inverser chimio / Granocytes</button></div>'+
+ '<p class="tq-status" id="tq-week-status" role="status" aria-live="polite">'+(cycles.length?'Sélectionne un patient.':'Aucun patient avec cycle enregistré sur cet appareil.')+'</p>'+
+ '</details></section>';
+}
+function tqWeekInputs(idx){
+ return [...document.querySelectorAll('#tq-days-'+idx+' input[data-day]')];
+}
+function tqWeekModeChanged(idx,existingDays){
+ const pick=document.getElementById('tq-week-patient'),patient=P.find(x=>x.id===(pick&&pick.value));
+ const select=document.getElementById('tq-mode-'+idx),mode=select&&select.value;
+ const rows=tqWeekInputs(idx),defaults=mode==='auto'?[]:(existingDays||tqCycleDays(patient,mode)||[]);
+ for(const control of rows){
+  control.checked=defaults.includes(Number(control.dataset.day));
+  control.disabled=mode==='auto';
+ }
+ const msg=document.getElementById('tq-week-status');
+ if(mode!=='auto'&&!defaults.length&&msg)msg.textContent="Jours non renseignés : coche manuellement les jours souhaités.";
+}
+function tqWeekFill(){
+ const choose=document.getElementById('tq-week-patient'),p=P.find(x=>x.id===(choose&&choose.value)),status=document.getElementById('tq-week-status');
+ for(let i=0;i<2;i++){
+  const mode=document.getElementById('tq-mode-'+i);
+  const rule=p&&tqOverride(p,tqWeekDate(i));
+  mode.value=rule?rule.mode:'auto';
+  tqWeekModeChanged(i,rule?rule.days:null);
+ }
+ if(status)status.textContent=p?'Exceptions du cycle habituel : les changements s’appliquent uniquement aux semaines affichées.':'Sélectionne un patient avec cycle.';
+}
+function tqWeekPlanned(){
+ const choose=document.getElementById('tq-week-patient'),p=P.find(x=>x.id===(choose&&choose.value));
+ if(!p||!p.cyc)throw Error('Sélectionne un patient dont le cycle est configuré.');
+ const decisions=[];
+ for(let i=0;i<2;i++){
+  const week=tqWeekDate(i),mode=document.getElementById('tq-mode-'+i).value;
+  const days=tqWeekInputs(i).filter(x=>x.checked).map(x=>Number(x.dataset.day));
+  if(mode!=='auto'&&!TQ.validDays(days))throw Error('Sélectionne au moins un jour pour '+(i===0?'cette semaine':'la semaine prochaine')+'.');
+  decisions.push({pid:p.id,week,mode,days});
+ }
+ return {p,decisions};
+}
+async function tqSaveWeekDecisions(plan){
+ const {p,decisions}=plan;
+ if(!p||!P.some(x=>x.id===p.id))throw Error('Patient introuvable.');
+ const current=tqWeeks(true),next=current.filter(x=>!decisions.some(d=>d.pid===x.pid&&d.week===x.week));
+ for(const d of decisions)if(d.mode!=='auto')next.push(tqMakeWeek(p,d.week,d.mode,d.days));
+ if(!TQ.validateList(next))throw Error('Exceptions invalides : aucune modification.');
+ const details=decisions.map(d=>d.mode==='auto'?'Semaine du '+d.week+' : retour au cycle normal':tqDescribeWeek(tqMakeWeek(p,d.week,d.mode,d.days))).join('\n');
+ if(!confirm('Confirmer les changements de planning pour '+p.n+' ?\n\n'+details+'\n\nLes suspensions restent prioritaires.'))return false;
+ await tqCommitVaultKey(TQ_WEEK_KEY,JSON.stringify(next),TOUR_STORE.getItem(TQ_WEEK_KEY));
+ render();
+ return true;
+}
+async function tqWeekApply(){
+ const status=document.getElementById('tq-week-status');
+ try{const plan=tqWeekPlanned(),done=await tqSaveWeekDecisions(plan);if(done)toast('Semaines enregistrées dans le coffre chiffré.');else if(status)status.textContent='Aucun changement sans confirmation.'}
+ catch(e){if(status)status.textContent='⚠ '+e.message;toast('Semaines non enregistrées.')}
+}
+function tqWeekInvert(){
+ const choose=document.getElementById('tq-week-patient'),p=P.find(x=>x.id===(choose&&choose.value)),status=document.getElementById('tq-week-status');
+ if(!p||!p.cyc){if(status)status.textContent='Sélectionne un patient avec cycle.';return}
+ for(let i=0;i<2;i++){
+  const week=tqWeekDate(i),existing=tqOverride(p,week);
+  const origin=existing?existing.mode:TQ.weekMode(p.cyc,week),mode=origin==='ch'?'gr':'ch';
+  document.getElementById('tq-mode-'+i).value=mode;
+  tqWeekModeChanged(i);
+ }
+ if(status)status.textContent='Inversion préparée. Relis les jours des deux semaines, puis touche Enregistrer.';
+}
+/* ===== Local text commands, explicit review before modifying encrypted entries ===== */
+function tqChatBlock(){
+ return '<section class="tq-chat" aria-label="Assistant de commandes Tournée">'+
+ '<h3>💬 Assistant Tournée</h3>'+
+ '<p>Écris une demande simple : il prépare une modification dans cet appareil, puis te demande confirmation. Ce n’est pas un chat IA connecté : aucune information patient n’est envoyée à un serveur.</p>'+
+ '<form class="tq-chat-form" onsubmit="tqChatPreview(event)">'+
+ '<label class="fl" for="tq-chat-input" style="flex:1 1 100%">Ta demande<input id="tq-chat-input" type="search" maxlength="600" autocomplete="off" placeholder="Ex. demain : prise de sang à prévoir"></label>'+
+ '<button type="submit">Analyser</button></form>'+
+ '<div id="tq-chat-output" class="tq-chat-output" role="status" aria-live="polite"></div>'+
+ '<div class="tq-preview" id="tq-chat-preview"></div>'+
+ '<div class="tq-guide">Exemples : « Note pour demain : préparer le prélèvement » ; « [patient] cette semaine chimio vendredi samedi dimanche et semaine prochaine granocyte ». Les textes inconnus restent sans effet.</div>'+
+ '</section>';
+}
+function tqChatPreview(e){
+ if(e&&e.preventDefault)e.preventDefault();
+ const input=document.getElementById('tq-chat-input'),out=document.getElementById('tq-chat-output'),actions=document.getElementById('tq-chat-preview');
+ if(!input||!out||!actions)return;
+ actions.replaceChildren();tqPending=null;
+ const text=input.value.trim(),parsed=TQ&&TQ.parseCommand(text,TODAY);
+ if(!parsed){out.textContent="Commande non reconnue. Essaie : « Note pour demain : préparer le prélèvement », ou utilise l’éditeur manuel des semaines.";return}
+ try{
+  let description;
+  if(parsed.type==='memo'){
+   if(parsed.day<TQ.add(TODAY,-30)||parsed.day>TQ.add(TODAY,365))throw Error('Choisis une date comprise entre J−30 et J+365.');
+   const existing=tqStickyText(parsed.day);
+   if(existing.length+parsed.text.length+1>1000)throw Error('Post-it complet. Modifie-le directement.');
+   tqPending={type:'memo',day:parsed.day,text:parsed.text};
+   description='Post-it du '+parsed.day+' : ajouter « '+parsed.text+' »'+(existing?'\nLe texte existant sera conservé.':'');
+  }else{
+   const matches=TQ.patientMatches(text,P);
+   if(matches.length!==1)throw Error(matches.length?'Plusieurs patients correspondent à ce texte. Écris un nom plus précis.':'Patient introuvable dans ce coffre. Écris exactement un nom de la liste Patients.');
+   const p=matches[0];
+   if(!p.cyc)throw Error('Ce patient n’a pas de cycle configuré : ouvre sa fiche pour vérifier son planning habituel.');
+   let proposals=parsed.entries;
+   if(parsed.type==='swap'){
+    proposals=[0,1].map(i=>{const week=tqWeekDate(i),before=tqOverride(p,week),mode=before?before.mode:TQ.weekMode(p.cyc,week);
+     if(!mode)throw Error('Cycle initial introuvable.');
+     return {week,mode:mode==='ch'?'gr':'ch',days:null};
+    });
+   }
+   const entries=proposals.map(x=>tqMakeWeek(p,x.week,x.mode,x.days));
+   if(!entries.length)throw Error('Aucune semaine à modifier.');
+   tqPending={type:'cycle',pid:p.id,entries};
+   description='Patient : '+p.n+'\n'+entries.map(tqDescribeWeek).join('\n')+'\nSeules ces semaines seront modifiées.';
+  }
+  out.textContent='Modification proposée — AUCUNE donnée encore changée :\n'+description;
+  const button=document.createElement('button');button.type='button';button.textContent='✓ Confirmer et enregistrer';
+  button.onclick=tqChatCommit;actions.append(button);
+  const cancel=document.createElement('button');cancel.type='button';cancel.className='ghost';cancel.textContent='Annuler';
+  cancel.onclick=()=>{tqPending=null;actions.replaceChildren();out.textContent='Commande annulée. Aucune modification.'};actions.append(cancel);
+ }catch(err){out.textContent='⚠ '+err.message;tqPending=null}
+}
+async function tqChatCommit(){
+ const pending=tqPending,output=document.getElementById('tq-chat-output'),buttons=document.getElementById('tq-chat-preview');
+ if(!pending||tqBusy)return;
+ try{
+  let done=false;
+  if(pending.type==='memo'){
+   if(!confirm('Ajouter au post-it du '+pending.day+' :\n'+pending.text+'\n\nConfirmer ?'))return;
+   await tqAddToPostit(pending.day,pending.text);
+   done=true;render();
+  }else{
+   const p=P.find(x=>x.id===pending.pid);
+   if(!p)throw Error('Le patient n’est plus dans le coffre. Rien n’a été enregistré.');
+   done=await tqApplyWeeks(pending.entries);
+  }
+  if(!done)return;
+  tqPending=null;toast('Commande enregistrée dans le coffre.');
+  if(buttons)buttons.replaceChildren();
+  const existing=document.getElementById('tq-chat-output');
+  if(existing)existing.textContent='✓ Modification confirmée et enregistrée sur cet appareil.';
+ }catch(e){if(output)output.textContent='⚠ '+e.message;toast('Aucune sauvegarde confirmée.')}
 }
 
 function memoBlock(L){const M=memos(day);
