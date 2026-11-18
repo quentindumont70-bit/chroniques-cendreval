@@ -56,7 +56,8 @@ test('V77: ouverture de coffre existant ne réécrit pas inutilement son contenu
  assert.match(html,/id="tour-save-strip"/);
  assert.match(html,/id="tour-lock"/);
  assert.match(html,/id="tour-save-retry"/);
- assert.match(html,/type="password" autocomplete="current-password"/);
+ assert.doesNotMatch(html,/type="password" autocomplete="current-password"/);
+ assert.match(html,/id="tour-import"/);
  assert.doesNotMatch(html,/fetch\(['"]https:\/\/.*patient/);
 });
 

@@ -47,17 +47,15 @@ test('V94: récupération JSON classique depuis nouvel iPhone ne demande aucun c
  assert.equal(JSON.parse(f.ctx.current().tidel_Pl)[0].id,'fictif-1');
 });
 
-test('V94: une ancienne sauvegarde chiffrée ne se déchiffre que sur action explicite et avec son ancien secret',async()=>{
- const f=await fixture({encrypted:true});
- await f.ctx.recover(true);
- assert.equal(f.decrypts(),0);
- assert.equal(f.flushes(),0);
- assert.equal(f.reloaded(),0);
- assert.match(f.errors[0],/ancien secret/);
- const g=await fixture({encrypted:true,password:'phrase-historique-de-test'});
- await g.ctx.recover(true);
- assert.equal(g.decrypts(),1);
- assert.equal(g.reloaded(),1);
+test('V248: un ancien coffre sans clé locale ne déclenche aucune demande de code',async()=>{
+ for(const oldValue of ['', 'historique-inutile']){
+  const f=await fixture({encrypted:true,password:oldValue});
+  await f.ctx.recover(true);
+  assert.equal(f.decrypts(),0);
+  assert.equal(f.flushes(),0);
+  assert.equal(f.reloaded(),0);
+  assert.match(f.errors[0],/ancien coffre/);
+ }
 });
 
 test('V94: une liste patient déjà présente bloque la restauration',async()=>{
@@ -95,14 +93,17 @@ test('V94: une erreur d écriture ne valide pas la restauration et laisse les do
  assert.match(f.errors[0],/Enregistrement de la restauration impossible/);
 });
 
-test('V94: accès direct et récupération volontaire accessibles sans écran de verrouillage',async()=>{
+test('V248: import JSON visible directement sur la PWA sans champ de code',async()=>{
  const page=await html();
  assert.match(page,/id="tour-security-gate" hidden/);
- assert.match(page,/id="tour-recovery-launch"(?: hidden)?>Récupérer mes anciennes données/);
+ assert.match(page,/id="tour-recovery-launch">Importer mes patients \(JSON\)/);
+ assert.match(page,/id="tour-recovery-direct">Importer mon JSON/);
+ assert.match(page,/id="tour-file" accept="\.json,application\/json"/);
+ assert.match(page,/id="tour-import" type="button">2 · Importer le JSON dans cette application/);
+ assert.match(page,/location\.hash==='#import-json'/);
  assert.match(page,/function recoverySpaceEmpty\(/);
  assert.match(page,/async function autoOpenTournee\(\)/);
- assert.match(page,/Récupération bloquée pour ne rien écraser/);
- assert.doesNotMatch(page.slice(page.indexOf('async function autoOpenTournee(){'),page.indexOf('function recoverySpaceEmpty(')),/document\.getElementById\('tour-pass'\)/);
+ assert.doesNotMatch(page,/id="tour-pass"|phrase secrète|phrase de sauvegarde/i);
 });
 
 test('V95: sauvegarde JSON complète sans code conserve journal et suivi fictifs',async()=>{

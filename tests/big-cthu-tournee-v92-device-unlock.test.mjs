@@ -78,7 +78,7 @@ test('V93: ancien coffre non associé à l appareil reste intact et ne bloque pa
  assert.equal(f.ctx.getActiveKey(),'synthetic-alternate');
  assert.equal(f.vaultStore.get('synthetic-vault'),f.record);
  assert.equal(f.elements['tour-recovery-launch'].hidden,false);
- assert.match(f.status.message,/récupération facultative/);
+ assert.match(f.status.message,/Importe ton fichier JSON/);
 });
 
 test('V93: ancienne clé incompatible ou coffre ancien altéré ne sont pas effacés',async()=>{
@@ -98,6 +98,6 @@ test('V93: aucune session ne se reverrouille après inactivité',async()=>{
  assert.doesNotMatch(saving,/location\.reload\(\)/);
  assert.match(html,/id="tour-lock">Sauvegarder<\/button>/);
  assert.match(html,/id="tour-security-gate" hidden/);
- assert.match(html,/Récupérer mes anciennes données/);
- assert.match(html,/autoOpenTournee\(\);/);
+ assert.match(html,/Importer mes patients \(JSON\)/);
+ assert.match(html,/autoOpenTournee\(\)\.then/);
 });

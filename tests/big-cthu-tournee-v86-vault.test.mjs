@@ -74,7 +74,7 @@ test('V86: export télécharge uniquement le coffre chiffré et pas un dump en c
  assert.match(code,/new Blob\(\[stored\]/);
  assert.match(code,/tournee-coffre-chiffre-/);
  assert.doesNotMatch(code,/JSON\.stringify\(secureState\)|tidel_Pl|patient\.n/);
- assert.match(html,/Pour transférer ce journal sur un autre appareil sans code/);
+ assert.match(html,/Pour transférer ce journal sur un autre appareil/);
 });
 
 test('V86: export et verrouillage attendent toutes les écritures en cours',async()=>{
