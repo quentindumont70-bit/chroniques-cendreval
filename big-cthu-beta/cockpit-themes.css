@@ -626,3 +626,17 @@ html[data-cthu-theme] body[data-cthu-area] :is(button,a,input,select,textarea):f
 .active-pulse-fast button:focus-visible{outline:3px solid var(--cthu-accent,#86f3de);outline-offset:3px}
 .active-pulse-next{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;font-size:13px}
 @media(max-width:700px){.active-pulse-fast{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.active-pulse-fast button{min-width:0}.active-pulse-item{padding:14px;gap:7px}}
+
+/* V228–V230: separate navigation link and 44 px pin button, no nested controls. */
+.active-pulse-card{position:relative;min-width:0}
+.active-pulse-card>.active-pulse-item{height:100%;padding-right:60px}
+.active-pulse-star{position:absolute;right:8px;top:8px;width:44px;height:44px;min-width:44px;min-height:44px;display:grid;place-items:center;border:1px solid var(--cthu-line,#554679);border-radius:12px;background:var(--cthu-surface,#211a36);color:var(--cthu-accent,#86f3de);font-size:24px;cursor:pointer;z-index:1}
+.active-pulse-star[aria-pressed="true"]{background:var(--cthu-accent,#86f3de);color:#111527}
+.active-pulse-star:disabled{opacity:.5;cursor:not-allowed}
+.active-pulse-star:focus-visible{outline:3px solid var(--cthu-accent,#86f3de);outline-offset:3px}
+.active-pulse-pinned{margin-top:12px;border:1px solid var(--cthu-line,#554679);border-radius:12px;padding:10px 12px}
+.active-pulse-pinned>summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
+.active-pulse-pinned-links{display:flex;gap:8px;flex-wrap:wrap;padding:8px 0}
+.active-pulse-pinned-link{display:inline-flex;align-items:center;min-height:44px;padding:9px 12px;border-radius:11px;background:var(--cthu-surface,#211a36);border:1px solid var(--cthu-line,#554679);color:inherit;text-decoration:none;overflow-wrap:anywhere}
+.active-pulse-pinned-link:focus-visible{outline:3px solid var(--cthu-accent,#86f3de);outline-offset:2px}
+@media(max-width:700px){.active-pulse-pinned-links{display:grid;grid-template-columns:1fr}.active-pulse-card>.active-pulse-item{min-height:100px}}

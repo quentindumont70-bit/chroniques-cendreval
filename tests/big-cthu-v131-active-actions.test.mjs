@@ -9,7 +9,7 @@ async function fixture(seed={}){
  const code=await read('active-pulse.js');
  const stored=new Map(Object.entries(seed)),queried=[];
  let writes=0,network=0;
- const el=()=>({children:[],textContent:'',className:'',href:'',
+ const el=()=>({children:[],textContent:'',className:'',href:'',attributes:{},setAttribute(key,value){this.attributes[key]=String(value)},
   append(...items){this.children.push(...items)},
   replaceChildren(...items){this.children=[...items]}});
  const nodes=new Map(['activePulseList','activePulseCount','activePulseStatus','cinemaPulseCount'].map(key=>[key,el()]));
@@ -63,7 +63,7 @@ test('V131: stockage illisible affiché sans effacer et sans fuite vers le rése
 test('V131: titres non injectés et seulement les vrais liens de navigation',async()=>{
  const f=await fixture({[K.tasks]:JSON.stringify([{text:'<img src=x onerror=alert(1)>',done:false}])});
  f.ctx.testRender();
- const card=f.nodes.get('activePulseList').children[0];
+ const card=f.nodes.get('activePulseList').children[0].children[0];
  assert.equal(card.href,'#priorities');
  assert.equal(card.children[1].textContent,'<img src=x onerror=alert(1)>');
 });
@@ -98,7 +98,7 @@ test('V145: les captures à traiter apparaissent sans écriture ni copie',async(
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
  f.ctx.testRender();
- const link=f.nodes.get('activePulseList').children[0];
+ const link=f.nodes.get('activePulseList').children[0].children[0];
  assert.equal(link.href,'./capture.html#capture=one');
  assert.equal(link.children[1].textContent,'Rappeler le plombier fictif');
 });
@@ -113,7 +113,7 @@ test('V145: captures invalides ou archives non affichées, aucun contenu inject�
  });
  f.ctx.testRender();
  assert.equal(f.collect().items.length,1);
- const card=f.nodes.get('activePulseList').children[0];
+ const card=f.nodes.get('activePulseList').children[0].children[0];
  assert.equal(card.children[1].textContent,'<img src=x onerror=alert(1)>');
  assert.equal(f.writes(),0);
 });
@@ -139,7 +139,7 @@ test('V147: alertes de stock DLC/DDM à échéance proche sans duplication de do
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
  f.ctx.testRender();
- assert.equal(f.nodes.get('activePulseList').children[0].href,'./garde-manger.html#food=a');
+ assert.equal(f.nodes.get('activePulseList').children[0].children[0].href,'./garde-manger.html#food=a');
 });
 
 test('V147: aucune alerte si dates éloignées, texte invalide ou stockage absent',async()=>{
@@ -285,7 +285,7 @@ test('V181: les vraies urgences passent devant les DDM et les loisirs sans doubl
  assert.equal(result.total,6);
  assert.equal(new Set(result.items.map(x=>x.title)).size,6);
  f.ctx.testRender();
- assert.match(f.nodes.get('activePulseList').children[0].className,/is-urgent/);
+ assert.match(f.nodes.get('activePulseList').children[0].children[0].className,/is-urgent/);
  assert.equal(f.nodes.get('activePulseCount').textContent,'6 actions retrouvées');
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
@@ -576,9 +576,50 @@ test('V227: une action épinglée ne passe jamais devant une DLC dangereusement 
  f.ctx.window.BigCthuActionFavorites={read:()=>({ids:['Priorités:favorite'],blocked:false})};
  f.ctx.testRender();
  const links=f.nodes.get('activePulseList').children;
- assert.equal(links[0].children[1].textContent,'Yaourt fictif périmé');
- assert.equal(links[1].children[1].textContent,'Tâche épinglée');
- assert.equal(links[1].children[0].textContent,'★ Priorités');
+ assert.equal(links[0].children[0].children[1].textContent,'Yaourt fictif périmé');
+ assert.equal(links[1].children[0].children[1].textContent,'Tâche épinglée');
+ assert.equal(links[1].children[0].children[0].textContent,'★ Priorités');
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
+
+
+test('V228–V230: une étoile est un vrai bouton séparé du lien et la vue favoris reste locale',async()=>{
+ const f=await fixture({[K.tasks]:JSON.stringify([{id:'task-one',text:'Rappel fictif',done:false}])});
+ const fake={read:()=>({ids:[],blocked:false}),toggle:id=>({ok:true,message:'Action épinglée sur cet appareil.'})};
+ f.ctx.window.BigCthuActionFavorites=fake;
+ const pinnedHost={children:[],replaceChildren(...items){this.children=[...items]},append(...items){this.children.push(...items)}};
+ const pinnedWrap={hidden:true};
+ f.nodes.set('activePulsePinned',pinnedHost);f.nodes.set('activePulsePinnedWrap',pinnedWrap);
+ f.ctx.testRender();
+ const card=f.nodes.get('activePulseList').children[0];
+ const link=card.children[0],button=card.children[1];
+ assert.equal(link.href,'#priority-task-one');
+ assert.equal(button.type,'button');
+ assert.equal(button.attributes['aria-pressed'],'false');
+ assert.match(button.attributes['aria-label'],/Épingler/);
+ assert.equal(pinnedWrap.hidden,true);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+ f.ctx.window.BigCthuActionFavorites={read:()=>({ids:['Priorités:task-one'],blocked:false}),toggle:()=>({ok:true,message:'retirée'})};
+ f.ctx.testRender();
+ assert.equal(pinnedWrap.hidden,false);
+ assert.equal(pinnedHost.children[0].href,'#priority-task-one');
+ assert.equal(f.nodes.get('activePulseList').children[0].children[1].attributes['aria-pressed'],'true');
+});
+
+
+test('V230: le raccourci projets en cours sélectionne uniquement Maison et Musique actifs',async()=>{
+ const f=await fixture({
+  [K.maison]:JSON.stringify([{id:'m1',name:'Sous-sol actif',status:'doing'},{id:'m2',name:'Peinture en attente',status:'todo'}]),
+  [K.musique]:JSON.stringify([{id:'music1',title:'Mix commencé',mode:'musique',status:'active'},{id:'music2',title:'Mix prévu',mode:'musique',status:'planned'}])
+ });
+ const result=JSON.parse(JSON.stringify(f.ctx.testCollect(true,8,'Actifs')));
+ assert.equal(result.counts.Actifs,2);
+ assert.deepEqual(result.items.map(x=>x.title),['Sous-sol actif','Mix commencé']);
+ assert.equal(result.items.every(x=>x.favoriteKey),true);
+ const html=await read('index.html');
+ assert.match(html,/id="activePulseActive" aria-pressed="false"/);
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
 });

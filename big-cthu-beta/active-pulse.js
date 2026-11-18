@@ -34,18 +34,19 @@ function collect(expanded=false,limit=8,kind='all',term='',pinned=[]){
  const stop=[end.getFullYear(),String(end.getMonth()+1).padStart(2,'0'),String(end.getDate()).padStart(2,'0')].join('-');
  const nearDate=new Date(now);nearDate.setDate(nearDate.getDate()+2);
  const near=[nearDate.getFullYear(),String(nearDate.getMonth()+1).padStart(2,'0'),String(nearDate.getDate()).padStart(2,'0')].join('-');
- const results=[];
+ const results=[],pinnedItems=[];
  let warnings=0,total=0,compactVisible=0,urgentCompact=0,urgentTotal=0;
  const counts={},matchCounts={};
+ const isActive=(source,item)=>(source.kind==='Maison'||source.kind==='Musique')&&item.status==='doing'||source.kind==='Musique'&&item.status==='active';
  const period=(source,item)=>{
   if(source.kind==='Priorités')return 'today';
   if(!['Stock','Agenda','Maison'].includes(source.kind))return 'undated';
   const day=item.due||item.date||'';
   return !day?'undated':day<today?'late':day===today?'today':day<=stop?'week':'later';
  };
- let todayTotal=0,weekTotal=0,undatedTotal=0;
- let matchedToday=0,matchedWeek=0,matchedUndated=0;
- let compactToday=0,compactWeek=0,compactUndated=0;
+ let todayTotal=0,weekTotal=0,undatedTotal=0,activeTotal=0;
+ let matchedToday=0,matchedWeek=0,matchedUndated=0,matchedActive=0;
+ let compactToday=0,compactWeek=0,compactUndated=0,compactActive=0;
  let matchedTotal=0,matchedCompact=0,matchedUrgent=0,matchedUrgentCompact=0;
  const needle=String(term||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
  for(const source of SOURCES){
@@ -62,9 +63,10 @@ function collect(expanded=false,limit=8,kind='all',term='',pinned=[]){
    const rank=due&&due<=today?1:due&&due<=near?1.5:x.priority==='haute'?2:x.status==='doing'?3:6;
    return {id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.name,rank,due,status:x.status,next:(due?'Date cible : '+due+(notes?' · ':''):'')+notes};
   }).sort((a,b)=>a.rank-b.rank||(a.due||'9999').localeCompare(b.due||'9999')||(a.status==='doing'?0:1)-(b.status==='doing'?0:1));
-  if(source.kind==='Musique')selected=rows.filter(x=>x&&x.mode==='musique'&&['active','planned'].includes(x.status)&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140) .sort((a,b)=>(a.status==='active'?0:1)-(b.status==='active'?0:1)||String(b.date||'').localeCompare(String(a.date||''))).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.title,rank:x.status==='active'?5:7,next:typeof x.note==='string'?x.note.slice(0,180):''}));
+  if(source.kind==='Musique')selected=rows.filter(x=>x&&x.mode==='musique'&&['active','planned'].includes(x.status)&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140) .sort((a,b)=>(a.status==='active'?0:1)-(b.status==='active'?0:1)||String(b.date||'').localeCompare(String(a.date||''))).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.title,status:x.status,rank:x.status==='active'?5:7,next:typeof x.note==='string'?x.note.slice(0,180):''}));
   if(source.kind==='Jeux')selected=rows.filter(x=>x&&x.done===false&&typeof x.game==='string'&&x.game.length<=60&&typeof x.text==='string'&&x.text.trim()&&x.text.length<=180).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=80?x.id:'',title:x.game,rank:9,next:x.text}));
   counts[source.kind]=selected.length;
+  activeTotal+=selected.filter(item=>isActive(source,item)).length;
   todayTotal+=selected.filter(item=>['late','today'].includes(period(source,item))).length;
   weekTotal+=selected.filter(item=>['late','today','week'].includes(period(source,item))).length;
   undatedTotal+=selected.filter(item=>period(source,item)==='undated').length;
@@ -73,9 +75,11 @@ function collect(expanded=false,limit=8,kind='all',term='',pinned=[]){
   total+=selected.length;
   compactVisible+=Math.min(selected.length,source.limit);
   // In urgency view, select urgent rows BEFORE limiting each module.
-  const eligible=kind==='Urgentes'?selected.filter(item=>item.rank<=2):kind==='Aujourd’hui'?selected.filter(item=>['late','today'].includes(period(source,item))):kind==='Semaine'?selected.filter(item=>['late','today','week'].includes(period(source,item))):kind==='Sans date'?selected.filter(item=>period(source,item)==='undated'):selected;
+  const eligible=kind==='Urgentes'?selected.filter(item=>item.rank<=2):kind==='Aujourd’hui'?selected.filter(item=>['late','today'].includes(period(source,item))):kind==='Semaine'?selected.filter(item=>['late','today','week'].includes(period(source,item))):kind==='Sans date'?selected.filter(item=>period(source,item)==='undated'):kind==='Actifs'?selected.filter(item=>isActive(source,item)):selected;
   const shown=needle?eligible.filter(item=>(item.title+' '+(item.next||'')).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().includes(needle)):eligible;
   matchCounts[source.kind]=shown.length;
+  matchedActive+=shown.filter(item=>isActive(source,item)).length;
+  compactActive+=shown.slice(0,source.limit).filter(item=>isActive(source,item)).length;
   matchedToday+=shown.filter(item=>['late','today'].includes(period(source,item))).length;
   matchedWeek+=shown.filter(item=>['late','today','week'].includes(period(source,item))).length;
   matchedUndated+=shown.filter(item=>period(source,item)==='undated').length;
@@ -86,12 +90,14 @@ function collect(expanded=false,limit=8,kind='all',term='',pinned=[]){
   matchedCompact+=Math.min(shown.length,source.limit);
   matchedUrgent+=shown.filter(item=>item.rank<=2).length;
   matchedUrgentCompact+=shown.slice(0,source.limit).filter(item=>item.rank<=2).length;
+  const toCard=item=>({...item,timeGroup:period(source,item),kind:source.kind,favoriteKey:favoriteKey(source,item),favorite:pinnedItem(source,item),url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.kind==='Agenda'&&item.id?'./agenda.html#event='+encodeURIComponent(item.id):source.kind==='Captures'&&item.id?'./capture.html#capture='+encodeURIComponent(item.id):source.kind==='Priorités'&&item.id?'#priority-'+encodeURIComponent(item.id):source.kind==='Musique'&&item.id?'./musique.html#studio='+encodeURIComponent(item.id):source.kind==='Stock'&&item.id?'./garde-manger.html#food='+encodeURIComponent(item.id):source.kind==='Jeux'&&item.id?'#session='+encodeURIComponent(item.id):source.url});
+  pinnedItems.push(...selected.filter(item=>pinnedItem(source,item)).map(toCard));
   const ordered=shown.slice().sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||(a.rank<=2&&b.rank<=2?a.rank-b.rank:0)||Number(pinnedItem(source,b))-Number(pinnedItem(source,a))||a.rank-b.rank);
-  for(const item of ordered.slice(0,expanded?limit:source.limit))results.push({...item,timeGroup:period(source,item),kind:source.kind,favoriteKey:favoriteKey(source,item),favorite:pinnedItem(source,item),url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.kind==='Agenda'&&item.id?'./agenda.html#event='+encodeURIComponent(item.id):source.kind==='Captures'&&item.id?'./capture.html#capture='+encodeURIComponent(item.id):source.kind==='Priorités'&&item.id?'#priority-'+encodeURIComponent(item.id):source.kind==='Musique'&&item.id?'./musique.html#studio='+encodeURIComponent(item.id):source.kind==='Stock'&&item.id?'./garde-manger.html#food='+encodeURIComponent(item.id):source.kind==='Jeux'&&item.id?'#session='+encodeURIComponent(item.id):source.url});
+  for(const item of ordered.slice(0,expanded?limit:source.limit))results.push(toCard(item));
  }
  counts.Urgentes=urgentTotal;
- counts['Aujourd’hui']=todayTotal;counts.Semaine=weekTotal;counts['Sans date']=undatedTotal;
- return {items:results.sort((a,b)=>a.rank-b.rank),warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact,matchedToday,matchedWeek,matchedUndated,compactToday,compactWeek,compactUndated};
+ counts['Aujourd’hui']=todayTotal;counts.Semaine=weekTotal;counts['Sans date']=undatedTotal;counts.Actifs=activeTotal;
+ return {items:results.sort((a,b)=>a.rank-b.rank),pinnedItems:pinnedItems.sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||a.rank-b.rank),warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact,matchedToday,matchedWeek,matchedUndated,compactToday,compactWeek,compactUndated,matchedActive,compactActive};
 }
 function node(tag,text,className){
  const x=document.createElement(tag);
@@ -110,26 +116,42 @@ function render(){
  const root=$('activePulseList');if(!root)return;
  const pins=window.BigCthuActionFavorites;
  const pinState=pins?pins.read():{ids:[],blocked:false};
- const {items,warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact,matchedToday,matchedWeek,matchedUndated,compactToday,compactWeek,compactUndated}=collect(expanded,pageSize,selectedKind,searchTerm,pinState.ids);
- const visible=(selectedKind==='all'?items:selectedKind==='Urgentes'?items.filter(item=>item.rank<=2):selectedKind==='Aujourd’hui'?items.filter(item=>['late','today'].includes(item.timeGroup)):selectedKind==='Semaine'?items.filter(item=>['late','today','week'].includes(item.timeGroup)):selectedKind==='Sans date'?items.filter(item=>item.timeGroup==='undated'):items.filter(item=>item.kind===selectedKind)).slice().sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||(a.rank<=2&&b.rank<=2?a.rank-b.rank:0)||Number(b.favorite)-Number(a.favorite)||a.rank-b.rank);
- const available=selectedKind==='all'?matchedTotal:selectedKind==='Urgentes'?matchedUrgent:selectedKind==='Aujourd’hui'?matchedToday:selectedKind==='Semaine'?matchedWeek:selectedKind==='Sans date'?matchedUndated:(matchCounts[selectedKind]||0);
- const compact=selectedKind==='all'?matchedCompact:selectedKind==='Urgentes'?matchedUrgentCompact:selectedKind==='Aujourd’hui'?compactToday:selectedKind==='Semaine'?compactWeek:selectedKind==='Sans date'?compactUndated:Math.min(available,2);
+ const {items,pinnedItems,warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact,matchedToday,matchedWeek,matchedUndated,compactToday,compactWeek,compactUndated,matchedActive,compactActive}=collect(expanded,pageSize,selectedKind,searchTerm,pinState.ids);
+ const visible=(selectedKind==='all'?items:selectedKind==='Urgentes'?items.filter(item=>item.rank<=2):selectedKind==='Aujourd’hui'?items.filter(item=>['late','today'].includes(item.timeGroup)):selectedKind==='Semaine'?items.filter(item=>['late','today','week'].includes(item.timeGroup)):selectedKind==='Sans date'?items.filter(item=>item.timeGroup==='undated'):selectedKind==='Actifs'?items.filter(item=>['Maison','Musique'].includes(item.kind)&&['doing','active'].includes(item.status)):items.filter(item=>item.kind===selectedKind)).slice().sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||(a.rank<=2&&b.rank<=2?a.rank-b.rank:0)||Number(b.favorite)-Number(a.favorite)||a.rank-b.rank);
+ const available=selectedKind==='all'?matchedTotal:selectedKind==='Urgentes'?matchedUrgent:selectedKind==='Aujourd’hui'?matchedToday:selectedKind==='Semaine'?matchedWeek:selectedKind==='Sans date'?matchedUndated:selectedKind==='Actifs'?matchedActive:(matchCounts[selectedKind]||0);
+ const compact=selectedKind==='all'?matchedCompact:selectedKind==='Urgentes'?matchedUrgentCompact:selectedKind==='Aujourd’hui'?compactToday:selectedKind==='Semaine'?compactWeek:selectedKind==='Sans date'?compactUndated:selectedKind==='Actifs'?compactActive:Math.min(available,2);
  root.replaceChildren();
  const count=$('activePulseCount');if(count)count.textContent=available===visible.length?available+' action'+(available>1?'s':'')+' retrouvée'+(available>1?'s':''):available+' actions · '+visible.length+' affichées';
  const heroCount=$('cinemaPulseCount');if(heroCount)heroCount.textContent=total===0?(warnings?'Certaines actions indisponibles':'Aucune action en attente'):total+' action'+(total>1?'s':'')+' à reprendre';
  if(!visible.length)root.append(node('p',warnings?'Certaines données sont illisibles : impossible de garantir que tout est à jour.':searchTerm?'Aucune action ne correspond à la recherche. Efface le filtre pour revenir aux rappels.':selectedKind==='all'?'Aucune action en attente dans tes modules locaux. Tu peux simplement continuer ta journée.':'Aucune action en attente dans cette catégorie.','muted'));
+ const pinAction=(reference)=>{if(!pins||!reference)return;const outcome=pins.toggle(reference);pinMessage=outcome.message;if(outcome.ok)render();else{const status=$('activePulsePinStatus');if(status)status.textContent=pinMessage}};
+ const pinnedHost=$('activePulsePinned'),pinnedWrap=$('activePulsePinnedWrap');
+ if(pinnedWrap)pinnedWrap.hidden=!pinnedItems.length;
+ if(pinnedHost){pinnedHost.replaceChildren();for(const item of pinnedItems.slice(0,6)){
+   const link=node('a','★ '+item.kind+' · '+item.title.slice(0,75),'active-pulse-pinned-link');link.href=item.url;pinnedHost.append(link);
+  }
+  if(pinnedItems.length>6)pinnedHost.append(node('span','+'+(pinnedItems.length-6)+' autres favoris épinglés','muted'));
+ }
  for(const item of visible){
+  const card=node('div','','active-pulse-card'+(item.favorite?' is-pinned':''));
   const link=node('a','','active-pulse-item'+(item.rank<=2?' is-urgent':''));
   link.href=item.url;
   const timeLabel=item.timeGroup==='late'?'En retard · ':item.timeGroup==='today'&&item.kind!=='Priorités'?'Aujourd’hui · ':item.timeGroup==='week'?'Cette semaine · ':'';
   link.append(node('small',(item.favorite?'★ ':'')+timeLabel+item.kind),node('strong',item.title));
   if(item.next)link.append(node('span',item.next,'active-pulse-next'));
-  root.append(link);
+  card.append(link);
+  if(item.favoriteKey){const button=node('button',item.favorite?'★':'☆','active-pulse-star');
+   button.type='button';button.setAttribute('aria-label',(item.favorite?'Retirer des favoris : ':'Épingler : ')+item.title.slice(0,100));
+   button.setAttribute('aria-pressed',item.favorite?'true':'false');button.title=item.favorite?'Retirer des favoris':'Épingler cette action';
+   button.onclick=()=>pinAction(item.favoriteKey);button.disabled=pinState.blocked||!pins;
+   card.append(button);
+  }
+  root.append(card);
  }
  const toggle=$('activePulseToggle');
  if(toggle){toggle.hidden=available<=compact;toggle.textContent=expanded?(visible.length<available&&pageSize<48?'Afficher encore':'Afficher moins'):'Afficher plus d’actions';toggle.setAttribute('aria-expanded',expanded?'true':'false');toggle.onclick=()=>{if(!expanded){expanded=true;pageSize=8}else if(visible.length<available&&pageSize<48){pageSize=Math.min(48,pageSize+16)}else{expanded=false;pageSize=8}render()}}
  const category=$('activePulseCategory');if(category){category.value=selectedKind;category.onchange=()=>{selectedKind=category.value;expanded=false;pageSize=8;render()}}
- const fast=[['activePulseToday','Aujourd’hui'],['activePulseWeek','Semaine']];
+ const fast=[['activePulseToday','Aujourd’hui'],['activePulseWeek','Semaine'],['activePulseActive','Actifs']];
  for(const [id,kind] of fast){const button=$(id);if(!button)continue;button.setAttribute('aria-pressed',selectedKind===kind?'true':'false');button.onclick=()=>{selectedKind=selectedKind===kind?'all':kind;expanded=false;pageSize=8;render()}}
  const search=$('activePulseSearch');if(search){if(search.value!==searchTerm)search.value=searchTerm;search.oninput=()=>{const next=search.value.slice(0,100);if(next===searchTerm)return;searchTerm=next;expanded=false;pageSize=8;scheduleSearchRender()};search.onkeydown=e=>{if(e.key==='Escape'&&searchTerm){searchTerm='';expanded=false;pageSize=8;render()}}}
  const clear=$('activePulseClear');if(clear){clear.hidden=!searchTerm;clear.onclick=()=>{searchTerm='';expanded=false;pageSize=8;render();if(search&&typeof search.focus==='function')search.focus()}}
@@ -149,7 +171,7 @@ function render(){
   pinPick.value=current;
   const updatePinButton=()=>{const pinned=pinState.ids.includes(pinPick.value);pinButton.textContent=pinned?'Retirer des favoris':'Épingler cette action';pinButton.disabled=!pinPick.value||pinState.blocked||!pins};
   pinPick.onchange=updatePinButton;updatePinButton();
-  pinButton.onclick=()=>{if(!pins||!pinPick.value)return;const outcome=pins.toggle(pinPick.value);pinMessage=outcome.message;if(outcome.ok)render();else if(pinStatus)pinStatus.textContent=pinMessage};
+  pinButton.onclick=()=>pinAction(pinPick.value);
  }
  if(pinStatus)pinStatus.textContent=pinState.blocked?'Favoris locaux illisibles : aucun favori ne sera modifié.':pinMessage;
  const status=$('activePulseStatus');
