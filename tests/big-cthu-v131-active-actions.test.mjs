@@ -552,6 +552,8 @@ test('V220–V224: regroupe les échéances du jour et de la semaine sans recopi
  const undated=JSON.parse(JSON.stringify(f.ctx.testCollect(true,8,'Sans date')));
  assert.deepEqual(today.items.map(x=>x.title),['DLC dépassée','Rendez-vous du jour','Travail en retard','Priorité actuelle']);
  assert.equal(today.counts['Aujourd’hui'],4);
+ assert.equal(today.items.find(x=>x.title==='DLC dépassée').timeGroup,'late');
+ assert.equal(today.items.find(x=>x.title==='Rendez-vous du jour').timeGroup,'today');
  assert.equal(week.counts.Semaine,6);
  assert.equal(week.items.length,6);
  assert.equal(undated.items.length,1);
