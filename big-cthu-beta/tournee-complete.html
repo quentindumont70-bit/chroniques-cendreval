@@ -496,6 +496,26 @@ body.tournee-locked #tour-save-strip{display:none}
 .tq-sticky .tq-meta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-top:7px}
 .tq-sticky .tq-meta button{border:1px solid #9d893e;border-radius:10px;background:#fff6c4;color:#3d341b;padding:8px 14px;font-weight:700}
 .tq-note-icon{display:block;font-size:10px;color:#8c6810;line-height:1}
+
+/* Les notes de chaque jour sont une liste de rappels distincts, utilisable au doigt. */
+.tq-sticky-hint{font-size:12px;margin:0 0 10px;color:#5a4b23;line-height:1.4}
+.tq-sticky-list{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:7px}
+.tq-sticky-item{display:flex;align-items:center;gap:8px;min-height:44px;padding:7px 9px;background:rgba(255,255,255,.50);border:1px solid #d4bf62;border-radius:10px}
+.tq-sticky-dash{font-size:20px;font-weight:800;line-height:1;flex:0 0 12px}
+.tq-sticky-label{flex:1 1 auto;min-width:0;overflow-wrap:anywhere;white-space:pre-wrap;font-weight:650}
+.tq-sticky-actions{display:flex;align-items:center;gap:5px;flex:0 0 auto}
+.tq-sticky-actions button{min-height:40px;padding:6px 9px;border-radius:8px;border:1px solid #ac954e;background:#fff8d7;color:#47391e;font-weight:750}
+.tq-sticky-actions .tq-sticky-delete{min-width:40px;background:#ffe1cf;border-color:#c88b75;font-size:21px}
+.tq-sticky-item input{min-width:0;flex:1 1 140px;padding:8px;border:1px solid #9f8739;border-radius:8px;color:#382a16;background:#fffefa;font:inherit}
+.tq-sticky-empty{font-size:13px;margin:4px 0 12px;color:#5a4b23}
+.tq-sticky-new{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}
+.tq-sticky-new input{flex:1 1 180px;min-width:0;padding:10px 12px;border:1px solid #d4bf62;border-radius:9px;background:#fffdf0;color:#382a16;font:inherit}
+.tq-sticky-new button,.tq-sticky-bulk button{min-height:44px;border:1px solid #9d893e;border-radius:9px;background:#fff9d4;color:#3d341b;padding:8px 12px;font-weight:800}
+.tq-sticky-bulk{margin-top:12px;border-top:1px solid #d4bf62;padding-top:9px}
+.tq-sticky-bulk summary{cursor:pointer;min-height:44px;padding:10px 0;font-size:13px;font-weight:750}
+.tq-sticky-bulk textarea{margin:5px 0 7px}
+@media(max-width:460px){.tq-sticky-item{align-items:flex-start;flex-wrap:wrap}.tq-sticky-label{flex-basis:calc(100% - 28px);padding-top:8px}.tq-sticky-actions{margin-left:auto}.tq-sticky-new button{flex:0 0 auto}}
+
 .tq-chat,.tq-week{margin:13px 0;padding:13px;border:1px solid var(--line);background:var(--card);border-radius:var(--r);box-shadow:var(--sh)}
 .tq-chat h3,.tq-week h3{font-size:16px;margin:0 0 7px;color:var(--ink)}
 .tq-chat p,.tq-week p{font-size:12px;line-height:1.5;color:var(--mut);margin:4px 0 8px}
@@ -1108,11 +1128,12 @@ function memoForm(pid){document.getElementById("pki").innerHTML=`<div class="gra
  <label class="fl">Note<textarea id="mtx" placeholder="Ex. passer à la pharmacie récupérer le traitement"></textarea></label>
  <div class="acts"><button class="btn" style="flex:1;justify-content:center" onclick="addMemo()">Ajouter</button><button class="btn ghost" onclick="closePk()">Annuler</button></div>`;document.getElementById("pk").classList.add("on")}
 
-/* ===== Post-it local par date, dans les mêmes memos chiffrés que le pense-bête ===== */
+/* ===== Post-it du jour : lignes indépendantes, stockage chiffré existant et notes historiques conservées ===== */
 const TQ_STICKY_ID="tq-postit";
 const tqStickyDrafts=Object.create(null);
+let tqStickyEditing=null,tqStickyUndo=null;
 function tqStickyShown(d){return Object.prototype.hasOwnProperty.call(tqStickyDrafts,d)?tqStickyDrafts[d]:tqStickyText(d)}
-function tqStickyDraft(el){if(!el||!TQ.validDay(el.dataset.day))return;tqStickyDrafts[el.dataset.day]=el.value;const status=el.closest('.tq-sticky')?.querySelector('#tq-sticky-status');if(status)status.textContent='Non enregistré : touche Enregistrer ou quitte le champ.';}
+function tqStickyDraft(el){if(!el||!TQ.validDay(el.dataset.day))return;tqStickyDrafts[el.dataset.day]=el.value;const status=el.closest('.tq-sticky')?.querySelector('#tq-sticky-status');if(status)status.textContent='Modification en attente : Enregistrer pour garder ces lignes.';}
 function tqStickyRows(d,strict){
  const raw=TOUR_STORE.getItem("tidel_memo_"+d);
  if(raw===null)return [];
@@ -1129,6 +1150,14 @@ function tqStickyText(d){
  const note=tqStickyRows(d,false).find(x=>x&&x.k===TQ_STICKY_ID);
  return note&&typeof note.t==="string"?note.t:"";
 }
+function tqStickyLines(text){
+ // Les anciens post-it multiligne restent lisibles ; "- " et "• " ne sont que des préfixes visuels.
+ return String(text||"").split(/\r?\n/).map(line=>line.replace(/^\s*[-•]\s+/,"").trim()).filter(Boolean);
+}
+function tqStickyItems(d){return tqStickyLines(tqStickyText(d))}
+function tqStickyPending(d){
+ return Object.prototype.hasOwnProperty.call(tqStickyDrafts,d)&&tqStickyDrafts[d]!==tqStickyText(d);
+}
 async function tqSaveStickyText(d,text){
  if(!TQ||!TQ.validDay(d)||typeof text!=="string"||text.length>1000)throw Error("Date ou note invalide (1000 caractères maximum).");
  const key="tidel_memo_"+d,old=TOUR_STORE.getItem(key),rows=tqStickyRows(d,true),value=text.trim();
@@ -1138,43 +1167,138 @@ async function tqSaveStickyText(d,text){
  await tqCommitVaultKey(key,JSON.stringify(next),old);
  return true;
 }
+function tqStickyListHtml(d){
+ const items=tqStickyItems(d);
+ if(!items.length)return '<p class="tq-sticky-empty">Aucun rappel prévu pour cette journée.</p>';
+ return '<ul class="tq-sticky-list">'+items.map((item,i)=>{
+  const editing=tqStickyEditing&&tqStickyEditing.d===d&&tqStickyEditing.i===i;
+  const prefix='<li class="tq-sticky-item"><span class="tq-sticky-dash" aria-hidden="true">−</span>';
+  if(editing)return prefix+
+   '<input type="text" id="tq-sticky-edit" maxlength="1000" value="'+esc(item)+'" aria-label="Modifier le rappel '+(i+1)+'" onkeydown="if(event.key===\'Enter\')tqStickyApplyEdit(\''+d+'\','+i+');if(event.key===\'Escape\')tqStickyCancelEdit()">'+
+   '<div class="tq-sticky-actions"><button type="button" onclick="tqStickyApplyEdit(\''+d+'\','+i+')">✓ OK</button><button type="button" onclick="tqStickyCancelEdit()">Annuler</button></div></li>';
+  return prefix+'<span class="tq-sticky-label">'+esc(item)+'</span>'+
+   '<div class="tq-sticky-actions"><button type="button" aria-label="Modifier le rappel '+(i+1)+'" onclick="tqStickyBeginEdit(\''+d+'\','+i+')">Modifier</button>'+
+   '<button type="button" class="tq-sticky-delete" aria-label="Effacer le rappel '+(i+1)+'" onclick="tqStickyDelete(\''+d+'\','+i+')">×</button></div></li>';
+ }).join('')+'</ul>';
+}
+function tqStickyRefresh(d,message){
+ if(d!==day)return;
+ const list=document.getElementById("tq-sticky-list");
+ if(list)list.innerHTML=tqStickyListHtml(d);
+ const status=document.getElementById("tq-sticky-status");
+ if(status&&message)status.textContent=message;
+ const badge=document.querySelector('[data-tq-day="'+d+'"] .tq-note-icon');
+ if(badge)badge.textContent=tqStickyItems(d).length?"📝":"▧";
+ const area=document.getElementById("tq-sticky-text");
+ if(area&&area.dataset.day===d&&!tqStickyPending(d))area.value=tqStickyText(d);
+ const undoButton=document.getElementById("tq-sticky-undo");
+ if(undoButton)undoButton.hidden=!(tqStickyUndo&&tqStickyUndo.d===d);
+}
+function tqStickyCheckDraft(d){
+ if(tqStickyPending(d))throw Error("Enregistre d'abord la modification globale en cours.");
+}
 function tqPostitBlock(){
- const content=tqStickyShown(day);
- return '<section class="tq-sticky" aria-label="Post-it du '+esc(short(day))+'">'+
- '<div class="tq-sticky-head"><span>🗒️ Post-it · '+esc(rel(day))+' '+esc(short(day))+'</span><span class="sub">sur cet appareil</span></div>'+
- '<label class="sub" for="tq-sticky-text">Détails rapides de cette journée</label>'+
- '<textarea id="tq-sticky-text" data-day="'+day+'" maxlength="1000" placeholder="Ex. prise de sang, rendez-vous, matériel à prendre..." oninput="tqStickyDraft(this)" onblur="tqStickySave(this)" aria-describedby="tq-sticky-status">'+esc(content)+'</textarea>'+
- '<div class="tq-meta"><span id="tq-sticky-status" class="sub" role="status" aria-live="polite">Enregistrement local en quittant le champ</span>'+
- '<button type="button" onclick="tqStickySave()">✓ Enregistrer</button></div></section>';
+ const d=day;
+ return '<section class="tq-sticky" aria-label="Post-it du '+esc(short(d))+'">'+
+ '<div class="tq-sticky-head"><span>🗒️ Post-it · '+esc(rel(d))+' '+esc(short(d))+'</span><span class="sub">uniquement ce jour</span></div>'+
+ '<p class="tq-sticky-hint">Rappels réservés à cette date. Les autres journées ont chacune leur propre post-it.</p>'+
+ '<div id="tq-sticky-list" data-day="'+d+'">'+tqStickyListHtml(d)+'</div>'+
+ '<div class="tq-sticky-new"><input type="text" id="tq-sticky-new" maxlength="1000" data-day="'+d+'" placeholder="Ajouter un rappel à ce jour…" aria-label="Nouveau rappel du '+esc(short(d))+'" onkeydown="if(event.key===\'Enter\'){event.preventDefault();tqStickyAdd()}">'+
+ '<button type="button" onclick="tqStickyAdd()">＋ Ajouter</button></div>'+
+ '<div class="tq-meta"><span id="tq-sticky-status" class="sub" role="status" aria-live="polite">Enregistrement automatique à l’ajout, à la modification et à la suppression</span>'+
+ '<button type="button" id="tq-sticky-undo" hidden onclick="tqStickyUndoDelete()">↶ Annuler la suppression</button></div>'+
+ '<details class="tq-sticky-bulk"><summary>Modifier tout le post-it</summary>'+
+ '<label class="sub" for="tq-sticky-text">Une idée par ligne (ce jour seulement)</label>'+
+ '<textarea id="tq-sticky-text" data-day="'+d+'" maxlength="1000" placeholder="Ex. prise de sang, matériel à prendre..." oninput="tqStickyDraft(this)" onblur="tqStickySave(this)" aria-describedby="tq-sticky-status">'+esc(tqStickyShown(d))+'</textarea>'+
+ '<button type="button" onclick="tqStickySave()">✓ Enregistrer toutes les lignes</button></details></section>';
+}
+function tqStickyBeginEdit(d,i){
+ if(!TQ.validDay(d)||d!==day)return;
+ try{
+  tqStickyCheckDraft(d);
+  if(!Number.isInteger(i)||i<0||i>=tqStickyItems(d).length)return;
+  tqStickyEditing={d,i};tqStickyRefresh(d);
+  const input=document.getElementById("tq-sticky-edit");if(input)input.focus();
+ }catch(e){tqStickyRefresh(d,"⚠ "+e.message)}
+}
+function tqStickyCancelEdit(){const d=day;tqStickyEditing=null;tqStickyRefresh(d)}
+async function tqStickyApplyEdit(d,i){
+ const field=document.getElementById("tq-sticky-edit");
+ if(!field||d!==day||!TQ.validDay(d))return;
+ const value=field.value.trim();
+ if(!value){tqStickyRefresh(d,"Une ligne vide ne peut pas être enregistrée : utilise × pour la retirer.");return}
+ try{
+  tqStickyCheckDraft(d);
+  const items=tqStickyItems(d);
+  if(!Number.isInteger(i)||i<0||i>=items.length)throw Error("Ce rappel n'existe plus.");
+  items[i]=value;
+  await tqSaveStickyText(d,items.join("\n"));
+  tqStickyEditing=null;tqStickyUndo=null;
+  tqStickyRefresh(d,"✓ Rappel modifié pour le "+short(d));
+ }catch(e){tqStickyRefresh(d,"⚠ "+e.message)}
+}
+async function tqStickyAdd(){
+ const input=document.getElementById("tq-sticky-new");if(!input)return;
+ const d=input.dataset.day,lines=tqStickyLines(input.value);
+ if(!TQ.validDay(d)||d!==day||!lines.length)return;
+ try{
+  tqStickyCheckDraft(d);
+  const updated=tqStickyItems(d).concat(lines);
+  await tqSaveStickyText(d,updated.join("\n"));
+  input.value="";tqStickyUndo=null;tqStickyEditing=null;
+  tqStickyRefresh(d,"✓ Ajouté uniquement au "+short(d));
+ }catch(e){tqStickyRefresh(d,"⚠ "+e.message)}
+}
+async function tqStickyDelete(d,i){
+ if(!TQ.validDay(d)||d!==day)return;
+ try{
+  tqStickyCheckDraft(d);
+  const items=tqStickyItems(d);
+  if(!Number.isInteger(i)||i<0||i>=items.length)return;
+  const before=tqStickyText(d);items.splice(i,1);
+  await tqSaveStickyText(d,items.join("\n"));
+  tqStickyUndo={d,before,after:tqStickyText(d)};
+  tqStickyEditing=null;
+  tqStickyRefresh(d,"✓ Rappel effacé de ce jour. Tu peux annuler la suppression.");
+ }catch(e){tqStickyRefresh(d,"⚠ "+e.message)}
+}
+async function tqStickyUndoDelete(){
+ const undo=tqStickyUndo;if(!undo||undo.d!==day)return;
+ try{
+  tqStickyCheckDraft(undo.d);
+  if(tqStickyText(undo.d)!==undo.after)throw Error("Le post-it a changé entretemps : annulation impossible.");
+  await tqSaveStickyText(undo.d,undo.before);
+  tqStickyUndo=null;tqStickyRefresh(undo.d,"✓ Suppression annulée.");
+ }catch(e){tqStickyRefresh(undo.d,"⚠ "+e.message)}
 }
 async function tqStickySave(el){
  el=el||document.getElementById("tq-sticky-text");
  if(!el)return;
  const d=el.dataset.day,txt=el.value;
  const status=el.closest('.tq-sticky')?.querySelector('#tq-sticky-status');
- if(tqBusy){if(status)status.textContent="Sauvegarde déjà en cours…";return}
  try{
-  if(status)status.textContent="Chiffrement et sauvegarde en cours…";
-  const changed=await tqSaveStickyText(d,txt);
+  if(status)status.textContent="Enregistrement en cours…";
+  const changed=await tqSaveStickyText(d,tqStickyLines(txt).join("\n"));
   if(Object.prototype.hasOwnProperty.call(tqStickyDrafts,d)&&tqStickyDrafts[d]===txt)delete tqStickyDrafts[d];
-  if(status)status.textContent=changed?"✓ Post-it enregistré dans le coffre":"✓ Post-it déjà à jour";
-  const chip=document.querySelector('[data-tq-day="'+d+'"] .tq-note-icon');
-  if(chip)chip.textContent=txt.trim()?"📝":"▧";
- }catch(e){if(status)status.textContent="⚠ "+e.message;toast("Post-it non enregistré, réessaie depuis cette page.")}
+  tqStickyEditing=null;tqStickyUndo=null;
+  tqStickyRefresh(d,changed?"✓ Post-it enregistré pour ce jour":"✓ Post-it déjà à jour");
+ }catch(e){if(status)status.textContent="⚠ "+e.message;toast("Post-it non enregistré : réessaie depuis cette page.")}
 }
 async function tqAddToPostit(d,line){
  if(!TQ||!TQ.validDay(d)||typeof line!=="string"||!line.trim())throw Error("Note invalide");
- const previous=tqStickyText(d),combined=[previous,line.trim()].filter(Boolean).join("\n");
- if(combined.length>1000)throw Error("Post-it plein (1000 caractères maximum). Modifie-le directement pour libérer de la place.");
+ tqStickyCheckDraft(d);
+ const combined=tqStickyItems(d).concat(tqStickyLines(line)).join("\n");
+ if(combined.length>1000)throw Error("Post-it plein (1000 caractères maximum).");
  await tqSaveStickyText(d,combined);
+ tqStickyUndo=null;tqStickyEditing=null;
+ tqStickyRefresh(d,"✓ Rappel ajouté uniquement au "+short(d));
 }
 function tqFocusSticky(d){
  if(!TQ||!TQ.validDay(d))return;
  day=d;tab="tour";render();
- const el=document.getElementById("tq-sticky-text");
- if(el){el.scrollIntoView({block:"center",behavior:"smooth"});el.focus({preventScroll:true})}
+ const el=document.querySelector(".tq-sticky");
+ if(el){el.scrollIntoView({block:"center",behavior:"smooth"});const input=document.getElementById("tq-sticky-new");if(input)input.focus({preventScroll:true})}
 }
-
 
 /* ===== Weekly cycle editor: current and following calendar weeks, no changes to the default cycle ===== */
 function tqWeekDate(n){return TQ.add(TQ.monday(TODAY),n*7)}
