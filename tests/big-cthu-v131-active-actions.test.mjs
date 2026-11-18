@@ -607,3 +607,19 @@ test('V228–V230: une étoile est un vrai bouton séparé du lien et la vue fav
  assert.equal(pinnedHost.children[0].href,'#priority-task-one');
  assert.equal(f.nodes.get('activePulseList').children[0].children[1].attributes['aria-pressed'],'true');
 });
+
+
+test('V230: le raccourci projets en cours sélectionne uniquement Maison et Musique actifs',async()=>{
+ const f=await fixture({
+  [K.maison]:JSON.stringify([{id:'m1',name:'Sous-sol actif',status:'doing'},{id:'m2',name:'Peinture en attente',status:'todo'}]),
+  [K.musique]:JSON.stringify([{id:'music1',title:'Mix commencé',mode:'musique',status:'active'},{id:'music2',title:'Mix prévu',mode:'musique',status:'planned'}])
+ });
+ const result=JSON.parse(JSON.stringify(f.ctx.testCollect(true,8,'Actifs')));
+ assert.equal(result.counts.Actifs,2);
+ assert.deepEqual(result.items.map(x=>x.title),['Sous-sol actif','Mix commencé']);
+ assert.equal(result.items.every(x=>x.favoriteKey),true);
+ const html=await read('index.html');
+ assert.match(html,/id="activePulseActive" aria-pressed="false"/);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
