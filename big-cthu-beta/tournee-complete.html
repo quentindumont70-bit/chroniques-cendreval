@@ -3048,6 +3048,12 @@ function openTourRecovery(){
  document.getElementById('tour-security-gate').hidden=false;
  report('');
 }
+function tourBackupEquivalent(a,b){
+ if(!validPortableState(a)||!validPortableState(b))return false;
+ const left=Object.keys(a).sort(),right=Object.keys(b).sort();
+ if(left.length!==right.length)return false;
+ return left.every((key,i)=>key===right[i]&&a[key]===b[key]);
+}
 async function tourPreviewBackupFile(){
  const target=document.getElementById('tour-backup-preview'),file=document.getElementById('tour-file')?.files?.[0];
  if(!file){target.textContent='Aucun fichier sélectionné.';return}
