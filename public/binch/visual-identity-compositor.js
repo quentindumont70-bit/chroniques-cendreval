@@ -19,8 +19,8 @@ const CLASSES={
  Prêtre:{id:'priest',glyph:'✢',light:'#fff2c7',aura:'#9b9ec8',scene:'renaissance-world-priest.svg',name:'Prêtre'},
  Chaman:{id:'shaman',glyph:'ϟ',light:'#9ddcf5',aura:'#1864a8',scene:'renaissance-world-shaman.svg',name:'Chaman'},
  Mage:{id:'mage',glyph:'✣',light:'#8bd8fc',aura:'#704ba2',scene:'renaissance-world-mage.svg',name:'Mage'},
- Démoniste:{id:'warlock',glyph:'⬡',light:'#c2a6f5',aura:'#623d91',scene:'renaissance-world-warlock.svg',name:'Démoniste'},
- Druide:{id:'druid',glyph:'❧',light:'#b4e28f',aura:'#3f8e5e',scene:'renaissance-world-druid.svg',name:'Druide'}
+ Démoniste:{id:'warlock',glyph:'⬡',light:'#c2a6f5',aura:'#623d91',scene:'renaissance-p9-hero-warlock.svg',name:'Démoniste'},
+ Druide:{id:'druid',glyph:'❧',light:'#b4e28f',aura:'#3f8e5e',scene:'renaissance-p9-hero-druid.svg',name:'Druide'}
 };
 const JOBS={
  Minage:{glyph:'◆',name:'Minage',effect:'ore'},
@@ -184,7 +184,7 @@ function attach(){
  const cinematic=document.querySelector('#binch-adventure-home .binch-character-card');
  if(cinematic&&!cinematic.querySelector('.binch-identity-composition')){
   const layer=el('div','binch-identity-composition');layer.setAttribute('aria-hidden','true');
-  layer.append(el('div','binch-identity-architecture'),el('div','binch-identity-professions'));
+  layer.append(el('div','binch-identity-landscape'),el('div','binch-identity-architecture'),el('div','binch-identity-aura'),el('div','binch-identity-professions'));
   cinematic.prepend(layer);
  }
 }
