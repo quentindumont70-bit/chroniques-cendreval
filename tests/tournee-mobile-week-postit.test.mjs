@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {runInNewContext} from 'node:vm';
+import {runInNewContext,Script} from 'node:vm';
 
 const read=path=>readFile(new URL('../big-cthu-beta/'+path,import.meta.url),'utf8');
 const sandbox={module:{exports:{}},Set,Map,Date,Array,JSON};
@@ -64,6 +64,9 @@ test('Tournée : une note du lendemain est traitée en local sans patient dans l
 
 test('Tournée : commandes locales, sauvegarde chiffrée existante et aucune requête réseau ajoutée',async()=>{
  const [page,helper,sw]=await Promise.all(['tournee-complete.html','tournee-quick-core.js','sw.js'].map(read));
+ const embedded=page.split('<script type="text/plain" id="tour-source-js">')[1]?.split('</script>')[0];
+ assert.ok(embedded,'Source Tournée absente');
+ assert.doesNotThrow(()=>new Script(embedded), 'La source de la tournée doit rester syntaxiquement valide');
  assert.match(page,/script src="\.\/tournee-quick-core\.js"/);
  assert.match(page,/tqPostitBlock\(\)/);
  assert.match(page,/tqChatBlock\(\)/);
