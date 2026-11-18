@@ -28,6 +28,10 @@
 #binch-specs-route{margin-top:14px}
 .binch-specs-progress{padding:13px 16px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;border-radius:10px;background:#413825;border:1px solid #aa915c;color:#f5e0a6}
 .binch-specs-progress span{font-size:.82rem;overflow-wrap:anywhere}
+.binch-specs-progress-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:10px;padding:10px 13px;background:#243632;border:1px solid #57756b;border-radius:10px}
+.binch-specs-progress-actions p{flex:1 1 250px;margin:0;font-size:.8rem;color:#e2dec9}
+.binch-specs-progress-actions button{flex:1 1 195px;min-height:42px;border:1px solid #bd9e6b;border-radius:9px;background:#3a4338;color:#ffebb7;padding:9px 11px}
+.binch-specs-progress-actions button:disabled{opacity:.5;cursor:not-allowed}
 .binch-specs-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,285px),1fr));gap:8px;margin-top:12px}
 .binch-specs-step{display:flex;gap:12px;align-items:center;padding:11px 12px;border:1px solid #637064;border-radius:9px;background:#1b2d31;min-height:68px}
 .binch-specs-step.is-done{border-color:#649782;background:#1c3932}
