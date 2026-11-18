@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#110e23">
+<title>Échéances IDEL · Big Cthu</title>
+<link rel="stylesheet" href="./cockpit-themes.css">
+<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml">
+<style>
+:root{font-family:system-ui,sans-serif;color:#f4f0ff;background:#100e22;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% -15%,#41315e,transparent 52%),#100e22;min-height:100vh}
+main{width:min(840px,100%);margin:auto;padding:18px 15px 70px}
+nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px}
+a{color:#bceee3}nav a{padding:8px 11px;border:1px solid #594b78;border-radius:10px}
+h1{font-size:clamp(27px,6vw,39px);margin:9px 0 7px}h2{font-size:20px;margin:0 0 13px}
+p{line-height:1.55}.muted{color:#bdb3d2}.panel{background:#211a36;border:1px solid #574a74;border-radius:17px;padding:17px;margin-top:17px}
+.warn{border-color:#a47a58;background:#332823;padding:12px 14px;border-radius:12px}
+label{display:grid;gap:6px;font-weight:700;font-size:14px}
+input,select,button{font:inherit;border-radius:11px;min-height:46px}
+input,select{background:#151429;border:1px solid #655b79;color:#fff;padding:9px 11px;width:100%}
+button{border:1px solid #77659a;background:#654bc4;color:#fff;padding:10px 15px;cursor:pointer;font-weight:700}
+button.ghost{background:#29213f}button.danger{border-color:#b97f89}button:disabled{opacity:.55;cursor:not-allowed}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #9cead9;outline-offset:3px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.row{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+.row>*{max-width:100%}.small{font-size:13px}.full{grid-column:1/-1}
+.cards{display:grid;gap:10px}.card{padding:13px;border-radius:13px;border:1px solid #61557e;background:#17142b}
+.card.expired{border-left:5px solid #e99192}.card.soon{border-left:5px solid #e9c486}
+.card h3{font-size:17px;margin:3px 0 7px;overflow-wrap:anywhere}.card p{margin:5px 0}
+.card .row{margin-top:11px}.card .row input{flex:1 1 155px;max-width:240px}
+.stat{font-size:25px;font-weight:800}.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.summary div{background:#2b2345;border:1px solid #61557e;padding:10px;border-radius:13px}.summary small{display:block;color:#bdb3d2}
+.notice{color:#d4ece8;font-size:13px}
+[hidden]{display:none!important}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.summary{grid-template-columns:repeat(3,minmax(0,1fr))}.summary .stat{font-size:21px}.row button{flex:1 1 auto}nav a{min-height:44px;display:inline-flex;align-items:center}.panel{padding:14px}}
+</style>
+<script src="./idel-echeances-core.js" defer></script>
+<script src="./idel-echeances.js" defer></script>
+</head>
+<body data-cthu-theme-tentacle="yes" data-cthu-area="idel">
+<main>
+<nav aria-label="Navigation"><a href="./index.html">← Big Cthu</a><a href="https://espacepro.ameli.fr/" target="_blank" rel="noopener noreferrer">amelipro (connexion CPS)</a><a href="https://www.ameli.fr/infirmier/exercice-liberal/prescription-prise-charge/regles-exercice-formalites/bilan-de-soins-infirmiers-bsi" target="_blank" rel="noopener noreferrer">Règles BSI · Ameli</a></nav>
+<h1>Échéances IDEL</h1>
+<p class="muted">Ordonnances à renouveler et BSI annuels : rappels locaux à l’ouverture de l’outil, sans connexion aux dossiers patients, à Tournée, à Topaze ou à amelipro.</p>
+<p class="warn small">Confidentialité : utilise uniquement un <strong>code interne non identifiant</strong>, jamais de nom, prénom, NIR ni renseignement clinique. Le coffre est chiffré sur cet appareil. Sans ta phrase secrète et ta sauvegarde, ces données ne pourront pas être récupérées.</p>
+
+<section class="panel" id="locked" aria-labelledby="lockTitle">
+<h2 id="lockTitle">Coffre chiffré</h2>
+<p class="muted" id="lockHint">Choisis une phrase secrète d’au moins 12 caractères, différente de tes mots de passe habituels.</p>
+<label for="passphrase">Phrase secrète du coffre <input id="passphrase" type="password" minlength="12" autocomplete="off" placeholder="12 caractères minimum"></label>
+<div class="row" style="margin-top:14px"><button type="button" id="unlock">Déverrouiller</button><button type="button" id="createVault" class="ghost" hidden>Créer mon coffre</button></div>
+<p id="lockStatus" role="status" aria-live="polite" class="muted"></p>
+</section>
+
+<section id="app" hidden>
+<div class="panel"><div class="row" style="justify-content:space-between"><h2>Alertes à traiter</h2><button type="button" class="ghost" id="lock">Verrouiller</button></div>
+<div class="summary" aria-label="Nombre d'échéances"><div><span class="stat" id="expiredCount">0</span><small>Échues</small></div><div><span class="stat" id="soonCount">0</span><small>À anticiper</small></div><div><span class="stat" id="totalCount">0</span><small>Suivies</small></div></div>
+<p class="small muted">BSI : penser à la nouvelle prescription dès J−45 et au bilan annuel dans amelipro dès J−30. Autres ordonnances : rappel dès J−30. L’échéance réelle est toujours celle saisie et vérifiée par toi.</p>
+<div class="row"><button type="button" id="notify" class="ghost">Activer les notifications à l’ouverture</button><button type="button" id="exportCalendar" class="ghost">Exporter les rappels Calendrier (.ics)</button></div>
+<p class="small notice">Les notifications du navigateur ne fonctionnent qu’à l’ouverture, coffre déverrouillé. Le calendrier peut produire des alertes plus tard si tu importes le fichier dans ton application Calendrier ; il ne contient aucun code patient.</p>
+<div id="list" class="cards" aria-live="polite"></div>
+</div>
+<section class="panel" aria-labelledby="addTitle"><h2 id="addTitle">Ajouter une échéance</h2>
+<form id="entryForm" class="grid">
+<label>Code interne (pas de donnée identifiante)<input id="reference" required maxlength="30" pattern="[a-zA-Z0-9_-]{1,30}" placeholder="REF-001" autocomplete="off"></label>
+<label>Type d’échéance<select id="kind"><option value="ordonnance">Ordonnance / soins</option><option value="bsi">BSI annuel</option></select></label>
+<label>Date de fin / échéance<input id="due" type="date" required></label>
+<div><label for="lastBsi">BSI annuel précédent (facultatif)</label><div class="row"><input id="lastBsi" type="date"><button id="calculateBsi" type="button" class="ghost">+ 1 an</button></div></div>
+<div class="full"><button type="submit">Ajouter au suivi</button></div>
+</form>
+<p class="small muted">Pour un BSI, « + 1 an » aide à renseigner l’échéance à partir du dernier BSI annuel. Un BSI intermédiaire ne décale pas cette échéance. Vérifie toujours la date et la prescription.</p>
+</section>
+<section class="panel"><h2>Sauvegarde chiffrée</h2>
+<p class="small muted">L’export conserve uniquement un fichier chiffré. L’import remplace le coffre local après confirmation ; il faudra ensuite déverrouiller avec la phrase secrète de la sauvegarde. Aucune synchronisation automatique.</p>
+<div class="row"><button id="backup" type="button" class="ghost">Exporter le coffre chiffré</button><button id="import" type="button" class="ghost">Importer une sauvegarde chiffrée</button><input id="importFile" type="file" accept=".json,application/json" hidden></div>
+</section>
+</section>
+<section class="panel" id="lockedImport"><h2>Restaurer un coffre</h2><p class="small muted">Tu peux importer une sauvegarde même si le coffre actuel est verrouillé. L’ancien coffre sera remplacé uniquement après confirmation.</p><button type="button" id="importLocked" class="ghost">Importer une sauvegarde chiffrée</button></section>
+<p id="status" role="status" aria-live="polite" class="notice"></p>
+</main>
+</body></html>
