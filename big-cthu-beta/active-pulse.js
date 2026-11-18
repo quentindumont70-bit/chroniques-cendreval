@@ -90,7 +90,7 @@ function collect(expanded=false,limit=8,kind='all',term='',pinned=[]){
   for(const item of ordered.slice(0,expanded?limit:source.limit))results.push({...item,timeGroup:period(source,item),kind:source.kind,favoriteKey:favoriteKey(source,item),favorite:pinnedItem(source,item),url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.kind==='Agenda'&&item.id?'./agenda.html#event='+encodeURIComponent(item.id):source.kind==='Captures'&&item.id?'./capture.html#capture='+encodeURIComponent(item.id):source.kind==='Priorités'&&item.id?'#priority-'+encodeURIComponent(item.id):source.kind==='Musique'&&item.id?'./musique.html#studio='+encodeURIComponent(item.id):source.kind==='Stock'&&item.id?'./garde-manger.html#food='+encodeURIComponent(item.id):source.kind==='Jeux'&&item.id?'#session='+encodeURIComponent(item.id):source.url});
  }
  counts.Urgentes=urgentTotal;
- counts.Aujourd’hui=todayTotal;counts.Semaine=weekTotal;counts['Sans date']=undatedTotal;
+ counts['Aujourd’hui']=todayTotal;counts.Semaine=weekTotal;counts['Sans date']=undatedTotal;
  return {items:results.sort((a,b)=>a.rank-b.rank),warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact,matchedToday,matchedWeek,matchedUndated,compactToday,compactWeek,compactUndated};
 }
 function node(tag,text,className){
