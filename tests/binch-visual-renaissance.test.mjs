@@ -32,7 +32,7 @@ function harness(initial='dusk'){
  const sandbox={document,window:{scrollTo(){},addEventListener(){}},localStorage:{getItem:k=>data.get(k)??null,setItem:(k,v)=>data.set(k,v)}};
  const marker="document.addEventListener('binch:adventure-ready',mount);";
  assert.ok(source('visual-renaissance.js').includes(marker));
- runInNewContext(source('visual-renaissance.js').replace(marker,"globalThis.__probe={mount,readAmbience,selectAmbience,applyAmbience,navigation,navigate,refreshPortals};\n"+marker),sandbox);
+ runInNewContext(source('visual-renaissance.js').replace(marker,"globalThis.__probe={mount,readAmbience,selectAmbience,applyAmbience,navigation,navigate,refreshPortals,readDetail,toggleDetail,applyDetail};\n"+marker),sandbox);
  return {p:sandbox.__probe,root,nodes,hero,portalButtons,ambienceButtons,clicked,data};
 }
 test('Renaissance : ambiance persistante et sélection sans mutation WoW',()=>{
@@ -77,7 +77,7 @@ test('Renaissance : image originale, accessibilité mobile et animation réduite
  assert.ok(html.includes('./visual-renaissance-worlds.css?v=001'));
 
  assert.ok(html.indexOf('./visual-renaissance.css?v=001')>html.indexOf('./ultimate-identities.css?v=001'),'design loaded after class theme');
- assert.ok(html.indexOf('./visual-renaissance.js?v=001')>html.indexOf('./player-home.js'),'home mounted before visual enhancement');
+ assert.ok(html.indexOf('./visual-renaissance.js?v=003')>html.indexOf('./player-home.js'),'home mounted before visual enhancement');
  assert.equal(html.match(/\.\/visual-renaissance\.js\?v=001/g)?.length,1);
 });
 test('Renaissance P2 : neuf vrais paysages originaux distincts branchés aux neuf classes',()=>{
@@ -151,4 +151,21 @@ test('Emblèmes de classe et métiers: originaux et connectés aux interfaces',(
  assert.ok(html.includes('visual-renaissance-details.css?v=001'));
  assert.ok(css.includes('prefers-reduced-motion:reduce'));
  assert.ok(css.includes('forced-colors:active'));
+});
+
+test('Mode graphique léger: préférence locale réversible sans altérer les sauvegardes',()=>{
+ const x=harness();
+ assert.equal(x.p.readDetail(),'rich');
+ assert.equal(x.p.toggleDetail(),'lite');
+ assert.equal(x.root.dataset.binchDetail,'lite');
+ assert.equal(x.data.get('binch.visual.detail.v1'),'lite');
+ assert.equal(x.p.toggleDetail(),'rich');
+ assert.equal(x.root.dataset.binchDetail,'rich');
+ const css=source('visual-renaissance-details.css');
+ assert.ok(css.includes('html[data-binch-detail="lite"]'));
+ assert.ok(css.includes('backdrop-filter:none!important'));
+ assert.ok(css.includes('var(--br-world-art)'));
+ const js=source('visual-renaissance.js');
+ assert.ok(js.includes('Mode léger — économiser les effets graphiques'));
+ assert.ok(!js.includes('grimoire.hub.v3'),'presentation must not write to profile');
 });
