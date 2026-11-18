@@ -582,9 +582,9 @@ body.tournee-locked #tour-save-strip{display:none}
 <p>Tu peux aussi tenter de relire les coffres présents sur cet appareil, sans les effacer.</p>
 <button id="tour-open" type="button">Chercher une ancienne sauvegarde locale</button></details>
 <p id="tour-error" role="status"></p>
-<p class="tour-backup-legal">Version privée en développement : pas d'hébergement HDS fourni. Conserve des copies indépendantes et protégées.</p>
+<p class="tour-backup-legal">Version privée en développement : cette version n'est pas un hébergement HDS certifié. Conserve des copies indépendantes et protégées.</p>
 </section>
-<div id="tour-save-strip" data-state="saved" aria-label="Sauvegarde locale de Tournée"><div id="tour-save-summary"><span id="tour-save-text" role="status" aria-live="polite">Données chiffrées enregistrées sur cet appareil.</span><button type="button" id="tour-save-retry" hidden>Réessayer</button><button type="button" id="tour-recovery-direct">Mes sauvegardes</button><button type="button" id="tour-save-menu" aria-expanded="false" aria-controls="tour-save-actions" onclick="tourSaveMenuToggle()">⋯ Outils</button></div><div id="tour-save-actions" hidden><span id="tour-network-state" aria-live="off" title="État réseau, indépendant de la sauvegarde locale">Connexion à déterminer</span><div class="tour-save-buttons"><button type="button" id="tour-absence-open">Absences &amp; modifications</button><button type="button" id="tour-lock">Sauvegarder maintenant</button><button type="button" id="tour-recovery-launch">Sauvegarder / restaurer</button></div></div></div>
+<div id="tour-save-strip" data-state="saved" aria-label="Sauvegarde locale de Tournée"><div id="tour-save-summary"><span id="tour-save-text" role="status" aria-live="polite">Données chiffrées enregistrées sur cet appareil.</span><button type="button" id="tour-save-retry" hidden>Réessayer</button><button type="button" id="tour-recovery-direct">Mes sauvegardes</button><button type="button" id="tour-save-menu" aria-expanded="false" aria-controls="tour-save-actions" onclick="tourSaveMenuToggle()">⋯ Outils</button></div><div id="tour-save-actions" hidden><span id="tour-network-state" aria-live="off" title="État réseau, indépendant de la sauvegarde locale">Connexion à déterminer</span><div class="tour-save-buttons"><button type="button" id="tour-absence-open">Absences &amp; modifications</button><button type="button" id="tour-lock">Sauvegarder</button><button type="button" id="tour-recovery-launch">Sauvegarder / restaurer</button></div></div></div>
 <section id="tour-absence-panel" hidden aria-label="Absences et modifications de Tournée">
 <div class="ap-inner">
 <div class="ap-closebar"><button id="ap-close" type="button">← Retour à Tournée</button><span class="ap-caption">Journal local chiffré</span></div>
@@ -2605,12 +2605,7 @@ async function ensureVaultSaved(){
  throw Error('Des modifications sont encore en cours : réessaie.');
 }
 document.getElementById('tour-save-retry').addEventListener('click',()=>flush().catch(saveFailure));
-window.tourneeSafeRefresh=async()=>{
- if(!secureBooted||!secureKey)throw Error('Stockage local indisponible : actualisation annulée.');
- await ensureVaultSaved();
- if(secureSavedGen!==secureGen)throw Error('Enregistrement incomplet : actualisation annulée.');
- location.reload();
-};
+
 
 async function exportEncryptedVault(){
  const status=document.getElementById('tour-save-text');
@@ -2999,6 +2994,13 @@ function checkTourIdle(){
 for(const event of ['pointerdown','keydown','input'])document.addEventListener(event,noteTourActivity,{passive:true});
 document.getElementById('tour-lock').addEventListener('click',lockTourSafely);
 function report(message){document.getElementById('tour-error').textContent=message}
+window.tourneeSafeRefresh=async()=>{
+ if(!secureBooted||!secureKey)throw Error('Stockage local indisponible : actualisation annulée.');
+ await ensureVaultSaved();
+ if(secureSavedGen!==secureGen)throw Error('Enregistrement incomplet : actualisation annulée.');
+ location.reload();
+};
+
 function launch(){if(secureBooted)return;secureBooted=true;lastTourActivity=Date.now();idleLockTimer=setTimeout(checkTourIdle,IDLE_LOCK_MS);document.body.classList.remove('tournee-locked');document.getElementById('tour-security-gate').hidden=true;let source=document.getElementById('tour-source-js');const script=document.createElement('script');script.textContent=source.textContent;document.body.append(script);source.remove();}
 async function login(fileMode){if(typeof secureBooted!=='undefined'&&secureBooted)return recoverOldVault(fileMode);try{
  if(!crypto?.subtle)throw Error('Ouvre Tournée en HTTPS dans Safari.');
