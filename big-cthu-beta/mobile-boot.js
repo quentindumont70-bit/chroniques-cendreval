@@ -12,8 +12,17 @@
   button.id='tour-refresh-latest';
   button.textContent='↻ Nouvelle version';
   button.title='Actualiser Tournée pour utiliser la dernière version';
-  button.onclick=()=>{
-   if(window.confirm('Actualiser Tournée maintenant ? Vérifie que tes post-it et autres modifications sont bien enregistrés.'))location.reload();
+  button.onclick=async()=>{
+   if(!window.confirm('Actualiser Tournée après la sauvegarde des modifications en cours ?'))return;
+   if(typeof window.tourneeSafeRefresh!=='function'){
+    button.textContent='Impossible de vérifier la sauvegarde : ferme et rouvre Tournée normalement.';
+    button.disabled=true;
+    return;
+   }
+   button.disabled=true;
+   button.textContent='Enregistrement avant actualisation…';
+   try{await window.tourneeSafeRefresh()}
+   catch(_){button.disabled=false;button.textContent='↻ Réessayer après sauvegarde';}
   };
   bar.append(button);
  };
