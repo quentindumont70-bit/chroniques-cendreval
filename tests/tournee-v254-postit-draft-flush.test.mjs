@@ -14,8 +14,8 @@ async function memoFixture(initial={},fail=false){
  const start=script.indexOf('/* ===== Post-it du jour :');
  const stop=script.indexOf('/* ===== Weekly cycle editor:',start);
  assert.ok(start>0&&stop>start);
- const records=new Map(Object.entries(initial)),writes=[],events={};
- const doc={hidden:false,getElementById:()=>null,querySelector:()=>null,addEventListener:(n,cb)=>{events[n]=cb}};
+ const records=new Map(Object.entries(initial)),writes=[],events={},fields={};
+ const doc={hidden:false,getElementById:id=>fields[id]||null,querySelector:()=>null,addEventListener:(n,cb)=>{events[n]=cb}};
  const win={};
  const ctx={
   window:win,document:doc,day:d1,
@@ -32,7 +32,7 @@ async function memoFixture(initial={},fail=false){
  };
  const exports='\nthis.api={flush:tqStickyFlushDrafts,save:tqStickySave,drafts:tqStickyDrafts,saved:tqStickyText,pending:tqStickyPending,shown:tqStickyShown};';
  runInNewContext(script.slice(start,stop)+exports,ctx,{timeout:1000});
- return {api:ctx.api,records,writes,events,doc,win};
+ return {api:ctx.api,records,writes,events,doc,win,fields};
 }
 
 test('V254: les brouillons de chaque jour sont sauvegardes separement',async()=>{
@@ -72,6 +72,16 @@ test('V254: une edition plus recente reste prioritaire apres le blur',async()=>{
  await f.api.flush();
  assert.equal(f.api.saved(d1),'Version B');
  assert.equal(f.api.pending(d1),false);
+});
+
+test('V254: un rappel en cours de saisie interdit une mise a jour prematuree',async()=>{
+ const f=await memoFixture();
+ f.fields['tq-sticky-new']={value:'Pas encore ajoute'};
+ await assert.rejects(f.api.flush(),/valide « Ajouter »/);
+ f.fields['tq-sticky-new'].value='';
+ f.fields['tq-sticky-edit']={value:'Modification inachevee'};
+ await assert.rejects(f.api.flush(),/valide « OK »/);
+ assert.deepEqual(f.writes,[]);
 });
 
 test('V254: la sauvegarde pour mise en veille utilise le stockage deja existant',async()=>{
