@@ -4,26 +4,37 @@ const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const read=(key,fall)=>{try{return JSON.parse(localStorage.getItem(key))??fall}catch{return fall}};
 const days=7;
-function currentEvents(){
- const raw=read('binch.guild.events.v1',[]);if(!Array.isArray(raw))return[];
- const now=new Date();now.setHours(0,0,0,0);
- const last=new Date(now);last.setDate(last.getDate()+days);
- return raw.filter(e=>e&&!e.done&&typeof e.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(e.date)&&typeof e.title==='string'&&typeof e.time==='string'&&Number.isInteger(e.size)&&e.size>=2&&e.size<=40&&new Date(e.date+'T00:00:00')>=now&&new Date(e.date+'T00:00:00')<last)
- .slice().sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time)).slice(0,35);
+function validEvent(e){
+ if(!e||e.done||typeof e.title!=='string'||!e.title.trim()||typeof e.date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(e.date)||typeof e.time!=='string'||!/^([01]\d|2[0-3]):[0-5]\d$/.test(e.time)||!Number.isInteger(e.size)||e.size<2||e.size>40)return false;
+ const d=new Date(e.date+'T'+e.time+':00');
+ return Number.isFinite(+d)&&[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')===e.date;
+}
+function currentEvents(now=Date.now()){
+ const raw=read('binch.guild.events.v1',[]);if(!Array.isArray(raw))return [];
+ return raw.filter(e=>validEvent(e)&&Date.parse(e.date+'T'+e.time+':00')>=now&&Date.parse(e.date+'T'+e.time+':00')<now+days*86400000)
+  .slice().sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time)).slice(0,35);
 }
 function metrics(event){
- const members=Array.isArray(event.attendees)?event.attendees.filter(x=>x&&x.status==='Confirmé'&&typeof x.name==='string'&&['Tank','Soigneur','DPS','Flexible'].includes(x.role)):[];
- const uncertain=Array.isArray(event.attendees)?event.attendees.filter(x=>x&&x.status==='Incertain').length:0;
- const count=members.length,tanks=members.filter(x=>x.role==='Tank').length,healers=members.filter(x=>x.role==='Soigneur').length;
- const isFive=event.size<=5;
- const flags=[];
+ const attendees=Array.isArray(event.attendees)?event.attendees:[];
+ const seen=new Set(),members=[],uncertainNames=new Set();
+ let duplicates=0;
+ for(const row of attendees.slice(0,80)){
+  if(!row||typeof row.name!=='string'||!row.name.trim()||row.name.length>36||!['Confirmé','Incertain','Absent'].includes(row.status)||!['Tank','Soigneur','DPS','Flexible'].includes(row.role))continue;
+  const key=row.name.trim().toLocaleLowerCase('fr');
+  if(seen.has(key)){duplicates++;continue}seen.add(key);
+  if(row.status==='Confirmé')members.push(row);
+  if(row.status==='Incertain')uncertainNames.add(key);
+ }
+ const count=members.length,tanks=members.filter(x=>x.role==='Tank').length,healers=members.filter(x=>x.role==='Soigneur').length,uncertain=uncertainNames.size;
+ const dungeon=event.kind==='Donjon'&&event.size===5,flags=[];
  if(count===0)flags.push('Aucun membre confirmé');
  else if(count<event.size)flags.push((event.size-count)+' place(s) libres');
  else if(count>event.size)flags.push((count-event.size)+' participant(s) de trop');
- if(isFive&&tanks===0)flags.push('Tank à confirmer');
- if(isFive&&healers===0)flags.push('Soigneur à confirmer');
+ if(dungeon&&tanks===0)flags.push('Tank à confirmer');
+ if(dungeon&&healers===0)flags.push('Soigneur à confirmer');
  if(uncertain)flags.push(uncertain+' réponse(s) incertaine(s)');
- return {count,tanks,healers,uncertain,flags};
+ if(duplicates)flags.push(duplicates+' inscription(s) en double à vérifier');
+ return {count,tanks,healers,uncertain,duplicates,flags};
 }
 function init(){
  const page=$('page-gm');if(!page||$('binch-guild-weekly'))return;
