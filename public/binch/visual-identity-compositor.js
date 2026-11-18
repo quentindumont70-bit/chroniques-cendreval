@@ -12,13 +12,13 @@ const RACES={
  Troll:{id:'troll',glyph:'⟡',name:'Troll',matter:'#182e31',metal:'#69d0bd',architecture:'voodoo',path:'<path d="M390 65 255 162l22 155 115 98 115-98 22-155Z"/><path d="m295 220 65 24-30 26m158-50-65 24 30 26M367 345l25-32 25 32M285 295q-105 75-165-25 100 28 140-40M495 295q105 75 165-25-100 28-140-40"/><path d="M85 460V125m-25 55 25-75 25 75m560 280V125m-25 55 25-75 25 75"/>'}
 };
 const CLASSES={
- Guerrier:{id:'warrior',glyph:'⚔',light:'#dca77d',aura:'#8f392b',scene:'renaissance-world-warrior.svg',name:'Guerrier'},
- Paladin:{id:'paladin',glyph:'✧',light:'#f7d3b8',aura:'#d4aa64',scene:'renaissance-world-paladin.svg',name:'Paladin'},
- Chasseur:{id:'hunter',glyph:'➶',light:'#aadf88',aura:'#3a8066',scene:'renaissance-world-hunter.svg',name:'Chasseur'},
- Voleur:{id:'rogue',glyph:'✦',light:'#e7d394',aura:'#3a5967',scene:'renaissance-world-rogue.svg',name:'Voleur'},
- Prêtre:{id:'priest',glyph:'✢',light:'#fff2c7',aura:'#9b9ec8',scene:'renaissance-world-priest.svg',name:'Prêtre'},
- Chaman:{id:'shaman',glyph:'ϟ',light:'#9ddcf5',aura:'#1864a8',scene:'renaissance-world-shaman.svg',name:'Chaman'},
- Mage:{id:'mage',glyph:'✣',light:'#8bd8fc',aura:'#704ba2',scene:'renaissance-world-mage.svg',name:'Mage'},
+ Guerrier:{id:'warrior',glyph:'⚔',light:'#dca77d',aura:'#8f392b',scene:'renaissance-p10-hero-warrior.svg',name:'Guerrier'},
+ Paladin:{id:'paladin',glyph:'✧',light:'#f7d3b8',aura:'#d4aa64',scene:'renaissance-p10-hero-paladin.svg',name:'Paladin'},
+ Chasseur:{id:'hunter',glyph:'➶',light:'#aadf88',aura:'#3a8066',scene:'renaissance-p10-hero-hunter.svg',name:'Chasseur'},
+ Voleur:{id:'rogue',glyph:'✦',light:'#e7d394',aura:'#3a5967',scene:'renaissance-p10-hero-rogue.svg',name:'Voleur'},
+ Prêtre:{id:'priest',glyph:'✢',light:'#fff2c7',aura:'#9b9ec8',scene:'renaissance-p10-hero-priest.svg',name:'Prêtre'},
+ Chaman:{id:'shaman',glyph:'ϟ',light:'#9ddcf5',aura:'#1864a8',scene:'renaissance-p10-hero-shaman.svg',name:'Chaman'},
+ Mage:{id:'mage',glyph:'✣',light:'#8bd8fc',aura:'#704ba2',scene:'renaissance-p10-hero-mage.svg',name:'Mage'},
  Démoniste:{id:'warlock',glyph:'⬡',light:'#c2a6f5',aura:'#623d91',scene:'renaissance-p9-hero-warlock.svg',name:'Démoniste'},
  Druide:{id:'druid',glyph:'❧',light:'#b4e28f',aura:'#3f8e5e',scene:'renaissance-p9-hero-druid.svg',name:'Druide'}
 };
