@@ -1,11 +1,20 @@
 /* La Binch — Renaissance: decorative UI, manual ambience and actual module navigation. */
 (()=>{'use strict';
-const KEY='binch.visual.ambience.v1';
+const KEY='binch.visual.ambience.v1',DETAIL_KEY='binch.visual.detail.v1';
 const AMBIENCES=[['dusk','Crépuscule','☀'],['moon','Nuit lunaire','☾'],['embers','Braises','✷']];
 const PORTALS=[['progression','Carte d’expédition','Ton prochain horizon','✥'],['specs','Grimoire des talents','Maîtriser ta classe','✧'],['metiers','Atelier des métiers','Recettes et ressources','⚒'],['gm','Salle du conseil','Préparer la guilde','⚑'],['command','Oracle Faith','Ton prochain conseil','✺'],['tresors','Reliquaire','Tes trouvailles','✦']];
 const $=id=>document.getElementById(id);
 function readAmbience(){try{const v=localStorage.getItem(KEY);return AMBIENCES.some(x=>x[0]===v)?v:'dusk'}catch{return 'dusk'}}
 let ambience=readAmbience();
+function readDetail(){try{return localStorage.getItem(DETAIL_KEY)==='lite'?'lite':'rich'}catch{return 'rich'}}
+let detail=readDetail();
+function applyDetail(){
+ document.documentElement.dataset.binchDetail=detail;
+ const button=document.querySelector('#binch-renaissance-ambiences button[data-binch-detail]');
+ if(button){button.setAttribute('aria-pressed',String(detail==='lite'));button.title=detail==='lite'?'Désactiver le mode léger':'Activer le mode léger'}
+}
+function toggleDetail(){detail=detail==='lite'?'rich':'lite';try{localStorage.setItem(DETAIL_KEY,detail)}catch{}applyDetail();return detail}
+
 function applyAmbience(){
  document.documentElement.dataset.binchAmbience=ambience;
  document.querySelectorAll('#binch-renaissance-ambiences button[data-ambience]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.ambience===ambience)));
@@ -29,6 +38,7 @@ function ambienceSelector(){
   const button=document.createElement('button');button.type='button';button.dataset.ambience=id;button.title=label;button.setAttribute('aria-label','Ambiance : '+label);button.textContent=glyph;
   button.addEventListener('click',()=>selectAmbience(id));host.append(button);
  }
+ const lite=document.createElement('button');lite.type='button';lite.dataset.binchDetail='lite';lite.setAttribute('aria-label','Mode léger — économiser les effets graphiques');lite.textContent='▤';lite.addEventListener('click',toggleDetail);host.append(lite);
  return host;
 }
 function portals(){
@@ -53,10 +63,10 @@ function mount(){
  const stage=document.createElement('div');stage.className='binch-renaissance-stage';stage.setAttribute('aria-hidden','true');hero.prepend(stage);
  const copy=hero.querySelector('.binch-kicker')?.parentElement;
  if(copy){const chapter=document.createElement('span');chapter.className='binch-renaissance-chapter';chapter.textContent='AZEROTH · TON HISTOIRE';copy.prepend(chapter)}
- hero.append(ambienceSelector());hero.after(portals());refreshPortals();applyAmbience();return true;
+ hero.append(ambienceSelector());hero.after(portals());refreshPortals();applyAmbience();applyDetail();return true;
 }
 function start(){
- applyAmbience();if(mount())return;
+ applyAmbience();applyDetail();if(mount())return;
  const app=$('app');if(!app)return;
  const observer=new MutationObserver(()=>{if(mount())observer.disconnect()});
  observer.observe(app,{childList:true,subtree:true});setTimeout(()=>observer.disconnect(),12000);
@@ -72,6 +82,6 @@ document.addEventListener('binch:adventure-ready',()=>{
 });
 document.addEventListener('binch:profile-change',applyAmbience);
 document.addEventListener('grimoire:sync',applyAmbience);
-window.addEventListener('storage',e=>{if(e.key===KEY){ambience=readAmbience();applyAmbience()}});
+window.addEventListener('storage',e=>{if(e.key===KEY){ambience=readAmbience();applyAmbience()}if(e.key===DETAIL_KEY){detail=readDetail();applyDetail()}});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
