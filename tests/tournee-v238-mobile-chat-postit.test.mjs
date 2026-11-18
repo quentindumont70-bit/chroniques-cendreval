@@ -146,3 +146,34 @@ test('Tournée V240: PIN supplémentaire inactif par défaut, réactivation poss
  assert.match(html,/await ensureVaultSaved\(\)/);
  assert.doesNotMatch(source,/function pinOff\(\)\{[^}]*secureState\s*=/);
 });
+
+
+test('Tournée V241: la barre de sauvegarde ne recouvre plus la tournée sur iPhone',()=>{
+ const segment=html.slice(html.indexOf('#tour-save-strip{'),html.indexOf('#tour-save-strip[data-state="error"]'));
+ assert.match(segment,/#tour-save-strip\{position:relative;z-index:2/);
+ assert.doesNotMatch(segment,/position:sticky|z-index:9999/);
+ assert.match(html,/#tour-save-strip\[data-state="error"\]\{position:sticky/);
+ assert.match(html,/#tour-save-actions\[hidden\]\{display:none!important\}/);
+ assert.match(html,/<div id="tour-save-actions" hidden>/);
+ assert.match(html,/id="tour-save-menu" aria-expanded="false" aria-controls="tour-save-actions"/);
+ assert.match(html,/id="tour-recovery-launch" hidden/);
+ assert.match(html,/id="tour-save-text" role="status" aria-live="polite"/);
+ assert.match(html,/#tour-save-retry/);
+});
+
+test('Tournée V241: les outils s’ouvrent et se referment sans toucher au coffre',()=>{
+ const start=html.indexOf('function tourSaveMenuToggle(){');
+ const end=html.indexOf('function saveStatus(',start);
+ assert.ok(start>0&&end>start);
+ const panel={hidden:true};
+ const menu={attributes:{},textContent:'⋯ Outils',setAttribute(k,v){this.attributes[k]=v}};
+ const document={getElementById:k=>k==='tour-save-actions'?panel:k==='tour-save-menu'?menu:null};
+ const open=new Function('document',html.slice(start,end)+'; return tourSaveMenuToggle;')(document);
+ open();
+ assert.equal(panel.hidden,false);
+ assert.equal(menu.attributes['aria-expanded'],'true');
+ open();
+ assert.equal(panel.hidden,true);
+ assert.equal(menu.attributes['aria-expanded'],'false');
+ assert.doesNotMatch(html.slice(start,end),/TOUR_STORE|secureState|localStorage|fetch\(/);
+});
