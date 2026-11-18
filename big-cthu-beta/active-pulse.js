@@ -41,7 +41,7 @@ function collect(expanded=false,limit=8,kind='all',term='',pinned=[]){
   if(source.kind==='Priorités')return 'today';
   if(!['Stock','Agenda','Maison'].includes(source.kind))return 'undated';
   const day=item.due||item.date||'';
-  return !day?'undated':day<=today?'today':day<=stop?'week':'later';
+  return !day?'undated':day<today?'late':day===today?'today':day<=stop?'week':'later';
  };
  let todayTotal=0,weekTotal=0,undatedTotal=0;
  let matchedToday=0,matchedWeek=0,matchedUndated=0;
@@ -65,22 +65,22 @@ function collect(expanded=false,limit=8,kind='all',term='',pinned=[]){
   if(source.kind==='Musique')selected=rows.filter(x=>x&&x.mode==='musique'&&['active','planned'].includes(x.status)&&typeof x.title==='string'&&x.title.trim()&&x.title.length<=140) .sort((a,b)=>(a.status==='active'?0:1)-(b.status==='active'?0:1)||String(b.date||'').localeCompare(String(a.date||''))).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=120?x.id:'',title:x.title,rank:x.status==='active'?5:7,next:typeof x.note==='string'?x.note.slice(0,180):''}));
   if(source.kind==='Jeux')selected=rows.filter(x=>x&&x.done===false&&typeof x.game==='string'&&x.game.length<=60&&typeof x.text==='string'&&x.text.trim()&&x.text.length<=180).map(x=>({id:typeof x.id==='string'&&x.id.length>0&&x.id.length<=80?x.id:'',title:x.game,rank:9,next:x.text}));
   counts[source.kind]=selected.length;
-  todayTotal+=selected.filter(item=>period(source,item)==='today').length;
-  weekTotal+=selected.filter(item=>['today','week'].includes(period(source,item))).length;
+  todayTotal+=selected.filter(item=>['late','today'].includes(period(source,item))).length;
+  weekTotal+=selected.filter(item=>['late','today','week'].includes(period(source,item))).length;
   undatedTotal+=selected.filter(item=>period(source,item)==='undated').length;
   urgentTotal+=selected.filter(item=>item.rank<=2).length;
   urgentCompact+=selected.slice(0,source.limit).filter(item=>item.rank<=2).length;
   total+=selected.length;
   compactVisible+=Math.min(selected.length,source.limit);
   // In urgency view, select urgent rows BEFORE limiting each module.
-  const eligible=kind==='Urgentes'?selected.filter(item=>item.rank<=2):kind==='Aujourd’hui'?selected.filter(item=>period(source,item)==='today'):kind==='Semaine'?selected.filter(item=>['today','week'].includes(period(source,item))):kind==='Sans date'?selected.filter(item=>period(source,item)==='undated'):selected;
+  const eligible=kind==='Urgentes'?selected.filter(item=>item.rank<=2):kind==='Aujourd’hui'?selected.filter(item=>['late','today'].includes(period(source,item))):kind==='Semaine'?selected.filter(item=>['late','today','week'].includes(period(source,item))):kind==='Sans date'?selected.filter(item=>period(source,item)==='undated'):selected;
   const shown=needle?eligible.filter(item=>(item.title+' '+(item.next||'')).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().includes(needle)):eligible;
   matchCounts[source.kind]=shown.length;
-  matchedToday+=shown.filter(item=>period(source,item)==='today').length;
-  matchedWeek+=shown.filter(item=>['today','week'].includes(period(source,item))).length;
+  matchedToday+=shown.filter(item=>['late','today'].includes(period(source,item))).length;
+  matchedWeek+=shown.filter(item=>['late','today','week'].includes(period(source,item))).length;
   matchedUndated+=shown.filter(item=>period(source,item)==='undated').length;
-  compactToday+=shown.slice(0,source.limit).filter(item=>period(source,item)==='today').length;
-  compactWeek+=shown.slice(0,source.limit).filter(item=>['today','week'].includes(period(source,item))).length;
+  compactToday+=shown.slice(0,source.limit).filter(item=>['late','today'].includes(period(source,item))).length;
+  compactWeek+=shown.slice(0,source.limit).filter(item=>['late','today','week'].includes(period(source,item))).length;
   compactUndated+=shown.slice(0,source.limit).filter(item=>period(source,item)==='undated').length;
   matchedTotal+=shown.length;
   matchedCompact+=Math.min(shown.length,source.limit);
@@ -105,7 +105,7 @@ function render(){
  const pins=window.BigCthuActionFavorites;
  const pinState=pins?pins.read():{ids:[],blocked:false};
  const {items,warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact,matchedToday,matchedWeek,matchedUndated,compactToday,compactWeek,compactUndated}=collect(expanded,pageSize,selectedKind,searchTerm,pinState.ids);
- const visible=(selectedKind==='all'?items:selectedKind==='Urgentes'?items.filter(item=>item.rank<=2):selectedKind==='Aujourd’hui'?items.filter(item=>item.timeGroup==='today'):selectedKind==='Semaine'?items.filter(item=>['today','week'].includes(item.timeGroup)):selectedKind==='Sans date'?items.filter(item=>item.timeGroup==='undated'):items.filter(item=>item.kind===selectedKind)).slice().sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||Number(b.favorite)-Number(a.favorite)||a.rank-b.rank);
+ const visible=(selectedKind==='all'?items:selectedKind==='Urgentes'?items.filter(item=>item.rank<=2):selectedKind==='Aujourd’hui'?items.filter(item=>['late','today'].includes(item.timeGroup)):selectedKind==='Semaine'?items.filter(item=>['late','today','week'].includes(item.timeGroup)):selectedKind==='Sans date'?items.filter(item=>item.timeGroup==='undated'):items.filter(item=>item.kind===selectedKind)).slice().sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||Number(b.favorite)-Number(a.favorite)||a.rank-b.rank);
  const available=selectedKind==='all'?matchedTotal:selectedKind==='Urgentes'?matchedUrgent:selectedKind==='Aujourd’hui'?matchedToday:selectedKind==='Semaine'?matchedWeek:selectedKind==='Sans date'?matchedUndated:(matchCounts[selectedKind]||0);
  const compact=selectedKind==='all'?matchedCompact:selectedKind==='Urgentes'?matchedUrgentCompact:selectedKind==='Aujourd’hui'?compactToday:selectedKind==='Semaine'?compactWeek:selectedKind==='Sans date'?compactUndated:Math.min(available,2);
  root.replaceChildren();
@@ -115,7 +115,7 @@ function render(){
  for(const item of visible){
   const link=node('a','','active-pulse-item'+(item.rank<=2?' is-urgent':''));
   link.href=item.url;
-  const timeLabel=item.timeGroup==='today'&&item.kind!=='Priorités'?'Aujourd’hui · ':item.timeGroup==='week'?'Cette semaine · ':'';
+  const timeLabel=item.timeGroup==='late'?'En retard · ':item.timeGroup==='today'&&item.kind!=='Priorités'?'Aujourd’hui · ':item.timeGroup==='week'?'Cette semaine · ':'';
   link.append(node('small',(item.favorite?'★ ':'')+timeLabel+item.kind),node('strong',item.title));
   if(item.next)link.append(node('span',item.next,'active-pulse-next'));
   root.append(link);
