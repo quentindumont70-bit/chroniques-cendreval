@@ -128,12 +128,15 @@ test('Atelier visuel : neuf paysages disponibles dans une galerie sans données 
  for(const id of ['druid','warrior','mage','priest','paladin','rogue','hunter','shaman','warlock']){
   assert.ok(gallery.includes('data-class="'+id+'"'),'class button '+id);
   assert.ok(gallery.includes('src="./renaissance-world-'+id+'.svg"'),'image '+id);
+  assert.ok(gallery.includes('src="./renaissance-sigil-'+id+'.svg"'),'original crest '+id);
  }
  assert.ok(gallery.includes('aria-pressed='));
  assert.ok(gallery.includes("getElementById('scenes').addEventListener('click'"));
  assert.ok(gallery.includes('Les données, les profils et la Bourse AH ne sont pas modifiés'));
  assert.ok(!gallery.includes('fetch('),'preview is self-contained, no remote fetch');
  assert.ok(gallery.includes('prefers-reduced-motion:reduce'));
+ assert.ok(gallery.includes('renaissance-profession-mining.svg'));
+ assert.ok(gallery.includes('renaissance-profession-engineering.svg'));
 });
 
 test('Emblèmes de classe et métiers: originaux et connectés aux interfaces',()=>{
@@ -148,7 +151,7 @@ test('Emblèmes de classe et métiers: originaux et connectés aux interfaces',(
   assert.ok(css.includes('renaissance-profession-'+job+'.svg'));
  }
  assert.ok(html.includes('data-job="${esc(j)}"'));
- assert.ok(html.includes('visual-renaissance-details.css?v=001'));
+ assert.ok(html.includes('visual-renaissance-details.css?v=003'));
  assert.ok(css.includes('prefers-reduced-motion:reduce'));
  assert.ok(css.includes('forced-colors:active'));
 });
@@ -168,4 +171,13 @@ test('Mode graphique léger: préférence locale réversible sans altérer les s
  const js=source('visual-renaissance.js');
  assert.ok(js.includes('Mode léger — économiser les effets graphiques'));
  assert.ok(!js.includes('grimoire.hub.v3'),'presentation must not write to profile');
+});
+
+test('Micro-interactions : apparition unique du butin et des pages, jamais en mode léger ou mouvement réduit',()=>{
+ const css=source('visual-renaissance-details.css');
+ assert.ok(css.includes('@keyframes binch-renaissance-enter'));
+ assert.ok(css.includes('@keyframes binch-relic-appear'));
+ assert.ok(css.includes('.binch-treasure-frame:nth-child(-n+8)'));
+ assert.ok(css.includes('html[data-binch-detail="lite"] #app main > .page.active'));
+ assert.ok(css.includes('@media(prefers-reduced-motion:reduce)'));
 });
