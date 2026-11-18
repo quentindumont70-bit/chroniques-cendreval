@@ -2605,6 +2605,12 @@ async function ensureVaultSaved(){
  throw Error('Des modifications sont encore en cours : réessaie.');
 }
 document.getElementById('tour-save-retry').addEventListener('click',()=>flush().catch(saveFailure));
+window.tourneeSafeRefresh=async()=>{
+ if(!secureBooted||!secureKey)throw Error('Stockage local indisponible : actualisation annulée.');
+ await ensureVaultSaved();
+ if(secureSavedGen!==secureGen)throw Error('Enregistrement incomplet : actualisation annulée.');
+ location.reload();
+};
 
 async function exportEncryptedVault(){
  const status=document.getElementById('tour-save-text');
