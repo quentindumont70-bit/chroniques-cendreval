@@ -194,3 +194,18 @@ html[data-binch-identity="warlock"] #page-hub .binch-portrait > span{opacity:.13
  #page-metiers #jobs-content .tile,#page-specs .binch-specs-step,#page-hub .binch-guard-list>button{background:Canvas!important;border-color:CanvasText!important}
  #page-hub .binch-portrait::before,#page-progression #map.map::after{display:none!important}
 }
+
+/* Manual low-power mode: preserve static art and content, drop costly effects. */
+html[data-binch-detail="lite"] :is(#app nav.nav,#page-hub .binch-character-card,#page-hub .binch-renaissance-portal,#page-hub .binch-portrait,#page-hub .binch-level,#page-hub .binch-route,#page-hub .binch-priority-guard,#page-gm #binch-gm-watch,#page-command #binch-faith-advisor,#page-tresors .binch-treasure-card,#page-progression #map.map){
+ box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+html[data-binch-detail="lite"] :is(#page-hub .binch-character-card::before,#page-hub .binch-portrait::before,#page-progression #map.map::before,#page-tresors .binch-treasure-card-art,#page-command #binch-faith-advisor::before){
+ filter:none!important;box-shadow:none!important;backdrop-filter:none!important
+}
+html[data-binch-detail="lite"] #page-hub .binch-character-card::before{background-image:linear-gradient(90deg,#061115de,#0a1b1bb7),var(--br-world-art)!important}
+html[data-binch-detail="lite"] :is(#page-hub .binch-renaissance-portal,#page-hub .binch-route-step,#app nav.nav button,#page-tresors .binch-treasure-card){animation:none!important;transition:none!important;transform:none!important}
+html[data-binch-detail="lite"] #page-hub .binch-renaissance-ambiences button[data-binch-detail]{color:#eff7dd;border-color:#ace0b2;background:#335444}
+#page-hub .binch-renaissance-ambiences button[data-binch-detail]{font-size:17px}
+@media(prefers-reduced-motion:reduce){
+ #page-hub .binch-renaissance-portal::after,#page-hub .binch-renaissance-stage{animation:none!important}
+}
