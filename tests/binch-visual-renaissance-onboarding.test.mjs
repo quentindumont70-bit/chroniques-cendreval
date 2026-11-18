@@ -86,3 +86,21 @@ test('Création de personnage : petits écrans, contraste et mouvement réduit',
  assert.ok(main.includes("if(!dialog.open){if(typeof dialog.showModal==='function')"));
  assert.ok(main.includes("['ArrowLeft','ArrowRight','Home','End']"));
 });
+
+test('Atelier sans profil : les neuf choix réels restent visibles et capturables sur iPhone',()=>{
+ const gallery=read('renaissance-onboarding-atelier.html');
+ const workflow=readFileSync(new URL('../.github/workflows/verify.yml',import.meta.url),'utf8');
+ for(const cls of ['Druide','Guerrier','Mage','Prêtre','Paladin','Voleur','Chasseur','Chaman','Démoniste']){
+  assert.ok(gallery.includes('data-classe="'+cls+'"'),'class visible: '+cls);
+ }
+ assert.ok(gallery.includes('<meta name="viewport"'));
+ assert.ok(gallery.includes('role="status"'));
+ assert.ok(gallery.includes('aria-pressed="true"'));
+ assert.ok(gallery.includes("grid.addEventListener('keydown'"));
+ assert.ok(gallery.includes('./visual-renaissance-onboarding.css?v=001'));
+ assert.ok(!gallery.includes('localStorage'));
+ assert.ok(!gallery.includes('fetch('));
+ assert.ok(workflow.includes('creation-classe-desktop.png'));
+ assert.ok(workflow.includes('creation-classe-mobile.png'));
+ assert.ok(workflow.includes('renaissance-onboarding-atelier.html'));
+});
