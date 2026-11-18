@@ -25,8 +25,8 @@ test('Interface Renaissance : arrière-plan de classe et présentations sans éc
  assert.ok(css.includes('#page-tresors .binch-treasure-card'));
  assert.ok(css.includes('#page-gm .binch-gm-watch-event strong'));
  assert.ok(css.includes('#binch-specs-pinned:not([hidden])'));
- assert.ok(html.includes('./visual-renaissance-finale.css?v=002'));
- assert.ok(html.lastIndexOf('./visual-renaissance-finale.css?v=002')>html.indexOf('./visual-renaissance-dock.css?v=002'));
+ assert.ok(html.includes('./visual-renaissance-finale.css?v=003'));
+ assert.ok(html.lastIndexOf('./visual-renaissance-finale.css?v=003')>html.indexOf('./visual-renaissance-dock.css?v=002'));
  assert.ok(!css.includes('localStorage'));
  assert.ok(!css.includes('fetch('));
 });
@@ -58,4 +58,28 @@ test('Douze builds réels ont chacun un blason original de leur classe',()=>{
  }
  assert.ok(css.includes('prefers-reduced-motion:reduce'));
  assert.ok(css.includes('forced-colors:active'));
+});
+
+test('Forge, conseil de guilde et oracle : scènes originales distinctes, jamais des données inventées',()=>{
+ const css=read('visual-renaissance-finale.css');
+ const assets=[
+  ['renaissance-workshop.svg','La Forge des Ingénieurs'],
+  ['renaissance-gm-council.svg','La Salle du Conseil'],
+  ['renaissance-faith-oracle.svg','Faith']
+ ];
+ const drawings=assets.map(([file,title])=>{
+  const xml=read(file);
+  assert.ok(xml.startsWith('<svg xmlns="http://www.w3.org/2000/svg"'));
+  assert.ok(xml.includes(title),file+' label');
+  assert.ok(xml.includes('<desc'),file+' description');
+  assert.ok(css.includes('url("./'+file+'")'),'scene actually used');
+  return xml;
+ });
+ assert.equal(new Set(drawings).size,3);
+ assert.ok(css.includes('#page-metiers>.panel.section:first-child'));
+ assert.ok(css.includes('#page-gm #binch-gm-watch::before'));
+ assert.ok(css.includes('#page-command #binch-faith-advisor'));
+ assert.ok(css.includes('html[data-binch-detail=lite] #page-command #binch-faith-advisor'));
+ assert.ok(css.includes('@media(forced-colors:active)'));
+ assert.ok(!css.includes('fetch('));
 });
