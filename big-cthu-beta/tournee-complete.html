@@ -501,6 +501,31 @@ body.tournee-locked #tour-save-strip{display:none}
 .tq-chat{scroll-margin-top:210px}
 .tq-chat.tq-targeted{box-shadow:0 0 0 3px var(--acc,#ac8deb),0 4px 18px rgba(0,0,0,.2)}
 @media(max-width:460px){.tq-header-chat{padding:7px 10px;min-width:105px}.tq-header-access .cit{font-size:11px!important}}
+/* Tournée Pro V253 : les informations terrain avant les réglages (tous les thèmes restent compatibles). */
+.tq-pro-overview{margin:14px 0 12px;padding:16px;border-radius:calc(var(--r) + 4px);border:1px solid color-mix(in srgb,var(--acc) 33%,var(--line));background:linear-gradient(138deg,color-mix(in srgb,var(--acc) 9%,var(--card)),var(--card) 63%);box-shadow:var(--sh);color:var(--ink)}
+.tq-pro-overview-header{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.tq-pro-overline{font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:var(--acc);font-weight:900}
+.tq-pro-overline i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);vertical-align:middle;margin:0 4px}
+.tq-pro-overview-date{font-size:12px;font-weight:700;color:var(--mut);white-space:nowrap}
+.tq-pro-overview-summary{font-size:15px;font-weight:750;margin:9px 0 13px;line-height:1.35}
+.tq-pro-overview-stats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.tq-pro-overview-stats>span{display:flex;align-items:baseline;gap:5px;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:color-mix(in srgb,var(--card) 80%,var(--bg2));color:var(--mut);font-size:12px}
+.tq-pro-overview-stats strong{font-size:19px;color:var(--ink);font-variant-numeric:tabular-nums}
+.tq-pro-overview-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tq-pro-overview-actions button{min-height:48px;text-align:center;padding:9px 11px;border-radius:11px;background:var(--soft);color:var(--ink);font-size:13px;font-weight:750;font-family:var(--ff);border:1px solid var(--line)}
+.tq-pro-overview-actions .tq-pro-primary{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.tq-pro-overview-actions button:focus-visible,.tq-pro-extras summary:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.tq-pro-signals{margin:12px 0}
+.tq-pro-extras{margin:22px 0 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--card);box-shadow:var(--sh);overflow:hidden}
+.tq-pro-extras>summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:56px;padding:12px 14px;font-weight:800;color:var(--ink);font-size:14px;list-style:none}
+.tq-pro-extras>summary::-webkit-details-marker{display:none}
+.tq-pro-extras>summary:after{content:"⌄";font-size:22px;color:var(--acc)}
+.tq-pro-extras[open]>summary:after{content:"⌃"}
+.tq-pro-extras>summary span{color:var(--mut);font-size:11px;font-weight:500;max-width:42%;text-align:right}
+.tq-pro-extras-body{padding:6px 13px 16px;border-top:1px solid var(--line)}
+@media(max-width:370px){.tq-pro-overview{padding:12px}.tq-pro-overview-actions button{font-size:12px;padding:9px 6px}.tq-pro-extras>summary span{display:none}}
+@media(min-width:720px){.tq-pro-overview-actions{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
 /* Mobile sticky notes, per-week cycle overrides and offline assistant. */
 .tq-sticky{position:relative;margin:12px 0 16px;padding:14px 15px 15px;background:#fff3a6;color:#3d341b;border:1px solid #decf79;border-radius:4px 15px 13px 6px;box-shadow:3px 5px 0 rgba(90,70,19,.12),0 7px 19px rgba(45,34,8,.09);transform:rotate(-.25deg)}
 .tq-sticky:before{content:"";position:absolute;right:0;top:0;border-width:0 21px 21px 0;border-style:solid;border-color:transparent var(--bg) transparent transparent;opacity:.5}
@@ -921,6 +946,8 @@ function tqOpenAssistant(){
  if(tab!=="tour"){
   tab="tour";document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t==="tour"));render();
  }
+ const extra=document.getElementById("tq-pro-extras");
+ if(extra&&!extra.open){extra.open=true;tqProToolsOpen=true}
  const panel=document.querySelector(".tq-chat");
  if(!panel){toast("Assistant indisponible : recharge Tournée.");return}
  panel.classList.add("tq-targeted");
@@ -929,15 +956,36 @@ function tqOpenAssistant(){
  panel.scrollIntoView({behavior:"smooth",block:"start"});
  setTimeout(()=>panel.classList.remove("tq-targeted"),2200);
 }
+let tqProToolsOpen=false;
+function tqProOverview(L,completed){
+ const outstanding=Math.max(0,L.length-completed),reminders=tqStickyItems(day).length;
+ const summary=ROUT()
+  ? L.length+' passages prévus'
+  : completed+' passage'+(completed===1?'':'s')+' réalisé'+(completed===1?'':'s')+' · '+outstanding+' restant'+(outstanding===1?'':'s');
+ return `<section class="tq-pro-overview" aria-label="Tableau de bord de la journée">
+ <div class="tq-pro-overview-header"><span class="tq-pro-overline">POSTE DE TOURNÉE <i aria-hidden="true"></i> ${esc(rel(day))}</span><span class="tq-pro-overview-date">${esc(short(day))}</span></div>
+ <p class="tq-pro-overview-summary">${esc(summary)}</p>
+ <div class="tq-pro-overview-stats">
+ <span><strong>${L.length}</strong> passage${L.length===1?'':'s'}</span>
+ ${ROUT()?'':`<span><strong>${outstanding}</strong> restant${outstanding===1?'':'s'}</span>`}
+ <span><strong>${reminders}</strong> rappel${reminders===1?'':'s'} ce jour</span>
+ </div>
+ <div class="tq-pro-overview-actions">
+ ${L.length?'<button type="button" class="tq-pro-primary" onclick="fmI=null;focusMode()">▶ Commencer / reprendre</button>':''}
+ <button type="button" onclick="qaForm()">＋ Ajouter un passage</button>
+ <button type="button" onclick="tqFocusSticky(day)">📝 Rappels</button>
+ <button type="button" onclick="tqOpenAssistant()">💬 Assistant</button>
+ </div></section>`;
+}
 function viewTour(){
  const L=list(day),D=doneSet(),nx=ROUT()?nxT(L):L.find(p=>!D.includes(p.id)),nd=L.filter(p=>D.includes(p.id)).length;
  const pct=L.length?Math.round(nd/L.length*100):0;
  let h=`<div class="chw"><button class="chip nav" onclick="shiftW(-1)" aria-label="Semaine précédente">‹</button><div class="chips sc">${CHR().map(d=>`<button class="chip ${d===day?"on":""} ${d===TODAY?"today":""} ${remOf(d)?"rp":""}" data-tq-day="${d}" onclick="chipKeep=this.parentNode.scrollLeft;day='${d}';render()" title="Afficher le post-it et la tournée du jour">${JC[DT(d).getDay()]}<em>${DT(d).getDate()}</em><small>${list(d).length}</small><span class="tq-note-icon" aria-hidden="true">${tqStickyText(d).trim()?"📝":"▧"}</span></button>`).join("")}</div><button class="chip nav" onclick="shiftW(1)" aria-label="Semaine suivante">›</button></div>${day!==TODAY?`<button class="tdy" onclick="day=TODAY;render()">↩ Revenir à aujourd'hui</button>`:""}${remBanner()}`;
- h+=`<div class="hi"><span>${greet()} 👋</span><button onclick="askWho()">${who()?"Changer":"Ton prénom ?"}</button></div>`;
- h+=tqChatBlock();h+=tqWeekBlock();h+=ordoChip();h+=bkChip();h+=suspBlock();h+=absBanner();h+=bdayBanner();h+=veilleBanner();
- h+=dayBand();h+=tqWeekWarning();h+=tqPostitBlock();
- h+=`${ROUT()?heroR(L,nx):`<div class="hero"><div class="ring" style="--p:${pct}"><b>${nd}/${L.length}</b></div><div style="min-width:0">${nx?`<div class="k">À suivre · ${nx.h.replace(" fin","")}</div><div class="big">${nx.n}</div><div class="sub">${nx.a}</div>${lateChip(nx)}`:L.length?`<div class="k">Terminé</div><div class="big">Tournée bouclée 🎉</div><div class="sub">Pense aux transmissions.</div>`:`<div class="k">Repos</div><div class="big">Aucun passage</div>`}</div></div>`}${L.length?`<button class="btn go" onclick="fmI=null;focusMode()">▶ Mode tournée<span>plein écran, patient par patient</span></button>${routeUrl()?`<a class="btn ghost route" href="${routeUrl()}" target="_blank" rel="noopener">${IC.nav}Itinéraire des prochains arrêts</a>`:""}`:""}${vigilBlock()}${endBlock(L)||tasksBlock(L)}${memoBlock(L)}${bilanCard()}`;
- h+=`${!ROUT()&&st.get("swhint",0)<3&&L.length?(st.set("swhint",st.get("swhint",0)+1),`<div class="hint">Astuce : glisse une carte vers la droite pour la valider</div>`):""}${chBlock()}<div class="row2"><span>${L.length} passages · 6h45 → 11h</span></div>`;
+ h+=tqProOverview(L,nd);
+ h+=`${ROUT()?heroR(L,nx):`<div class="hero"><div class="ring" style="--p:${pct}"><b>${nd}/${L.length}</b></div><div style="min-width:0">${nx?`<div class="k">À suivre · ${nx.h.replace(" fin","")}</div><div class="big">${nx.n}</div><div class="sub">${nx.a}</div>${lateChip(nx)}`:L.length?`<div class="k">Terminé</div><div class="big">Tournée bouclée 🎉</div><div class="sub">Pense aux transmissions.</div>`:`<div class="k">Repos</div><div class="big">Aucun passage</div>`}</div></div>`}`;
+ h+=tqPostitBlock();
+ h+=`<div class="tq-pro-signals" aria-label="Alertes et suivis de la journée">${ordoChip()}${bkChip()}${suspBlock()}${absBanner()}${bdayBanner()}${veilleBanner()}${tqWeekWarning()}${vigilBlock()}${endBlock(L)||tasksBlock(L)}${memoBlock(L)}</div>`;
+ h+=`${!ROUT()&&st.get("swhint",0)<3&&L.length?(st.set("swhint",st.get("swhint",0)+1),`<div class="hint">Astuce : glisse une carte vers la droite pour la valider</div>`):""}<div class="row2"><span>${L.length} passages · journée sélectionnée</span></div>`;
  let last="",nowDone=day!==TODAY;
  L.forEach(p=>{const pm=mins(hOf(p));if(!nowDone&&pm!=null&&pm>nowMin()){nowDone=true;h+=`<div class="nowl"><span>${hm()}</span></div>`}
   const done=!ROUT()&&D.includes(p.id),isn=nx&&nx.id===p.id,past=ROUT()&&day===TODAY&&mins(hOf(p))!=null&&mins(hOf(p))<nowMin()-20,same=p.lieu&&p.lieu===last;last=p.lieu||p.a;
@@ -951,6 +999,7 @@ function viewTour(){
  h+=`${absDayList()}<button class="btn" style="width:100%;justify-content:center;margin-top:10px" onclick="qaForm()">＋ Ajouter un passage</button>`;
  if(L.length)h+=`<button class="btn ghost" style="width:100%;justify-content:center;margin-top:4px" onclick="shareDay()">📤 Partager la tournée du jour</button>`;
  if(!L.length)h+=`<div class="empty"><b>☕</b>Aucun passage ce jour</div>`;
+ h+=`<details class="tq-pro-extras" id="tq-pro-extras" ${tqProToolsOpen?"open":""} ontoggle="tqProToolsOpen=this.open"><summary>Réglages et outils complémentaires <span>Assistant · semaines · bilan</span></summary><div class="tq-pro-extras-body"><div class="hi"><span>${greet()}</span><button onclick="askWho()">${who()?"Changer":"Ton prénom ?"}</button></div>${tqChatBlock()}${tqWeekBlock()}${dayBand()}${bilanCard()}${chBlock()}</div></details>`;
  return h;
 }
 const FL=[["all","Tous"],["l2","Lyon 2e"],["l5","Lyon 5e"],["res","Résidence"],["tj","Tous les jours"],["jp","Jours particuliers"]];
