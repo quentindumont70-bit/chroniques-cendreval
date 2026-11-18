@@ -1370,6 +1370,12 @@ async function tqStickySave(el){
 // Avant toute actualisation, vider les brouillons encore en mémoire.
 // En cas d'échec, rejeter : l'utilisateur conserve son écran, jamais de rechargement forcé.
 async function tqStickyFlushDrafts(){
+ // Un champ encore en cours de saisie n'est pas un rappel enregistré.
+ // Ne jamais recharger l'app avant que l'utilisateur ait validé Ajouter ou OK.
+ const newField=document.getElementById('tq-sticky-new');
+ if(newField&&newField.value.trim())throw Error('Nouveau rappel en cours : valide « Ajouter » avant actualisation.');
+ const editField=document.getElementById('tq-sticky-edit');
+ if(editField&&tqStickyEditing)throw Error('Rappel en cours de modification : valide « OK » avant actualisation.');
  if(tqStickySavePromise)await tqStickySavePromise;
  for(const [d,raw] of Object.entries(tqStickyDrafts)){
   if(!TQ||!TQ.validDay(d))throw Error('Date de rappel invalide : actualisation annulée.');
