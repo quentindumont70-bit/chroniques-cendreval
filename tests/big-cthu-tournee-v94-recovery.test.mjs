@@ -60,14 +60,29 @@ test('V94: une ancienne sauvegarde chiffrée ne se déchiffre que sur action exp
  assert.equal(g.reloaded(),1);
 });
 
-test('V94: ni patient ni historique déjà présent ne sont écrasés',async()=>{
- for(const initial of [filled,{tidel_Pl:'[]',tidel_done_2026_11_13:'["fictif-1"]'},{tidel_Pl:'[]',tidel_absences_journal_v1:'[{"id":"signal-fictif"}]'}]){
+test('V94: une liste patient déjà présente bloque la restauration',async()=>{
+ const f=await fixture({initial:filled});
+ await f.ctx.recover(true);
+ assert.equal(f.flushes(),0);
+ assert.equal(f.reloaded(),0);
+ assert.equal(JSON.stringify(f.ctx.current()),JSON.stringify(filled));
+ assert.match(f.errors[0],/ne rien écraser/);
+});
+
+test('V247: si la liste est vide, les notes et journaux existants survivent au retour des patients',async()=>{
+ for(const initial of [
+  {tidel_Pl:'[]',tidel_done_2026_11_13:'["fictif-1"]'},
+  {tidel_Pl:'[]',tidel_absences_journal_v1:'[{"id":"signal-fictif"}]'}
+ ]){
   const f=await fixture({initial});
   await f.ctx.recover(true);
-  assert.equal(f.flushes(),0);
-  assert.equal(f.reloaded(),0);
-  assert.equal(JSON.stringify(f.ctx.current()),JSON.stringify(initial));
-  assert.match(f.errors[0],/ne rien écraser/);
+  assert.equal(f.errors.length,0);
+  assert.equal(f.flushes(),1);
+  assert.equal(f.reloaded(),1);
+  assert.equal(f.ctx.current().tidel_Pl,filled.tidel_Pl);
+  for(const [key,value] of Object.entries(initial)){
+   if(key!=='tidel_Pl')assert.equal(f.ctx.current()[key],value);
+  }
  }
 });
 
