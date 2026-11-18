@@ -105,6 +105,28 @@ html[data-binch-ambience=embers]{
  background-position:center;background-size:cover;
  filter:var(--br-scene-filter);
 }
+/* Emerald guardian of the forest: original decorative art, no combat or talent data. */
+html[data-binch-identity=druid] #page-hub .binch-character-card::before{
+ background-image:
+  linear-gradient(90deg,#061315e8 0%,#08191acf 25%,#101d1d60 65%,#08151d2b 100%),
+  url("./renaissance-feral-spirit.svg"),
+  var(--br-class-aura),var(--br-scene-glow),var(--br-world-art);
+ background-size:cover,auto 87%,cover,cover,cover;
+ background-position:center,92% 100%,center,center,center;
+ background-repeat:no-repeat;
+ background-blend-mode:normal,screen,normal,normal,normal;
+}
+@media(max-width:720px){
+ html[data-binch-identity=druid] #page-hub .binch-character-card::before{
+  background-size:cover,auto 60%,cover,cover,cover;
+  background-position:center,100% 100%,center,center,60% center;
+ }
+}
+@media(max-width:420px){
+ html[data-binch-identity=druid] #page-hub .binch-character-card::before{
+  background-size:cover,auto 46%,cover,cover,cover;
+ }
+}
 #page-hub .binch-character-card::after{
  content:"";position:absolute;pointer-events:none;
  inset:auto 4% 10px;left:4%;height:2px;
