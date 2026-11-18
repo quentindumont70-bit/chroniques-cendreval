@@ -87,3 +87,20 @@ test('Guide Druide: points proposés distincts des points réellement confirmés
  assert.ok(source.includes('done=taken===step[3]&&confirmed>=step[1]'));
  assert.ok(source.includes('les talents réellement dépensés ne sont pas lus dans WoW'));
 });
+
+test('Talents Druide: royaumes distincts, import de niveau uniquement depuis le bon personnage',()=>{
+ const marker="if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();";
+ const profile={classe:'Druide',race:'Tauren',data:{pseudo:'Bobinch',level:26,realm:'Forever'}};
+ const p=probe('specs-guide.js',marker,'progressKey,importedLevel',{
+  'grimoire.hub.v3':JSON.stringify(profile),
+  'grimoire.bridge.last':JSON.stringify({name:'Bobinch',realm:'Autre',level:60})
+ });
+ assert.equal(p.importedLevel(),26,'un import d’un autre royaume ne modifie pas le niveau');
+ p._storage.set('grimoire.bridge.last',JSON.stringify({name:'Bobinch',realm:'Forever',level:33}));
+ assert.equal(p.importedLevel(),33,'l’import correspondant peut actualiser le niveau');
+ const withoutRealm={...profile,data:{pseudo:'Bobinch',level:26}};
+ p._storage.set('grimoire.hub.v3',JSON.stringify(withoutRealm));
+ const keyForever=p.progressKey();
+ p._storage.set('grimoire.bridge.last',JSON.stringify({name:'Bobinch',realm:'Autre',level:33}));
+ assert.notEqual(p.progressKey(),keyForever,'les progrès manuels ne se croisent pas entre royaumes');
+});
