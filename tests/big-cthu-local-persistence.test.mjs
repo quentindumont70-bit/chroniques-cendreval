@@ -484,7 +484,7 @@ test('Coffre V27: sauvegarde les favoris, conserve les versions antérieures et 
 
 test('Cockpit: un accès principal sécurisé et une passerelle pour exporter l ancienne version',async()=>{
  const html=await readFile(new URL('../big-cthu-beta/index.html',import.meta.url),'utf8');
- const legacy=html.match(/<a href="\.\/tournee\.html" id="tourneeLegacyExport"[^>]*>([\s\S]*?)<\/a>/);
+ const legacy=html.match(/<a href="\.\/tournee\.html\?legacy=1" id="tourneeLegacyExport"[^>]*>([\s\S]*?)<\/a>/);
  const secure=html.match(/<a href="\.\/tournee-complete\.html" id="openTourneeSecure">([\s\S]*?)<\/a>/);
  assert.ok(legacy,'Ancienne version accessible pour exporter');
  assert.ok(secure,'Tournée chiffrée est le seul accès principal');
