@@ -1107,6 +1107,7 @@ async function tqStickySave(){
  if(!el)return;
  const d=el.dataset.day,txt=el.value;
  const status=document.getElementById("tq-sticky-status");
+ if(tqBusy){if(status)status.textContent="Sauvegarde déjà en cours…";return}
  try{
   if(status)status.textContent="Chiffrement et sauvegarde en cours…";
   const changed=await tqSaveStickyText(d,txt);
