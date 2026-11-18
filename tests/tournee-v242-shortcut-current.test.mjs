@@ -5,7 +5,7 @@ import {readFile} from 'node:fs/promises';
 const read=name=>readFile(new URL('../big-cthu-beta/'+name,import.meta.url),'utf8');
 test('V242: raccourci iPhone charge le document le plus récent en ligne sans changer son adresse',async()=>{
  const sw=await read('sw.js');
- assert.match(sw,/const CACHE='big-cthu-public-v2-v242'/);
+ assert.match(sw,/const CACHE='big-cthu-public-v2-v243'/);
  assert.match(sw,/if\(r\.mode==='navigate'\)/);
  assert.match(sw,/fetch\(r,\{cache:'no-store'\}\)/);
  assert.match(sw,/caches\.match\(r,\{ignoreSearch:true\}\)/);
