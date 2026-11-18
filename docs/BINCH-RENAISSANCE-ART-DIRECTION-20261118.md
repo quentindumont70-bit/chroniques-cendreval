@@ -50,8 +50,8 @@ Les styles sont chargés **après** les thèmes préexistants. Les modules et le
 
 - **P2 — livré sur cette branche** : neuf scènes vectorielles de classes, distinctes dans leur architecture et leur palette. Fallback générique pour le profil inconnu, plus la galerie `public/binch/renaissance-atelier.html` pour la revue des neuf scènes.
 - **P3 — livré côté CSS** : salle de guerre GM, cartes Faith et trésors mis en scène dans `visual-renaissance-chambers.css`, sans accès supplémentaire au jeu ni modification des récompenses.
-- **P4 — à poursuivre** : icônes de métiers originales et réduction du nombre d'onglets visibles, sans sacrifier les fonctionnalités cachées ; navigation testable sur mobile.
-- **P5 — à poursuivre** : transitions entre modules et mode ultra-léger pour appareils à faibles ressources, en respectant `prefers-reduced-motion`.
+- **P4 — livré sur cette branche** : neuf sceaux de classe forgés, deux emblèmes de métiers (Minage/Ingénierie), portails Accueil supplémentaires vers Faith et Trésors lorsque ces modules existent, carte d'expédition et talents plus immersifs, objectifs épinglés plus lisibles.
+- **P5 — livré sur cette branche** : transitions d'entrée courtes sur les pages et les trésors réellement possédés, jamais de boucle permanente ; mode graphique léger volontaire, stocké localement, et respect de `prefers-reduced-motion`.
 - **P6 — à valider** : vérification visuelle sur iPhone et Windows, revue du conflit éventuel entre styles puis fusion/déploiement uniquement autorisés.
 
 ## Limites et responsabilité
@@ -65,4 +65,36 @@ La page `public/binch/renaissance-atelier.html` est une **prévisualisation auto
 Les nouveaux fichiers sont :
 `renaissance-world-druid.svg`, `renaissance-world-warrior.svg`, `renaissance-world-mage.svg`, `renaissance-world-priest.svg`, `renaissance-world-paladin.svg`, `renaissance-world-rogue.svg`, `renaissance-world-hunter.svg`, `renaissance-world-shaman.svg`, `renaissance-world-warlock.svg`.
 
-**Contrôles CI :** un fichier SVG distinct par classe, XML analysable pour les 10 scènes (9 classes et paysage générique), les 9 liaisons CSS, responsive, mouvement réduit, galerie complète et absence de modifications économiques. Les CI ne remplacent pas la recette graphique réelle.
+**Contrôles CI :** 21 SVG analysables (10 paysages, 9 emblèmes de classe, 2 métiers), raccordement aux styles, responsive, six vrais portails, sauvegarde des trois ambiances et du mode léger, mouvement réduit, galerie complète et absence de modifications économiques. Les CI ne remplacent pas la recette graphique réelle.
+
+## Golipette P3 — refonte graphique complémentaire, 18 novembre 2026
+
+Dix chantiers de création ont été traités sur la PR #234 (en attente de revue) :
+
+1. Neuf blasons de classes originaux en SVG et raccord à l'emblème du personnage.
+2. Sceaux de **Minage** et d'**Ingénierie** sur les fiches réelles de métiers ; aucune recette ni statistique inventée.
+3. Carte d'expédition plus cinématique, noeuds et tracé de parcours conservés.
+4. Arbres de talents et route Druide farouche retravaillés visuellement ; aucun point ou rang calculé fictivement.
+5. Objectifs épinglés, chronologie et boutons de quêtes enrichis par catégorie.
+6. Six portails d'accueil vers des écrans qui existent déjà, dont Faith et le Reliquaire quand leurs onglets sont présents.
+7. Animations ponctuelles de révélation des trésors **déjà débloqués**, pas de génération de loot.
+8. Transition courte entre pages, sans boucle d'animation et désactivable.
+9. **Mode léger** manuel pour anciens téléphones : réduit filtres, ombres et transitions sans cacher le contenu ou changer les données.
+10. Galerie de comparaison réunissant neuf décors, neuf sceaux et les deux métiers, pour vérifier la direction artistique sans jouer à WoW.
+
+Les fichiers utilisés sont `renaissance-sigil-*.svg`, `renaissance-profession-*.svg`, `visual-renaissance-details.css` et `visual-renaissance.js`. Les tests d'interaction et d'accessibilité sont exécutés par GitHub Actions.
+
+### Dix prochains chantiers pour une bêta visuelle digne de ce nom
+
+1. Relecture et résolution **ciblée** des éventuels conflits PR #234 avec la branche principale.
+2. Vérification réelle du rendu du blason Farouche sur iPhone.
+3. Inspection des deux cartes Minage/Ingénierie sur le terrain.
+4. Contrôle du défilement et de l'affichage des légendes sur la carte d'expédition.
+5. Vérification des cartes de talents niveaux 20, 40, 60 et de leur source Forever.
+6. Navigation des six portails sans écrans vides ni onglet trompeur.
+7. Test du Reliquaire avec zéro puis plusieurs trésors effectivement débloqués.
+8. Test du mode léger et de la réduction du mouvement sur téléphone.
+9. Contrôle visuel de toutes les classes sur iPhone portrait/paysage et Windows 1080p.
+10. Revue humaine, fusion autorisée et déploiement bêta limité à la version validée.
+
+**Aucune fusion, aucun déploiement ni intervention utilisateur demandée pendant la réalisation de ce lot.** Les tests CI vérifient des propriétés techniques, pas la beauté du résultat sur de vrais appareils.
