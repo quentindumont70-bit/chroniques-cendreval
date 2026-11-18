@@ -5,9 +5,14 @@ const PREFIXES=['binch.guild.','binch.custom.objectives.v1.','binch.leveling.log
 const EXACT=['grimoire.hub.v3','binch.lfg.local.v1','binch.ah.market.v1','binch.ah.scope.v1','binch.ah.craft.v1','binch.ah.trading.v1','binch.faith.goal.v1','binch.specs.focus.v1'];
 const MAX_KEYS=300,MAX_FILE=2*1024*1024;
 function eligible(k){return EXACT.includes(k)||PREFIXES.some(prefix=>k.startsWith(prefix));}
+const FAITH_GOALS=['balanced','quick','craft','class','dungeon','market','guild'];
+function validValue(k,v){if(typeof v!=='string'||v.length>200000)return false;
+ if(k==='binch.faith.goal.v1')return FAITH_GOALS.includes(v); // Faith stores its selection as a plain string
+ try{JSON.parse(v);return true}catch{return false}
+}
 function collect(){
  const result={};let count=0;for(let i=0;i<localStorage.length&&count<MAX_KEYS;i++){const k=localStorage.key(i);
-  if(!k||!eligible(k))continue;const v=localStorage.getItem(k);if(typeof v==='string'&&v.length<=200000){try{JSON.parse(v);result[k]=v;count++}catch{}}
+  if(!k||!eligible(k))continue;const v=localStorage.getItem(k);if(validValue(k,v)){result[k]=v;count++;}
  }
  return result;
 }
@@ -40,9 +45,9 @@ function init(){
    const entries=Object.entries(data.entries);
    if(!entries.length||entries.length>MAX_KEYS)throw Error('Nombre de rubriques invalide.');
    for(const [k,v] of entries){
-    if(!eligible(k)||typeof v!=='string'||v.length>200000)throw Error('Rubrique non autorisée : '+k);
+    if(!eligible(k)||!validValue(k,v))throw Error('Rubrique non autorisée ou invalide : '+k);
     if(k==='__proto__'||k==='constructor'||k==='prototype')throw Error('Nom de rubrique dangereux.');
-    try{JSON.parse(v)}catch{throw Error('Données JSON invalides pour '+k)}
+
    }
    const present=entries.filter(([k])=>localStorage.getItem(k)!==null).length;
    if(!confirm('Restaurer '+entries.length+' rubrique(s), dont '+present+' existe(nt) déjà ? Les rubriques existantes du même nom seront remplacées. Aucune donnée ne sera envoyée à un serveur.'))return;
