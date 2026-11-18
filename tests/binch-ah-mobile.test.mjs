@@ -46,3 +46,11 @@ test('From imported bags, item lookup is explicit and never auto-fetches or writ
  assert.doesNotMatch(clickHandler,/fetch\(|onAhl\(/);
  assert.doesNotMatch(clickHandler,/persistMarket\(|mergeFeed\(/);
 });
+
+test('Trading mobile: le tableau AH ne génère pas des milliers de lignes DOM',()=>{
+ const ui=read('ah-trading.js');
+ assert.ok(ui.includes('const allIds=[...new Set([...Object.keys(feed.markets[mk]?.items||{})'), 'selected market comes first');
+ assert.match(ui,/const ids=allIds\.slice\(0,150\)/);
+ assert.match(ui,/Les données importées ne sont pas supprimées/);
+ assert.match(ui,/ids\.map\(id=>/);
+});
