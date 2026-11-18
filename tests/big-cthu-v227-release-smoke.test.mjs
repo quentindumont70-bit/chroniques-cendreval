@@ -15,8 +15,8 @@ test('V225: recherche groupée dans une seule frame sur navigateur compatible',a
 
 test('V226: cache public complet pour le parcours cockpit, actions, favoris et coffre',async()=>{
  const sw=await read('sw.js');
- assert.match(sw,/const CACHE='big-cthu-public-v2-v227'/);
- for(const asset of ['./index.html','./active-pulse.js','./action-favorites.js','./next-session.js','./sauvegardes.html','./cockpit-themes.css','./cockpit-themes.js','./cinema-upgrade.css','./cinema-nutrition.css','./cinema-musique.css','./cinema-maison.css']){
+ assert.match(sw,/const CACHE='big-cthu-public-v2-v\d+'/);
+ for(const asset of ['./index.html','./active-pulse.js','./action-favorites.js','./next-session.js','./sauvegardes.html','./idel-echeances.html','./idel-echeances-core.js','./idel-echeances.js','./cockpit-themes.css','./cockpit-themes.js','./cinema-upgrade.css','./cinema-nutrition.css','./cinema-musique.css','./cinema-maison.css']){
   assert.ok(sw.includes("'"+asset+"'"),asset+' absent du cache public');
  }
  assert.match(sw,/if\(r\.method!=='GET'\)return/);
