@@ -34,7 +34,7 @@ function collect(expanded=false,limit=8,kind='all',term='',pinned=[]){
  const stop=[end.getFullYear(),String(end.getMonth()+1).padStart(2,'0'),String(end.getDate()).padStart(2,'0')].join('-');
  const nearDate=new Date(now);nearDate.setDate(nearDate.getDate()+2);
  const near=[nearDate.getFullYear(),String(nearDate.getMonth()+1).padStart(2,'0'),String(nearDate.getDate()).padStart(2,'0')].join('-');
- const results=[];
+ const results=[],pinnedItems=[];
  let warnings=0,total=0,compactVisible=0,urgentCompact=0,urgentTotal=0;
  const counts={},matchCounts={};
  const period=(source,item)=>{
@@ -86,12 +86,14 @@ function collect(expanded=false,limit=8,kind='all',term='',pinned=[]){
   matchedCompact+=Math.min(shown.length,source.limit);
   matchedUrgent+=shown.filter(item=>item.rank<=2).length;
   matchedUrgentCompact+=shown.slice(0,source.limit).filter(item=>item.rank<=2).length;
+  const toCard=item=>({...item,timeGroup:period(source,item),kind:source.kind,favoriteKey:favoriteKey(source,item),favorite:pinnedItem(source,item),url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.kind==='Agenda'&&item.id?'./agenda.html#event='+encodeURIComponent(item.id):source.kind==='Captures'&&item.id?'./capture.html#capture='+encodeURIComponent(item.id):source.kind==='Priorités'&&item.id?'#priority-'+encodeURIComponent(item.id):source.kind==='Musique'&&item.id?'./musique.html#studio='+encodeURIComponent(item.id):source.kind==='Stock'&&item.id?'./garde-manger.html#food='+encodeURIComponent(item.id):source.kind==='Jeux'&&item.id?'#session='+encodeURIComponent(item.id):source.url});
+  pinnedItems.push(...selected.filter(item=>pinnedItem(source,item)).map(toCard));
   const ordered=shown.slice().sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||(a.rank<=2&&b.rank<=2?a.rank-b.rank:0)||Number(pinnedItem(source,b))-Number(pinnedItem(source,a))||a.rank-b.rank);
-  for(const item of ordered.slice(0,expanded?limit:source.limit))results.push({...item,timeGroup:period(source,item),kind:source.kind,favoriteKey:favoriteKey(source,item),favorite:pinnedItem(source,item),url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.kind==='Agenda'&&item.id?'./agenda.html#event='+encodeURIComponent(item.id):source.kind==='Captures'&&item.id?'./capture.html#capture='+encodeURIComponent(item.id):source.kind==='Priorités'&&item.id?'#priority-'+encodeURIComponent(item.id):source.kind==='Musique'&&item.id?'./musique.html#studio='+encodeURIComponent(item.id):source.kind==='Stock'&&item.id?'./garde-manger.html#food='+encodeURIComponent(item.id):source.kind==='Jeux'&&item.id?'#session='+encodeURIComponent(item.id):source.url});
+  for(const item of ordered.slice(0,expanded?limit:source.limit))results.push(toCard(item));
  }
  counts.Urgentes=urgentTotal;
  counts['Aujourd’hui']=todayTotal;counts.Semaine=weekTotal;counts['Sans date']=undatedTotal;
- return {items:results.sort((a,b)=>a.rank-b.rank),warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact,matchedToday,matchedWeek,matchedUndated,compactToday,compactWeek,compactUndated};
+ return {items:results.sort((a,b)=>a.rank-b.rank),pinnedItems:pinnedItems.sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||a.rank-b.rank),warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact,matchedToday,matchedWeek,matchedUndated,compactToday,compactWeek,compactUndated};
 }
 function node(tag,text,className){
  const x=document.createElement(tag);
@@ -110,7 +112,7 @@ function render(){
  const root=$('activePulseList');if(!root)return;
  const pins=window.BigCthuActionFavorites;
  const pinState=pins?pins.read():{ids:[],blocked:false};
- const {items,warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact,matchedToday,matchedWeek,matchedUndated,compactToday,compactWeek,compactUndated}=collect(expanded,pageSize,selectedKind,searchTerm,pinState.ids);
+ const {items,pinnedItems,warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact,matchedToday,matchedWeek,matchedUndated,compactToday,compactWeek,compactUndated}=collect(expanded,pageSize,selectedKind,searchTerm,pinState.ids);
  const visible=(selectedKind==='all'?items:selectedKind==='Urgentes'?items.filter(item=>item.rank<=2):selectedKind==='Aujourd’hui'?items.filter(item=>['late','today'].includes(item.timeGroup)):selectedKind==='Semaine'?items.filter(item=>['late','today','week'].includes(item.timeGroup)):selectedKind==='Sans date'?items.filter(item=>item.timeGroup==='undated'):items.filter(item=>item.kind===selectedKind)).slice().sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||(a.rank<=2&&b.rank<=2?a.rank-b.rank:0)||Number(b.favorite)-Number(a.favorite)||a.rank-b.rank);
  const available=selectedKind==='all'?matchedTotal:selectedKind==='Urgentes'?matchedUrgent:selectedKind==='Aujourd’hui'?matchedToday:selectedKind==='Semaine'?matchedWeek:selectedKind==='Sans date'?matchedUndated:(matchCounts[selectedKind]||0);
  const compact=selectedKind==='all'?matchedCompact:selectedKind==='Urgentes'?matchedUrgentCompact:selectedKind==='Aujourd’hui'?compactToday:selectedKind==='Semaine'?compactWeek:selectedKind==='Sans date'?compactUndated:Math.min(available,2);
@@ -118,13 +120,29 @@ function render(){
  const count=$('activePulseCount');if(count)count.textContent=available===visible.length?available+' action'+(available>1?'s':'')+' retrouvée'+(available>1?'s':''):available+' actions · '+visible.length+' affichées';
  const heroCount=$('cinemaPulseCount');if(heroCount)heroCount.textContent=total===0?(warnings?'Certaines actions indisponibles':'Aucune action en attente'):total+' action'+(total>1?'s':'')+' à reprendre';
  if(!visible.length)root.append(node('p',warnings?'Certaines données sont illisibles : impossible de garantir que tout est à jour.':searchTerm?'Aucune action ne correspond à la recherche. Efface le filtre pour revenir aux rappels.':selectedKind==='all'?'Aucune action en attente dans tes modules locaux. Tu peux simplement continuer ta journée.':'Aucune action en attente dans cette catégorie.','muted'));
+ const pinAction=(reference)=>{if(!pins||!reference)return;const outcome=pins.toggle(reference);pinMessage=outcome.message;if(outcome.ok)render();else{const status=$('activePulsePinStatus');if(status)status.textContent=pinMessage}};
+ const pinnedHost=$('activePulsePinned'),pinnedWrap=$('activePulsePinnedWrap');
+ if(pinnedWrap)pinnedWrap.hidden=!pinnedItems.length;
+ if(pinnedHost){pinnedHost.replaceChildren();for(const item of pinnedItems.slice(0,6)){
+   const link=node('a','★ '+item.kind+' · '+item.title.slice(0,75),'active-pulse-pinned-link');link.href=item.url;pinnedHost.append(link);
+  }
+  if(pinnedItems.length>6)pinnedHost.append(node('span','+'+(pinnedItems.length-6)+' autres favoris épinglés','muted'));
+ }
  for(const item of visible){
+  const card=node('div','','active-pulse-card'+(item.favorite?' is-pinned':''));
   const link=node('a','','active-pulse-item'+(item.rank<=2?' is-urgent':''));
   link.href=item.url;
   const timeLabel=item.timeGroup==='late'?'En retard · ':item.timeGroup==='today'&&item.kind!=='Priorités'?'Aujourd’hui · ':item.timeGroup==='week'?'Cette semaine · ':'';
   link.append(node('small',(item.favorite?'★ ':'')+timeLabel+item.kind),node('strong',item.title));
   if(item.next)link.append(node('span',item.next,'active-pulse-next'));
-  root.append(link);
+  card.append(link);
+  if(item.favoriteKey){const button=node('button',item.favorite?'★':'☆','active-pulse-star');
+   button.type='button';button.setAttribute('aria-label',(item.favorite?'Retirer des favoris : ':'Épingler : ')+item.title.slice(0,100));
+   button.setAttribute('aria-pressed',item.favorite?'true':'false');button.title=item.favorite?'Retirer des favoris':'Épingler cette action';
+   button.onclick=()=>pinAction(item.favoriteKey);button.disabled=pinState.blocked||!pins;
+   card.append(button);
+  }
+  root.append(card);
  }
  const toggle=$('activePulseToggle');
  if(toggle){toggle.hidden=available<=compact;toggle.textContent=expanded?(visible.length<available&&pageSize<48?'Afficher encore':'Afficher moins'):'Afficher plus d’actions';toggle.setAttribute('aria-expanded',expanded?'true':'false');toggle.onclick=()=>{if(!expanded){expanded=true;pageSize=8}else if(visible.length<available&&pageSize<48){pageSize=Math.min(48,pageSize+16)}else{expanded=false;pageSize=8}render()}}
@@ -149,7 +167,7 @@ function render(){
   pinPick.value=current;
   const updatePinButton=()=>{const pinned=pinState.ids.includes(pinPick.value);pinButton.textContent=pinned?'Retirer des favoris':'Épingler cette action';pinButton.disabled=!pinPick.value||pinState.blocked||!pins};
   pinPick.onchange=updatePinButton;updatePinButton();
-  pinButton.onclick=()=>{if(!pins||!pinPick.value)return;const outcome=pins.toggle(pinPick.value);pinMessage=outcome.message;if(outcome.ok)render();else if(pinStatus)pinStatus.textContent=pinMessage};
+  pinButton.onclick=()=>pinAction(pinPick.value);
  }
  if(pinStatus)pinStatus.textContent=pinState.blocked?'Favoris locaux illisibles : aucun favori ne sera modifié.':pinMessage;
  const status=$('activePulseStatus');
