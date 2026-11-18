@@ -19,7 +19,7 @@ async function fixture({delayCommit=false}={}){
  const document={hidden:false,getElementById:id=>fields[id]||null,querySelector:()=>null,addEventListener(){}};
  const ctx={
   window,document,day:d1,
-  TQ:{validDay:d=>/^\\d{4}-\\d{2}-\\d{2}$/.test(d)},
+  TQ:{validDay:d=>/^\d{4}-\d{2}-\d{2}$/.test(d)},
   TOUR_STORE:{getItem:key=>records.get(key)??null},
   tqCommitVaultKey:async(key,value,old)=>{
    if(delayCommit)await new Promise(resolve=>{completeCommit=resolve});
@@ -28,7 +28,7 @@ async function fixture({delayCommit=false}={}){
   },
   esc:escapeHtml,short:d=>d,rel:d=>d,toast(){},saveFailure(){},JSON,Object,Array,Number
  };
- runInNewContext(source.slice(start,end)+'\\nthis.api={trackNew:tqStickyTrackNew,trackEdit:tqStickyTrackEdit,block:tqPostitBlock,begin:tqStickyBeginEdit,add:tqStickyAdd,flush:tqStickyFlushDrafts,quick:tqStickyQuickDrafts};',ctx,{timeout:1000});
+ runInNewContext(source.slice(start,end)+'\nthis.api={trackNew:tqStickyTrackNew,trackEdit:tqStickyTrackEdit,block:tqPostitBlock,begin:tqStickyBeginEdit,add:tqStickyAdd,flush:tqStickyFlushDrafts,quick:tqStickyQuickDrafts};',ctx,{timeout:1000});
  return {ctx,api:ctx.api,fields,records,writes,release:()=>{assert.ok(completeCommit);completeCommit()}};
 }
 
