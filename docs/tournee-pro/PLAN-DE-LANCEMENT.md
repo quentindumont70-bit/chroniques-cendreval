@@ -40,7 +40,7 @@ Le prix mensuel doit payer un avantage concret (mises à jour stables, accompagn
 | 5 | **Refonte UI terrain** | accueil utile en 5 secondes, contraste iPhone, une action principale par écran, états vides | P1 | **V253 : accueil prioritaire et mobile ; direction artistique premium Medical Ops à venir** |
 | 6 | **Cœur métier fiable** | rappels journaliers, cycles, absences, modifications et journal sans régression | P1 | V255 : brouillons d'ajout / édition conservés en navigation, mise à jour bloquée si saisie non validée ; tests iOS terrain à compléter |
 | 7 | **Onboarding et exemples** | prise en main ≤5 min avec données fictives et import explicite | P1 | V256 : guide fictif en 5 étapes ; essai réel de prise en main et import assisté à valider |
-| 8 | **Suite de tests appareil réel** | iOS PWA/Android, hors ligne, fermeture forcée, mise à jour, conflit de deux onglets | P0 | Tests automatisés partiels |
+| 8 | **Suite de tests appareil réel** | iOS PWA/Android, hors ligne, fermeture forcée, mise à jour, conflit de deux onglets | P0 | V257 : contrôle local des pages publiques hors ligne et tests CI ; essais iPhone/Android réels toujours à faire |
 | 9 | **Conformité et exploitation** | finalité, RGPD, registre, responsabilités, contrats, HDS si hébergement confié à un tiers ; support et incidents | P0 AVANT VENTE | À instruire |
 | 10 | **Pilote, modèle économique, sortie produit** | 5–10 IDEL testeurs, corrections P0, facturation/support, décision explicite go/no-go | P1 | Non lancé |
 
@@ -115,3 +115,9 @@ Pendant la session ouverte, le champ **Ajouter un rappel** garde son texte par d
 Une page autonome « Premiers pas » accessible depuis « ⋯ Outils » explique en cinq étapes l'espace PWA/iPhone, la lecture de la tournée, les post-it par date, le journal local d'absences (sans modification Topaze) et l'export JSON de secours. Les illustrations sont statiques, les fichiers de démonstration ne sont jamais importés dans les dossiers de la bêta et aucune nouvelle base n'est créée.
 
 Le guide est ajouté aux fichiers publics précachés du service worker V256. Cela **ne remplace pas** le test sur un iPhone réel hors ligne et ne prouve pas encore la prise en main en cinq minutes. Il ne faut jamais faire d'essai de restauration en écrasant un coffre réel.
+
+## Golipette V257 — vérifier le cache public avant l'essai iPhone
+
+La page `tournee-controle-iphone.html`, accessible depuis le guide « Premiers pas », inspecte **uniquement** la présence du cache public V257, ses trois pages essentielles et l'activité du service worker dans le contexte du navigateur courant. Elle n'accède à aucun coffre local, aucune note, aucun patient et n'effectue aucune requête réseau. Elle indique clairement qu'une page en cache ne signifie ni stockage clinique récupérable, ni sauvegarde externe, ni validation d'un vrai redémarrage sous iOS. En l'absence de cache, de contrôle du service worker ou d'accès à CacheStorage, elle signale une vérification incomplète et n'affiche pas de réussite trompeuse.
+
+Une suite de tests Node V257 couvre cache prêt/absent/partiel, service non actif, accès refusé et non-accès aux données sensibles. **La validation sur un iPhone réel reste obligatoire**, de même que les scénarios multi-onglets en environnement fictif ; aucune synchronisation, migration de patients ou infrastructure cloud n'a été ajoutée.
