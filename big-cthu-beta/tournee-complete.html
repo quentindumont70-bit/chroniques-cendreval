@@ -569,7 +569,7 @@ body.tournee-locked #tour-save-strip{display:none}
 <section class="tour-backup-card"><h2>2 · Conserver une copie</h2>
 <p>Ce fichier JSON complet permet de restaurer les patients sur un autre appareil. Il contient des données de santé <strong>lisibles</strong> : conserve-le dans un endroit privé et protégé, jamais sur GitHub.</p>
 <button id="tour-portable-export" type="button">Télécharger ma sauvegarde complète</button>
-<p id="tour-backup-download-status" role="status" aria-live="polite">Aucune copie extérieure n'est vérifiée par Tournée. Vérifie le fichier téléchargé dans Fichiers.</p></section>
+<p id="tour-backup-download-status" role="status" aria-live="polite">Aucune copie extérieure n'est vérifiée par Tournée. Après le téléchargement, sélectionne le fichier dans l'étape 3 : Tournée vérifiera que son contenu correspond aux données actuelles.</p></section>
 <section class="tour-backup-card"><h2>3 · Restaurer un fichier</h2>
 <p>Choisis une sauvegarde JSON. Elle est contrôlée avant la restauration ; aucune fiche déjà présente ne sera écrasée.</p>
 <label for="tour-file">Choisir un fichier dans Fichiers</label><input type="file" id="tour-file" accept=".json,application/json">
@@ -3039,22 +3039,38 @@ function openTourRecovery(){
  document.getElementById('tour-security-gate').hidden=false;
  report('');
 }
+// Comparaison exacte et locale des valeurs : la petite empreinte FNV de l'export
+// détecte une erreur de fichier, mais ne sert pas de preuve de sécurité.
+function tourBackupEquivalent(a,b){
+ if(!validPortableState(a)||!validPortableState(b))return false;
+ const left=Object.keys(a).sort(),right=Object.keys(b).sort();
+ if(left.length!==right.length)return false;
+ return left.every((key,i)=>key===right[i]&&a[key]===b[key]);
+}
 async function tourPreviewBackupFile(){
  const target=document.getElementById('tour-backup-preview'),file=document.getElementById('tour-file')?.files?.[0];
  if(!file){target.textContent='Aucun fichier sélectionné.';return}
  if(file.size>25*1024*1024){target.textContent='Fichier trop volumineux. Aucun changement.';return}
+ target.textContent='Vérification du fichier sur cet appareil…';
  try{
   const data=JSON.parse(await file.text());
   if(isEncryptedVaultRecord(data)){
    target.textContent='Ancien coffre technique : sélectionne un export JSON complet pour changer d’appareil.';
    return;
   }
-  const state=data?.format===PORTABLE_FORMAT?readPortableVault(data):fillFromBackup(data);
+  const portable=data?.format===PORTABLE_FORMAT;
+  const state=portable?readPortableVault(data):fillFromBackup(data);
   if(!validVaultState(state))throw Error('Format de sauvegarde non reconnu');
-  const count=tourPatientCountFrom(state);
-  target.textContent=count+' fiche(s) détectées dans ce fichier. '+(tourPatientCountFrom(secureState)
-   ?'Des patients sont déjà présents : import bloqué pour préserver leurs données.'
-   :'La liste active est vide : restauration possible sans remplacer les autres notes.');
+  const count=tourPatientCountFrom(state),existing=tourPatientCountFrom(secureState);
+  if(existing>0){
+   if(portable&&tourBackupEquivalent(state,secureState)){
+    target.textContent='✓ Copie contrôlée : '+count+' fiche(s) et toutes les rubriques locales correspondent aux données actuelles. Vérifié uniquement sur cet appareil, à cet instant. Conserve ce fichier dans Fichiers en lieu sûr.';
+   }else{
+    target.textContent='Fichier lisible : '+count+' fiche(s). Il ne correspond pas exactement aux données actuelles, ou est dans un ancien format. Les patients présents sont conservés : aucune restauration par-dessus.';
+   }
+  }else{
+   target.textContent='Fichier lisible : '+count+' fiche(s). La liste de cette application est vide : restauration possible sans remplacer les autres notes.';
+  }
  }catch(e){target.textContent='Fichier non reconnu ou endommagé. Aucune donnée modifiée.'}
 }
 document.getElementById('tour-file').addEventListener('change',tourPreviewBackupFile);

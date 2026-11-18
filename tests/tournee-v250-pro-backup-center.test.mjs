@@ -57,7 +57,7 @@ test('V250 : aperçu d un export traditionnel à 24 patients fictifs, sans nom a
 test('V250 : une liste existante rend l import explicitement non remplaçable',async()=>{
  const f=await previewFixture({currentPatients:[{id:'fictif'}],file:{v:1,P:[{id:'autre'}],kv:{}}});
  await f.preview();f.open();
- assert.match(f.elements['tour-backup-preview'].textContent,/import bloqué/);
+ assert.match(f.elements['tour-backup-preview'].textContent,/aucune restauration par-dessus/);
  assert.match(f.elements['tour-saved-status'].textContent,/1 fiche/);
 });
 test('V250 : les anciens coffres et JSON invalides sont refusés au précontrôle sans écrire',async()=>{
