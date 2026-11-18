@@ -233,3 +233,30 @@ html[data-br-race=gnome] #app #hub-cards .tile{border-style:double}
 }
 html[data-binch-detail=lite] #app .page>.panel.section:first-child{background-image:linear-gradient(100deg,#0b1c23,#152629)}
 @media(forced-colors:active){#app .page>.panel.section:first-child{background-image:none}}
+
+/* P9 pilot matte-paint panoramas: still original scalable local illustrations.
+   The darker left third protects actual HUD copy; character art remains visible. */
+#page-hub .binch-character-card > .binch-identity-composition .binch-identity-landscape{
+ background-image:linear-gradient(90deg,#061316f7 0%,#081a20d9 34%,#08162257 79%),var(--br-class-world);
+ background-position:center,center 47%;background-size:cover;
+ opacity:.94;filter:none;
+}
+#page-hub .binch-character-card > .binch-identity-composition .binch-identity-aura{opacity:.38}
+html[data-br-class=druid] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-landscape{
+ background-image:linear-gradient(90deg,#061316f8 0%,#071b1be0 33%,#071a1b63 80%),url("./renaissance-feral-spirit.svg"),var(--br-class-world);
+ background-size:cover,auto 82%,cover;
+ background-position:center,95% bottom,center 47%;
+ background-repeat:no-repeat;
+}
+@media(max-width:720px){
+ #page-hub .binch-character-card > .binch-identity-composition .binch-identity-landscape{
+ background-image:linear-gradient(180deg,#061316df,#061316a4 65%,#061316d7),var(--br-class-world);
+ }
+ html[data-br-class=druid] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-landscape{
+ background-image:linear-gradient(180deg,#061316df,#061316b7 65%,#061316e5),url("./renaissance-feral-spirit.svg"),var(--br-class-world);
+ background-size:cover,auto 52%,cover;background-position:center,100% 100%,center;
+ }
+}
+html[data-binch-detail=lite] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-landscape{
+ background-image:linear-gradient(90deg,#091a1fdb,#15252bb3),var(--br-class-world);
+}
