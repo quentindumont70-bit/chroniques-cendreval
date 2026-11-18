@@ -63,9 +63,9 @@ function render(){
  $('binch-gm-watch-urgent').innerHTML=s.requests.length?s.requests.slice(0,5).map(r=>'<article><strong>'+esc(text(r.title))+'</strong><span>'+Math.min(num(r.quantity),s.fulfillment.find(f=>f.id===r.id)?.received||0)+' / '+num(r.quantity)+' réception(s) confirmée(s) manuellement'+(r.priority==='urgent'?' · Urgent':'')+(r.deadline&&Number.isFinite(Date.parse(r.deadline))?' · échéance '+esc(new Date(r.deadline).toLocaleDateString('fr-FR'))+(Date.parse(r.deadline)<Date.now()?' (dépassée)':''):'')+'</span></article>').join(''):'<p>Aucune demande ouverte dans le Planner local.</p>';
 }
 function navigate(destination){
- if(destination==='calendar'){const element=document.getElementById('binch-guild-calendar');if(element){element.scrollIntoView({behavior:'smooth',block:'start'});return}}
+ if(destination==='calendar'){const element=document.getElementById('binch-guild-calendar');if(element){const parent=element.closest('details.binch-gm-workspace-group');if(parent)parent.open=true;element.scrollIntoView({behavior:'smooth',block:'start'});return}}
  if(destination==='planner'){const element=document.getElementById('binch-guild-planner');if(element){element.open=true;element.scrollIntoView({behavior:'smooth',block:'start'});return}}
- if(destination==='delegations'){const node=$('binch-gm-delegations');if(node){node.scrollIntoView({behavior:'smooth',block:'start'});return}}
+ if(destination==='delegations'){const node=$('binch-gm-delegations');if(node){const parent=node.closest('details.binch-gm-workspace-group');if(parent)parent.open=true;node.scrollIntoView({behavior:'smooth',block:'start'});return}}
  if(destination==='coffre'){document.querySelector('#app nav.nav [data-page="coffre"]')?.click();return}
  document.querySelector('#app nav.nav [data-page="gm"]')?.click();
 }
