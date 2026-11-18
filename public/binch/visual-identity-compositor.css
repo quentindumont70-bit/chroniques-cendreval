@@ -2,7 +2,7 @@
    Original vector architecture remains crisp at any DPI, zero requests for race ornaments. */
 :root{
  --br-race-matter:#28332f;--br-race-metal:#d4b278;
- --br-class-light:#dca77d;--br-class-aura:#8f392b;
+ --br-class-light:#dca77d;--br-vital-aura:#8f392b;
  --br-class-world:url("./renaissance-world-warrior.svg");
  --br-race-art:none;--br-job-glyph:"";--br-second-glyph:"";
 }
@@ -31,7 +31,7 @@
 }
 #page-hub .hero .hero-copy{max-width:min(64%,590px)}
 #page-hub .hero .hero-sigil{
- color:var(--br-class-light);text-shadow:0 0 38px var(--br-class-aura),0 3px 11px #000c;
+ color:var(--br-class-light);text-shadow:0 0 38px var(--br-vital-aura),0 3px 11px #000c;
 }
 .binch-identity-composition{
  position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;
@@ -52,13 +52,13 @@
  mix-blend-mode:screen;
 }
 .binch-identity-aura{
- background:radial-gradient(ellipse at 78% 22%,color-mix(in srgb,var(--br-class-aura) 34%,transparent),transparent 57%),
+ background:radial-gradient(ellipse at 78% 22%,color-mix(in srgb,var(--br-vital-aura) 34%,transparent),transparent 57%),
  linear-gradient(0deg,color-mix(in srgb,var(--br-race-matter) 60%,transparent),transparent 60%);
 }
-.binch-identity-professions{font:2.4rem Georgia,serif;color:var(--br-class-light);text-shadow:0 0 19px var(--br-class-aura);}
+.binch-identity-professions{font:2.4rem Georgia,serif;color:var(--br-class-light);text-shadow:0 0 19px var(--br-vital-aura);}
 .binch-identity-professions::before,.binch-identity-professions::after{
  content:var(--br-job-glyph);position:absolute;right:13%;bottom:11%;
- opacity:.58;filter:drop-shadow(0 0 11px var(--br-class-aura));
+ opacity:.58;filter:drop-shadow(0 0 11px var(--br-vital-aura));
 }
 .binch-identity-professions::after{content:var(--br-second-glyph);right:8%;bottom:33%;font-size:.67em;opacity:.43}
 #binch-adventure-home .binch-identity-composition .binch-identity-architecture{
@@ -209,7 +209,7 @@ html[data-binch-detail=lite] .binch-reforge-preview::before{filter:none}
 /* Carry race material into the navigation and the secondary chapter surfaces. */
 #app nav.nav button.active{
  border-bottom:2px solid var(--br-race-metal);
- box-shadow:inset 0 -1px var(--br-class-light),0 0 20px color-mix(in srgb,var(--br-class-aura) 20%,transparent);
+ box-shadow:inset 0 -1px var(--br-class-light),0 0 20px color-mix(in srgb,var(--br-vital-aura) 20%,transparent);
 }
 #app .page>.panel.section,#app #hub-cards .tile{
  border-color:color-mix(in srgb,var(--br-race-metal) 36%,#365053);
