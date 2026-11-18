@@ -6,7 +6,7 @@ const fmt=n=>Number(n).toLocaleString('fr-FR');
 function snapshot(){
  const p=read('grimoire.hub.v3'),d=p.data||{},last=read('grimoire.bridge.last');
  const name=String(d.pseudo||last.name||'Aventurier'),race=p.race||'',cls=p.classe||'',same=!!last.name&&last.name.trim().toLocaleLowerCase('fr')===name.trim().toLocaleLowerCase('fr');
- const inv=same&&Array.isArray(last.inventory)?last.inventory:[],cnt=id=>inv.filter(x=>Number(x.id)===id).reduce((n,x)=>n+(Number(x.count)||1),0);
+ const inv=same&&Array.isArray(last.inventory)?last.inventory:[],cnt=id=>inv.filter(x=>Number(x.id)===id).reduce((n,x)=>{const q=Number(x.count);return n+(Number.isSafeInteger(q)&&q>0?q:0)},0);
  const xp=same&&last.xp!=null&&last.xp!==''?Number(last.xp):null,xpMax=same&&last.xpMax!=null&&last.xpMax!==''?Number(last.xpMax):null;
  const jobsKey=name.trim().toLowerCase()+'-'+race+'-'+cls,skills=read('grimoire.craft.v1').imports?.[jobsKey]?.skills||{};
  const market=read('binch.market.v1'),calendar=read('binch.guild.events.v1'),planner=read('binch.guild.planner.v1');
@@ -36,8 +36,10 @@ function recommendations(p,goal){
  // The chosen druid role is manual context, never guessed from the class alone.
  if(p.cls==='Druide'&&(goal==='class'||goal==='balanced')){
   const role=p.spec.toLocaleLowerCase('fr');
-  if(/ours|tank|farouche|feral/.test(role))
+  if(/ours|tank/.test(role))
    add(113,'Préparer ton équipement tank','Le profil mentionne une orientation farouche/tank. Vérifie tes pièces défensives et ton rôle avant le prochain groupe. Aucun score d’armure n’est calculé sans statistiques fiables.','Spécialisation déclarée · profil manuel','equipment');
+  else if(/farouche|feral|félin|felin|chat|cat/.test(role))
+   add(111,'Suivre le build Farouche — pex','Ton profil indique une orientation farouche. Ouvre Specs pour consulter la progression des talents selon ton niveau ; les points réellement dépensés ne sont pas lus en jeu.','Spécialisation déclarée · guide de talents local','specs');
   else if(/soin|restaur|heal/.test(role))
    add(110,'Préparer tes soins de groupe','Ton profil mentionne une orientation soins. Contrôle sorts, composants et équipement, sans supposer tes talents.','Spécialisation déclarée · profil manuel','equipment');
   else if(!role)
