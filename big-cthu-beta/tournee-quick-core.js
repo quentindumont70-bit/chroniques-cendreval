@@ -31,7 +31,7 @@ function extractWeekCommands(phrase,today=dateHere()){
   const target=/semaine prochaine|semaine pro\b|la semaine d apres/.test(c)?'next':/cette semaine|semaine en cours/.test(c)?'this':null;
   if(!mode||!target)continue;
   const days=[];
-  for(const [regex,n] of [[/\bdimanche\b/,0],[/\blundi\b/,1],[/\bmardi\b/,2],[/\bmercredi\b/,3],[/\bjeudi\b/,4],[/\bvendredi\b/,5],[/\bsamedi\b/,6]])if(regex.test(c))days.push(n);
+  for(const [regex,n] of [[/\blundi\b/,1],[/\bmardi\b/,2],[/\bmercredi\b/,3],[/\bjeudi\b/,4],[/\bvendredi\b/,5],[/\bsamedi\b/,6],[/\bdimanche\b/,0]])if(regex.test(c))days.push(n);
   out.push({week:target==='next'?add(base,7):base,mode,days:days.length?days:null});
  }
  if(out.length&&new Set(out.map(x=>x.week)).size===out.length)return {type:'cycle',entries:out};
