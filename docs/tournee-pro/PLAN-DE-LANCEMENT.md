@@ -38,7 +38,7 @@ Le prix mensuel doit payer un avantage concret (mises à jour stables, accompagn
 | 3 | **Restauration démontrable** | round-trip sur 1/24/500 patients FICTIFS, sans modification des notes ni écrasement | P0 | **V251 : tests automatisés + vérification fichier ; iOS réel encore à valider** |
 | 4 | **Un seul parcours installé** | distinguer explicitement PWA installée/Safari, migration guidée, jamais de copie implicite | P0 | **V252 : identification visible de l'espace ; transfert guidé encore à construire** |
 | 5 | **Refonte UI terrain** | accueil utile en 5 secondes, contraste iPhone, une action principale par écran, états vides | P1 | **V253 : accueil prioritaire et mobile ; direction artistique premium Medical Ops à venir** |
-| 6 | **Cœur métier fiable** | rappels journaliers, cycles, absences, modifications et journal sans régression | P1 | V254 : brouillons des post-it protégés avant actualisation ; tests terrain à compléter |
+| 6 | **Cœur métier fiable** | rappels journaliers, cycles, absences, modifications et journal sans régression | P1 | V255 : brouillons d'ajout / édition conservés en navigation, mise à jour bloquée si saisie non validée ; tests iOS terrain à compléter |
 | 7 | **Onboarding et exemples** | prise en main ≤5 min avec données fictives et import explicite | P1 | À construire |
 | 8 | **Suite de tests appareil réel** | iOS PWA/Android, hors ligne, fermeture forcée, mise à jour, conflit de deux onglets | P0 | Tests automatisés partiels |
 | 9 | **Conformité et exploitation** | finalité, RGPD, registre, responsabilités, contrats, HDS si hébergement confié à un tiers ; support et incidents | P0 AVANT VENTE | À instruire |
@@ -103,3 +103,9 @@ Une nouvelle hiérarchie privilégie les passages du jour, la progression, la pr
 Avant qu'une nouvelle version recharge la PWA, les brouillons multiligne sont enregistrés dans le **coffre chiffré local existant**, sans nouvelle base. Les écritures de post-it sont sérialisées. Si la persistance échoue, l'actualisation est refusée et le brouillon reste dans la session actuelle. En passant l'application en arrière-plan, une sauvegarde est tentée, sans garantie si iOS termine immédiatement le processus. Tests CI sur deux dates fictives, échec d'écriture et reprise avant rechargement.
 
 Ce mécanisme ne constitue pas une sauvegarde hors appareil ; il ne remplace pas les vérifications iPhone réel et hors connexion ni la future sauvegarde externe.
+
+## Golipette V255 — brouillons rapides lors du changement de jour
+
+Pendant la session ouverte, le champ **Ajouter un rappel** garde son texte par date lors d'une navigation entre jours. La modification d'une ligne reste aussi visible lorsqu'on revient au jour concerné. La fonction de mise à jour sûre refuse le rechargement tant qu'un ajout ou une édition n'a pas été validé, même lorsque le brouillon est sur une autre journée. Une saisie faite pendant une écriture asynchrone n'est pas effacée à son retour.
+
+**Limite claire :** ces brouillons *non validés* restent **en mémoire vive**, pas dans une deuxième base. Ils peuvent disparaître si iOS tue l'application ; seuls les rappels explicitement ajoutés/modifiés sont écrits dans le coffre chiffré existant. Un test iPhone réel est toujours requis. Aucun patient ni post-it existant n'est réimporté ou migré.

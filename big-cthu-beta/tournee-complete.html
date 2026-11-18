@@ -1204,7 +1204,20 @@ function memoForm(pid){document.getElementById("pki").innerHTML=`<div class="gra
 /* ===== Post-it du jour : lignes indépendantes, stockage chiffré existant et notes historiques conservées ===== */
 const TQ_STICKY_ID="tq-postit";
 const tqStickyDrafts=Object.create(null);
+// Brouillons rapides conservés uniquement en mémoire pendant la navigation entre jours.
+// Ils ne sont jamais présentés comme sauvegardés avant validation explicite.
+const tqStickyQuickDrafts=Object.create(null);
 let tqStickyEditing=null,tqStickyUndo=null;
+function tqStickyTrackNew(el){
+ if(!el||!TQ.validDay(el.dataset.day))return;
+ const d=el.dataset.day;
+ if(el.value)tqStickyQuickDrafts[d]=el.value;
+ else delete tqStickyQuickDrafts[d];
+}
+function tqStickyTrackEdit(el){
+ if(!el||!tqStickyEditing||tqStickyEditing.d!==day)return;
+ tqStickyEditing.value=el.value;
+}
 function tqStickyShown(d){return Object.prototype.hasOwnProperty.call(tqStickyDrafts,d)?tqStickyDrafts[d]:tqStickyText(d)}
 function tqStickyDraft(el){if(!el||!TQ.validDay(el.dataset.day))return;tqStickyDrafts[el.dataset.day]=el.value;const status=el.closest('.tq-sticky')?.querySelector('#tq-sticky-status');if(status)status.textContent='Modification en attente : Enregistrer pour garder ces lignes.';}
 function tqStickyRows(d,strict){
@@ -1247,7 +1260,7 @@ function tqStickyListHtml(d){
   const editing=tqStickyEditing&&tqStickyEditing.d===d&&tqStickyEditing.i===i;
   const prefix='<li class="tq-sticky-item"><span class="tq-sticky-dash" aria-hidden="true">−</span>';
   if(editing)return prefix+
-   '<input type="text" id="tq-sticky-edit" maxlength="1000" value="'+esc(item)+'" aria-label="Modifier le rappel '+(i+1)+'" onkeydown="if(event.key===\'Enter\')tqStickyApplyEdit(\''+d+'\','+i+');if(event.key===\'Escape\')tqStickyCancelEdit()">'+
+   '<input type="text" id="tq-sticky-edit" maxlength="1000" value="'+esc(tqStickyEditing.value)+'" aria-label="Modifier le rappel '+(i+1)+'" oninput="tqStickyTrackEdit(this)" onkeydown="if(event.key===\'Enter\')tqStickyApplyEdit(\''+d+'\','+i+');if(event.key===\'Escape\')tqStickyCancelEdit()">'+
    '<div class="tq-sticky-actions"><button type="button" onclick="tqStickyApplyEdit(\''+d+'\','+i+')">✓ OK</button><button type="button" onclick="tqStickyCancelEdit()">Annuler</button></div></li>';
   return prefix+'<span class="tq-sticky-label">'+esc(item)+'</span>'+
    '<div class="tq-sticky-actions"><button type="button" aria-label="Modifier le rappel '+(i+1)+'" onclick="tqStickyBeginEdit(\''+d+'\','+i+')">Modifier</button>'+
@@ -1276,7 +1289,7 @@ function tqPostitBlock(){
  '<div class="tq-sticky-head"><span>🗒️ Post-it · '+esc(rel(d))+' '+esc(short(d))+'</span><span class="sub">uniquement ce jour</span></div>'+
  '<p class="tq-sticky-hint">Rappels réservés à cette date. Les autres journées ont chacune leur propre post-it.</p>'+
  '<div id="tq-sticky-list" data-day="'+d+'">'+tqStickyListHtml(d)+'</div>'+
- '<div class="tq-sticky-new"><input type="text" id="tq-sticky-new" maxlength="1000" data-day="'+d+'" placeholder="Ajouter un rappel à ce jour…" aria-label="Nouveau rappel du '+esc(short(d))+'" onkeydown="if(event.key===\'Enter\'){event.preventDefault();tqStickyAdd()}">'+
+ '<div class="tq-sticky-new"><input type="text" id="tq-sticky-new" maxlength="1000" data-day="'+d+'" value="'+esc(tqStickyQuickDrafts[d]||"")+'" placeholder="Ajouter un rappel à ce jour…" aria-label="Nouveau rappel du '+esc(short(d))+'" oninput="tqStickyTrackNew(this)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();tqStickyAdd()}">'+
  '<button type="button" onclick="tqStickyAdd()">＋ Ajouter</button></div>'+
  '<div class="tq-meta"><span id="tq-sticky-status" class="sub" role="status" aria-live="polite">Enregistrement automatique à l’ajout, à la modification et à la suppression</span>'+
  '<button type="button" id="tq-sticky-undo" hidden onclick="tqStickyUndoDelete()">↶ Annuler la suppression</button></div>'+
@@ -1290,7 +1303,7 @@ function tqStickyBeginEdit(d,i){
  try{
   tqStickyCheckDraft(d);
   if(!Number.isInteger(i)||i<0||i>=tqStickyItems(d).length)return;
-  tqStickyEditing={d,i};tqStickyRefresh(d);
+  tqStickyEditing={d,i,value:tqStickyItems(d)[i]};tqStickyRefresh(d);
   const input=document.getElementById("tq-sticky-edit");if(input)input.focus();
  }catch(e){tqStickyRefresh(d,"⚠ "+e.message)}
 }
@@ -1312,13 +1325,16 @@ async function tqStickyApplyEdit(d,i){
 }
 async function tqStickyAdd(){
  const input=document.getElementById("tq-sticky-new");if(!input)return;
- const d=input.dataset.day,lines=tqStickyLines(input.value);
+ const d=input.dataset.day,raw=input.value,lines=tqStickyLines(raw);
  if(!TQ.validDay(d)||d!==day||!lines.length)return;
  try{
   tqStickyCheckDraft(d);
   const updated=tqStickyItems(d).concat(lines);
   await tqSaveStickyText(d,updated.join("\n"));
-  input.value="";tqStickyUndo=null;tqStickyEditing=null;
+  // Si l'utilisateur a continué de saisir pendant l'écriture, garder son nouveau texte.
+  if(tqStickyQuickDrafts[d]===raw)delete tqStickyQuickDrafts[d];
+  if(input.value===raw)input.value="";
+  tqStickyUndo=null;tqStickyEditing=null;
   tqStickyRefresh(d,"✓ Ajouté uniquement au "+short(d));
  }catch(e){tqStickyRefresh(d,"⚠ "+e.message)}
 }
@@ -1373,9 +1389,10 @@ async function tqStickyFlushDrafts(){
  // Un champ encore en cours de saisie n'est pas un rappel enregistré.
  // Ne jamais recharger l'app avant que l'utilisateur ait validé Ajouter ou OK.
  const newField=document.getElementById('tq-sticky-new');
- if(newField&&newField.value.trim())throw Error('Nouveau rappel en cours : valide « Ajouter » avant actualisation.');
+ if((newField&&newField.value.trim())||Object.values(tqStickyQuickDrafts).some(value=>value.trim()))
+  throw Error('Nouveau rappel en cours sur une journée : valide « Ajouter » avant actualisation.');
  const editField=document.getElementById('tq-sticky-edit');
- if(editField)throw Error('Rappel en cours de modification : valide « OK » avant actualisation.');
+ if(editField||tqStickyEditing)throw Error('Rappel en cours de modification : valide « OK » ou « Annuler » avant actualisation.');
  if(tqStickySavePromise)await tqStickySavePromise;
  for(const [d,raw] of Object.entries(tqStickyDrafts)){
   if(!TQ||!TQ.validDay(d))throw Error('Date de rappel invalide : actualisation annulée.');
