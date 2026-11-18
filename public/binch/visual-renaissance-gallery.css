@@ -1,0 +1,131 @@
+/*
+ La Binch Renaissance — interactive gallery and route focus.
+ No progression is modified; only visual presentation.
+*/
+#page-hub .binch-renaissance-visions{
+ display:inline-flex;align-items:center;justify-content:center;gap:7px;
+ margin:13px 0 4px;padding:11px 17px;min-height:45px;
+ border:1px solid #f0cc89;border-radius:10px;
+ color:#fff0c8;font:800 .78rem Cinzel,Georgia,serif;
+ background:linear-gradient(135deg,#655234,#263d34 85%);
+ box-shadow:inset 0 1px #fff3,0 8px 22px #0009,0 0 18px #a982493a;
+ cursor:pointer;letter-spacing:.02em;
+}
+#page-hub .binch-renaissance-visions:hover{border-color:#fff1c5;background:linear-gradient(135deg,#876b3f,#28483c)}
+#page-hub .binch-renaissance-visions:focus-visible{outline:3px solid #ffe7a9;outline-offset:3px}
+#page-hub .binch-route-tools .binch-renaissance-route-focus{
+ min-height:42px;min-width:145px;flex:1 1 auto;padding:9px 15px;
+ border:1px solid #a2b59c;border-radius:10px;
+ color:#dff2d3;background:#273c32;
+ font:700 .75rem system-ui,-apple-system,sans-serif;
+ cursor:pointer;text-align:center;box-shadow:inset 0 1px #fff1;
+}
+#page-hub .binch-route-tools .binch-renaissance-route-focus[aria-pressed=true]{
+ background:linear-gradient(120deg,#5b563a,#344b37);border-color:#f6da9c;color:#ffedc6;
+ box-shadow:0 0 0 2px #eecb8350,inset 0 1px #fff2;
+}
+html[data-binch-route-focus=todo] #page-hub .binch-route-step.done{display:none!important}
+#page-hub .binch-route-tools .binch-renaissance-route-focus:focus-visible{
+ outline:3px solid #ffe4a5;outline-offset:3px;
+}
+.binch-renaissance-gallery{
+ position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+ width:min(1160px,calc(100vw - 24px));max-width:1160px;
+ max-height:min(92dvh,900px);padding:0;margin:0;overflow-y:auto;
+ border:2px solid #dcba81;border-radius:20px;
+ background:linear-gradient(145deg,#1c2c2d,#0a171c 63%,#15182a);
+ color:#f5e7d3;box-shadow:0 35px 100px #000e,inset 0 1px #fff2;
+ z-index:2147483000;overscroll-behavior:contain;
+}
+.binch-renaissance-gallery:not([open]){display:none}
+.binch-renaissance-gallery::backdrop{
+ background:#01070bdc;
+ -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+}
+.binch-renaissance-gallery>header{
+ position:sticky;top:0;z-index:2;
+ display:flex;align-items:center;justify-content:space-between;gap:15px;
+ background:linear-gradient(110deg,#293b35,#111d24);border-bottom:1px solid #b69d6d9c;
+ padding:14px clamp(15px,3vw,30px);
+ -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+}
+.binch-renaissance-gallery>header h2{
+ color:#ffe7af;font:700 clamp(1.25rem,3vw,1.9rem) Cinzel,Georgia,serif;
+ margin:0;line-height:1.2;
+}
+.binch-renaissance-gallery .binch-gallery-close{
+ min-height:44px;min-width:85px;padding:10px 14px;
+ color:#ffe8c5;background:#302c29;border:1px solid #cfad7a;border-radius:9px;cursor:pointer;
+}
+.binch-renaissance-gallery .binch-gallery-disclaimer{
+ margin:14px clamp(15px,3vw,30px);
+ color:#c8d3c9;font-size:.79rem;line-height:1.5;
+}
+.binch-renaissance-gallery .binch-gallery-scene{
+ margin:12px clamp(15px,3vw,30px) 18px;
+ overflow:hidden;border:1px solid #b99e70;border-radius:16px;
+ background:#121e26;box-shadow:0 17px 40px #0008;
+}
+.binch-renaissance-gallery .binch-gallery-scene>img{
+ display:block;width:100%;aspect-ratio:16/7.6;object-fit:cover;object-position:center;
+ background:#132e32;
+}
+.binch-renaissance-gallery .binch-gallery-scene figcaption{
+ padding:12px 16px;font:700 clamp(.85rem,2vw,1.2rem) Cinzel,Georgia,serif;
+ color:#f2ddae;background:linear-gradient(90deg,#24352f,#111f25);
+ border-top:1px solid #ae8e6175;
+}
+.binch-renaissance-gallery .binch-gallery-grid{
+ display:grid;grid-template-columns:repeat(9,minmax(0,1fr));
+ gap:7px;padding:0 clamp(15px,3vw,30px) 25px;
+}
+.binch-renaissance-gallery .binch-gallery-choice{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+ min-width:0;min-height:98px;padding:8px 5px;border:1px solid #6d837c;
+ border-radius:10px;background:linear-gradient(140deg,#203431,#101d25);
+ color:#e0e9df;cursor:pointer;
+}
+.binch-renaissance-gallery .binch-gallery-choice>img{
+ width:min(100%,55px);height:57px;object-fit:contain;pointer-events:none;
+}
+.binch-renaissance-gallery .binch-gallery-choice>span{
+ font-size:.68rem;font-weight:700;line-height:1.2;overflow-wrap:anywhere;text-align:center;
+}
+.binch-renaissance-gallery .binch-gallery-choice[aria-pressed=true]{
+ border-color:#f6dca2;background:linear-gradient(140deg,#5a553c,#213c36);
+ box-shadow:0 0 0 2px #e9c58e38,0 0 15px #d9b56b36;color:#ffedc8;
+}
+.binch-renaissance-gallery :is(button,a):focus-visible{
+ outline:3px solid #fff0b9;outline-offset:3px;
+}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+ .binch-renaissance-gallery .binch-gallery-choice:hover{
+  transform:translateY(-2px);border-color:#deb88b;
+ }
+}
+@media(max-width:900px){
+ .binch-renaissance-gallery .binch-gallery-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+ .binch-renaissance-gallery .binch-gallery-scene>img{aspect-ratio:16/9}
+}
+@media(max-width:530px){
+ .binch-renaissance-gallery{width:calc(100vw - 12px);max-height:95dvh;border-radius:12px}
+ .binch-renaissance-gallery .binch-gallery-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ .binch-renaissance-gallery .binch-gallery-choice{min-height:86px;padding:6px}
+ .binch-renaissance-gallery .binch-gallery-scene>img{aspect-ratio:4/3}
+ .binch-renaissance-gallery>header{padding:11px 12px}
+ #page-hub .binch-renaissance-visions{font-size:.72rem;padding:10px 12px}
+}
+@media(prefers-reduced-motion:reduce){
+ .binch-renaissance-gallery .binch-gallery-choice{animation:none!important;transform:none!important;transition:none!important}
+}
+html[data-binch-detail=lite] .binch-renaissance-gallery,
+html[data-binch-detail=lite] .binch-renaissance-gallery>header,
+html[data-binch-detail=lite] .binch-renaissance-gallery .binch-gallery-choice{
+ box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+@media(forced-colors:active){
+ .binch-renaissance-gallery,.binch-renaissance-gallery .binch-gallery-choice,
+ #page-hub .binch-renaissance-visions,#page-hub .binch-renaissance-route-focus{
+  border-color:CanvasText;background:Canvas;color:CanvasText;
+ }
+}
