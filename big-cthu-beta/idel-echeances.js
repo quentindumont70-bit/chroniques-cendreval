@@ -52,7 +52,7 @@ function upcoming(){return items.map(item=>({item,...C.assess(item)})).sort((a,b
 function notifications(){
  if(notified||!key||!('Notification' in window)||Notification.permission!=='granted')return;
  const count=upcoming().filter(x=>x.alert!=='later').length;
- if(count){new Notification('Échéances IDEL à vérifier',{body:count+' échéance(s) à contrôler dans le coffre chiffré Big Cthu.',tag:'big-cthu-idel'});notified=true}
+ if(count){try{new Notification('Échéances IDEL à vérifier',{body:count+' échéance(s) à contrôler dans le coffre chiffré Big Cthu.',tag:'big-cthu-idel'});notified=true}catch(e){say('Notification non prise en charge ici. L’export Calendrier reste disponible.')}}
 }
 function render(){
  if(!key)return;
@@ -180,6 +180,7 @@ $('backup').addEventListener('click',onBackup);
 $('import').addEventListener('click',()=>$('importFile').click());
 $('importLocked').addEventListener('click',()=>$('importFile').click());
 $('importFile').addEventListener('change',onImport);
-window.addEventListener('pagehide',()=>{key=null;items=[];envelope=null});
+window.addEventListener('pagehide',lock);
+window.addEventListener('pageshow',()=>{if(!key)refreshLock()});
 onKind();refreshLock();
 })();
