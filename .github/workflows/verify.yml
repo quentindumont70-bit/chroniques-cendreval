@@ -37,7 +37,7 @@ jobs:
       - name: Vérifier la Renaissance visuelle de La Binch
         run: |
           node --test tests/binch-visual-renaissance.test.mjs
-          python3 -c "import xml.etree.ElementTree as ET, pathlib; paths=list(pathlib.Path('public/binch').glob('renaissance-*.svg')); assert len(paths)==10, f'Expected ten original scenes, got {len(paths)}'; [ET.parse(path) for path in paths]; print('Validated',len(paths),'SVG scenes')"
+          python3 -c "import xml.etree.ElementTree as ET, pathlib; paths=list(pathlib.Path('public/binch').glob('renaissance-*.svg')); assert len(paths)==21, f'Expected 21 original scenes and sigils, got {len(paths)}'; [ET.parse(path) for path in paths]; print('Validated',len(paths),'original SVG artworks')"
       - name: Vérifier la présence de Big Cthu dans le paquet Pages
         run: |
           node scripts/stage-big-cthu-beta.mjs
