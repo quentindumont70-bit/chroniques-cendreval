@@ -39,6 +39,27 @@ function missing(e){
   tank:e.kind==='Donjon'&&size===5?Math.max(0,1-c.tank):null,
   heal:e.kind==='Donjon'&&size===5?Math.max(0,1-c.heal):null};
 }
+function actionPlan(s){
+ const tasks=[];
+ const add=(label,detail)=>{if(tasks.length<20)tasks.push({label,detail})};
+ for(const e of s.upcoming.slice(0,5)){
+  const m=missing(e),title=text(e.title);
+  if(m.slots)add('Inscrits à confirmer : '+title,m.slots+' place(s) sans confirmation');
+  if(m.excess)add('Effectif à réduire : '+title,m.excess+' inscription(s) au-dessus de la capacité');
+  if(m.tank)add('Tank à confirmer : '+title,'Rôle requis pour un donjon à 5');
+  if(m.heal)add('Soigneur à confirmer : '+title,'Rôle requis pour un donjon à 5');
+  if(m.c.duplicates)add('Dédoublonner : '+title,m.c.duplicates+' inscription(s) en double dans le calendrier');
+ }
+ for(const r of s.requests.slice(0,8)){
+  const f=s.fulfillment.find(x=>x.id===r.id),missingQty=Math.max(0,num(r.quantity)-num(f?.received));
+  if(missingQty&&(r.priority==='urgent'||r.deadline&&Number.isFinite(Date.parse(r.deadline))&&Date.parse(r.deadline)<Date.now()))
+   add('Approvisionnement : '+text(r.title),missingQty+' unité(s) sans réception confirmée manuellement');
+ }
+ for(const task of s.tasks.slice(0,12)){
+  if(task?.status==='blocked')add('Débloquer : '+text(task.title),text(task.owner||'Responsable non attribué'));
+ }
+ return tasks.slice(0,8);
+}
 function summary(s){
  const lines=['LA BINCH · RAPPORT GM (brouillon local)','Données sur cet appareil, non synchronisées entre membres.',''];
  if(!s.upcoming.length)lines.push('Sorties : aucune à venir dans le calendrier local.');
@@ -48,6 +69,7 @@ function summary(s){
  }
  lines.push('',s.requests.length?'Demandes ouvertes :':'Aucune demande ouverte dans le Planner local.');
  for(const r of s.requests.slice(0,7))lines.push('• '+text(r.title)+' · reçus '+(s.fulfillment.find(f=>f.id===r.id)?.received||0)+' / '+num(r.quantity)+(r.priority==='urgent'?' [URGENT]':'')+(r.deadline&&Number.isFinite(Date.parse(r.deadline))?' · échéance '+new Date(r.deadline).toLocaleDateString('fr-FR'):''));
+ const priorities=actionPlan(s);if(priorities.length){lines.push('','ACTIONS À CONFIRMER MANUELLEMENT :');for(const a of priorities)lines.push('• '+a.label+' — '+a.detail)}
  lines.push('','Délégations ouvertes : '+s.tasks.length);for(const t of s.tasks.slice(0,5))lines.push('• '+text(t.title)+' — '+text(t.owner||'Non attribué')+' — '+text(t.due||'Sans échéance'));lines.push('','Coffre : '+s.resources.length+' ligne(s) déclarée(s), à confirmer avec les propriétaires.','Copie manuelle pour Discord ; aucun message publié automatiquement.');
  return lines.join('\n');
 }
@@ -60,6 +82,7 @@ function render(){
   const m=missing(e),hours=new Date(stamp(e)).toLocaleString('fr-FR',{dateStyle:'medium',timeStyle:'short'});
   return '<article class="binch-gm-watch-event"><div><strong>'+esc(text(e.title))+'</strong><small>'+esc(hours)+' · '+m.c.total+'/'+m.size+' confirmés localement · '+m.slots+' place(s) non confirmée(s)'+(m.excess?' · '+m.excess+' en trop':'')+(m.c.duplicates?' · '+m.c.duplicates+' doublon(s) à vérifier':'')+'</small><small>Tank '+m.c.tank+' · Soins '+m.c.heal+' · DPS '+m.c.dps+' · Flex '+m.c.flex+'</small></div><button type="button" data-gm-watch-open="calendar">Gérer</button></article>';
  }).join(''):'<p>Aucune sortie à venir dans le calendrier local. Ajoute un rendez-vous avant de convoquer les joueurs.</p>';
+ const actions=actionPlan(s),check=$('binch-gm-watch-actions');if(check)check.innerHTML=actions.length?'<ol>'+actions.map(a=>'<li><strong>'+esc(a.label)+'</strong><small>'+esc(a.detail)+'</small></li>').join('')+'</ol>':'<p>Aucune action bloquante détectée dans les registres locaux. Vérifie les données en jeu avant le départ.</p>';
  $('binch-gm-watch-urgent').innerHTML=s.requests.length?s.requests.slice(0,5).map(r=>'<article><strong>'+esc(text(r.title))+'</strong><span>'+Math.min(num(r.quantity),s.fulfillment.find(f=>f.id===r.id)?.received||0)+' / '+num(r.quantity)+' réception(s) confirmée(s) manuellement'+(r.priority==='urgent'?' · Urgent':'')+(r.deadline&&Number.isFinite(Date.parse(r.deadline))?' · échéance '+esc(new Date(r.deadline).toLocaleDateString('fr-FR'))+(Date.parse(r.deadline)<Date.now()?' (dépassée)':''):'')+'</span></article>').join(''):'<p>Aucune demande ouverte dans le Planner local.</p>';
 }
 function navigate(destination){
@@ -72,7 +95,7 @@ function navigate(destination){
 function mount(){
  const home=$('binch-gm-hub');if(!home||$('binch-gm-watch'))return false;
  const box=document.createElement('section');box.id='binch-gm-watch';box.className='binch-gm-watch';
- box.innerHTML='<header><div><div class="eyebrow">BRIEFING EXPRESS · INFORMATIONS LOCALES</div><h2>Tableau de garde du maître de guilde</h2><p>Prochaines sorties, confirmations, demandes et ressources déclarées. Aucun statut en direct sans service partagé.</p></div><button type="button" id="binch-gm-watch-copy">Copier le briefing Discord</button></header><div id="binch-gm-watch-stats"></div><div class="binch-gm-watch-grid"><div><h3>Sorties à préparer</h3><div id="binch-gm-watch-list"></div></div><div><h3>Demandes ouvertes</h3><div id="binch-gm-watch-urgent"></div><button type="button" data-gm-watch-open="planner">Ouvrir le Planner</button><button type="button" data-gm-watch-open="coffre">Voir le coffre</button><button type="button" data-gm-watch-open="delegations">Gérer les délégations</button></div></div><p class="binch-gm-watch-status" id="binch-gm-watch-status" role="status" aria-live="polite"></p>';
+ box.innerHTML='<header><div><div class="eyebrow">BRIEFING EXPRESS · INFORMATIONS LOCALES</div><h2>Tableau de garde du maître de guilde</h2><p>Prochaines sorties, confirmations, demandes et ressources déclarées. Aucun statut en direct sans service partagé.</p></div><button type="button" id="binch-gm-watch-copy">Copier le briefing Discord</button></header><div id="binch-gm-watch-stats"></div><div class="binch-gm-watch-grid"><div><h3>Sorties à préparer</h3><div id="binch-gm-watch-list"></div></div><div><h3>Demandes ouvertes</h3><div id="binch-gm-watch-urgent"></div><button type="button" data-gm-watch-open="planner">Ouvrir le Planner</button><button type="button" data-gm-watch-open="coffre">Voir le coffre</button><button type="button" data-gm-watch-open="delegations">Gérer les délégations</button></div></div><section class="binch-gm-watch-checklist"><h3>Actions avant départ</h3><p>Checklist locale indicative : vérifie les confirmations dans le jeu et avec les membres.</p><div id="binch-gm-watch-actions"></div></section><p class="binch-gm-watch-status" id="binch-gm-watch-status" role="status" aria-live="polite"></p>';
  home.querySelector('.binch-gm-menu')?.before(box);
  box.addEventListener('click',e=>{const b=e.target.closest('[data-gm-watch-open]');if(b)navigate(b.dataset.gmWatchOpen)});
  $('binch-gm-watch-copy').onclick=async()=>{const value=summary(snapshot());try{if(!navigator.clipboard?.writeText)throw Error('Clipboard unavailable');await navigator.clipboard.writeText(value);$('binch-gm-watch-status').textContent='Briefing copié, à coller dans Discord.'}catch{window.prompt('Copier pour Discord',value)}};
