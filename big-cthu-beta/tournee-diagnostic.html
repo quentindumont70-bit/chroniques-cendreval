@@ -1,0 +1,39 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#201a38"><title>Retrouver ma Tournée — diagnostic local</title><style>
+:root{font:16px/1.48 system-ui,-apple-system,sans-serif;background:#151025;color:#f8f5ff;color-scheme:dark}*{box-sizing:border-box}body{margin:0;padding:16px 14px 55px}main{max-width:680px;margin:0 auto}h1{font-size:clamp(25px,6vw,33px);line-height:1.18}p{line-height:1.55}.card{background:#261f3d;border:1px solid #685789;border-radius:17px;padding:17px;margin:15px 0}.notice{border-left:4px solid #f4c46b}.warn{color:#ffe5a4}.row{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid #554967;padding:10px 0}.row span{font-size:14px;min-width:0;overflow-wrap:anywhere}.row strong{font-size:14px;text-align:right;overflow-wrap:anywhere}button,a.action{background:#ae8bf3;color:#171023;border-radius:12px;padding:13px 14px;min-height:48px;border:0;display:inline-flex;align-items:center;justify-content:center;font:inherit;font-weight:750;cursor:pointer;text-decoration:none}button:focus-visible,a:focus-visible{outline:3px solid #7ef0d6;outline-offset:3px}.buttons{display:flex;gap:10px;flex-wrap:wrap}.buttons>*{flex:1 1 190px}a{color:#d8c1ff}small{color:#d5cce6}.muted{color:#d5cce6}li{margin-bottom:10px}.stat{font-size:18px}#feedback{min-height:26px}#items{margin:7px 0}code{overflow-wrap:anywhere}
+</style><script src="./tournee-diagnostic-local.js" defer></script></head>
+<body><main><p><a href="./tournee.html">← Ancienne Tournée</a></p><h1>Retrouver les patients de Tournée</h1>
+<section class="card notice"><strong>Ce diagnostic ne change rien.</strong><p>Il vérifie seulement combien de patients l’ancienne interface peut trouver dans <strong>ce navigateur</strong> et quels coffres chiffrés y existent. Aucun patient, nom, ordonnance ni clé secrète n’est affiché, envoyé ou copié.</p><p class="warn"><strong>Ne réinitialise pas Tournée, ne supprime pas les données de site et n’importe rien avant d’avoir identifié la bonne source.</strong></p></section>
+<section class="card" aria-label="Résultats du diagnostic"><h2>Sur cet appareil et ce navigateur</h2><div id="items" role="status" aria-live="polite">Lecture des indicateurs…</div><p id="interpretation" class="muted"></p><div class="buttons"><button type="button" id="refresh">Relire sans modifier</button><button type="button" id="copy">Copier le rapport sans noms</button></div><p id="feedback" role="status" aria-live="polite"></p></section>
+<section class="card"><h2>Si tu ne retrouves pas les 17 passages</h2><ol>
+<li>Reviens à <strong>l’onglet exact</strong> dans lequel les patients étaient visibles. Ne le recharge pas : il pourrait encore conserver la liste en mémoire.</li>
+<li>Vérifie séparément <strong>Chrome</strong>, <strong>Safari</strong> et le navigateur intégré de ChatGPT. Ils ne partagent pas nécessairement le stockage de Tournée.</li>
+<li>Ouvre ce diagnostic dans le navigateur d’origine et compare la ligne « Ancienne liste locale ».</li>
+<li>Si la liste existe encore dans l’ancien onglet, fais d’abord une <strong>sauvegarde complète</strong> depuis cet onglet, puis seulement une restauration contrôlée.</li>
+</ol><p class="muted">Un coffre indiqué « présent » n’implique pas qu’il contient des patients : son contenu est chiffré et ce diagnostic ne tente jamais de l’ouvrir.</p></section></main>
+<script>
+window.addEventListener('DOMContentLoaded',()=>{
+ 'use strict';
+ const $=id=>document.getElementById(id),api=window.TOURNEE_RECOVERY_PROBE;
+ const row=(name,value)=>{const el=document.createElement('div');el.className='row';const a=document.createElement('span'),b=document.createElement('strong');a.textContent=name;b.textContent=value;el.append(a,b);return el};
+ let report='';
+ const fmt=v=>v==='present-contenu-inconnu'?'Présent (non ouvert)':v==='absent'?'Absent':'Inconnu';
+ function run(){
+  if(!api){$('items').textContent='Script de diagnostic non chargé : ouvre cette page avec une connexion réseau.';return}
+  let storage;try{storage=window.localStorage}catch(e){storage={get length(){throw Error('Stockage inaccessible')}}}
+  const p=api.probe(storage);
+  $('items').replaceChildren(
+   row('Ancienne liste de patients',p.legacy.status==='present'?p.legacy.count+' entrée(s)':p.legacy.status),
+   row('Coffre complet historique',fmt(p.vaults.original)),
+   row('Coffre actuel automatique',fmt(p.vaults.appareil)),
+   row('Coffre précédent',fmt(p.vaults.precedent)),
+   row('Autres clés locales Tournée',String(p.otherKeys)),
+   row('Stockage du navigateur',p.localStorage==='ok'?'Accessible':'Inaccessible')
+  );
+  $('interpretation').textContent=p.legacy.status==='present'&&p.legacy.count>0?'Une liste existe dans ce navigateur. Ne l’écrase pas ; privilégie un export depuis l’ancienne Tournée.':p.legacy.status==='present'&&p.legacy.count===0?'L’ancienne liste locale est vide ici. Examine les coffres et surtout le navigateur où les passages étaient visibles.':'Aucune ancienne liste lisible ici. Cela ne prouve pas sa suppression : elle peut être dans un autre navigateur ou un coffre non ouvert.';
+  report=api.summarize(p);
+ }
+ $('refresh').onclick=run;
+ $('copy').onclick=async()=>{try{await navigator.clipboard.writeText(report);$('feedback').textContent='Rapport sans noms copié.'}catch(e){$('feedback').textContent='Copie indisponible : fais une capture des indicateurs uniquement.'}};
+ run();
+});
+</script></body></html>
