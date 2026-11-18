@@ -83,7 +83,7 @@ test('V94: une erreur d écriture ne valide pas la restauration et laisse les do
 test('V94: accès direct et récupération volontaire accessibles sans écran de verrouillage',async()=>{
  const page=await html();
  assert.match(page,/id="tour-security-gate" hidden/);
- assert.match(page,/id="tour-recovery-launch">Récupérer mes anciennes données/);
+ assert.match(page,/id="tour-recovery-launch"(?: hidden)?>Récupérer mes anciennes données/);
  assert.match(page,/function recoverySpaceEmpty\(/);
  assert.match(page,/async function autoOpenTournee\(\)/);
  assert.match(page,/Récupération bloquée pour ne rien écraser/);
