@@ -162,6 +162,33 @@ document.addEventListener('binch:adventure-ready',()=>{
   observer.observe(nav,{childList:true});
  }
 });
+let routeToastTimer=null;
+function clearRouteToast(){
+ const toast=$('binch-renaissance-route-toast');
+ if(routeToastTimer!==null){clearTimeout(routeToastTimer);routeToastTimer=null}
+ if(toast)toast.remove();
+}
+function showRouteToast(event){
+ if(!event?.detail?.done)return; // never celebrate an unchecking operation
+ const id=String(event.detail.id||'');
+ if(!id)return;
+ const buttons=[...document.querySelectorAll('#binch-route-list [data-done]')];
+ const target=buttons.find(b=>b.dataset.done===id);
+ const name=target?.querySelector('strong')?.textContent?.trim().slice(0,110)||'Une étape';
+ clearRouteToast();
+ const toast=document.createElement('div');toast.id='binch-renaissance-route-toast';
+ toast.className='binch-renaissance-route-toast';toast.setAttribute('role','status');
+ toast.setAttribute('aria-live','polite');
+ const rune=document.createElement('span');rune.className='binch-route-toast-rune';rune.setAttribute('aria-hidden','true');rune.textContent='✧';
+ const message=document.createElement('span'),title=document.createElement('strong'),subtitle=document.createElement('small');
+ title.textContent=name;subtitle.textContent='Noté comme terminé dans ton carnet local · non confirmé dans WoW';
+ message.append(title,subtitle);
+ const close=document.createElement('button');close.type='button';close.textContent='×';
+ close.setAttribute('aria-label','Fermer la notification');close.addEventListener('click',clearRouteToast);
+ toast.append(rune,message,close);document.body.append(toast);
+ routeToastTimer=setTimeout(clearRouteToast,3300);
+}
+document.addEventListener('binch:route-complete',showRouteToast);
 document.addEventListener('binch:profile-change',applyAmbience);
 document.addEventListener('grimoire:sync',applyAmbience);
 window.addEventListener('storage',e=>{if(e.key===KEY){ambience=readAmbience();applyAmbience()}if(e.key===DETAIL_KEY){detail=readDetail();applyDetail()}if(e.key===FOCUS_KEY){routeFocus=readRouteFocus();applyRouteFocus()}});
