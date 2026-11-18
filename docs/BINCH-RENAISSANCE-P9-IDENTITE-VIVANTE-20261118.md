@@ -94,3 +94,14 @@ Elles sont branchées sur les deux surfaces d'accueil (hero initial et carte cin
 10. Préparer la bêta limitée pour ton frère après revue et approbation ; ne pas fusionner par anticipation.
 
 **Gouvernance :** branche `feature/binch-visual-renaissance-20261118`, PR #234 en brouillon, aucun merge, aucun changement de données WoW ou AH, aucune dépense.
+
+### Revue réelle des captures P10 — correction ciblée
+
+Les captures headless générées par la CI pour Tauren/Druide et Mort-vivant/Démoniste, sur 1440×960 et 430×860, ont été examinées. Un défaut vérifiable est apparu : le tracé architectural racial recouvrait excessivement le paysage de classe, comme un dessin filaire géant. Le moteur a été corrigé sur les surfaces suivantes :
+
+- **Atelier P10** : architecture réduite à une gravure discrète positionnée en second plan, plus légère sur iPhone.
+- **Vraie application** : même hiérarchie, scènes de classe dominantes ; ornements raciaux limités en taille et en opacité.
+- **Dialogue Reforger mon identité** : prévisualisation corrigée pour ne pas masquer la scène principale.
+- **Préchargement** : l’atelier ne charge en priorité que le panorama de la classe sélectionnée dans l’URL (liste blanche) ; pas les neuf images d’un seul coup.
+
+Ces changements sont sur la PR en brouillon. Les captures de la dernière révision et l’essai tactile réel restent les critères de validation ; une capture headless verte ne prouve pas à elle seule le confort d’usage.
