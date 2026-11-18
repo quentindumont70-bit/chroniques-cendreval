@@ -14,7 +14,7 @@ function harness(initial='dusk'){
   after(item){nodes.passages=item}
   setAttribute(k,v){this.attributes[k]=v}
   addEventListener(k,fn){this['on'+k]=fn}
-  querySelector(k){return k==='strong'?this.children.find(x=>x.tag==='span')?.children.find(x=>x.tag==='strong'):null}
+  querySelector(k){return k==='strong'?this.children.flatMap(x=>x.children||[]).find(x=>x.tag==='strong'):null}
  }
  const copy=new Element('div');
  const hero=new Element('section');hero.querySelector=s=>s==='.binch-kicker'?{parentElement:copy}:null;
@@ -63,6 +63,15 @@ test('Renaissance : image originale, accessibilité mobile et animation réduite
  assert.match(css,/:focus-visible/);
  assert.match(css, /html\[data-binch-ambience=moon\]/);
  assert.match(css, /html\[data-binch-ambience=embers\]/);
+ const worlds=source('visual-renaissance-worlds.css');
+ assert.match(worlds,/#onboarding/);
+ assert.match(worlds,/#page-progression/);
+ assert.match(worlds,/#page-metiers/);
+ assert.match(worlds,/#page-gm/);
+ assert.match(worlds,/#page-specs/);
+ assert.match(worlds,/prefers-reduced-motion:reduce/);
+ assert.ok(html.includes('./visual-renaissance-worlds.css?v=001'));
+
  assert.ok(html.indexOf('./visual-renaissance.css?v=001')>html.indexOf('./ultimate-identities.css?v=001'),'design loaded after class theme');
  assert.ok(html.indexOf('./visual-renaissance.js?v=001')>html.indexOf('./player-home.js'),'home mounted before visual enhancement');
  assert.equal(html.match(/\.\/visual-renaissance\.js\?v=001/g)?.length,1);
