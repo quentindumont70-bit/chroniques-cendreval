@@ -214,7 +214,7 @@ test('Galerie intégrée : neuf visions accessibles sans changer le personnage',
  assert.ok(css.includes('::backdrop'));
  assert.ok(css.includes('@media(max-width:530px)'));
  assert.ok(css.includes('prefers-reduced-motion:reduce'));
- assert.ok(source('index.html').includes('./visual-renaissance-gallery.css?v=001'));
+ assert.ok(source('index.html').includes('./visual-renaissance-gallery.css?v=002'));
 });
 test('Timeline visuelle : filtrer les étapes terminées sans les modifier',()=>{
  const x=harness();x.p.mount();
@@ -261,4 +261,22 @@ test('Gardien félin original : illustration de classe décorative et adaptée a
  assert.ok(css.includes('auto 46%'));
  const low=source('visual-renaissance-details.css');
  assert.ok(low.includes('html[data-binch-detail="lite"] #page-hub .binch-character-card::before'),'lite mode overrides heavy spirit graphics');
+});
+
+test('Carnet de quête : confirmation célébrée uniquement en local, sans faux loot WoW',()=>{
+ const js=source('visual-renaissance.js');
+ const begin=js.indexOf('function showRouteToast(event){');
+ const end=js.indexOf("document.addEventListener('binch:route-complete',showRouteToast);",begin);
+ assert.ok(begin>=0&&end>begin);
+ const feature=js.slice(begin,end);
+ assert.ok(feature.includes('if(!event?.detail?.done)return'));
+ assert.ok(feature.includes('non confirmé dans WoW'));
+ assert.ok(feature.includes('setTimeout(clearRouteToast,3300)'));
+ assert.ok(!feature.includes('localStorage.setItem'));
+ assert.ok(source('player-home.js').includes("new CustomEvent('binch:route-complete'"));
+ const css=source('visual-renaissance-gallery.css');
+ assert.ok(css.includes('.binch-renaissance-route-toast'));
+ assert.ok(css.includes('binch-route-toast-arrival'));
+ assert.ok(css.includes('prefers-reduced-motion:reduce'));
+ assert.ok(css.includes('env(safe-area-inset-bottom'));
 });
