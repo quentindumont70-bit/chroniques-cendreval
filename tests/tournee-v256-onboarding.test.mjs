@@ -29,5 +29,5 @@ test('V256 : guide accessible depuis Tournée et préchargé hors ligne',async()
  assert.match(app,/id="tour-onboarding-open"/);
  assert.match(app,/window\.open\('\.\/tournee-demarrage\.html','_blank','noopener,noreferrer'\)/);
  assert.match(sw,/'\.\/tournee-demarrage\.html'/);
- assert.match(sw,/big-cthu-public-v2-v256/);
+ assert.match(sw,/const CACHE='big-cthu-public-v2-v\d+'/);
 });

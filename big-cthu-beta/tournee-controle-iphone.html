@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#091722">
+<meta name="description" content="Contrôle local et sans données de santé du cache hors ligne de Tournée sur iPhone.">
+<title>Contrôle hors ligne · Tournée</title>
+<style>
+:root{color-scheme:dark;--bg:#08131e;--panel:#13293a;--line:#315266;--text:#ecf7fa;--muted:#b4ccd6;--ok:#83ebc6;--warn:#ffcf86}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 85% -5%,#14575a,transparent 58%),var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header,main,footer{max-width:760px;margin:auto;padding:0 18px}
+header{padding-top:24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{color:var(--ok);font-weight:800;letter-spacing:.13em;text-transform:uppercase;font-size:12px}
+a{color:var(--ok)}.back{border:1px solid var(--line);border-radius:12px;padding:10px 14px;text-decoration:none;min-height:44px;display:inline-flex;align-items:center;color:var(--text)}
+h1{font-size:clamp(28px,6vw,46px);line-height:1.12;letter-spacing:-.035em;margin:28px 0 12px}h2{font-size:21px;margin:20px 0 10px}
+.lead{color:#d3e4eb;font-size:17px}
+.note{border-left:4px solid var(--warn);background:#2a302e;color:#ffebce;padding:15px;border-radius:10px;font-size:14px;margin:18px 0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:22px 0}
+.item{border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,var(--panel),#101f2d);padding:17px;min-height:114px}
+.item span{display:block;font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.item strong{display:block;margin-top:7px;font-size:16px;overflow-wrap:anywhere}
+#result{border:1px solid #406679;border-radius:16px;background:#163040;padding:18px;margin:18px 0;font-weight:700}
+#result[data-state="ready"]{border-color:#367764;color:var(--ok)}
+#result[data-state="attention"],#result[data-state="error"]{border-color:#8c6c3d;color:var(--warn)}
+button{background:var(--ok);color:#092332;border:0;border-radius:12px;font-weight:800;padding:12px 18px;min-height:48px;font-size:15px;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--warn);outline-offset:3px}
+ol{padding-left:24px}li{margin:12px 0}small,footer{color:var(--muted)}
+footer{padding-top:26px;padding-bottom:34px;font-size:12px}
+@media(max-width:480px){.grid{grid-template-columns:1fr}.back{font-size:12px;padding:9px}.item{min-height:87px}header{align-items:flex-start}}
+</style>
+</head>
+<body>
+<header><div class="brand">Tournée · Contrôle terrain</div><a class="back" href="./tournee-demarrage.html">← Premiers pas</a></header>
+<main>
+<h1>Hors ligne : ce qui est réellement prêt.</h1>
+<p class="lead">Ce contrôle examine uniquement le cache des <strong>pages publiques</strong> de Tournée et le contexte de navigation. Il n'ouvre, ne lit et ne modifie aucun dossier patient, aucune note et aucune sauvegarde.</p>
+<p class="note"><strong>Attention :</strong> ouvrir ce contrôle dans Safari peut produire un résultat différent de celui de l'icône installée sur ton iPhone. Un cache prêt ne prouve ni la récupération des patients, ni une sauvegarde externe, ni le bon fonctionnement après fermeture forcée.</p>
+<div class="grid">
+ <section class="item"><span>Espace affiché</span><strong id="mode">Contrôle en cours…</strong></section>
+ <section class="item"><span>Service hors ligne</span><strong id="worker">Contrôle en cours…</strong></section>
+ <section class="item"><span>Pages publiques essentielles</span><strong id="shell">Contrôle en cours…</strong></section>
+ <section class="item"><span>Indication réseau</span><strong id="network">Contrôle en cours…</strong></section>
+</div>
+<div id="result" role="status" aria-live="polite" data-state="checking">Vérification des pages publiques…</div>
+<button type="button" id="check-now">Relancer le contrôle</button>
+<p><small>Une vérification ne télécharge rien et ne remplace pas les tests réels. Si une saisie est en cours dans Tournée, valide-la avant de quitter l'application ou d'installer une mise à jour.</small></p>
+<h2>Validation réelle sur iPhone — à faire une seule fois</h2>
+<ol>
+ <li>Dans ton <strong>icône Tournée habituelle</strong>, vérifie que les rappels déjà enregistrés sont visibles. Ne crée pas de faux patients dans ton vrai coffre.</li>
+ <li>Après confirmation de sauvegarde, active le mode avion et rouvre l'icône. Vérifie uniquement que la tournée s'affiche et que les anciennes informations restent accessibles.</li>
+ <li>Reviens en ligne. Confirme que les rappels restent affectés au bon jour et que le statut d'enregistrement n'affiche pas d'erreur.</li>
+ <li>Test de conflit entre deux fenêtres et restauration : <strong>uniquement sur un environnement fictif isolé</strong>, jamais sur le coffre réel.</li>
+</ol>
+<p class="note">Aucune sauvegarde automatique vers un autre appareil n'est disponible actuellement. Une copie JSON non chiffrée contient des données sensibles : elle doit être protégée et vérifiée hors de cet iPhone.</p>
+</main>
+<footer>Version V257 · Diagnostic local limité aux pages publiques, sans données médicales ni requête réseau.</footer>
+<script id="diagnostic-script">
+(function(){
+'use strict';
+const CACHE_NAME='big-cthu-public-v2-v257';
+const REQUIRED=['tournee-complete.html','tournee-demarrage.html','tournee-controle-iphone.html'];
+function show(id,value){document.getElementById(id).textContent=value}
+async function checkOfflineShell(){
+ const result=document.getElementById('result');
+ result.dataset.state='checking';
+ result.textContent='Vérification locale en cours…';
+ const standalone=!!((typeof matchMedia==='function'&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true);
+ show('mode',standalone?'Application installée':'Navigateur (espace potentiellement distinct)');
+ const controlled=!!(navigator.serviceWorker&&navigator.serviceWorker.controller);
+ show('worker',controlled?'Actif sur cette page':'Non actif sur cette page');
+ show('network',navigator.onLine===false?'Appareil déclaré hors ligne':'Appareil déclaré en ligne (indicatif)');
+ try{
+  if(typeof caches==='undefined')throw new Error('CacheStorage indisponible');
+  const names=await caches.keys();
+  if(!names.includes(CACHE_NAME)){
+   show('shell','Cache V257 absent');
+   result.dataset.state='attention';
+   result.textContent='Cache non confirmé. Ouvre Tournée une première fois en ligne, termine toute saisie puis réessaie.';
+   return {ready:false,reason:'missing-cache'};
+  }
+  const cache=await caches.open(CACHE_NAME);
+  const flags=await Promise.all(REQUIRED.map(async path=>{
+   const response=await cache.match(new URL('./'+path,location.href).href);
+   return !!(response&&response.ok);
+  }));
+  const count=flags.filter(Boolean).length;
+  show('shell',count+' / '+REQUIRED.length+' pages en cache');
+  if(count===REQUIRED.length&&controlled){
+   result.dataset.state='ready';
+   result.textContent='Pages publiques en cache et service actif. Étape suivante : essai réel en mode avion depuis ton icône habituelle.';
+   return {ready:true,reason:'public-shell'};
+  }
+  result.dataset.state='attention';
+  result.textContent=count<REQUIRED.length?'Certaines pages manquent dans le cache. Vérifie en ligne avant de compter sur l’accès hors ligne.':'Pages présentes, mais service non actif sur cet écran. Recommence dans l’application installée après avoir validé toute saisie.';
+  return {ready:false,reason:count<REQUIRED.length?'incomplete-cache':'not-controlled'};
+ }catch(error){
+  show('shell','Vérification indisponible');
+  result.dataset.state='error';
+  result.textContent='Le cache public ne peut pas être vérifié ici. Cela ne signifie pas que tes dossiers ont disparu.';
+  return {ready:false,reason:'unavailable'};
+ }
+}
+document.getElementById('check-now').addEventListener('click',checkOfflineShell);
+window.tourneeOfflineCheck=checkOfflineShell;
+checkOfflineShell();
+})();
+</script>
+</body>
+</html>
