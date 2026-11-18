@@ -3,7 +3,7 @@
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
-const num=(n)=>Number.isSafeInteger(Number(n))&&Number(n)>=0?Number(n):0;
+const num=n=>Number.isSafeInteger(Number(n))&&Number(n)>=0&&Number(n)<=1e9?Number(n):0;
 const text=(s,n=90)=>String(s??'').trim().slice(0,n);
 const stamp=e=>{
  const date=String(e?.date||''),time=String(e?.time||'');
@@ -18,7 +18,7 @@ function snapshot(){
  const resources=(Array.isArray(bank)?bank:[]).filter(r=>r&&text(r.item)&&num(r.count)>0);
  const delegated=read('binch.guild.delegations.v1',[]),tasks=(Array.isArray(delegated)?delegated:[]).filter(x=>x&&x.status!=='done');
  const overdue=requests.filter(r=>r.deadline&&Number.isFinite(Date.parse(r.deadline))&&Date.parse(r.deadline)<now);
- const fulfillment=requests.map(r=>({id:r.id,title:r.title,needed:num(r.quantity),received:(Array.isArray(r.contributions)?r.contributions:[]).filter(c=>c.status==='confirmed').reduce((n,c)=>n+num(c.quantity),0)}));
+ const fulfillment=requests.map(r=>{const seen=new Set(),rows=Array.isArray(r.contributions)?r.contributions:[];let received=0;for(const c of rows.slice(0,200)){if(!c||c.status!=='confirmed'||!num(c.quantity))continue;const key=String(c.character||c.id||'').trim().toLocaleLowerCase('fr');if(!key||seen.has(key))continue;seen.add(key);received=Math.min(1e9,received+num(c.quantity))}return {id:r.id,title:r.title,needed:num(r.quantity),received};});
  return {upcoming,requests,resources,overdue,fulfillment,tasks};
 }
 function roleCounts(e){
@@ -44,10 +44,10 @@ function summary(s){
  if(!s.upcoming.length)lines.push('Sorties : aucune à venir dans le calendrier local.');
  for(const e of s.upcoming.slice(0,5)){
   const m=missing(e);
-  lines.push('• '+text(e.title)+' — '+e.date+' '+text(e.time,5)+' | '+m.c.total+'/'+m.size+' confirmés | '+m.slots+' places non confirmées | tanks '+m.c.tank+', soins '+m.c.heal+', DPS '+m.c.dps+', flex '+m.c.flex);
+  lines.push('• '+text(e.title)+' — '+e.date+' '+text(e.time,5)+' | '+m.c.total+'/'+m.size+' confirmés | '+m.slots+' places non confirmées'+(m.excess?' | '+m.excess+' places dépassées':'')+(m.c.duplicates?' | '+m.c.duplicates+' doublon(s) à vérifier':'')+' | tanks '+m.c.tank+', soins '+m.c.heal+', DPS '+m.c.dps+', flex '+m.c.flex);
  }
  lines.push('',s.requests.length?'Demandes ouvertes :':'Aucune demande ouverte dans le Planner local.');
- for(const r of s.requests.slice(0,7))lines.push('• '+text(r.title)+' · reçus '+(s.fulfillment.find(f=>f.id===r.id)?.received||0)+' / '+num(r.quantity)+(r.priority==='urgent'?' [URGENT]':'')+(r.deadline?' · échéance '+new Date(r.deadline).toLocaleDateString('fr-FR'):''));
+ for(const r of s.requests.slice(0,7))lines.push('• '+text(r.title)+' · reçus '+(s.fulfillment.find(f=>f.id===r.id)?.received||0)+' / '+num(r.quantity)+(r.priority==='urgent'?' [URGENT]':'')+(r.deadline&&Number.isFinite(Date.parse(r.deadline))?' · échéance '+new Date(r.deadline).toLocaleDateString('fr-FR'):''));
  lines.push('','Délégations ouvertes : '+s.tasks.length);for(const t of s.tasks.slice(0,5))lines.push('• '+text(t.title)+' — '+text(t.owner||'Non attribué')+' — '+text(t.due||'Sans échéance'));lines.push('','Coffre : '+s.resources.length+' ligne(s) déclarée(s), à confirmer avec les propriétaires.','Copie manuelle pour Discord ; aucun message publié automatiquement.');
  return lines.join('\n');
 }
@@ -58,7 +58,7 @@ function render(){
  const target=$('binch-gm-watch-list');
  target.innerHTML=next?s.upcoming.slice(0,4).map(e=>{
   const m=missing(e),hours=new Date(stamp(e)).toLocaleString('fr-FR',{dateStyle:'medium',timeStyle:'short'});
-  return '<article class="binch-gm-watch-event"><div><strong>'+esc(text(e.title))+'</strong><small>'+esc(hours)+' · '+m.c.total+'/'+m.size+' confirmés localement · '+m.slots+' place(s) non confirmée(s)</small><small>Tank '+m.c.tank+' · Soins '+m.c.heal+' · DPS '+m.c.dps+' · Flex '+m.c.flex+'</small></div><button type="button" data-gm-watch-open="calendar">Gérer</button></article>';
+  return '<article class="binch-gm-watch-event"><div><strong>'+esc(text(e.title))+'</strong><small>'+esc(hours)+' · '+m.c.total+'/'+m.size+' confirmés localement · '+m.slots+' place(s) non confirmée(s)'+(m.excess?' · '+m.excess+' en trop':'')+(m.c.duplicates?' · '+m.c.duplicates+' doublon(s) à vérifier':'')+'</small><small>Tank '+m.c.tank+' · Soins '+m.c.heal+' · DPS '+m.c.dps+' · Flex '+m.c.flex+'</small></div><button type="button" data-gm-watch-open="calendar">Gérer</button></article>';
  }).join(''):'<p>Aucune sortie à venir dans le calendrier local. Ajoute un rendez-vous avant de convoquer les joueurs.</p>';
  $('binch-gm-watch-urgent').innerHTML=s.requests.length?s.requests.slice(0,5).map(r=>'<article><strong>'+esc(text(r.title))+'</strong><span>'+Math.min(num(r.quantity),s.fulfillment.find(f=>f.id===r.id)?.received||0)+' / '+num(r.quantity)+' réception(s) confirmée(s) manuellement'+(r.priority==='urgent'?' · Urgent':'')+(r.deadline&&Number.isFinite(Date.parse(r.deadline))?' · échéance '+esc(new Date(r.deadline).toLocaleDateString('fr-FR'))+(Date.parse(r.deadline)<Date.now()?' (dépassée)':''):'')+'</span></article>').join(''):'<p>Aucune demande ouverte dans le Planner local.</p>';
 }
