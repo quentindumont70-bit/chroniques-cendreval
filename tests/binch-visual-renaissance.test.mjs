@@ -78,3 +78,43 @@ test('Renaissance : image originale, accessibilité mobile et animation réduite
  assert.ok(html.indexOf('./visual-renaissance.js?v=001')>html.indexOf('./player-home.js'),'home mounted before visual enhancement');
  assert.equal(html.match(/\.\/visual-renaissance\.js\?v=001/g)?.length,1);
 });
+test('Renaissance P2 : neuf vrais paysages originaux distincts branchés aux neuf classes',()=>{
+ const css=source('visual-renaissance.css');
+ const classes=['druid','warrior','mage','priest','paladin','rogue','hunter','shaman','warlock'];
+ const bodies=[];
+ for(const cls of classes){
+  const filename='renaissance-world-'+cls+'.svg';
+  const artwork=source(filename);
+  assert.ok(artwork.includes('viewBox="0 0 1600 760"'),filename+' ratio cinématique');
+  assert.ok(artwork.includes('aria-label='),filename+' accessible');
+  assert.ok(artwork.length>2000,filename+' must be a substantive original vector');
+  assert.ok(!/https?:\/\//.test(artwork.replace('http://www.w3.org/2000/svg','')),filename+' no external media');
+  assert.ok(css.includes('html[data-binch-identity='+cls+']{--br-world-art:url("./'+filename+'")}'),cls+' must use its own art');
+  bodies.push(artwork);
+ }
+ assert.equal(new Set(bodies).size,9,'each class has its own scene rather than a recolor');
+ assert.match(css, /var\(--br-class-aura\),var\(--br-scene-glow\),var\(--br-world-art\)/);
+ assert.ok(css.includes(':root{--br-world-art:url("./renaissance-citadel.svg")}'),'unknown classes have a safe fallback');
+});
+
+test('Renaissance P2 : trésors, Faith et GM empruntent des scènes sans modifier les données',()=>{
+ const css=source('visual-renaissance-chambers.css'),html=source('index.html');
+ for(const selector of [
+  '#page-gm #binch-gm-watch',
+  '#page-gm #binch-gm-workspace',
+  '#page-command #binch-faith-advisor',
+  '#page-command .binch-faith-action',
+  '#page-tresors .binch-treasure-card',
+  '#page-hub #binch-profile-exhibit'
+ ]) assert.ok(css.includes(selector),'missing visual treatment for '+selector);
+ assert.ok(css.includes('renaissance-world-warrior.svg'));
+ assert.ok(css.includes('renaissance-world-mage.svg'));
+ assert.ok(css.includes('renaissance-world-warlock.svg'));
+ assert.ok(css.includes('prefers-reduced-motion:reduce'));
+ assert.ok(css.includes('forced-colors:active'));
+ assert.ok(html.includes('./visual-renaissance-chambers.css?v=001'));
+ assert.ok(html.indexOf('./visual-renaissance-chambers.css?v=001')>html.indexOf('./ultimate-identities.css?v=001'));
+ const js=source('visual-renaissance.js');
+ assert.ok(!js.includes('fetch('),'artwork must not trigger remote services');
+ assert.ok(!js.includes('BinchRewards.'),'ornaments must not award treasure');
+});
