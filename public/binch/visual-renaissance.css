@@ -10,6 +10,26 @@
  --br-scene-filter:saturate(1.04) contrast(1.07);
  --br-scene-glow:radial-gradient(circle at 82% 23%,#edae5c35,transparent 34%);
 }
+/* One world, nine magical signatures. These follow the existing class identity. */
+:root{--br-class-aura:radial-gradient(circle at 74% 62%,#88a99a24,transparent 45%);--br-race-rune:"✧"}
+html[data-binch-identity=druid]{--br-class-aura:radial-gradient(circle at 76% 70%,#79cb6b40,transparent 42%)}
+html[data-binch-identity=warrior]{--br-class-aura:radial-gradient(circle at 75% 68%,#c5a28b36,transparent 46%)}
+html[data-binch-identity=mage]{--br-class-aura:radial-gradient(circle at 76% 66%,#64bbf34a,transparent 43%)}
+html[data-binch-identity=priest]{--br-class-aura:radial-gradient(circle at 76% 52%,#f6e8b94b,transparent 47%)}
+html[data-binch-identity=paladin]{--br-class-aura:radial-gradient(circle at 75% 63%,#f0b8d04c,transparent 43%)}
+html[data-binch-identity=rogue]{--br-class-aura:radial-gradient(circle at 78% 72%,#bfbe6140,transparent 40%)}
+html[data-binch-identity=hunter]{--br-class-aura:radial-gradient(circle at 73% 68%,#95bc7040,transparent 44%)}
+html[data-binch-identity=shaman]{--br-class-aura:radial-gradient(circle at 77% 63%,#60bedc4b,transparent 48%)}
+html[data-binch-identity=warlock]{--br-class-aura:radial-gradient(circle at 73% 59%,#b37bea4b,transparent 45%)}
+html[data-binch-ancestry=tauren]{--br-race-rune:"◉"}
+html[data-binch-ancestry=orc]{--br-race-rune:"✦"}
+html[data-binch-ancestry=troll]{--br-race-rune:"⟡"}
+html[data-binch-ancestry=undead]{--br-race-rune:"☾"}
+html[data-binch-ancestry=human]{--br-race-rune:"⚜"}
+html[data-binch-ancestry=elf]{--br-race-rune:"☽"}
+html[data-binch-ancestry=dwarf]{--br-race-rune:"◆"}
+html[data-binch-ancestry=gnome]{--br-race-rune:"⚙"}
+html[data-binch-ancestry=skyborne]{--br-race-rune:"✵"}
 html[data-binch-ambience=moon]{
  --br-gold:#c9d8ed;--br-burnished:#789bb1;--br-edge:#8bb7d47d;
  --br-scene-filter:hue-rotate(30deg) saturate(.85) brightness(.82);
@@ -70,7 +90,7 @@ html[data-binch-ambience=embers]{
 #page-hub .binch-character-card::before{
  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
  background-image:linear-gradient(90deg,#061115d9 0%,#081b1dc2 23%,#12202143 68%,#08151d20 100%),
-  var(--br-scene-glow),url("./renaissance-citadel.svg");
+  var(--br-class-aura),var(--br-scene-glow),url("./renaissance-citadel.svg");
  background-position:center;background-size:cover;
  filter:var(--br-scene-filter);
 }
@@ -88,7 +108,7 @@ html[data-binch-ambience=embers]{
 }
 #page-hub .binch-renaissance-stage::before,
 #page-hub .binch-renaissance-stage::after{
- content:"✧";font:34px Georgia,serif;position:absolute;color:#f0ce82ad;
+ content:var(--br-race-rune);font:34px Georgia,serif;position:absolute;color:#f0ce82ad;
  text-shadow:0 0 20px #e4bf7b;top:8px;left:17px;
 }
 #page-hub .binch-renaissance-stage::after{content:"✥";top:auto;bottom:7px;left:auto;right:17px}
@@ -230,7 +250,7 @@ html[data-binch-ambience=embers]{
  }
  #page-hub .binch-character-card::before{
   background-position:58% center;
-  background-image:linear-gradient(90deg,#071315e8,#071518c9 58%,#0a171b91),var(--br-scene-glow),url("./renaissance-citadel.svg")
+  background-image:linear-gradient(90deg,#071315e8,#071518c9 58%,#0a171b91),var(--br-class-aura),var(--br-scene-glow),url("./renaissance-citadel.svg")
  }
  #page-hub .binch-character-card .binch-portrait{
   width:89px;grid-column:1;grid-row:1;justify-self:start;
