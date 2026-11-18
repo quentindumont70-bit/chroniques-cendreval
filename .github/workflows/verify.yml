@@ -58,6 +58,8 @@ jobs:
           path: renaissance-captures/*.png
           retention-days: 3
           if-no-files-found: warn
+      - name: Tester le HUD mobile Renaissance
+        run: node --test tests/binch-visual-renaissance-dock.test.mjs
       - name: Vérifier la présence de Big Cthu dans le paquet Pages
         run: |
           node scripts/stage-big-cthu-beta.mjs
