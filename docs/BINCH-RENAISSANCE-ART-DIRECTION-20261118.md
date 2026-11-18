@@ -48,12 +48,21 @@ Les styles sont chargés **après** les thèmes préexistants. Les modules et le
 
 ## Phases suivantes, après validation visuelle
 
-- **P2 — illustrations** : scènes véritablement distinctes par classe/zone et pictogrammes originaux de métiers, uniquement avec droits de diffusion clairs.
-- **P3 — ergonomie** : hiérarchiser accueil, journal, carte, trésors et classes ; réduire l'impression de mille onglets.
-- **P4 — micro-interactions** : transitions contextuelles légères, détails de matière sans baisse de fluidité.
-- **P5 — guilde** : donner une identité de salle de guerre au GM Hub, sans prétendre à un backend partagé.
-- **P6 — bêta** : retours réels du testeur iPhone/PC et validation finale des parcours.
+- **P2 — livré sur cette branche** : neuf scènes vectorielles de classes, distinctes dans leur architecture et leur palette. Fallback générique pour le profil inconnu, plus la galerie `public/binch/renaissance-atelier.html` pour la revue des neuf scènes.
+- **P3 — livré côté CSS** : salle de guerre GM, cartes Faith et trésors mis en scène dans `visual-renaissance-chambers.css`, sans accès supplémentaire au jeu ni modification des récompenses.
+- **P4 — à poursuivre** : icônes de métiers originales et réduction du nombre d'onglets visibles, sans sacrifier les fonctionnalités cachées ; navigation testable sur mobile.
+- **P5 — à poursuivre** : transitions entre modules et mode ultra-léger pour appareils à faibles ressources, en respectant `prefers-reduced-motion`.
+- **P6 — à valider** : vérification visuelle sur iPhone et Windows, revue du conflit éventuel entre styles puis fusion/déploiement uniquement autorisés.
 
 ## Limites et responsabilité
 
 **Code présent sur branche ≠ déploiement sur GitHub Pages.** Une CI verte ne valide pas le rendu sur un véritable iPhone. La PR reste **DRAFT** ; aucune fusion avant revue, aucune dépense, aucun changement des données métier ni de la Bourse AH.
+
+## Galerie de validation des neuf classes (livrée dans la PR)
+
+La page `public/binch/renaissance-atelier.html` est une **prévisualisation autonome** de la direction artistique : elle contient les neuf scènes réellement utilisées sur l'accueil, avec des vignettes et un clic pour agrandir le paysage de la classe. Ce n'est ni une nouvelle app, ni une démonstration de progression WoW, et aucune donnée de jeu n'est lue.
+
+Les nouveaux fichiers sont :
+`renaissance-world-druid.svg`, `renaissance-world-warrior.svg`, `renaissance-world-mage.svg`, `renaissance-world-priest.svg`, `renaissance-world-paladin.svg`, `renaissance-world-rogue.svg`, `renaissance-world-hunter.svg`, `renaissance-world-shaman.svg`, `renaissance-world-warlock.svg`.
+
+**Contrôles CI :** un fichier SVG distinct par classe, XML analysable pour les 10 scènes (9 classes et paysage générique), les 9 liaisons CSS, responsive, mouvement réduit, galerie complète et absence de modifications économiques. Les CI ne remplacent pas la recette graphique réelle.
