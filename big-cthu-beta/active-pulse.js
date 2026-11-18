@@ -99,7 +99,13 @@ function node(tag,text,className){
  if(className)x.className=className;
  return x;
 }
-let expanded=false,selectedKind='all',pageSize=8,searchTerm='',pinMessage='';
+let expanded=false,selectedKind='all',pageSize=8,searchTerm='',pinMessage='',searchFrame=false;
+function scheduleSearchRender(){
+ if(searchFrame)return;
+ if(typeof requestAnimationFrame!=='function'){render();return}
+ searchFrame=true;
+ requestAnimationFrame(()=>{searchFrame=false;render()});
+}
 function render(){
  const root=$('activePulseList');if(!root)return;
  const pins=window.BigCthuActionFavorites;
@@ -125,7 +131,7 @@ function render(){
  const category=$('activePulseCategory');if(category){category.value=selectedKind;category.onchange=()=>{selectedKind=category.value;expanded=false;pageSize=8;render()}}
  const fast=[['activePulseToday','Aujourd’hui'],['activePulseWeek','Semaine']];
  for(const [id,kind] of fast){const button=$(id);if(!button)continue;button.setAttribute('aria-pressed',selectedKind===kind?'true':'false');button.onclick=()=>{selectedKind=selectedKind===kind?'all':kind;expanded=false;pageSize=8;render()}}
- const search=$('activePulseSearch');if(search){if(search.value!==searchTerm)search.value=searchTerm;search.oninput=()=>{searchTerm=search.value.slice(0,100);expanded=false;pageSize=8;render()};search.onkeydown=e=>{if(e.key==='Escape'&&searchTerm){searchTerm='';expanded=false;pageSize=8;render()}}}
+ const search=$('activePulseSearch');if(search){if(search.value!==searchTerm)search.value=searchTerm;search.oninput=()=>{const next=search.value.slice(0,100);if(next===searchTerm)return;searchTerm=next;expanded=false;pageSize=8;scheduleSearchRender()};search.onkeydown=e=>{if(e.key==='Escape'&&searchTerm){searchTerm='';expanded=false;pageSize=8;render()}}}
  const clear=$('activePulseClear');if(clear){clear.hidden=!searchTerm;clear.onclick=()=>{searchTerm='';expanded=false;pageSize=8;render();if(search&&typeof search.focus==='function')search.focus()}}
  const pinPick=$('activePulsePinPick'),pinButton=$('activePulsePinButton'),pinStatus=$('activePulsePinStatus');
  if(pinPick&&pinButton){
