@@ -203,10 +203,10 @@ function vFaith(c){
  return '<div class="bt-faith"><p class="bt-faith-intro">Faith, intendante marchande : je ne reformule que les calculs ci-dessus, sans rien inventer.</p>'+f.lines.map(l=>'<p>'+esc(l)+'</p>').join('')+(f.refs.length?'<h3>Références</h3><ol class="bt-refs">'+f.refs.map(r=>'<li>'+esc(r)+'</li>').join('')+'</ol>':'')+'</div>';
 }
 function feedMarketId(){const ids=Object.keys(feed?.markets||{});return state.feedMarket&&ids.includes(state.feedMarket)?state.feedMarket:null}
-function regionMarket(){const id=feedMarketId();if(!id)return null;const m=T.marketMeta(id,feed.markets[id].meta);return m.region&&m.region===state.region&&state.confirmedMarket===id?feed.markets[id]:null}
+function regionMarket(scope){const id=feedMarketId();if(!id||!scope?.faction)return null;const m=T.marketMeta(id,feed.markets[id].meta);return m.region&&m.region===state.region&&state.confirmedMarket===id&&m.faction===scope.faction?feed.markets[id]:null}
 function gate(c){const id=feedMarketId();return T.canMergeFeed({userRegion:state.region,confirmedMarket:state.confirmedMarket,marketId:id,marketInfo:id?feed.markets[id].meta:null,scopeFaction:c.scope?.faction,enabled:state.autoFeed})}
 function skinHtml(c){
- const plan=T.skinningPlan({level:c.ch.level,professions:c.ch.professions,index:c.index,feedMarket:regionMarket()});
+ const plan=T.skinningPlan({level:c.ch.level,professions:c.ch.professions,index:c.index,feedMarket:regionMarket(c.scope)});
  if(plan.status!=='ok')return empty('Dépeçage non importé : importe GrimoireSync.lua pour obtenir un plan selon ton niveau.');
  const best=plan.best?'<p class="bt-decision">Priorité : '+esc(plan.best.name)+' — '+coin(plan.best.leather.price)+' l’unité ('+esc(plan.best.leather.src)+', '+esc(when(plan.best.leather.at))+'), monstres niveau '+plan.best.mobRange.join('–')+'.</p>':'<p class="bt-alert">Aucun cuir accessible n’a de cote connue : données insuffisantes.</p>';
  return '<p class="bt-note">Niveau '+(plan.level||'inconnu')+' · Dépeçage '+plan.skill+' → monstres dépeçables jusqu’au niveau '+plan.maxMob+(plan.nextSkill?' (niveau '+plan.nextSkill.mobLevel+' à '+plan.nextSkill.skill+' de compétence)':'')+'. Règle et tranches de niveaux Classic, à confirmer sur Forever.</p>'+best+
@@ -265,7 +265,7 @@ function vLive(c){
  const markets=sum.markets;
  const ids=[...new Set(markets.flatMap(m=>Object.keys(feed.markets[m.market].items||{})))];
  const table='<div class="bt-table"><table><thead><tr><th>Objet</th>'+markets.map(m=>'<th>'+esc(m.label)+'</th>').join('')+'</tr></thead><tbody>'+ids.map(id=>{
-  const cm=T.crossMarket(feed,Number(id)),comparable=cm.filter(x=>x.price!=null&&x.fresh&&x.region===state.region&&x.faction===c.scope?.faction);
+  const cm=T.crossMarket(feed,Number(id)),comparable=T.comparableQuotes(feed,cm,state.confirmedMarket===mk?mk:null,state.region,c.scope?.faction);
   const low=comparable.length>=2?comparable[0].market:null;
   return '<tr><td>'+esc(feed.names?.[id]?.n||'Objet '+id)+'</td>'+markets.map(m=>{
    const x=cm.find(y=>y.market===m.market);
@@ -282,7 +282,7 @@ function vLive(c){
   '<div class="bt-kpis">'+kpi('Flux publié',when(sum.generatedAt),'collecteur GitHub')+markets.map(m=>kpi(m.label,m.scanAt?when(m.scanAt):'—',m.items+' objets · '+m.contributors7d+' contributeur(s) / 7 j')).join('')+'</div>'+
   '<h3>Conseils du moment pour '+esc(c.ch.pseudo)+(c.ch.level?' (niveau '+c.ch.level+')':'')+'</h3>'+(top.length?'<ol class="bt-list">'+top.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ol>':empty('Pas encore de conseil étayé : il faut au moins 3 relevés par objet (le flux en apporte jusqu’à 8 par passage).'))+
   '<h3>Que dépecer maintenant ?</h3>'+skinHtml(c)+
-  '<h3>Comparaison des hôtels des ventes</h3><p class="bt-note">Le moins cher est en vert seulement si au moins deux relevés récents (72 h maximum) concernent ta région et ta faction. Les cours périmés sont visibles, mais exclus de la comparaison. Aucun transfert automatique entre serveurs ou factions.</p>'+table+(feedStatus?'<p class="bt-note">'+esc(feedStatus)+'</p>':'');
+  '<h3>Comparaison des hôtels des ventes</h3><p class="bt-note">Le moins cher est en vert seulement si au moins deux relevés récents (72 h maximum) concernent la même région, faction, règleset, maison et fournisseur que le marché choisi et confirmé. Les autres marchés restent indicatifs, sans arbitrage ni transfert automatique.</p>'+table+(feedStatus?'<p class="bt-note">'+esc(feedStatus)+'</p>':'');
 }
 async function loadFeed(force){
  try{
@@ -426,8 +426,8 @@ function mount(){
   if(e.target.id==='bt-radar-source'){state.radarSource=['all','scan','community','manual','mixed'].includes(e.target.value)?e.target.value:'all';save();render()}
   if(e.target.id==='bt-radar-age'){state.radarAgeH=e.target.value==='6'?6:24;save();render()}
   if(e.target.id==='bt-radar-status'){state.radarStatus=['all','buy','watch'].includes(e.target.value)?e.target.value:'all';save();render()}
-  if(e.target.id==='bt-feed-market'){state.feedMarket=e.target.value||null;save();render()}
-  if(e.target.id==='bt-region'){state.region=e.target.value||null;save();render()}
+  if(e.target.id==='bt-feed-market'){const next=e.target.value||null;if(next!==state.feedMarket){state.feedMarket=next;state.confirmedMarket=null;state.autoFeed=false}save();render()}
+  if(e.target.id==='bt-region'){const next=e.target.value||null;if(next!==state.region){state.region=next;state.confirmedMarket=null;state.autoFeed=false}save();render()}
   if(e.target.id==='bt-feed-confirm'){state.confirmedMarket=e.target.checked?feedMarketId():null;save();mergeFeed();render()}
   if(e.target.id==='bt-feed-auto'){state.autoFeed=e.target.checked;save();mergeFeed();render()}
  });

@@ -491,6 +491,17 @@ function crossMarket(feed,itemId,now=Date.now()){
    ageH,fresh:price!==null&&ageH<=72};
  }).sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));
 }
+/** Cotations comparables uniquement dans un même périmètre confirmé : région, faction, règles et maison. */
+function comparableQuotes(feed,quotes,selectedMarket,region,faction){
+ if(!validFeed(feed)||!selectedMarket||!feed.markets[selectedMarket]||!region||!faction)return [];
+ const selected=marketMeta(selectedMarket,feed.markets[selectedMarket].meta);
+ if(selected.region!==region||selected.faction!==faction||!selected.ruleset)return [];
+ return (Array.isArray(quotes)?quotes:[]).filter(q=>{
+  if(q?.price==null||!q.fresh||!feed.markets[q.market])return false;
+  const meta=marketMeta(q.market,feed.markets[q.market].meta);
+  return meta.region===region&&meta.faction===faction&&meta.ruleset===selected.ruleset&&meta.houseId===selected.houseId&&meta.provider===selected.provider;
+ });
+}
 function feedSummary(feed,now=Date.now()){
  if(!validFeed(feed))return null;
  const gen=parseTime(feed.generatedAt);
@@ -503,11 +514,11 @@ const LEATHER_TIERS=[{itemId:2318,hide:783,name:'Cuir léger',mobs:[1,27]},{item
 const skinSkillFor=level=>level<=10?1:level<=20?(level-10)*10:level*5;
 const maxSkinnableLevel=skill=>{let lv=1;for(let l=1;l<=63;l++)if(skinSkillFor(l)<=skill)lv=l;return lv};
 function professionRank(professions,label){const keys=PROFESSION_ALIASES[label]||[norm(label)];for(const [n,v] of Object.entries(professions||{}))if(keys.includes(norm(n)))return Number(v?.rank??v)||0;return null}
-function skinningPlan({level,professions,index,feedMarket}){
+function skinningPlan({level,professions,index,feedMarket,now=Date.now()}){
  const skill=professionRank(professions,'Dépeçage');
  if(skill==null)return {status:'Dépeçage non importé',tiers:[]};
  const lv=Number(level)||0,cap=maxSkinnableLevel(skill);
- const price=id=>{const e=index?.find({itemId:id});if(e?.stats.sufficient)return {price:e.stats.current,at:e.stats.lastAt,src:'carnet'};const r=feedMarket?.items?.[id]?.row;return r&&isCopper(r[0])?{price:r[0],at:new Date(parseTime(r[2])).toISOString(),src:'flux communautaire'}:null};
+ const price=id=>{const e=index?.find({itemId:id});if(e?.stats.sufficient)return {price:e.stats.current,at:e.stats.lastAt,src:'carnet'};const r=feedMarket?.items?.[id]?.row;const at=Array.isArray(r)?parseTime(r[2]):null;return at&&at<=now&&now-at<=72*HOUR&&isCopper(r[0])&&Number.isSafeInteger(r[1])&&r[1]>0?{price:r[0],at:new Date(at).toISOString(),src:'flux communautaire'}:null};
  const tiers=LEATHER_TIERS.map(t=>{
   const lo=t.mobs[0],hi=Math.min(t.mobs[1],lv+3,cap);
   const reachable=lv>0&&hi>=lo&&lo<=lv+3;
@@ -518,6 +529,6 @@ function skinningPlan({level,professions,index,feedMarket}){
  return {status:'ok',skill,level:lv,maxMob:cap,tiers,best:ranked[0]||null,nextSkill:cap<60?{mobLevel:cap+1,skill:skinSkillFor(cap+1)}:null};
 }
 
-return {FEED_URL,MARKET_LABEL,marketMeta,canMergeFeed,feedObservations,crossMarket,feedSummary,LEATHER_TIERS,skinSkillFor,maxSkinnableLevel,skinningPlan,SCAN_SOURCE,COMMUNITY_SOURCE,LEATHER,CONVERSIONS,coin,median,weightedMedian,weightedMean,extractPayload,parseGrimoire,aggregateListings,scanObservations,parseCommunity,
+return {FEED_URL,MARKET_LABEL,marketMeta,canMergeFeed,feedObservations,crossMarket,comparableQuotes,feedSummary,LEATHER_TIERS,skinSkillFor,maxSkinnableLevel,skinningPlan,SCAN_SOURCE,COMMUNITY_SOURCE,LEATHER,CONVERSIONS,coin,median,weightedMedian,weightedMean,extractPayload,parseGrimoire,aggregateListings,scanObservations,parseCommunity,
  mergeObservations,itemStats,supplyChange,simulate,hasProfession,marketIndex,evaluateRecipe,craftAnalysis,bagAdvice,budgetPlan,opportunities,filterOpportunities,observationOrigin,movers,resaleCandidates,farmTargets,journalReview,evaluateAlerts,faithBrief};
 });

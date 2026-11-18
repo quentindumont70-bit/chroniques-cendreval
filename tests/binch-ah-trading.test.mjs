@@ -313,7 +313,7 @@ test('Comparateur AH : cotations futures écartées et données sans date non co
 test('Progression: seuil de dépeçage Classic et plan selon le niveau',()=>{
  assert.equal(T.skinSkillFor(20),100);assert.equal(T.skinSkillFor(32),160);
  assert.equal(T.maxSkinnableLevel(150),30);
- const plan=T.skinningPlan({level:32,professions:{'Dépeçage':{rank:150}},feedMarket:FEED.markets['forever.normal.horde.us']});
+ const plan=T.skinningPlan({level:32,professions:{'Dépeçage':{rank:150}},feedMarket:FEED.markets['forever.normal.horde.us'],now:NOW});
  assert.equal(plan.maxMob,30);
  assert.equal(plan.best.name,'Cuir moyen','94pc > 30pc, accessible à ce niveau');
  assert.equal(plan.tiers.find(t=>t.itemId===4304).reachable,false);
@@ -384,4 +384,53 @@ test('Historique AH: la vue parle d’offre observée sans prétendre identifier
  assert.match(ui,/supplySection\(cur\)/);
  assert.match(ui,/ne prouve pas une vente/);
  assert.match(ui,/deux scans GrimoireSync/);
+});
+
+test('Dépeçage: cours externes datés, quantités vérifiables, aucune cote périmée ou future',()=>{
+ const now=NOW;
+ const plan=row=>T.skinningPlan({level:32,professions:{'Dépeçage':{rank:150}},now,
+  feedMarket:{items:{2319:{row}}}});
+ assert.equal(plan([900,4,now-3600000]).tiers.find(t=>t.itemId===2319).leather.price,900);
+ for(const row of [[900,4,now+3600000],[900,4,now-73*3600000],[900,0,now-3600000],[900,-2,now-3600000],[900,null,now-3600000],[900,4,null],[900,4,'pas une date']]){
+  assert.equal(plan(row).tiers.find(t=>t.itemId===2319).leather,null,'cours externe invalide refusé : '+JSON.stringify(row));
+ }
+ const ui=readFileSync(new URL('../public/binch/ah-trading.js',import.meta.url),'utf8');
+ assert.match(ui,/m\.faction===scope\.faction/,'faction du marché requise pour le dépeçage');
+ assert.match(ui,/m\.region===state\.region/,'région du joueur requise');
+ assert.match(ui,/state\.confirmedMarket===id/,'confirmation du marché requise');
+});
+
+test('Consentement marché AH: changement région ou serveur révoque la confirmation',()=>{
+ const ui=readFileSync(new URL('../public/binch/ah-trading.js',import.meta.url),'utf8');
+ assert.match(ui,/next!==state\.feedMarket\)\{state\.feedMarket=next;state\.confirmedMarket=null;state\.autoFeed=false/);
+ assert.match(ui,/next!==state\.region\)\{state\.region=next;state\.confirmedMarket=null;state\.autoFeed=false/);
+});
+
+test('Comparaison AH: jamais de meilleur prix sans marché confirmé et périmètre identique',()=>{
+ const market='forever.normal.horde.us',now=NOW;
+ const quotes=[
+  {market,price:100,fresh:true},
+  {market:'autre-normal',price:80,fresh:true},
+  {market:'forever.pvp.horde.us',price:20,fresh:true},
+  {market:'forever.normal.alliance.us',price:10,fresh:true},
+  {market:'eu-normal',price:5,fresh:true},
+  {market:'autre-maison',price:1,fresh:true},
+  {market:'autre-fournisseur',price:2,fresh:true},
+  {market:'vieux-normal',price:3,fresh:false}
+ ];
+ const meta=(provider,region,ruleset,faction,houseId=null)=>({provider,region,ruleset,faction,houseId});
+ const markets=Object.fromEntries(quotes.map(x=>[x.market,{meta:meta('auctionhouse.fyi','us','normal','Horde')}]));
+ markets['forever.pvp.horde.us'].meta.ruleset='pvp';
+ markets['forever.normal.alliance.us'].meta.faction='Alliance';
+ markets['eu-normal'].meta.region='eu';
+ markets['autre-maison'].meta.houseId=6;
+ markets['autre-fournisseur'].meta.provider='API Blizzard';
+ const feed={format:'binch-ah-feed-v2',markets};
+ const result=T.comparableQuotes(feed,quotes,market,'us','Horde');
+ assert.deepEqual(result.map(x=>x.market),[market,'autre-normal']);
+ assert.deepEqual(T.comparableQuotes(feed,quotes,null,'us','Horde'),[]);
+ assert.deepEqual(T.comparableQuotes(feed,quotes,market,'eu','Horde'),[]);
+ assert.deepEqual(T.comparableQuotes(feed,quotes,market,'us','Alliance'),[]);
+ const ui=readFileSync(new URL('../public/binch/ah-trading.js',import.meta.url),'utf8');
+ assert.match(ui,/state\.confirmedMarket===mk\?mk:null/,'comparateur sans consentement ne marque aucun meilleur cours');
 });
