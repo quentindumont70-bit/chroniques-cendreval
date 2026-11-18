@@ -65,6 +65,7 @@ test('V258 : onglet périmé mais sans modification locale ne prétend plus êtr
  await a.flush();
  const initial=shared.get('fiction-only');
  const b=await fixture(shared,{locks,previous:initial});
+ b.ctx.secureState.tidel_Pl='[{"id":"PERSONNE-FICTIVE-MODIFIEE"}]';
  await b.flush();
  a.ctx.secureSavedGen=a.ctx.secureGen;
  await assert.rejects(a.ctx.v258.ensureVaultSaved(),/Conflit de sauvegarde/);
