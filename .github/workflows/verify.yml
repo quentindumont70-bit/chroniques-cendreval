@@ -49,6 +49,9 @@ jobs:
             "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2500 --window-size=1440,960 --screenshot="renaissance-captures/${class}-desktop.png" "file://$PWD/public/binch/renaissance-atelier.html?classe=${class}"
           done
           "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2500 --window-size=430,860 --screenshot="renaissance-captures/druid-mobile.png" "file://$PWD/public/binch/renaissance-atelier.html?classe=druid"
+          # Captures de la vraie interface initiale : le profil ne sera ni créé ni modifié.
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=3500 --window-size=1440,960 --screenshot="renaissance-captures/onboarding-desktop.png" "file://$PWD/public/binch/index.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=3500 --window-size=430,860 --screenshot="renaissance-captures/onboarding-mobile.png" "file://$PWD/public/binch/index.html"
           ls -lh renaissance-captures/
       - name: Conserver les captures de revue (3 jours, sans publication Pages)
         if: github.event_name == 'pull_request' && github.head_ref == 'feature/binch-visual-renaissance-20261118'
