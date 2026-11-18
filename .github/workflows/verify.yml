@@ -76,6 +76,8 @@ jobs:
         run: node --test tests/binch-visual-renaissance-onboarding.test.mjs
       - name: Tester l'identité visuelle composite et la reforge sans perte de données
         run: node --test tests/binch-visual-identity-compositor.test.mjs
+      - name: Tester le prototype premium Shaaby et son artwork embarqué
+        run: node --test tests/binch-shaaby-premium.test.mjs
       - name: Vérifier la présence de Big Cthu dans le paquet Pages
         run: |
           node scripts/stage-big-cthu-beta.mjs
