@@ -5,10 +5,15 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
 const num=(n)=>Number.isSafeInteger(Number(n))&&Number(n)>=0?Number(n):0;
 const text=(s,n=90)=>String(s??'').trim().slice(0,n);
-const stamp=e=>{const d=new Date(String(e.date||'')+'T'+String(e.time||'00:00')+':00');return Number.isFinite(+d)?+d:Infinity};
+const stamp=e=>{
+ const date=String(e?.date||''),time=String(e?.time||'');
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(time))return Infinity;
+ const d=new Date(date+'T'+time+':00');
+ return Number.isFinite(+d)&&[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')===date?+d:Infinity;
+};
 function snapshot(){
  const now=Date.now(),events=read('binch.guild.events.v1',[]),planner=read('binch.guild.planner.v1',{}),bank=read('binch.guild.bank.v1',[]);
- const upcoming=(Array.isArray(events)?events:[]).filter(e=>e&&!e.done&&typeof e.date==='string'&&stamp(e)>=now-60000).sort((a,b)=>stamp(a)-stamp(b)).slice(0,8);
+ const upcoming=(Array.isArray(events)?events:[]).filter(e=>e&&!e.done&&Number.isFinite(stamp(e))&&stamp(e)>=now).sort((a,b)=>stamp(a)-stamp(b)).slice(0,8);
  const requests=(Array.isArray(planner.requests)?planner.requests:[]).filter(r=>r&&!r.closed&&text(r.title)).sort((a,b)=>Number(b.priority==='urgent')-Number(a.priority==='urgent')||Date.parse(a.deadline||'9999')-Date.parse(b.deadline||'9999')).slice(0,12);
  const resources=(Array.isArray(bank)?bank:[]).filter(r=>r&&text(r.item)&&num(r.count)>0);
  const delegated=read('binch.guild.delegations.v1',[]),tasks=(Array.isArray(delegated)?delegated:[]).filter(x=>x&&x.status!=='done');
@@ -17,13 +22,22 @@ function snapshot(){
  return {upcoming,requests,resources,overdue,fulfillment,tasks};
 }
 function roleCounts(e){
- const confirmed=(Array.isArray(e.attendees)?e.attendees:[]).filter(a=>a?.status==='Confirmé');
+ const source=Array.isArray(e.attendees)?e.attendees:[],seen=new Set(),confirmed=[];
+ let duplicates=0;
+ for(const a of source.slice(0,80)){
+  if(!a||typeof a.name!=='string'||!a.name.trim()||a.name.length>36||!['Confirmé','Incertain','Absent'].includes(a.status)||!['Tank','Soigneur','DPS','Flexible'].includes(a.role))continue;
+  const key=a.name.trim().toLocaleLowerCase('fr');
+  if(seen.has(key)){duplicates++;continue}seen.add(key);
+  if(a.status==='Confirmé')confirmed.push(a);
+ }
  const count=role=>confirmed.filter(a=>a.role===role).length;
- return {tank:count('Tank'),heal:count('Soigneur'),dps:count('DPS'),flex:count('Flexible'),total:confirmed.length};
+ return {tank:count('Tank'),heal:count('Soigneur'),dps:count('DPS'),flex:count('Flexible'),total:confirmed.length,duplicates};
 }
 function missing(e){
  const c=roleCounts(e),size=Math.max(2,Math.min(40,num(e.size)||5));
- return {c,size,slots:Math.max(0,size-c.total),tank:Math.max(0,1-c.tank),heal:Math.max(0,1-c.heal)};
+ return {c,size,slots:Math.max(0,size-c.total),excess:Math.max(0,c.total-size),
+  tank:e.kind==='Donjon'&&size===5?Math.max(0,1-c.tank):null,
+  heal:e.kind==='Donjon'&&size===5?Math.max(0,1-c.heal):null};
 }
 function summary(s){
  const lines=['LA BINCH · RAPPORT GM (brouillon local)','Données sur cet appareil, non synchronisées entre membres.',''];
