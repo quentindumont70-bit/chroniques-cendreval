@@ -138,6 +138,9 @@ test('Atelier visuel : neuf paysages disponibles dans une galerie sans données 
  assert.ok(gallery.includes('Les données, les profils et la Bourse AH ne sont pas modifiés'));
  assert.ok(!gallery.includes('fetch('),'preview is self-contained, no remote fetch');
  assert.ok(gallery.includes('prefers-reduced-motion:reduce'));
+ assert.ok(gallery.includes('function selectScene(id)'));
+ assert.ok(gallery.includes("new URLSearchParams(location.search).get('classe')"));
+ assert.ok(gallery.includes("['ArrowLeft','ArrowRight']"));
  assert.ok(gallery.includes('renaissance-profession-mining.svg'));
  assert.ok(gallery.includes('renaissance-profession-engineering.svg'));
 });
@@ -228,4 +231,18 @@ test('Timeline visuelle : filtrer les étapes terminées sans les modifier',()=>
  assert.ok(css.includes('html[data-binch-route-focus=todo] #page-hub .binch-route-step.done'));
  const js=source('visual-renaissance.js');
  assert.ok(!js.includes('binch.route.done'),'the visual toggle must not alter completed quest records');
+});
+
+test('Revue visuelle PR : captures sur classe connue, sans déploiement',()=>{
+ const flow=readFileSync(new URL('../.github/workflows/verify.yml',import.meta.url),'utf8');
+ assert.ok(flow.includes('Capturer la galerie Renaissance pour revue graphique'));
+ assert.ok(flow.includes("github.head_ref == 'feature/binch-visual-renaissance-20261118'"));
+ assert.ok(flow.includes('renaissance-atelier.html?classe='));
+ assert.ok(flow.includes('druid-mobile.png'));
+ assert.ok(flow.includes('actions/upload-artifact@v4'));
+ assert.ok(flow.includes('retention-days: 3'));
+ assert.ok(!flow.includes('actions/deploy-pages'));
+ const css=source('visual-renaissance-gallery.css');
+ assert.ok(css.includes('grid-row:3'),'mobile quest focus stays below search and filters');
+ assert.ok(css.includes('grid-template-columns:repeat(3,minmax(0,1fr))'));
 });
