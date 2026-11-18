@@ -38,7 +38,7 @@ async function fixture(initial={}){
 }
 
 test('V249 : les notes du jeudi n apparaissent pas dans le post-it du vendredi',async()=>{
- const f=await fixture({'tidel_memo_'+d1:JSON.stringify([{k:'tq-postit',p:null,t:'Prélèvement FICTIF'}])});
+ const f=await fixture({['tidel_memo_'+d1]:JSON.stringify([{k:'tq-postit',p:null,t:'Prélèvement FICTIF'}])});
  assert.deepEqual(Array.from(f.api.items(d1)),['Prélèvement FICTIF']);
  assert.deepEqual(Array.from(f.api.items(d2)),[]);
  assert.match(f.api.render(),/Prélèvement FICTIF/);
@@ -50,7 +50,7 @@ test('V249 : les notes du jeudi n apparaissent pas dans le post-it du vendredi',
 
 test('V249 : les anciennes notes séparées par des lignes deviennent des entrées distinctes',async()=>{
  const old=JSON.stringify([{k:'memo-ancien',p:'fictif',t:'Historique'},{k:'tq-postit',p:null,t:'Soin fictif\n- matériel\n• Téléphoner'}]);
- const f=await fixture({'tidel_memo_'+d1:old});
+ const f=await fixture({['tidel_memo_'+d1]:old});
  assert.deepEqual(Array.from(f.api.items(d1)),['Soin fictif','matériel','Téléphoner']);
  assert.match(f.api.render(),/aria-label="Effacer le rappel 3"/);
  await f.api.addAssistant(d1,'Confirmer la tournée');
@@ -62,7 +62,7 @@ test('V249 : les anciennes notes séparées par des lignes deviennent des entré
 });
 
 test('V249 : ajout, modification, effacement et annulation agissent sur le jour sélectionné',async()=>{
- const f=await fixture({'tidel_memo_'+d1:JSON.stringify([{k:'tq-postit',p:null,t:'Ligne A\nLigne B'}])});
+ const f=await fixture({['tidel_memo_'+d1]:JSON.stringify([{k:'tq-postit',p:null,t:'Ligne A\nLigne B'}])});
  f.fields['tq-sticky-new']={value:'- Troisième idée',dataset:{day:d1}};
  await f.api.add();
  assert.equal(f.fields['tq-sticky-new'].value,'');
@@ -80,7 +80,7 @@ test('V249 : ajout, modification, effacement et annulation agissent sur le jour 
 });
 
 test('V249 : HTML échappé, aucun transfert réseau et les autres données intactes',async()=>{
- const f=await fixture({'tidel_memo_'+d1:JSON.stringify([{k:'tq-postit',p:null,t:'<img src=x onerror=alert(1)>'}])});
+ const f=await fixture({['tidel_memo_'+d1]:JSON.stringify([{k:'tq-postit',p:null,t:'<img src=x onerror=alert(1)>'}])});
  const html=f.api.render();
  assert.match(html,/&lt;img src=x onerror=alert\(1\)&gt;/);
  assert.doesNotMatch(html,/<img src=x/);
@@ -91,7 +91,7 @@ test('V249 : HTML échappé, aucun transfert réseau et les autres données inta
 });
 
 test('V249 : un brouillon global non enregistré bloque la suppression',async()=>{
- const f=await fixture({'tidel_memo_'+d1:JSON.stringify([{k:'tq-postit',p:null,t:'Ancienne note'}])});
+ const f=await fixture({['tidel_memo_'+d1]:JSON.stringify([{k:'tq-postit',p:null,t:'Ancienne note'}])});
  f.api.getDrafts()[d1]='Brouillon en attente';
  await f.api.remove(d1,0);
  assert.deepEqual(Array.from(f.api.items(d1)),['Ancienne note']);
