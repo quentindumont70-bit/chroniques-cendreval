@@ -525,25 +525,28 @@ body.tournee-locked #tour-save-strip{display:none}
 </head>
 <body class="tournee-locked tournee-checking"><section id="tour-security-gate" hidden>
 <a href="./index.html">← Retour au cockpit Big Cthu</a>
-<h1>Retrouver mes patients</h1>
+<h1>Importer mes patients</h1>
 <button id="tour-recovery-close" type="button">← Retour à Tournée</button>
-<p class="info" id="tour-saved-status">Vérification de ta sauvegarde chiffrée sur cet appareil…</p>
-<p>Tournée s'ouvre directement sans code ni phrase secrète. Cet écran est réservé au cas où tu veux récupérer d'anciennes données déjà chiffrées. L'ancien coffre et les sauvegardes ne sont jamais effacés.</p>
-<label for="tour-pass">Ancienne phrase de sauvegarde (si nécessaire)</label>
-<input id="tour-pass" type="password" autocomplete="current-password" minlength="12" placeholder="Ta phrase secrète">
-<button id="tour-open">Retrouver mes patients</button>
-<details style="margin-top:14px"><summary style="cursor:pointer">Importer une sauvegarde JSON ou un coffre chiffré (uniquement si cet espace est vide)</summary>
-<label for="tour-file">Sauvegarde Tournée : JSON classique ou coffre chiffré complet</label><input type="file" id="tour-file" accept=".json,application/json">
-<button id="tour-import">Importer dans Tournée complète</button></details>
+<p class="info" id="tour-saved-status">Les données de cette application restent sur cet iPhone.</p>
+<p>Pour retrouver tes patients sur cette application, sélectionne la sauvegarde JSON enregistrée dans Fichiers sur cet iPhone. Aucune donnée n'est envoyée à GitHub.</p>
+<div id="tour-import-panel" style="display:grid;gap:10px;margin-top:16px;padding:14px;border:1px solid #63548e;border-radius:14px">
+<label for="tour-file"><strong>1 · Choisir ma sauvegarde JSON</strong></label>
+<input type="file" id="tour-file" accept=".json,application/json" style="max-width:100%;font:inherit">
+<button id="tour-import" type="button">2 · Importer le JSON dans cette application</button>
+<p style="margin:0;font-size:13px">Les fiches présentes ne seront jamais écrasées. Une sauvegarde d'origine reste conservée dans Fichiers.</p>
+</div>
+<details style="margin-top:14px"><summary>Rechercher une ancienne sauvegarde locale</summary>
+<p>Si elle est lisible automatiquement sur cet appareil, Tournée peut retrouver les anciennes fiches sans importer de fichier.</p>
+<button id="tour-open" type="button">Essayer la récupération automatique</button></details>
 <p id="tour-error" role="status"></p>
-<p>Attention : le déverrouillage automatique signifie que toute personne ayant accès à ce navigateur peut ouvrir Tournée. Protège l'accès à ton iPhone. Si un coffre chiffré existe déjà, l'import d'un autre JSON est bloqué pour éviter son écrasement. Les données restent chiffrées dans ce navigateur, mais cette version web n'est pas un hébergement HDS certifié. Conserve ta sauvegarde d'origine et l'application historique pour les soins.</p>
+<p style="font-size:13px">Cette version locale conserve les données chiffrées sur cet appareil. Elle n'est pas un hébergement HDS certifié. Garde ton fichier JSON dans Fichiers, à l'abri d'un partage accidentel.</p>
 </section>
-<div id="tour-save-strip" data-state="saved" aria-label="Sauvegarde locale de Tournée"><div id="tour-save-summary"><span id="tour-save-text" role="status" aria-live="polite">Données chiffrées enregistrées sur cet appareil.</span><button type="button" id="tour-save-retry" hidden>Réessayer</button><button type="button" id="tour-recovery-direct">Retrouver mes patients</button><button type="button" id="tour-save-menu" aria-expanded="false" aria-controls="tour-save-actions" onclick="tourSaveMenuToggle()">⋯ Outils</button></div><div id="tour-save-actions" hidden><span id="tour-network-state" aria-live="off" title="État réseau, indépendant de la sauvegarde locale">Connexion à déterminer</span><div class="tour-save-buttons"><button type="button" id="tour-vault-export">Copie chiffrée locale</button><button type="button" id="tour-portable-export">Exporter une sauvegarde complète JSON</button><button type="button" id="tour-absence-open">Absences &amp; modifications</button><button type="button" id="tour-lock">Sauvegarder</button><button type="button" id="tour-recovery-launch">Récupérer mes anciennes données</button></div></div></div>
+<div id="tour-save-strip" data-state="saved" aria-label="Sauvegarde locale de Tournée"><div id="tour-save-summary"><span id="tour-save-text" role="status" aria-live="polite">Données chiffrées enregistrées sur cet appareil.</span><button type="button" id="tour-save-retry" hidden>Réessayer</button><button type="button" id="tour-recovery-direct">Importer mon JSON</button><button type="button" id="tour-save-menu" aria-expanded="false" aria-controls="tour-save-actions" onclick="tourSaveMenuToggle()">⋯ Outils</button></div><div id="tour-save-actions" hidden><span id="tour-network-state" aria-live="off" title="État réseau, indépendant de la sauvegarde locale">Connexion à déterminer</span><div class="tour-save-buttons"><button type="button" id="tour-vault-export">Copie chiffrée locale</button><button type="button" id="tour-portable-export">Exporter une sauvegarde complète JSON</button><button type="button" id="tour-absence-open">Absences &amp; modifications</button><button type="button" id="tour-lock">Sauvegarder</button><button type="button" id="tour-recovery-launch">Importer mes patients (JSON)</button></div></div></div>
 <section id="tour-absence-panel" hidden aria-label="Absences et modifications de Tournée">
 <div class="ap-inner">
 <div class="ap-closebar"><button id="ap-close" type="button">← Retour à Tournée</button><span class="ap-caption">Journal local chiffré</span></div>
 <h2>Absences &amp; modifications</h2>
-<p>Journal conservé dans le même coffre local chiffré que Tournée. Il ne modifie ni les soins planifiés ni Topaze. Les états de rapprochement sont manuels. <strong>Pour transférer ce journal sur un autre appareil sans code, utilise « Exporter une sauvegarde complète JSON ». Ce fichier est lisible sans phrase secrète : conserve-le dans un emplacement privé.</strong></p>
+<p>Journal conservé dans le même coffre local chiffré que Tournée. Il ne modifie ni les soins planifiés ni Topaze. Les états de rapprochement sont manuels. <strong>Pour transférer ce journal sur un autre appareil, utilise « Exporter une sauvegarde complète JSON ». Ce fichier est lisible : conserve-le dans un emplacement privé.</strong></p>
 <form id="ap-form">
 <div class="ap-grid">
 <label>Date du changement<input id="ap-day" type="date" required></label>
@@ -2278,7 +2281,7 @@ function showLegacyRecovery(){
  button.hidden=false;
  const empty=recoverySpaceEmpty(secureState);
  if(direct)direct.hidden=false;
- saveStatus('saved',empty?'Ancienne sauvegarde détectée (récupération facultative). La liste active est vide : touche « Retrouver mes patients ».':'Tournée ouverte. Une ancienne sauvegarde est également conservée sur cet appareil.');
+ saveStatus('saved',empty?'Tournée prête. Importe ton fichier JSON depuis « Importer mon JSON ».':'Tournée ouverte. Les sauvegardes locales sont conservées.');
 }
 const PORTABLE_FORMAT='bigcthu-tournee-complete-portable-v1';
 function validPortableState(state){
@@ -2331,7 +2334,7 @@ function recoverySpaceEmpty(state){
 async function recoverOldVault(fileMode){
  try{
   if(!recoveryPatientListEmpty(secureState))throw Error('La liste actuelle contient déjà des patients. Récupération bloquée pour ne rien écraser. Aucun changement effectué.');
-  const password=document.getElementById('tour-pass').value;
+  const password=''; // Aucun code demandé par l'application.
   let state;
   if(fileMode){
    const file=document.getElementById('tour-file').files[0];
@@ -2339,7 +2342,7 @@ async function recoverOldVault(fileMode){
    const candidate=JSON.parse(await file.text());
    if(candidate&&candidate.format===PORTABLE_FORMAT)state=readPortableVault(candidate);
    else if(isEncryptedVaultRecord(candidate)){
-    if(password.length<12)throw Error('Ce fichier est chiffré : sa récupération exige son ancien secret. Pour transférer sans code, utilise « Exporter une sauvegarde complète JSON » depuis l’ancien appareil.');
+    if(password.length<12)throw Error('Ce fichier est un ancien coffre non importable directement. Sélectionne un export JSON classique ou complet. Aucun fichier modifié.');
     state=await decryptRecord(JSON.stringify(candidate),password);
    }else state=fillFromBackup(candidate);
   }else{
@@ -2347,7 +2350,7 @@ async function recoverOldVault(fileMode){
    const candidates=[];
    if(old&&SECURE_KEY!==ORIGINAL_KEY)candidates.push({raw:old,legacy:false});
    if(previous)candidates.push({raw:previous,legacy:true});
-   if(!candidates.length)throw Error('Aucun ancien coffre à récupérer dans ce navigateur. Vérifie le navigateur qui contenait les anciens patients, ou importe une sauvegarde JSON depuis ce même écran. Aucune donnée effacée.');
+   if(!candidates.length)throw Error('Aucun ancien coffre utilisable ici. Choisis ton fichier JSON ci-dessus. Aucune donnée effacée.');
    const device=await recalledDeviceKey().catch(()=>null);
    let openedEmpty=false;
    for(const candidate of candidates){
@@ -2357,7 +2360,7 @@ async function recoverOldVault(fileMode){
      if(device&&device.v===1&&device.salt===info.salt&&device.key){
       try{unpacked=await decryptWithDeviceKey(candidate.raw,device.key)}catch(_){}
      }
-     if(!unpacked&&password.length>=12)unpacked=await decryptRecord(candidate.raw,password);
+     // Si la clé locale n'est pas disponible, ne pas ouvrir l'ancien coffre. Le JSON reste importable.
      if(!unpacked)continue;
      const possible=candidate.legacy?fillFromBackup(unpacked.data):unpacked;
      if(!validVaultState(possible))continue;
@@ -2365,7 +2368,7 @@ async function recoverOldVault(fileMode){
      openedEmpty=true;
     }catch(_){/* Essayer l'autre sauvegarde sans effacer quoi que ce soit. */}
    }
-   if(!state)throw Error(openedEmpty?'Les sauvegardes ouvertes ne contiennent aucune fiche patient. Aucune donnée modifiée.':'Les sauvegardes sont présentes, mais leur clé n’est pas disponible ici. Saisis une seule fois l’ancienne phrase de sauvegarde, ou retrouve l’appareil qui les ouvrait. Aucune donnée effacée.');
+   if(!state)throw Error(openedEmpty?'Les sauvegardes ouvertes ne contiennent aucune fiche patient. Aucune donnée modifiée.':'Les anciennes sauvegardes ne sont pas lisibles automatiquement ici. Choisis ton fichier JSON au-dessus. Aucune donnée effacée.');
   }
   if(!validVaultState(state))throw Error('Sauvegarde incompatible. Aucun changement.');
   // Restaurer les fiches et le suivi ancien sans écraser les éventuels
@@ -2384,7 +2387,7 @@ async function recoverOldVault(fileMode){
    throw Error('Enregistrement de la restauration impossible. Ancien coffre et contenu actuel conservés.');
   }
   document.getElementById('tour-security-gate').hidden=true;
-  saveStatus('saved','Anciennes données récupérées et enregistrées. Aucun coffre original supprimé.');
+  saveStatus('saved','Patients importés et sauvegardés sur cet appareil. Aucun ancien coffre supprimé.');
   location.reload();
  }catch(e){report(e.message||'Récupération impossible : ancien coffre conservé.')}
 }
@@ -2841,51 +2844,25 @@ for(const event of ['pointerdown','keydown','input'])document.addEventListener(e
 document.getElementById('tour-lock').addEventListener('click',lockTourSafely);
 function report(message){document.getElementById('tour-error').textContent=message}
 function launch(){if(secureBooted)return;secureBooted=true;lastTourActivity=Date.now();idleLockTimer=setTimeout(checkTourIdle,IDLE_LOCK_MS);document.body.classList.remove('tournee-locked');document.getElementById('tour-security-gate').hidden=true;let source=document.getElementById('tour-source-js');const script=document.createElement('script');script.textContent=source.textContent;document.body.append(script);source.remove();}
-async function login(fileMode){if(typeof secureBooted!=='undefined'&&secureBooted)return recoverOldVault(fileMode);try{
- if(!crypto?.subtle)throw Error('Ouvre Tournée en HTTPS dans Safari.');
- const password=document.getElementById('tour-pass').value;if(password.length<12)throw Error('Entre ta phrase secrète (12 caractères minimum).');
- report('Déchiffrement en cours sur cet appareil…');let state,importedEncrypted=null;
- const full=localStorage.getItem(SECURE_KEY),previous=localStorage.getItem(PREVIOUS_KEY);
- if(fileMode){
- if(full||previous)throw Error('Une Tournée chiffrée existe déjà dans ce navigateur. Déverrouille-la : un nouvel import pourrait écraser tes dossiers. Conserve ta sauvegarde originale.');
- const file=document.getElementById('tour-file').files[0];if(!file)throw Error('Sélectionne ton fichier JSON.');if(file.size>25*1024*1024)throw Error('Fichier trop volumineux.');
- const candidate=JSON.parse(await file.text());
- if(isEncryptedVaultRecord(candidate)){
-  state=await decryptRecord(JSON.stringify(candidate),password);
-  if(!state||typeof state!=='object'||!Array.isArray(JSON.parse(state.tidel_Pl||'null')))throw Error('Coffre chiffré invalide');
-  importedEncrypted={v:1,salt:candidate.salt,iv:candidate.iv,cipher:candidate.cipher};
- }else state=fillFromBackup(candidate)
- }
- else if(full){state=await decryptRecord(full,password);if(!state||typeof state!=='object'||!Array.isArray(JSON.parse(state.tidel_Pl||'null')))throw Error('Données chiffrées invalides.')}
- else if(previous){const saved=await decryptRecord(previous,password);state=fillFromBackup(saved.data)}
- else throw Error('Aucune sauvegarde chiffrée ici. Importe ton JSON.');
- secureState=Object.assign(Object.create(null),state);
- secureSalt=importedEncrypted?from64(importedEncrypted.salt):full&&!fileMode?from64(JSON.parse(full).salt):crypto.getRandomValues(new Uint8Array(16));
- secureKey=await keyFor(password,secureSalt);
- secureLastWrittenRecord=localStorage.getItem(SECURE_KEY);
- if(!full){if(importedEncrypted){const restored=JSON.stringify(importedEncrypted);localStorage.setItem(SECURE_KEY,restored);secureLastWrittenRecord=restored}else{secureGen++;await flush()}}launch();
- if(typeof indexedDB!=='undefined')rememberDeviceKey(secureKey,secureSalt).catch(()=>{saveStatus('saved','Données chiffrées enregistrées. Accès automatique indisponible : conserve ta phrase secrète.')});
- }catch(err){report('Ouverture impossible : '+(err?.message||'mot de passe ou fichier invalide'))}}
+async function login(fileMode){
+ if(secureBooted)return recoverOldVault(fileMode);
+ report('L’espace de données actif ne peut pas être ouvert dans ce navigateur. Rien ne sera remplacé. Conserve ta sauvegarde et essaie depuis ton application iPhone habituelle.');
+}
 document.getElementById('tour-open').addEventListener('click',()=>login(false));
 function openTourRecovery(){
- const sources=[
-  ['coffre historique',ORIGINAL_KEY],
-  ['coffre précédent',PREVIOUS_KEY],
-  ['coffre actuel',ALTERNATE_KEY]
- ].filter(([,key])=>!!localStorage.getItem(key)).map(([name])=>name);
- const status=document.getElementById('tour-saved-status');
- if(status)status.textContent=sources.length
-  ? 'Sur ce navigateur : '+sources.join(', ')+'. Les coffres existants restent inchangés.'
-  : 'Aucun coffre détecté dans ce navigateur. Le stockage Safari et celui du navigateur intégré peuvent être séparés.';
- const gate=document.getElementById('tour-security-gate');
- gate.hidden=false;
- report('Tente « Retrouver mes patients » sans saisir de phrase. Si l’ancien coffre ne peut pas être ouvert automatiquement, son ancienne phrase est nécessaire. Aucune donnée ne sera effacée.');
+ const sources=[ORIGINAL_KEY,PREVIOUS_KEY,ALTERNATE_KEY].filter(key=>!!localStorage.getItem(key)).length;
+ const patients=recoveryPatientListEmpty(secureState)?0:(()=>{try{return JSON.parse(secureState.tidel_Pl).length}catch(_){return 0}})();
+ document.getElementById('tour-saved-status').textContent=patients
+ ? patients+' patient(s) déjà dans cette application. Un nouvel import ne remplace aucune fiche existante.'
+ : 'Aucun patient dans cet espace de l’application. '+sources+' sauvegarde(s) locale(s) détectée(s).';
+ document.getElementById('tour-security-gate').hidden=false;
+ report('Sélectionne ton export JSON dans Fichiers puis touche « Importer le JSON dans cette application ».');
 }
 document.getElementById('tour-recovery-launch').addEventListener('click',openTourRecovery);
 document.getElementById('tour-recovery-direct').addEventListener('click',openTourRecovery);
 document.getElementById('tour-recovery-close').addEventListener('click',()=>{document.getElementById('tour-security-gate').hidden=true});
 document.getElementById('tour-import').addEventListener('click',()=>login(true));
-document.getElementById('tour-saved-status').textContent=localStorage.getItem(SECURE_KEY)?'Une Tournée complète chiffrée est disponible. Utilise la même phrase secrète.':localStorage.getItem(PREVIOUS_KEY)?'✅ Ta sauvegarde chiffrée précédente est détectée. Utilise la même phrase secrète : les patients seront transférés dans l’application complète.':'Aucune sauvegarde locale détectée ici. Sélectionne ton fichier JSON.';
+document.getElementById('tour-saved-status').textContent='Import JSON disponible depuis cette application.';
 function updateTourNetworkStatus(){
  const tag=document.getElementById('tour-network-state');
  if(!tag)return;
