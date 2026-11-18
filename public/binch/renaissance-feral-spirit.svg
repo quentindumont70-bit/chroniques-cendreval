@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650" role="img" aria-labelledby="title description">
+<title id="title">Esprit du félin — gardien de la forêt</title>
+<desc id="description">Illustration originale d'un grand félin spectral vert émeraude, tapi dans les fougères sous la lune, pour le décor du Druide de La Binch.</desc>
+<defs>
+ <radialGradient id="aura"><stop stop-color="#b9f6b9" stop-opacity=".29"/><stop offset=".37" stop-color="#85ddbb" stop-opacity=".17"/><stop offset="1" stop-color="#4ebeac" stop-opacity="0"/></radialGradient>
+ <radialGradient id="fur" cx=".45" cy=".2"><stop stop-color="#365d52"/><stop offset=".56" stop-color="#173e3d"/><stop offset="1" stop-color="#071d27"/></radialGradient>
+ <linearGradient id="edge" x1="0" y1="0" x2="0.8" y2="1"><stop stop-color="#ecffc6"/><stop offset=".5" stop-color="#86d9bc"/><stop offset="1" stop-color="#4b928c"/></linearGradient>
+ <linearGradient id="mane" x1="0" y1="0" x2=".1" y2="1"><stop stop-color="#7fd4b3"/><stop offset="1" stop-color="#183d42"/></linearGradient>
+ <filter id="bloom"><feGaussianBlur stdDeviation="14"/></filter>
+ <filter id="eyeGlow"><feGaussianBlur stdDeviation="4"/></filter>
+ <g id="leaf"><path d="M0 0Q-16-36-6-74Q26-40 0 0" fill="#1a5b49" stroke="#9de1b7" stroke-width="1.5"/></g>
+</defs>
+<ellipse cx="474" cy="350" rx="359" ry="299" fill="url(#aura)"/>
+<g opacity=".22" stroke="#baf5c5" stroke-width="2" fill="none">
+ <circle cx="500" cy="315" r="224" stroke-dasharray="4 20"/>
+ <circle cx="500" cy="315" r="247" stroke-dasharray="15 28"/>
+ <path d="M500 42V92m0 445v51M227 315h51m444 0h52M305 121l37 38m318 316 38 38M687 122l-35 37M347 472l-37 37"/>
+</g>
+<g opacity=".9">
+ <path d="M175 580Q55 556 100 432q29-67 85-27-55-2-41 75 17 81 104 66" fill="none" stroke="#315c4f" stroke-width="47" stroke-linecap="round"/>
+ <path d="M175 580Q55 556 100 432q29-67 85-27" fill="none" stroke="#9fddad" stroke-opacity=".52" stroke-width="4" stroke-linecap="round"/>
+ <!-- Long low shoulders and body -->
+ <path d="M257 506Q237 394 304 327q62-81 181-91 165-13 241 66 55 58 28 179-20 87-116 107H312q-56-21-55-82Z" fill="url(#fur)" stroke="#85d7b3" stroke-opacity=".83" stroke-width="7"/>
+ <path d="M281 488Q310 367 413 341q120-39 223 25" fill="none" stroke="#b8f0c5" stroke-opacity=".4" stroke-width="11" stroke-linecap="round"/>
+ <path d="M560 569q76-118 148-112 47 11 16 91-38 49-104 45Z" fill="#123a3a" stroke="#85d7ad" stroke-width="6"/>
+ <!-- Subtle stripes -->
+ <g stroke="#84bda2" stroke-width="13" fill="none" opacity=".42">
+  <path d="M344 304q37 61 2 107M426 256q57 54 33 127M513 252q53 39 44 106M606 265q50 51 35 108M699 306q35 52 14 104"/>
+ </g>
+ <!-- Head, pointed tufted ears -->
+ <path d="M299 292 268 126l112 83q105-50 207 3l113-85-30 173q48 70-5 156-36 56-139 85-116 4-207-54-79-71-20-195Z" fill="url(#fur)" stroke="url(#edge)" stroke-width="10" stroke-linejoin="round"/>
+ <path d="M302 263 285 156l67 54q-44 22-50 53Zm326-55 51-52-8 106q-17-31-43-54Z" fill="#7da889" stroke="#d6f2c2" stroke-width="4"/>
+ <!-- cheek fur -->
+ <path d="M313 337 257 347l51 31-39 35 69 1-26 43 74-15 83 48 16-94-95-81Z" fill="#234a44" stroke="#8ac1a0" stroke-width="4"/>
+ <path d="M664 335 721 346l-50 31 39 35-70 1 26 43-75-15-82 48-17-94 96-81Z" fill="#224842" stroke="#8ac1a0" stroke-width="4"/>
+ <!-- forehead rune -->
+ <path d="M468 260q28 29 61 0l-11 52-20 20-20-20Z" fill="#5b9882" stroke="#c4edb2" stroke-width="3"/>
+ <path d="M501 271v43M487 293l14 14 13-14" fill="none" stroke="#edffc7" stroke-width="4" stroke-linecap="round"/>
+ <!-- feline eye shapes -->
+ <path d="M347 347q57-46 115 1-52 43-115-1ZM533 348q56-47 113 1-55 44-113-1Z" fill="#061b20" stroke="#c1f6b5" stroke-width="5"/>
+ <path d="M366 348q42-20 77 0-37 24-77 0Zm185 0q40-20 78 0-37 24-78 0Z" fill="#9df4bc" filter="url(#eyeGlow)" opacity=".82"/>
+ <path d="M366 348q42-20 77 0-37 24-77 0Zm185 0q40-20 78 0-37 24-78 0Z" fill="#c4ffd1"/>
+ <path d="M406 332v35m184-35v35" stroke="#082c24" stroke-width="11" stroke-linecap="round"/>
+ <!-- muzzle, nose, whiskers -->
+ <path d="M444 400q31-17 56 7 22-25 55-8l-9 56q-40 39-94 0Z" fill="#8ab5a2" opacity=".36"/>
+ <path d="M473 411h53l-27 24Z" fill="#14292c" stroke="#d7f4cd" stroke-width="3"/>
+ <path d="M499 433v19m0 0q-18 18-36 1m36-1q18 18 36 1" fill="none" stroke="#d8e4c8" stroke-width="4" stroke-linecap="round"/>
+ <g fill="none" stroke="#d8f9c4" stroke-width="2.5" opacity=".7">
+  <path d="M447 440q-70-12-138 5m140 8q-81 16-144 43m246-56q66-12 140 4m-141 9q84 14 141 42"/>
+ </g>
+ <!-- Front paws -->
+ <path d="M363 506q-25 44-35 89l112-2q-2-48-17-86" fill="#244b43" stroke="#93c4a4" stroke-width="6"/>
+ <path d="M571 507q-20 49-18 88l123-2q-2-52-31-91" fill="#224b42" stroke="#93c4a4" stroke-width="6"/>
+ <path d="M347 590v-24m35 27v-20m33 18v-22m155 24v-22m42 22v-23m42 22v-24" stroke="#b9dbac" stroke-width="3" opacity=".6"/>
+</g>
+<!-- Misty foliage and flying spores -->
+<g opacity=".68"><use href="#leaf" x="199" y="638" transform="rotate(-17 199 638)"/><use href="#leaf" x="271" y="645" transform="rotate(17 271 645)"/><use href="#leaf" x="723" y="643" transform="rotate(-15 723 643)"/><use href="#leaf" x="782" y="644" transform="rotate(21 782 644)"/><path d="M93 649q92-76 192-20m384-4q100-62 164 12" fill="none" stroke="#7ac5a4" stroke-width="6" opacity=".49"/></g>
+<g fill="#d7ffd4" opacity=".77"><circle cx="279" cy="269" r="3"/><circle cx="706" cy="248" r="3"/><circle cx="218" cy="357" r="2.2"/><circle cx="779" cy="377" r="2.8"/><circle cx="476" cy="77" r="2.7"/><circle cx="657" cy="134" r="2.1"/></g>
+</svg>
