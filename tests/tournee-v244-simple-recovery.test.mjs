@@ -29,6 +29,16 @@ test('V245: new recovery does not upload patient data and offline shell is refre
  assert.ok(recover.length>500);
  assert.doesNotMatch(recover,/fetch\s*\(|sendBeacon\s*\(|\.clear\s*\(|removeItem\s*\(/);
  const worker=await read('sw.js');
- assert.match(worker,/const CACHE='big-cthu-public-v2-v245'/);
+ assert.match(worker,/const CACHE='big-cthu-public-v2-v246'/);
  assert.match(worker,/'\.\/tournee-complete\.html'/);
+});
+
+test('V246: separate rescue route avoids the cached old page and opens recovery immediately',async()=>{
+ const rescue=await read('tournee-secours-v246.html');
+ assert.match(rescue,/<title>Tournée · Récupération directe V246<\/title>/);
+ assert.match(rescue,/autoOpenTournee\(\)\.then\(opened=>\{if\(opened\)openTourRecovery\(\)\}\)/);
+ assert.match(rescue,/id="tour-recovery-launch">Récupérer mes anciennes données/);
+ assert.match(rescue,/if\(!recoverySpaceEmpty\(secureState\)\)throw Error/);
+ const worker=await read('sw.js');
+ assert.match(worker,/'\.\/tournee-secours-v246\.html'/);
 });
