@@ -428,6 +428,21 @@ body:not(.tournee-locked) #tour-security-gate:not([hidden]){position:fixed;inset
 #tour-security-gate .info{border-radius:12px;padding:12px;background:#153b3d;color:#cffff3}
 #tour-security-gate a{color:#b1ffe9}
 #tour-security-gate #tour-error{color:#ffc7c7;min-height:22px}
+#tour-security-gate .tour-backup-intro{margin:0 0 12px;color:#ddd6ec}
+#tour-security-gate .tour-backup-grid{display:grid;gap:12px}
+#tour-security-gate .tour-backup-card{border:1px solid #55466e;border-radius:14px;background:#2b2441;padding:14px}
+#tour-security-gate .tour-backup-card h2{font-size:17px;margin:0 0 9px;color:white}
+#tour-security-gate .tour-backup-card p{margin:6px 0 9px;line-height:1.55}
+#tour-security-gate .tour-backup-status{background:#153b3d;border-radius:10px;padding:11px;color:#cffff3}
+#tour-security-gate #tour-backup-preview,#tour-security-gate #tour-backup-download-status{font-size:13px;color:#ddd5ed}
+#tour-security-gate .tour-backup-card button{font-weight:700}
+#tour-security-gate .tour-backup-advanced{margin-top:16px;border:1px solid #55466e;padding:12px;border-radius:12px}
+#tour-security-gate .tour-backup-advanced summary{cursor:pointer;min-height:44px;padding:9px 0;font-size:14px;font-weight:700}
+#tour-security-gate .tour-backup-advanced button{font-size:13px;background:#46365c}
+#tour-security-gate .tour-backup-legal{font-size:12px;color:#bfb5d4}
+#tour-security-gate #tour-recovery-close{width:auto;background:transparent;border:1px solid #7f6ca4;padding:8px 12px;margin:0 0 10px}
+@media(min-width:800px){#tour-security-gate{max-width:760px}}
+
 #tour-save-strip{position:relative;z-index:2;padding:6px 12px;background:#173b36;color:#d9fff4;display:block;font:13px/1.45 system-ui,-apple-system,sans-serif}
 #tour-save-summary{display:flex;align-items:center;gap:8px;min-height:42px;max-width:880px;margin-inline:auto}
 #tour-save-text{flex:1;min-width:0;max-height:2.9em;overflow:hidden;overflow-wrap:anywhere}
@@ -543,25 +558,33 @@ body.tournee-locked #tour-save-strip{display:none}
 @media(max-width:520px){.tq-week-grid{grid-template-columns:1fr}.tq-chat-form input{flex-basis:100%}.tq-week .tq-actions button{flex-basis:100%}}
 </style>
 </head>
-<body class="tournee-locked tournee-checking"><section id="tour-security-gate" hidden>
-<a href="./index.html">← Retour au cockpit Big Cthu</a>
-<h1>Importer mes patients</h1>
-<button id="tour-recovery-close" type="button">← Retour à Tournée</button>
-<p class="info" id="tour-saved-status">Les données de cette application restent sur cet iPhone.</p>
-<p>Pour retrouver tes patients sur cette application, sélectionne la sauvegarde JSON enregistrée dans Fichiers sur cet iPhone. Aucune donnée n'est envoyée à GitHub.</p>
-<div id="tour-import-panel" style="display:grid;gap:10px;margin-top:16px;padding:14px;border:1px solid #63548e;border-radius:14px">
-<label for="tour-file"><strong>1 · Choisir ma sauvegarde JSON</strong></label>
-<input type="file" id="tour-file" accept=".json,application/json" style="max-width:100%;font:inherit">
-<button id="tour-import" type="button">2 · Importer le JSON dans cette application</button>
-<p style="margin:0;font-size:13px">Les fiches présentes ne seront jamais écrasées. Une sauvegarde d'origine reste conservée dans Fichiers.</p>
+<body class="tournee-locked tournee-checking"><section id="tour-security-gate" hidden role="dialog" aria-modal="true" aria-labelledby="tour-backup-title">
+<h1 id="tour-backup-title">Mes sauvegardes</h1>
+<button id="tour-recovery-close" type="button">← Revenir à ma tournée</button>
+<p class="tour-backup-intro">Un seul endroit pour vérifier les données de cet appareil, créer une copie et restaurer un fichier.</p>
+<div class="tour-backup-grid">
+<section class="tour-backup-card"><h2>1 · Sur cet iPhone</h2>
+<p class="tour-backup-status" id="tour-saved-status" role="status">Lecture des données locales…</p>
+<p>Les modifications sont enregistrées automatiquement sur cet appareil. <strong>Ce stockage n'est pas une copie de secours</strong> et ne suit pas les autres navigateurs.</p></section>
+<section class="tour-backup-card"><h2>2 · Conserver une copie</h2>
+<p>Ce fichier JSON complet permet de restaurer les patients sur un autre appareil. Il contient des données de santé <strong>lisibles</strong> : conserve-le dans un endroit privé et protégé, jamais sur GitHub.</p>
+<button id="tour-portable-export" type="button">Télécharger ma sauvegarde complète</button>
+<p id="tour-backup-download-status" role="status" aria-live="polite">Aucune copie extérieure n'est vérifiée par Tournée. Vérifie le fichier téléchargé dans Fichiers.</p></section>
+<section class="tour-backup-card"><h2>3 · Restaurer un fichier</h2>
+<p>Choisis une sauvegarde JSON. Elle est contrôlée avant la restauration ; aucune fiche déjà présente ne sera écrasée.</p>
+<label for="tour-file">Choisir un fichier dans Fichiers</label><input type="file" id="tour-file" accept=".json,application/json">
+<p id="tour-backup-preview" role="status" aria-live="polite">Aucun fichier sélectionné.</p>
+<button id="tour-import" type="button">Restaurer sur cet appareil</button></section>
 </div>
-<details style="margin-top:14px"><summary>Rechercher une ancienne sauvegarde locale</summary>
-<p>Si elle est lisible automatiquement sur cet appareil, Tournée peut retrouver les anciennes fiches sans importer de fichier.</p>
-<button id="tour-open" type="button">Essayer la récupération automatique</button></details>
+<details class="tour-backup-advanced"><summary>Options avancées · anciens coffres</summary>
+<p>Une copie technique chiffrée dépend de la clé de ce téléphone ; elle ne remplace pas le JSON complet pour changer d'appareil.</p>
+<button id="tour-vault-export" type="button">Exporter une copie technique locale</button>
+<p>Tu peux aussi tenter de relire les coffres présents sur cet appareil, sans les effacer.</p>
+<button id="tour-open" type="button">Chercher une ancienne sauvegarde locale</button></details>
 <p id="tour-error" role="status"></p>
-<p style="font-size:13px">Cette version locale conserve les données chiffrées sur cet appareil. Elle n'est pas un hébergement HDS certifié. Garde ton fichier JSON dans Fichiers, à l'abri d'un partage accidentel.</p>
+<p class="tour-backup-legal">Version privée en développement : pas d'hébergement HDS fourni. Conserve des copies indépendantes et protégées.</p>
 </section>
-<div id="tour-save-strip" data-state="saved" aria-label="Sauvegarde locale de Tournée"><div id="tour-save-summary"><span id="tour-save-text" role="status" aria-live="polite">Données chiffrées enregistrées sur cet appareil.</span><button type="button" id="tour-save-retry" hidden>Réessayer</button><button type="button" id="tour-recovery-direct">Importer mon JSON</button><button type="button" id="tour-save-menu" aria-expanded="false" aria-controls="tour-save-actions" onclick="tourSaveMenuToggle()">⋯ Outils</button></div><div id="tour-save-actions" hidden><span id="tour-network-state" aria-live="off" title="État réseau, indépendant de la sauvegarde locale">Connexion à déterminer</span><div class="tour-save-buttons"><button type="button" id="tour-vault-export">Copie chiffrée locale</button><button type="button" id="tour-portable-export">Exporter une sauvegarde complète JSON</button><button type="button" id="tour-absence-open">Absences &amp; modifications</button><button type="button" id="tour-lock">Sauvegarder</button><button type="button" id="tour-recovery-launch">Importer mes patients (JSON)</button></div></div></div>
+<div id="tour-save-strip" data-state="saved" aria-label="Sauvegarde locale de Tournée"><div id="tour-save-summary"><span id="tour-save-text" role="status" aria-live="polite">Données chiffrées enregistrées sur cet appareil.</span><button type="button" id="tour-save-retry" hidden>Réessayer</button><button type="button" id="tour-recovery-direct">Mes sauvegardes</button><button type="button" id="tour-save-menu" aria-expanded="false" aria-controls="tour-save-actions" onclick="tourSaveMenuToggle()">⋯ Outils</button></div><div id="tour-save-actions" hidden><span id="tour-network-state" aria-live="off" title="État réseau, indépendant de la sauvegarde locale">Connexion à déterminer</span><div class="tour-save-buttons"><button type="button" id="tour-absence-open">Absences &amp; modifications</button><button type="button" id="tour-lock">Sauvegarder maintenant</button><button type="button" id="tour-recovery-launch">Sauvegarder / restaurer</button></div></div></div>
 <section id="tour-absence-panel" hidden aria-label="Absences et modifications de Tournée">
 <div class="ap-inner">
 <div class="ap-closebar"><button id="ap-close" type="button">← Retour à Tournée</button><span class="ap-caption">Journal local chiffré</span></div>
