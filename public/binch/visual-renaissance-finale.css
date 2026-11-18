@@ -265,3 +265,85 @@ html[data-binch-detail=lite] #page-specs #binch-specs .binch-spec-card{
 html[data-binch-detail=lite] #page-specs #binch-specs .binch-spec-card[data-spec-id]::before{
  filter:none!important
 }
+
+/* Three purpose-built chapters: forging, guild strategy and Faith's astral compass. */
+#page-metiers>.panel.section:first-child::before{
+ background-image:linear-gradient(90deg,#101b1ff2,#142521ca 64%,#0e1b20b5),url("./renaissance-workshop.svg")!important;
+ background-position:72% center!important;opacity:.78!important;
+}
+#page-metiers>.panel.section:first-child{
+ border-color:#bc9b68!important;background:linear-gradient(120deg,#1c2d2b,#121f26);
+}
+#page-metiers>.panel.section:first-child h2{color:#ffe5b5}
+#page-metiers #jobs-content .tile[data-job=Minage]{
+ background-image:linear-gradient(100deg,#152c33e8,#192a30d6),url("./renaissance-workshop.svg")!important;
+ background-position:70% 45%;background-size:cover;
+}
+#page-metiers #jobs-content .tile[data-job="Ingénierie"]{
+ background-image:linear-gradient(95deg,#142832ed,#152a30bb),url("./renaissance-workshop.svg")!important;
+ background-position:45% 62%;background-size:cover;
+}
+#page-gm #binch-gm-watch::before,
+#page-gm #binch-gm-workspace::before,
+#page-gm .binch-gm-hub::after{
+ background-image:linear-gradient(85deg,#07191ce8,#101e21b9 65%,#09181da8),
+ url("./renaissance-gm-council.svg")!important;
+ background-position:75% center!important;background-size:cover!important;
+ opacity:.55!important;
+}
+#page-gm #binch-gm-watch-stats{
+ position:relative;z-index:1;
+}
+#page-gm #binch-gm-watch-stats div{
+ border:1px solid #a88a6296;
+ background:linear-gradient(120deg,#354237ee,#17282ceb);
+}
+#page-gm #binch-gm-watch-stats b{
+ color:#ffe3ac;text-shadow:0 0 19px #d0a76e68;
+}
+#page-command #binch-faith-advisor{
+ background-image:linear-gradient(100deg,#17252ceb,#1b1f32de 58%,#1a2233ca),
+ url("./renaissance-faith-oracle.svg")!important;
+ background-position:right center!important;background-size:cover!important;
+}
+#page-command #binch-faith-advisor::before{
+ background:url("./renaissance-faith-oracle.svg") 65% center/cover!important;
+ opacity:.32!important;mask-image:radial-gradient(circle,#000,transparent 74%);
+}
+#page-command #binch-faith-advisor :is(h3,h4,strong){text-shadow:0 2px 14px #10101c9c}
+#page-command #binch-faith-goal{
+ background:#111d2af2;border-color:#b7a4e0;
+}
+@media(max-width:720px){
+ #page-command #binch-faith-advisor{
+  background-image:linear-gradient(90deg,#111c2af4,#1b2340df),url("./renaissance-faith-oracle.svg")!important;
+  background-position:70% 45%!important;
+ }
+ #page-gm #binch-gm-watch::before,#page-gm #binch-gm-workspace::before{
+  background-position:63% center!important;opacity:.38!important;
+ }
+ #page-metiers #jobs-content .tile[data-job=Minage],
+ #page-metiers #jobs-content .tile[data-job="Ingénierie"]{background-position:50% 55%}
+}
+html[data-binch-detail=lite] #page-command #binch-faith-advisor{
+ background-image:linear-gradient(120deg,#151d2a,#23253a)!important;
+}
+html[data-binch-detail=lite] #page-gm #binch-gm-watch::before,
+html[data-binch-detail=lite] #page-gm #binch-gm-workspace::before,
+html[data-binch-detail=lite] #page-gm .binch-gm-hub::after,
+html[data-binch-detail=lite] #page-metiers>.panel.section:first-child::before{
+ display:none!important;
+}
+html[data-binch-detail=lite] #page-metiers #jobs-content .tile[data-job=Minage],
+html[data-binch-detail=lite] #page-metiers #jobs-content .tile[data-job="Ingénierie"]{
+ background-image:linear-gradient(120deg,#14292c,#101c24)!important;
+}
+@media(forced-colors:active){
+ #page-metiers>.panel.section:first-child,
+ #page-metiers #jobs-content .tile[data-job=Minage],
+ #page-metiers #jobs-content .tile[data-job="Ingénierie"],
+ #page-command #binch-faith-advisor{
+  background:Canvas!important;border-color:CanvasText!important;
+ }
+ #page-command #binch-faith-advisor::before{display:none!important}
+}
