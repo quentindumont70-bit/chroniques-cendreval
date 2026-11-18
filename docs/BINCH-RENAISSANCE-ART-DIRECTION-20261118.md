@@ -98,3 +98,35 @@ Les fichiers utilisés sont `renaissance-sigil-*.svg`, `renaissance-profession-*
 10. Revue humaine, fusion autorisée et déploiement bêta limité à la version validée.
 
 **Aucune fusion, aucun déploiement ni intervention utilisateur demandée pendant la réalisation de ce lot.** Les tests CI vérifient des propriétés techniques, pas la beauté du résultat sur de vrais appareils.
+
+## Passe P5 — HUD mobile, gardien félin, carnet vivant et captures (18 novembre)
+
+Cette passe ajoute du code à l'application existante ; elle ne concerne pas la Bourse AH.
+
+### Livrés dans la branche de refonte (revue et intégration encore nécessaires)
+
+1. **HUD mobile** : barre compacte Quartier / Carte / Talents / Guilde, fondée uniquement sur les vrais boutons d'onglets. Les rubriques indisponibles restent masquées et la navigation complète continue d'exister.
+2. **Écran iPhone** : barre au-dessus de la zone de geste, boutons tactiles de 44 pixels minimum, contenu doté d'un espace inférieur pour éviter le recouvrement.
+3. **Suivi de talents épinglé** : repositionné au-dessus du HUD sur les téléphones portrait.
+4. **Palette Ctrl+K** : apparence de table de guerre en métal forgé et teintes de classe. L'ancien moteur de recherche et ses favoris ne changent pas.
+5. **Gardien du Druide** : nouveau `renaissance-feral-spirit.svg` original, posé dans la scène des Druides et recadré pour 720/420 px. Décor seulement, pas une représentation de talents ou d'équipement lu dans le jeu.
+6. **Carnet de route** : notification courte après une case cochée manuellement, avec l'avertissement explicite « non confirmé dans WoW ». Aucune nouvelle récompense ni sauvegarde de progression.
+7. **Accessibilité** : respect de `prefers-reduced-motion`, mode léger, focus visible et couleurs forcées, y compris pour le HUD et la notification.
+8. **Tests ciblés** : `tests/binch-visual-renaissance-dock.test.mjs` couvre les vrais boutons, les onglets retardés, les zones sûres iPhone et la palette ; les tests Renaissance couvrent aussi l'illustration féline et la notification.
+9. **Prévisualisations** : captures de galerie, plus deux captures de l'écran de création de personnage réel en format desktop et téléphone, conservées trois jours en artefacts CI. Ce n'est pas un déploiement ni un test sur un vrai iPhone.
+10. **Gouvernance** : aucune fusion ou transaction, branche et PR #234 conservées en brouillon jusqu'à revue.
+
+### Prochaines priorités, dans cet ordre
+
+1. Obtenir les deux contrôles CI verts sur le dernier commit de cette passe.
+2. Ouvrir les captures GitHub et éliminer uniquement les défauts visuels réellement constatés.
+3. Tester le HUD sur un vrai iPhone en portrait avec les safe areas.
+4. Contrôler le rendu du gardien félin derrière le portrait, le niveau et les actions.
+5. Comparer les neuf paysages de classe, y compris en mode léger.
+6. Vérifier l'absence de double navigation dans les pages Specs et GM.
+7. Tester un objet de route marqué terminé puis réactivé, sans inventer d'achèvement en jeu.
+8. Vérifier la lisibilité du panneau Ctrl+K et de ses favoris sur mobile.
+9. Recueillir un retour du futur testeur GM sur la cohérence des rubriques et de la carte.
+10. Préparer une revue humaine ciblée, puis seulement une fusion et un déploiement autorisés.
+
+**Distinction des preuves :** les tests techniques et captures headless valident la présence et le rendu de certaines interfaces ; ils ne prouvent ni la fluidité tactile iPhone ni la justesse de la synchronisation WoW.
