@@ -69,6 +69,18 @@ test('HUD mobile : aucune mutation de progression, protection iPhone, onglets co
  assert.ok(css.includes('prefers-reduced-motion:reduce'));
  assert.ok(css.includes('forced-colors:active'));
  assert.ok(html.includes('./visual-renaissance-dock.js?v=001'));
- assert.ok(html.includes('./visual-renaissance-dock.css?v=001'));
+ assert.ok(html.includes('./visual-renaissance-dock.css?v=002'));
  assert.ok(html.includes('class="nav binch-nav-multiline"'),'full navigation remains in page');
+});
+
+test('Palette de commande : esthétique Renaissance sur la vraie recherche Ctrl+K',()=>{
+ const css=readFileSync(new URL('../public/binch/visual-renaissance-dock.css',import.meta.url),'utf8');
+ const palette=readFileSync(new URL('../public/binch/ultimate-quicknav.js',import.meta.url),'utf8');
+ for(const sel of ['#binch-quicknav-launch','.binch-quicknav-dialog','.binch-quicknav-head','.binch-quicknav-item','#binch-quicknav-search']){
+  assert.ok(css.includes(sel),'missing war-table treatment '+sel);
+ }
+ assert.ok(palette.includes('Ctrl + K'),'the existing search retains its shortcut');
+ assert.ok(palette.includes('tab?.click()'),'still navigates to actual modules');
+ assert.ok(css.includes('html[data-binch-detail=lite] .binch-quicknav-dialog'));
+ assert.ok(css.includes('env(safe-area-inset-top'));
 });
