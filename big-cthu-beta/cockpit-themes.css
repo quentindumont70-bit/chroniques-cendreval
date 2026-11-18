@@ -610,3 +610,11 @@ html[data-cthu-theme] body[data-cthu-area] :is(button,a,input,select,textarea):f
 #activePulseClear{min-height:44px}
 #activePulseSearch:focus-visible{outline:3px solid var(--cthu-accent,#86f3de);outline-offset:3px}
 @media(max-width:700px){#activePulseSearch{flex-basis:100%}}
+
+/* V218–V219 — accessible action pin controls, no duplicate task bodies. */
+.active-pulse-pin{display:flex;align-items:flex-end;flex-wrap:wrap;gap:10px;margin:12px 0 4px}
+.active-pulse-pin label{flex:0 0 100%;font-weight:700;font-size:12px}
+#activePulsePinPick{flex:1 1 220px;max-width:100%;min-height:44px;border-radius:12px;border:1px solid var(--cthu-line,#645a7c);background:var(--cthu-surface,rgba(20,18,40,.85));color:inherit;padding:9px 12px;font:inherit}
+#activePulsePinButton{min-height:44px}
+#activePulsePinPick:focus-visible,#activePulsePinButton:focus-visible{outline:3px solid var(--cthu-accent,#86f3de);outline-offset:3px}
+@media(max-width:700px){#activePulsePinPick{flex-basis:100%}}

@@ -21,7 +21,10 @@ function read(key){
   return {rows,bad:false};
  }catch(e){return {rows:[],bad:true}}
 }
-function collect(expanded=false,limit=8,kind='all',term=''){
+function collect(expanded=false,limit=8,kind='all',term='',pinned=[]){
+ const favorites=new Set(pinned);
+ const favoriteKey=(source,item)=>item.id?source.kind+':'+item.id:'';
+ const pinnedItem=(source,item)=>favorites.has(favoriteKey(source,item));
  const now=new Date();
  const today=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
  const clock=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
@@ -65,7 +68,8 @@ function collect(expanded=false,limit=8,kind='all',term=''){
   matchedCompact+=Math.min(shown.length,source.limit);
   matchedUrgent+=shown.filter(item=>item.rank<=2).length;
   matchedUrgentCompact+=shown.slice(0,source.limit).filter(item=>item.rank<=2).length;
-  for(const item of shown.slice(0,expanded?limit:source.limit))results.push({...item,kind:source.kind,url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.kind==='Agenda'&&item.id?'./agenda.html#event='+encodeURIComponent(item.id):source.kind==='Captures'&&item.id?'./capture.html#capture='+encodeURIComponent(item.id):source.kind==='Priorités'&&item.id?'#priority-'+encodeURIComponent(item.id):source.kind==='Musique'&&item.id?'./musique.html#studio='+encodeURIComponent(item.id):source.kind==='Stock'&&item.id?'./garde-manger.html#food='+encodeURIComponent(item.id):source.kind==='Jeux'&&item.id?'#session='+encodeURIComponent(item.id):source.url});
+  const ordered=shown.slice().sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||Number(pinnedItem(source,b))-Number(pinnedItem(source,a)));
+  for(const item of ordered.slice(0,expanded?limit:source.limit))results.push({...item,kind:source.kind,favoriteKey:favoriteKey(source,item),favorite:pinnedItem(source,item),url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.kind==='Agenda'&&item.id?'./agenda.html#event='+encodeURIComponent(item.id):source.kind==='Captures'&&item.id?'./capture.html#capture='+encodeURIComponent(item.id):source.kind==='Priorités'&&item.id?'#priority-'+encodeURIComponent(item.id):source.kind==='Musique'&&item.id?'./musique.html#studio='+encodeURIComponent(item.id):source.kind==='Stock'&&item.id?'./garde-manger.html#food='+encodeURIComponent(item.id):source.kind==='Jeux'&&item.id?'#session='+encodeURIComponent(item.id):source.url});
  }
  counts.Urgentes=urgentTotal;
  return {items:results.sort((a,b)=>a.rank-b.rank),warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact};
@@ -76,11 +80,13 @@ function node(tag,text,className){
  if(className)x.className=className;
  return x;
 }
-let expanded=false,selectedKind='all',pageSize=8,searchTerm='';
+let expanded=false,selectedKind='all',pageSize=8,searchTerm='',pinMessage='';
 function render(){
  const root=$('activePulseList');if(!root)return;
- const {items,warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact}=collect(expanded,pageSize,selectedKind,searchTerm);
- const visible=selectedKind==='all'?items:selectedKind==='Urgentes'?items.filter(item=>item.rank<=2):items.filter(item=>item.kind===selectedKind);
+ const pins=window.BigCthuActionFavorites;
+ const pinState=pins?pins.read():{ids:[],blocked:false};
+ const {items,warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact}=collect(expanded,pageSize,selectedKind,searchTerm,pinState.ids);
+ const visible=(selectedKind==='all'?items:selectedKind==='Urgentes'?items.filter(item=>item.rank<=2):items.filter(item=>item.kind===selectedKind)).slice().sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||Number(b.favorite)-Number(a.favorite)||a.rank-b.rank);
  const available=selectedKind==='all'?matchedTotal:selectedKind==='Urgentes'?matchedUrgent:(matchCounts[selectedKind]||0);
  const compact=selectedKind==='all'?matchedCompact:selectedKind==='Urgentes'?matchedUrgentCompact:Math.min(available,2);
  root.replaceChildren();
@@ -90,7 +96,7 @@ function render(){
  for(const item of visible){
   const link=node('a','','active-pulse-item'+(item.rank<=2?' is-urgent':''));
   link.href=item.url;
-  link.append(node('small',item.kind),node('strong',item.title));
+  link.append(node('small',(item.favorite?'★ ':'')+item.kind),node('strong',item.title));
   if(item.next)link.append(node('span',item.next,'active-pulse-next'));
   root.append(link);
  }
@@ -99,6 +105,21 @@ function render(){
  const category=$('activePulseCategory');if(category){category.value=selectedKind;category.onchange=()=>{selectedKind=category.value;expanded=false;pageSize=8;render()}}
  const search=$('activePulseSearch');if(search){if(search.value!==searchTerm)search.value=searchTerm;search.oninput=()=>{searchTerm=search.value.slice(0,100);expanded=false;pageSize=8;render()};search.onkeydown=e=>{if(e.key==='Escape'&&searchTerm){searchTerm='';expanded=false;pageSize=8;render()}}}
  const clear=$('activePulseClear');if(clear){clear.hidden=!searchTerm;clear.onclick=()=>{searchTerm='';expanded=false;pageSize=8;render();if(search&&typeof search.focus==='function')search.focus()}}
+ const pinPick=$('activePulsePinPick'),pinButton=$('activePulsePinButton'),pinStatus=$('activePulsePinStatus');
+ if(pinPick&&pinButton){
+  const previous=pinPick.value;
+  pinPick.replaceChildren();
+  for(const item of visible){if(!item.favoriteKey)continue;
+   const option=node('option',(item.favorite?'★ ':'')+item.kind+' · '+item.title.slice(0,65));option.value=item.favoriteKey;pinPick.append(option);
+  }
+  const choices=visible.filter(item=>item.favoriteKey);
+  const current=choices.some(item=>item.favoriteKey===previous)?previous:(choices[0]?.favoriteKey||'');
+  pinPick.value=current;
+  const updatePinButton=()=>{const pinned=pinState.ids.includes(pinPick.value);pinButton.textContent=pinned?'Retirer des favoris':'Épingler cette action';pinButton.disabled=!pinPick.value||pinState.blocked||!pins};
+  pinPick.onchange=updatePinButton;updatePinButton();
+  pinButton.onclick=()=>{if(!pins||!pinPick.value)return;const outcome=pins.toggle(pinPick.value);pinMessage=outcome.message;if(outcome.ok)render();else if(pinStatus)pinStatus.textContent=pinMessage};
+ }
+ if(pinStatus)pinStatus.textContent=pinState.blocked?'Favoris locaux illisibles : aucun favori ne sera modifié.':pinMessage;
  const status=$('activePulseStatus');
  if(status)status.textContent=warnings?'Certaines données locales sont illisibles ; aucune n’a été modifiée.':available>visible.length?'Affichage de '+visible.length+' sur '+available+' actions. Rappels lus localement, sans copie.':'Rappels lus localement, sans copie ni synchronisation.';
 }
