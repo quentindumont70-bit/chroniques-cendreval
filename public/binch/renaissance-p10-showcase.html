@@ -11,7 +11,9 @@
   Druide:'renaissance-p9-hero-druid.svg'};
  const picked=new URLSearchParams(location.search).get('classe')||'Druide';
  const link=document.createElement('link');link.rel='preload';link.as='image';
- link.href='./'+(scene[picked]||scene.Druide);document.head.append(link);
+ const asset=scene[picked]||scene.Druide;
+ link.href='./'+asset;document.head.append(link);
+ document.documentElement.style.setProperty('--world','url("./'+asset+'")');
 })();
 </script>
 <style>
