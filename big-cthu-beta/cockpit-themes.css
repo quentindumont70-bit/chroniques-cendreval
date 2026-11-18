@@ -618,3 +618,11 @@ html[data-cthu-theme] body[data-cthu-area] :is(button,a,input,select,textarea):f
 #activePulsePinButton{min-height:44px}
 #activePulsePinPick:focus-visible,#activePulsePinButton:focus-visible{outline:3px solid var(--cthu-accent,#86f3de);outline-offset:3px}
 @media(max-width:700px){#activePulsePinPick{flex-basis:100%}}
+
+/* V220–V224: quick date views, thumb targets and readable long actions. */
+.active-pulse-fast{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.active-pulse-fast button{min-height:44px;min-width:118px}
+.active-pulse-fast button[aria-pressed="true"]{border:2px solid var(--cthu-accent,#86f3de);font-weight:800}
+.active-pulse-fast button:focus-visible{outline:3px solid var(--cthu-accent,#86f3de);outline-offset:3px}
+.active-pulse-next{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;font-size:13px}
+@media(max-width:700px){.active-pulse-fast{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.active-pulse-fast button{min-width:0}.active-pulse-item{padding:14px;gap:7px}}
