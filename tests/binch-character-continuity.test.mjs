@@ -10,7 +10,7 @@ function probe(file,marker,bindings,rows={}){
  const localStorage={getItem:k=>storage.get(k)??null,key:i=>[...storage.keys()][i]??null,get length(){return storage.size}};
  const sandbox={localStorage,document:{readyState:'loading',addEventListener(){}},window:{}};
  runInNewContext(source.replace(marker,'globalThis.__probe={'+bindings+'};\n'+marker),sandbox,{filename:file});
- return sandbox.__probe;
+ return Object.assign(sandbox.__probe,{_storage:storage});
 }
 
 test('Sauvegarde portable: conserve Faith, talents et AH sans exporter le dernier import brut',()=>{
@@ -21,6 +21,7 @@ test('Sauvegarde portable: conserve Faith, talents et AH sans exporter le dernie
   'binch.specs.focus.v1':'{"id":"druid-feral","pinned":true}',
   'binch.ah.trading.v1':'{"view":"dashboard"}',
   'binch.leveling.log.v1.bobinch.tauren.druide':'[]',
+  'binch.specs.progress.v1.bobinch.forever.tauren.druide':'{"confirmedThrough":27}',
   'grimoire.bridge.last':'{"name":"Bobinch","inventory":[{"id":1,"count":4}]}',
   'binch.ah.feed.cache.v1':'{"stale":true}',
   'binch.guild.invalid.v1':'not-json'
@@ -30,6 +31,7 @@ test('Sauvegarde portable: conserve Faith, talents et AH sans exporter le dernie
  assert.equal(JSON.parse(rows['binch.specs.focus.v1']).id,'druid-feral');
  assert.equal(JSON.parse(rows['binch.ah.trading.v1']).view,'dashboard');
  assert.ok(rows['binch.leveling.log.v1.bobinch.tauren.druide']);
+ assert.equal(JSON.parse(rows['binch.specs.progress.v1.bobinch.forever.tauren.druide']).confirmedThrough,27);
  assert.equal(rows['grimoire.bridge.last'],undefined);
  assert.equal(rows['binch.ah.feed.cache.v1'],undefined);
  assert.equal(rows['binch.guild.invalid.v1'],undefined);
@@ -60,4 +62,28 @@ test('Faith: farouche pex distinct du tank, stocks invalides exclus, royaume res
  });
  assert.equal(mismatch.snapshot().same,false);
  assert.equal(mismatch.snapshot().copper,0);
+});
+
+test('Guide Druide: points proposés distincts des points réellement confirmés',()=>{
+ const marker="if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();";
+ const hub={race:'Tauren',classe:'Druide',data:{pseudo:'Bobinch',realm:'Forever',level:32}};
+ const p=probe('specs-guide.js',marker,'progressKey,progress,confirmProgress,nextPoint',{
+  'grimoire.hub.v3':JSON.stringify(hub)
+ });
+ const key=p.progressKey();
+ assert.ok(key?.startsWith('binch.specs.progress.v1.'));
+ assert.equal(p.progress().confirmedThrough,9,'sans action manuelle, rien n’est déclaré comme dépensé');
+ assert.equal(p.confirmProgress(32),true);
+ assert.equal(p.progress().confirmedThrough,32);
+ assert.equal(p.confirmProgress(61),false);
+ assert.equal(p.progress().confirmedThrough,32);
+ p._storage.set('grimoire.hub.v3',JSON.stringify({...hub,data:{...hub.data,pseudo:'Autre Druide'}}));
+ assert.equal(p.progress().confirmedThrough,9,'la progression ne fuit pas entre personnages');
+ p._storage.set('grimoire.hub.v3',JSON.stringify(hub));
+ assert.equal(p.progress().confirmedThrough,32);
+ assert.equal(p.confirmProgress(9),true,'le suivi peut être remis à zéro sans perdre le build');
+ assert.equal(p.progress().confirmedThrough,9);
+ const source=readFileSync(new URL('../public/binch/specs-guide.js',import.meta.url),'utf8');
+ assert.ok(source.includes('done=taken===step[3]&&confirmed>=step[1]'));
+ assert.ok(source.includes('les talents réellement dépensés ne sont pas lus dans WoW'));
 });
