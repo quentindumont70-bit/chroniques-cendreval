@@ -65,6 +65,8 @@ jobs:
         run: node --test tests/binch-visual-renaissance-dock.test.mjs
       - name: Tester la constellation et les chapitres Renaissance
         run: node --test tests/binch-visual-renaissance-finale.test.mjs
+      - name: Tester la création de personnage Renaissance et ses choix accessibles
+        run: node --test tests/binch-visual-renaissance-onboarding.test.mjs
       - name: Vérifier la présence de Big Cthu dans le paquet Pages
         run: |
           node scripts/stage-big-cthu-beta.mjs
