@@ -1,0 +1,72 @@
+# Tournée Pro — plan de produit et Golipette de lancement
+
+**Statut :** bêta privée, **interdite à la vente en l'état**. Première cible : infirmiers et infirmières libéraux exerçant seuls en France. Révision : 18 novembre 2026.
+
+## Promesse du produit
+
+> « Ma tournée, mes rappels et mes transmissions, lisibles en deux gestes même sans réseau. Mes données sont récupérables, je sais à tout moment où elles sont. »
+
+Tournée est un **compagnon terrain**. Elle n'est ni un moteur de facturation SESAM-Vitale, ni un remplacement de Topaze, ni un dispositif d'aide au diagnostic. Aucun accès à des données patients depuis GitHub, les tests CI ou un assistant externe. Pas de duplication d'une base Topaze ni d'écritures Topaze sans habilitation explicite.
+
+## Ce qu'il faut vendre
+
+1. Une **journée claire** : tournée, ordre, faits/non faits, prochains passages.
+2. Des **rappels par date** : post-it séparés par jour et par ligne, suppression et annulation.
+3. Une **fiche terrain utile** : informations strictement nécessaires, mises à jour rapides.
+4. Un **suivi sans surprise** : absences, modifications, transmissions et horodatage.
+5. Une **mobilité fiable** : chargement iPhone, fonctionnement hors ligne et mises à jour sans perte.
+6. Une **sortie de secours compréhensible** : une copie exportable/restaurable, testée, avant tout changement d'appareil.
+
+Les modules annexes de Big Cthu (maison, musique, jeux) ne doivent pas être exposés à la clientèle de Tournée. Le marketing, la marque et l'expérience professionnelle seront distincts, **sans migration silencieuse** des données de l'application iPhone actuelle.
+
+## Politique prix : hypothèse à valider
+
+- **14 jours d'essai gratuit** (sans carte bancaire).
+- **9,90 € TTC / mois / IDEL**, sans engagement, prix de travail et non offre en vigueur.
+- **99 € TTC / an**, option annuelle.
+- **20 € TTC d'installation accompagnée** uniquement sur demande : mise en place, reprise de données, contrôle avec le client. Pas de frais d'entrée obligatoires.
+- Cabinet multi-utilisateurs et synchronisation HDS : **hors périmètre** jusqu'à validation des coûts et des rôles.
+
+Le prix mensuel doit payer un avantage concret (mises à jour stables, accompagnement, support, fonctions terrain), pas une promesse de synchronisation inexistante. Comparaison publique au 18/11/2026 : Tournée Facile annonce 5,99 €/mois en annuel, 10,99 €/mois en mensuel ; InfirmiLib 24,99 €/mois. Sources : https://tourneefacile.com/tarifs/ et https://infirmilib.fr/ . Ne jamais déduire une marge sur ces prix sans connaître hébergement, assistance, TVA et frais de paiement.
+
+## Roadmap des 10 prochains chantiers (Golipette)
+
+| # | Chantier | Livrable mesurable | Priorité | État |
+|---|---|---|---|---|
+| 1 | **Centre de sauvegarde unique** | local ≠ externe, export, import et aperçu sans identité, pas de jargon ni formulaire de code | P0 | **V250 implémenté, CI à vérifier** |
+| 2 | **Mises à jour sûres** | actualiser seulement après confirmation de la sauvegarde locale ; refuser sinon | P0 | **V250 implémenté, CI à vérifier** |
+| 3 | **Restauration démontrable** | round-trip sur 1/24/500 patients FICTIFS, sans modification des notes ni écrasement | P0 | Tests ciblés V250 ; campagne iOS à faire |
+| 4 | **Un seul parcours installé** | distinguer explicitement PWA installée/Safari, migration guidée, jamais de copie implicite | P0 | À construire |
+| 5 | **Refonte UI terrain** | accueil utile en 5 secondes, contraste iPhone, une action principale par écran, états vides | P1 | À construire |
+| 6 | **Cœur métier fiable** | rappels journaliers, cycles, absences, modifications et journal sans régression | P1 | Existant à consolider |
+| 7 | **Onboarding et exemples** | prise en main ≤5 min avec données fictives et import explicite | P1 | À construire |
+| 8 | **Suite de tests appareil réel** | iOS PWA/Android, hors ligne, fermeture forcée, mise à jour, conflit de deux onglets | P0 | Tests automatisés partiels |
+| 9 | **Conformité et exploitation** | finalité, RGPD, registre, responsabilités, contrats, HDS si hébergement confié à un tiers ; support et incidents | P0 AVANT VENTE | À instruire |
+| 10 | **Pilote, modèle économique, sortie produit** | 5–10 IDEL testeurs, corrections P0, facturation/support, décision explicite go/no-go | P1 | Non lancé |
+
+**Ordre d'exécution :** 1 → 2 → 3 → 4 → 8 → 5 → 6 → 7 → 9 → 10. Les travaux UI ne doivent jamais passer devant une perte potentielle de données.
+
+## Contrat de sauvegarde — compréhensible et vérifiable
+
+- **Sauvegarde locale :** chaque écriture patients/notes est chiffrée dans le stockage de l'appareil. Elle peut être perdue si le stockage du navigateur est supprimé, si l'iPhone est perdu ou si la clé locale disparaît.
+- **Copie externe :** le bouton « Télécharger ma sauvegarde complète » génère un JSON exportable. **Ce fichier est lisible et contient des données sensibles.** L'app ne peut pas garantir sa présence dans Fichiers après le clic ; elle doit le dire.
+- **Restauration :** prévisualiser seulement le **nombre** de fiches et le format ; ne jamais révéler de noms dans les logs, fichiers publics ou supports. Ne pas écraser les patients déjà présents.
+- **Ancien coffre technique :** il dépend de sa clé de chiffrement locale et n'est **pas** un moyen fiable de transférer les données sur un nouvel appareil. Le conserver mais le placer en option avancée.
+- **Synchronisation automatique :** **absente**. Ne pas l'annoncer tant qu'une solution conforme, interopérable, testée et réellement disponible n'existe pas.
+- **Échec :** ne pas afficher « réussi » si une écriture, un export ou une lecture de contrôle échoue. Ne pas supprimer les anciens coffres.
+
+La version V250 clarifie ce contrat mais **ne résout pas** la résilience d'un appareil volé ou totalement détruit. La sauvegarde automatisée multi-appareils est un chantier majeur, à cadrer sur une infrastructure adaptée.
+
+## Avant toute ouverture commerciale : portes de sortie obligatoires
+
+- **Qualité:** pas de P0/P1 ouvert, tests CI verts, restauration réelle à partir de sauvegardes fictives iOS/Android, lancement hors ligne vérifié, récupération depuis PWA installée validée.
+- **Sécurité:** chiffrement et intégrité, absence de PHI dans dépôt / suivi / analytics, contrôle d'accès et sauvegardes adaptés au périmètre. Pas de « sécurité supprimée » qui laisserait des patients exposés.
+- **Juridique:** politique de confidentialité, DPA/contrat sous-traitant si applicable, information utilisateurs, droits et suppression, revue du traitement, décision sur nécessité d'AIPD et cadre HDS selon le flux réel. Une sauvegarde cloud chiffrée de données de santé reste dans le champ de l'hébergement HDS si applicable.
+- **Produit:** aucun code patient, aucune sauvegarde utilisateur, aucune clé publique, aucune donnée factice se faisant passer pour une vraie donnée. Aucun lien de paiement avant revue.
+- **Commerce:** offre, CGV, support, procédures de réclamation, résiliation, facture et processus de remboursement documentés avant encaissement.
+
+Sources réglementaires officielles : https://www.cnil.fr/fr/rgpd-et-professionnels-de-sante-liberaux-ce-que-vous-devez-savoir ; https://esante.gouv.fr/faq/quel-est-le-champ-dapplication-de-la-legislation-relative-lhebergement-de-donnees-de-sante-caractere-personnel ; https://gnius.esante.gouv.fr/fr/reglementation/fiches-reglementation/hebergement-des-donnees-de-sante-hds .
+
+## Décision stratégique
+
+**Ne pas ajouter de fonctionnalités secondaires tant qu'un infirmier ne peut pas prouver qu'il retrouve ses dossiers sans assistance.** D'abord la confiance, puis la finition, enfin le tarif. L'usage actuel reste privé ; la mise en vente nécessitera une nouvelle décision fondée sur les gates réels.
