@@ -658,6 +658,150 @@ async function tqApplyWeeks(entries,confirmation){
  return true;
 }
 
+
+/* ===== Réglage manuel des semaines, sans passer par une conversation ===== */
+function tqWeekBlock(){
+ if(!TQ)return '<div class="tq-week">Éditeur local indisponible. Recharge la page pour réessayer.</div>';
+ const base=TQ.monday(TODAY),next=TQ.add(base,7),opts=P.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.n)+'</option>').join('');
+ return '<section class="tq-week" aria-label="Changer les semaines chimio et Granocytes">'+
+ '<details id="tq-week-editor"><summary>🧪 Changer une semaine chimio / Granocytes</summary>'+
+ '<p>Choisis le patient, la semaine, le traitement et les jours. Ces exceptions sont temporaires, dans ton coffre chiffré, sans modifier le cycle de fond.</p>'+
+ '<div class="tq-week-grid"><label>Patient<select id="tq-week-patient" onchange="tqWeekFormRefresh()"><option value="">Choisir une fiche</option>'+opts+'</select></label>'+
+ '<label>Semaine<select id="tq-week-start" onchange="tqWeekFormRefresh()"><option value="'+base+'">Cette semaine · '+base+'</option><option value="'+next+'">Semaine prochaine · '+next+'</option></select></label>'+
+ '<label>Type<select id="tq-week-mode" onchange="tqWeekFormRefresh()"><option value="ch">Chimio</option><option value="gr">Granocytes</option></select></label></div>'+
+ '<fieldset class="tq-week-days"><legend>Jours de passage (à vérifier)</legend>'+
+ [1,2,3,4,5,6,0].map(n=>'<label><input type="checkbox" class="tq-week-day" value="'+n+'">'+JC[n]+'</label>').join('')+'</fieldset>'+
+ '<div class="tq-actions"><button type="button" onclick="tqWeekSaveManual()">Prévisualiser et appliquer</button>'+
+ '<button type="button" onclick="tqWeekReverse()">Inverser cette semaine / la prochaine</button>'+
+ '<button type="button" onclick="tqWeekRemove()">Retirer cette exception</button></div>'+
+ '<p class="tq-status" id="tq-week-status" role="status" aria-live="polite">Sélectionne une fiche pour voir les jours de son cycle.</p></details></section>';
+}
+function tqWeekFormRefresh(){
+ const select=document.getElementById("tq-week-patient"),week=document.getElementById("tq-week-start"),mode=document.getElementById("tq-week-mode");
+ if(!select||!week||!mode)return;
+ const p=P.find(x=>x.id===select.value),ov=p?tqOverride(p,week.value):null;
+ const days=ov&&ov.mode===mode.value?ov.days:TQ.cycleDays(p&&p.cyc,mode.value);
+ document.querySelectorAll(".tq-week-day").forEach(box=>{box.checked=!!days&&days.includes(Number(box.value))});
+ const status=document.getElementById("tq-week-status");
+ if(status)status.textContent=!p?"Choisis un patient.":
+  !p.cyc?"Cette fiche n’a pas de rythme chimio / Granocytes enregistré. Configure d’abord son cycle.":
+  (ov?"Exception actuelle : "+tqDescribeWeek(ov)+". ":"Cycle habituel inchangé. ")+
+  (!days?"Sélectionne les jours de passage manuellement.":"Jours proposés : "+TQ.dayNames(days)+". Vérifie-les avant de valider.");
+}
+function tqWeekPick(){
+ const id=document.getElementById("tq-week-patient")?.value;
+ return P.find(x=>x.id===id)||null;
+}
+function tqWeekSelected(){
+ return [...document.querySelectorAll(".tq-week-day")].filter(x=>x.checked).map(x=>Number(x.value));
+}
+async function tqWeekSaveManual(){
+ const p=tqWeekPick(),week=document.getElementById("tq-week-start")?.value,mode=document.getElementById("tq-week-mode")?.value;
+ const status=document.getElementById("tq-week-status");
+ try{
+  if(!p)throw Error("Choisis d'abord un patient.");
+  const entry=tqMakeWeek(p,week,mode,tqWeekSelected());
+  const applied=await tqApplyWeeks([entry]);
+  if(status)status.textContent=applied?"Semaine mise à jour dans le coffre. Vérifie les jours affichés.":"Modification annulée.";
+ }catch(e){if(status)status.textContent=e.message;toast(e.message)}
+}
+async function tqWeekReverse(){
+ const p=tqWeekPick(),status=document.getElementById("tq-week-status");
+ try{
+  if(!p)throw Error("Choisis un patient.");
+  if(!p.cyc)throw Error("Le cycle doit être renseigné dans la fiche.");
+  const base=TQ.monday(TODAY),next=TQ.add(base,7),thisMode=TQ.weekMode(p.cyc,base),nextMode=TQ.weekMode(p.cyc,next);
+  if(!thisMode||!nextMode||thisMode===nextMode)throw Error("Impossible d'identifier les deux semaines du cycle de base.");
+  const entries=[tqMakeWeek(p,base,nextMode,null),tqMakeWeek(p,next,thisMode,null)];
+  const applied=await tqApplyWeeks(entries,"Inverser les semaines pour "+p.n+" ?");
+  if(status)status.textContent=applied?"Les deux semaines ont été inversées et enregistrées.":"Inversion annulée.";
+ }catch(e){if(status)status.textContent=e.message;toast(e.message)}
+}
+async function tqWeekRemove(){
+ const p=tqWeekPick(),week=document.getElementById("tq-week-start")?.value,status=document.getElementById("tq-week-status");
+ try{
+  if(!p)throw Error("Choisis un patient.");
+  if(!tqOverride(p,week)){if(status)status.textContent="Aucune exception pour cette semaine.";return}
+  if(!confirm("Retirer l'exception de "+p.n+" pour la semaine du "+week+" ? Le cycle habituel reprendra."))return;
+  await tqDeleteWeek(p.id,week);
+  if(status)status.textContent="Exception retirée ; cycle habituel rétabli.";
+ }catch(e){if(status)status.textContent=e.message;toast(e.message)}
+}
+/* ===== Assistant de commandes totalement local, sans envoi de données ni appel IA ===== */
+function tqChatBlock(){
+ return '<section class="tq-chat" aria-label="Assistant local de Tournée">'+
+ '<h3>💬 Assistant de tournée</h3>'+
+ '<p>Écris une modification en français. Je prépare le changement et te demande de confirmer. Tout se passe ici, sans IA externe ni envoi de données.</p>'+
+ '<form class="tq-chat-form" onsubmit="event.preventDefault();tqChatAsk()">'+
+ '<input id="tq-chat-input" maxlength="600" autocomplete="off" aria-label="Demander un changement dans Tournée" placeholder="Ex. demain : prise de sang…">'+
+ '<button type="submit">Proposer</button></form>'+
+ '<div id="tq-chat-output" class="tq-chat-output" role="status" aria-live="polite"></div>'+
+ '<div id="tq-chat-preview" class="tq-preview"></div>'+
+ '<p class="tq-guide">Exemples : « demain : passer au laboratoire » · « Nom patient : chimio cette semaine vendredi samedi dimanche et granocyte semaine prochaine » · « inverse les semaines de Nom patient ». Je ne peux pas modifier les actes ou Topaze.</p></section>';
+}
+function tqChatSay(message){
+ const host=document.getElementById("tq-chat-output");
+ if(host)host.textContent=message;
+}
+function tqChatPreview(label){
+ const host=document.getElementById("tq-chat-preview");if(!host)return;
+ host.replaceChildren();
+ const b=document.createElement("button");b.type="button";b.textContent="✓ Confirmer la proposition";b.onclick=tqChatApply;
+ host.append(b);
+ if(label)tqChatSay(label);
+}
+function tqChatAsk(){
+ tqPending=null;
+ const raw=document.getElementById("tq-chat-input")?.value.trim()||"";
+ const preview=document.getElementById("tq-chat-preview");if(preview)preview.replaceChildren();
+ if(!TQ){tqChatSay("Assistant local non chargé. Recharge cette page.");return}
+ const plan=TQ.parseCommand(raw,TODAY);
+ if(!plan){
+  tqChatSay("Je comprends pour le moment les post-it datés, les semaines chimio / Granocytes et l'inversion du cycle. Exemple : « demain : prise de sang » ou « [patient] chimio cette semaine vendredi samedi dimanche et granocyte semaine prochaine ». Aucune modification faite.");
+  return;
+ }
+ if(plan.type==="memo"){
+  tqPending=plan;
+  tqChatPreview("Post-it proposé pour "+plan.day+" :\n"+plan.text+"\n\nAucune donnée modifiée pour l'instant.");
+  return;
+ }
+ const patients=TQ.patientMatches(raw,P);
+ if(patients.length!==1){
+  tqChatSay(!patients.length?"Aucune fiche patient correspondante. Vérifie le nom dans Patients ou utilise l'éditeur manuel.":"Plusieurs patients correspondent à ce nom. Précise leur nom complet ou utilise l'éditeur manuel.");
+  return;
+ }
+ const p=patients[0];
+ try{
+  let entries=plan.entries;
+  if(plan.type==="swap"){
+   if(!p.cyc)throw Error("Cette fiche n'a pas de cycle configuré.");
+   const base=TQ.monday(TODAY),next=TQ.add(base,7),left=TQ.weekMode(p.cyc,base),right=TQ.weekMode(p.cyc,next);
+   if(!left||!right)throw Error("Le cycle habituel ne permet pas de calculer l'inversion.");
+   entries=[{week:base,mode:right},{week:next,mode:left}];
+  }
+  entries=entries.map(e=>tqMakeWeek(p,e.week,e.mode,e.days));
+  tqPending={type:"cycle",entries};
+  tqChatPreview("Pour "+p.n+", je propose :\n"+entries.map(tqDescribeWeek).join("\n")+"\n\nLes suspensions restent prioritaires. Vérifie les jours avant confirmation.");
+ }catch(e){tqChatSay(e.message+"\nAucune modification faite. Utilise l'éditeur manuel pour choisir les jours.")}
+}
+async function tqChatApply(){
+ const plan=tqPending; if(!plan)return;
+ tqPending=null;
+ const preview=document.getElementById("tq-chat-preview");if(preview)preview.replaceChildren();
+ try{
+  if(plan.type==="memo"){
+   if(!confirm("Ajouter dans le post-it du "+plan.day+" :\n"+plan.text+" ?")){tqChatSay("Ajout annulé.");return}
+   await tqAddToPostit(plan.day,plan.text);
+   tqFocusSticky(plan.day);toast("Post-it ajouté au coffre chiffré.");return;
+  }
+  if(plan.type==="cycle"){
+   const applied=await tqApplyWeeks(plan.entries);
+   tqChatSay(applied?"✓ Semaines enregistrées et tournée recalculée.":"Modification annulée.");
+   return;
+  }
+ }catch(e){tqChatSay("⚠ "+e.message);toast("Modification non enregistrée.")}
+}
+
 const IC={nav:'<svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8z"/></svg>',tel:'<svg viewBox="0 0 24 24"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>',chk:'<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'};
 let PER=(()=>{const a=[],d=new Date(2026,10,6);while(d<=new Date(2026,10,16)){a.push(d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"));d.setDate(d.getDate()+1)}return a})();
 function DT(s){const[a,b,c]=s.split("-");return new Date(+a,b-1,+c)}
@@ -703,7 +847,7 @@ function viewTour(){
  const pct=L.length?Math.round(nd/L.length*100):0;
  let h=`<div class="chw"><button class="chip nav" onclick="shiftW(-1)" aria-label="Semaine précédente">‹</button><div class="chips sc">${CHR().map(d=>`<button class="chip ${d===day?"on":""} ${d===TODAY?"today":""} ${remOf(d)?"rp":""}" data-tq-day="${d}" onclick="chipKeep=this.parentNode.scrollLeft;day='${d}';render()" title="Afficher le post-it et la tournée du jour">${JC[DT(d).getDay()]}<em>${DT(d).getDate()}</em><small>${list(d).length}</small><span class="tq-note-icon" aria-hidden="true">${tqStickyText(d).trim()?"📝":"▧"}</span></button>`).join("")}</div><button class="chip nav" onclick="shiftW(1)" aria-label="Semaine suivante">›</button></div>${day!==TODAY?`<button class="tdy" onclick="day=TODAY;render()">↩ Revenir à aujourd'hui</button>`:""}${remBanner()}`;
  h+=`<div class="hi"><span>${greet()} 👋</span><button onclick="askWho()">${who()?"Changer":"Ton prénom ?"}</button></div>`;
- h+=ordoChip();h+=bkChip();h+=suspBlock();h+=absBanner();h+=bdayBanner();h+=veilleBanner();
+ h+=tqChatBlock();h+=tqWeekBlock();h+=ordoChip();h+=bkChip();h+=suspBlock();h+=absBanner();h+=bdayBanner();h+=veilleBanner();
  h+=dayBand();h+=tqPostitBlock();
  h+=`${ROUT()?heroR(L,nx):`<div class="hero"><div class="ring" style="--p:${pct}"><b>${nd}/${L.length}</b></div><div style="min-width:0">${nx?`<div class="k">À suivre · ${nx.h.replace(" fin","")}</div><div class="big">${nx.n}</div><div class="sub">${nx.a}</div>${lateChip(nx)}`:L.length?`<div class="k">Terminé</div><div class="big">Tournée bouclée 🎉</div><div class="sub">Pense aux transmissions.</div>`:`<div class="k">Repos</div><div class="big">Aucun passage</div>`}</div></div>`}${L.length?`<button class="btn go" onclick="fmI=null;focusMode()">▶ Mode tournée<span>plein écran, patient par patient</span></button>${routeUrl()?`<a class="btn ghost route" href="${routeUrl()}" target="_blank" rel="noopener">${IC.nav}Itinéraire des prochains arrêts</a>`:""}`:""}${vigilBlock()}${endBlock(L)||tasksBlock(L)}${memoBlock(L)}${bilanCard()}`;
  h+=`${!ROUT()&&st.get("swhint",0)<3&&L.length?(st.set("swhint",st.get("swhint",0)+1),`<div class="hint">Astuce : glisse une carte vers la droite pour la valider</div>`):""}${chBlock()}<div class="row2"><span>${L.length} passages · 6h45 → 11h</span></div>`;
