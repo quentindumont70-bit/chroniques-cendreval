@@ -84,6 +84,9 @@ test('V238: onDate respects a saved override before normal alternating cycle',()
  assert.equal(cyk(patient,'2026-11-20'),'ch');
  assert.equal(cyk(patient,'2026-11-24'),'gr');
  assert.equal(onDate(patient,'2026-11-24'),true);
+ patient.rm=['2026-11-21'];
+ assert.equal(onDate(patient,'2026-11-21'),false,'explicitly removed visit must override weekly schedule');
+ delete patient.rm;
  assert.equal(onDate(patient,'2026-11-23'),false);
 });
 
@@ -92,9 +95,11 @@ test('V238: the daily sticky note reuses the encrypted Tournée memo key',()=>{
  assert.match(source,/await tqCommitVaultKey\(key,JSON\.stringify\(next\),old\)/);
  assert.match(source,/await ensureVaultSaved\(\)/);
  assert.match(source,/function tqPostitBlock\(\)/);
- assert.match(source,/onblur="tqStickySave\(\)"/);
+ assert.match(source,/oninput="tqStickyDraft\(this\)" onblur="tqStickySave\(this\)"/);
  assert.match(source,/data-tq-day=/);
  assert.match(source,/function tqChatPreview\(e\)/);
+ assert.match(source,/function tqWeekWarning\(\)/);
+ assert.match(source,/const tqStickyDrafts=Object\.create\(null\)/);
  assert.match(source,/function tqWeekApply\(\)/);
  assert.match(source,/if\(!confirm\(/);
  assert.match(source,/AUCUNE donnée encore changée/);
