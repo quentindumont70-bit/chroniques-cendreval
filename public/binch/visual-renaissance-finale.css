@@ -226,3 +226,42 @@ html[data-binch-detail=lite] #page-specs #binch-specs .binch-spec-card{
  }
  #page-specs #binch-specs::before{display:none!important}
 }
+
+/* Twelve real guide cards, nine original heraldic marks. */
+#page-specs #binch-specs .binch-spec-card{--br-guide-crest:none}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="druid-feral"]{--br-guide-crest:url("./renaissance-sigil-druid.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="druid-bear"]{--br-guide-crest:url("./renaissance-sigil-druid.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="druid-cat"]{--br-guide-crest:url("./renaissance-sigil-druid.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="druid-resto"]{--br-guide-crest:url("./renaissance-sigil-druid.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="hunter-bm"]{--br-guide-crest:url("./renaissance-sigil-hunter.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="warrior-arms"]{--br-guide-crest:url("./renaissance-sigil-warrior.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="mage-frost"]{--br-guide-crest:url("./renaissance-sigil-mage.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="shaman-enh"]{--br-guide-crest:url("./renaissance-sigil-shaman.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="warlock-aff"]{--br-guide-crest:url("./renaissance-sigil-warlock.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="rogue-combat"]{--br-guide-crest:url("./renaissance-sigil-rogue.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="priest-shadow"]{--br-guide-crest:url("./renaissance-sigil-priest.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="paladin-ret"]{--br-guide-crest:url("./renaissance-sigil-paladin.svg")}
+
+#page-specs #binch-specs .binch-spec-card[data-spec-id]::before{
+ content:"";position:absolute;top:14px;left:13px;
+ width:48px;height:48px;border:0;border-radius:0;
+ background:var(--br-guide-crest) center/contain no-repeat;
+ filter:drop-shadow(0 5px 12px #bca67a6d);
+ box-shadow:none;pointer-events:none;
+}
+#page-specs #binch-specs .binch-spec-card[data-spec-id]{
+ padding-left:72px;
+}
+@media(max-width:540px){
+ #page-specs #binch-specs .binch-spec-card[data-spec-id]{padding-left:56px}
+ #page-specs #binch-specs .binch-spec-card[data-spec-id]::before{
+  top:15px;left:7px;width:39px;height:39px;
+ }
+}
+@media(forced-colors:active){
+ #page-specs #binch-specs .binch-spec-card[data-spec-id]::before{display:none}
+ #page-specs #binch-specs .binch-spec-card[data-spec-id]{padding-left:12px}
+}
+html[data-binch-detail=lite] #page-specs #binch-specs .binch-spec-card[data-spec-id]::before{
+ filter:none!important
+}
