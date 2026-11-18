@@ -57,6 +57,15 @@ Le prix mensuel doit payer un avantage concret (mises à jour stables, accompagn
 
 La version V250 clarifie ce contrat mais **ne résout pas** la résilience d'un appareil volé ou totalement détruit. La sauvegarde automatisée multi-appareils est un chantier majeur, à cadrer sur une infrastructure adaptée.
 
+## Architecture commerciale à ne pas confondre avec la bêta actuelle
+
+La PWA actuelle tourne sous le même domaine GitHub Pages que les modules personnels Big Cthu. Or **localStorage et IndexedDB sont isolés par origine (domaine), et non par chemin de page** : une application de santé commercialisée doit être séparée techniquement des jeux, démonstrations et scripts personnels.
+
+- **Cible commerciale :** domaine/origine réservée à Tournée, contrôle des dépendances et des scripts, politique de sécurité (CSP) testée, identité PWA indépendante, aucune fonctionnalité personnelle accessible depuis l'app professionnelle.
+- **Migration :** expliquer qu'un changement de domaine crée un stockage neuf ; transfert par export/import testé et accompagné. Aucun transfert silencieux de dossiers réels et aucune supposition que Safari et l'icône iOS partagent leurs bases.
+- **Infrastructure :** si synchronisation/backup serveur un jour, choisir et contractualiser le prestataire HDS requis, chiffrer en transit et au repos, gérer droits des remplaçants et sauvegardes vérifiables. Pas de serveur clandestin ni de paiements activés depuis la bêta.
+- **Positionnement réglementaire :** documenter la finalité fonctionnelle ; si des modules d'aide à la décision clinique apparaissent, faire qualifier leur statut réglementaire avant d'en promettre l'usage.
+
 ## Avant toute ouverture commerciale : portes de sortie obligatoires
 
 - **Qualité:** pas de P0/P1 ouvert, tests CI verts, restauration réelle à partir de sauvegardes fictives iOS/Android, lancement hors ligne vérifié, récupération depuis PWA installée validée.
