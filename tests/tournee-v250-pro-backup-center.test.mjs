@@ -13,7 +13,7 @@ async function previewFixture({currentPatients=[],file,fill}={}){
  const elements={
   'tour-saved-status':{textContent:''},
   'tour-backup-preview':{textContent:''},
-  'tour-file':{files:file?[{size:512,async text(){return typeof file==='string'?file:JSON.stringify(file)}}]:[]},
+  'tour-file':{addEventListener(){},files:file?[{size:512,async text(){return typeof file==='string'?file:JSON.stringify(file)}}]:[]},
   'tour-security-gate':{hidden:true}
  };
  const calls=[];
@@ -80,7 +80,7 @@ test('V250 : export JSON s auto-valide sans prétendre vérifier Fichiers, zéro
 });
 test('V250 : la mise à jour iOS attend la sauvegarde réelle, sans effacer de données',async()=>{
  const html=await read('tournee-complete.html'),boot=await read('mobile-boot.js');
- const a=html.indexOf('window.tourneeSafeRefresh=async()=>'),b=html.indexOf('async function exportEncryptedVault',a);
+ const a=html.indexOf('window.tourneeSafeRefresh=async()=>'),b=html.indexOf('function launch(){',a);
  assert.ok(a>0&&b>a);
  assert.match(html.slice(a,b),/await ensureVaultSaved\(\)/);
  assert.match(html.slice(a,b),/secureSavedGen!==secureGen/);
