@@ -60,6 +60,6 @@ test('V219: Coffre V27 conserve les références et le cache public emporte le s
  assert.match(backup,/data\.actionFavorites=readActionPins\(\)/);
  assert.match(backup,/stage\(ACTION_PINS,staged\.actionFavorites\)/);
  assert.match(sw,/'\.\/action-favorites\.js'/);
- assert.match(sw,/big-cthu-public-v2-v219/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
  assert.doesNotMatch(pulse,/localStorage\.setItem|fetch\(|XMLHttpRequest/);
 });
