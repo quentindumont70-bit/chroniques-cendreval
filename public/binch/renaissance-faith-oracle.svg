@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 630" role="img" aria-labelledby="title desc">
+<title id="title">Faith — l'Oracle de la boussole astrale</title>
+<desc id="desc">Orbe mystique original avec astrolabe, cristaux et constellations violettes. Illustration abstraite de l'assistant, sans prétention de lecture du jeu en direct.</desc>
+<defs><radialGradient id="abyss"><stop stop-color="#51456e"/><stop offset=".65" stop-color="#252f4e"/><stop offset="1" stop-color="#101e2d"/></radialGradient><radialGradient id="shine"><stop stop-color="#f3dcff" stop-opacity=".85"/><stop offset=".23" stop-color="#b9a6e8" stop-opacity=".44"/><stop offset="1" stop-color="#ae7ddd" stop-opacity="0"/></radialGradient><linearGradient id="ring" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f7daac"/><stop offset=".42" stop-color="#a4a7d1"/><stop offset=".72" stop-color="#9278ac"/><stop offset="1" stop-color="#d7b69d"/></linearGradient><g id="star"><path d="M0-12 3-3 12 0 3 3 0 12-3 3-12 0-3-3Z" fill="#e9d7ff"/></g></defs>
+<path d="M0 0h1000v630H0Z" fill="url(#abyss)"/>
+<circle cx="615" cy="309" r="321" fill="url(#shine)"/>
+<g fill="none" stroke="url(#ring)" opacity=".85"><circle cx="615" cy="312" r="205" stroke-width="10"/><circle cx="615" cy="312" r="243" stroke-width="4" stroke-dasharray="8 24"/><ellipse cx="615" cy="312" rx="290" ry="90" transform="rotate(-25 615 312)" stroke-width="8"/><ellipse cx="615" cy="312" rx="275" ry="91" transform="rotate(55 615 312)" stroke-width="5"/><ellipse cx="615" cy="312" rx="110" ry="244" transform="rotate(-12 615 312)" stroke-width="4"/></g>
+<g fill="none" stroke="#f1d9b9" opacity=".52" stroke-width="3"><path d="M615 42v541M346 312h539M424 120l383 383M805 120 427 501"/></g>
+<path d="M617 156 733 307 618 469 499 308Z" fill="#665590" stroke="#edd6ff" stroke-width="10"/><path d="M615 176v270m-94-139h189" stroke="#c5b5ff" stroke-width="7"/><path d="m614 179-91 129 93 134 93-135z" fill="#ad96dc" opacity=".53"/>
+<ellipse cx="615" cy="313" rx="92" ry="92" fill="url(#shine)"/>
+<circle cx="615" cy="313" r="30" fill="#f7e9ff" opacity=".9"/><circle cx="615" cy="313" r="51" fill="none" stroke="#fff1d5" stroke-width="5"/>
+<g opacity=".86"><use href="#star" x="616" y="66"/><use href="#star" x="858" y="313"/><use href="#star" x="614" y="555"/><use href="#star" x="372" y="312"/><use href="#star" x="448" y="139"/><use href="#star" x="783" y="486"/></g>
+<g fill="#d7bcf4"><circle cx="188" cy="156" r="3"/><circle cx="275" cy="419" r="2"/><circle cx="902" cy="94" r="3"/><circle cx="844" cy="539" r="2.5"/><circle cx="92" cy="519" r="3"/></g>
+<path d="M0 590q220-61 450-25t550-25v90H0Z" fill="#101d2b"/>
+</svg>
