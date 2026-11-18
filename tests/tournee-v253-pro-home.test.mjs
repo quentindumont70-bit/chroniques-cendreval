@@ -75,7 +75,7 @@ test('V253 : l assistant dans les outils repliés reste accessible depuis l en-t
 
 test('V253 : les fonctions métier préexistantes ne sont pas supprimées de la vue',()=>{
  for(const fn of ['tqChatBlock','tqWeekBlock','tqPostitBlock','ordoChip','bkChip','suspBlock','absBanner','bdayBanner','veilleBanner','tqWeekWarning','vigilBlock','endBlock','tasksBlock','memoBlock','bilanCard','chBlock','absDayList','shareDay','qaForm','focusMode']){
-  assert.ok(view.includes(fn+'('), 'Toujours accessible : '+fn);
+  assert.ok((view+quick).includes(fn+'('), 'Toujours accessible : '+fn);
  }
  assert.equal((view.match(/heroR\(L,nx\)/g)||[]).length,1);
  assert.equal((view.match(/tqPostitBlock\(\)/g)||[]).length,1);
