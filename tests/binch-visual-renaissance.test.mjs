@@ -63,6 +63,8 @@ test('Renaissance : image originale, accessibilité mobile et animation réduite
  assert.match(css,/:focus-visible/);
  assert.match(css, /html\[data-binch-ambience=moon\]/);
  assert.match(css, /html\[data-binch-ambience=embers\]/);
+ for(const cls of ['druid','warrior','mage','priest','paladin','rogue','hunter','shaman','warlock'])assert.ok(css.includes('html[data-binch-identity='+cls+']'),'auras: '+cls);
+ for(const ancestry of ['tauren','orc','troll','undead','human','elf','dwarf','gnome'])assert.ok(css.includes('html[data-binch-ancestry='+ancestry+']'),'runes: '+ancestry);
  const worlds=source('visual-renaissance-worlds.css');
  assert.match(worlds,/#onboarding/);
  assert.match(worlds,/#page-progression/);
