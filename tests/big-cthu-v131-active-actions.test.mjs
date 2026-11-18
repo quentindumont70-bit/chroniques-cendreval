@@ -565,3 +565,20 @@ test('V220–V224: regroupe les échéances du jour et de la semaine sans recopi
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
 });
+
+
+test('V227: une action épinglée ne passe jamais devant une DLC dangereusement dépassée',async()=>{
+ const day=delta=>{const d=new Date();d.setDate(d.getDate()+delta);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+ const f=await fixture({
+  [K.pantry]:JSON.stringify([{id:'unsafe',name:'Yaourt fictif périmé',kind:'DLC',date:day(-1)}]),
+  [K.tasks]:JSON.stringify([{id:'favorite',text:'Tâche épinglée',done:false}])
+ });
+ f.ctx.window.BigCthuActionFavorites={read:()=>({ids:['Priorités:favorite'],blocked:false})};
+ f.ctx.testRender();
+ const links=f.nodes.get('activePulseList').children;
+ assert.equal(links[0].children[1].textContent,'Yaourt fictif périmé');
+ assert.equal(links[1].children[1].textContent,'Tâche épinglée');
+ assert.equal(links[1].children[0].textContent,'★ Priorités');
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
