@@ -40,7 +40,7 @@ function init(){
  const page=$('page-gm');if(!page||$('binch-guild-weekly'))return;
  const region=document.createElement('section');region.id='binch-guild-weekly';region.className='panel section';
  region.innerHTML='<div class="eyebrow">ÉTAT-MAJOR / PROCHAINS JOURS</div><h2>Cette semaine en guilde</h2>'+
- '<p class="muted">Une vue de coordination des sept prochains jours, à partir du calendrier local. Les membres inscrits sur un autre appareil ne sont pas visibles ici sans import. Une même personne inscrite plusieurs fois ne compte qu'une fois et doit être vérifiée manuellement.</p>'+
+ '<p class="muted">Une vue de coordination des sept prochains jours, à partir du calendrier local. Les membres inscrits sur un autre appareil ne sont pas visibles ici sans import. Une même personne inscrite plusieurs fois ne compte qu’une fois et doit être vérifiée manuellement.</p>'+
  '<div id="binch-weekly-summary" role="status" aria-live="polite"></div>'+
  '<div id="binch-weekly-list"></div>'+
  '<div class="binch-weekly-actions"><button type="button" id="binch-weekly-copy">Copier le briefing de la semaine</button><button type="button" id="binch-weekly-refresh">Actualiser</button></div>';
