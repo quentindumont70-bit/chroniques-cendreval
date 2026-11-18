@@ -143,3 +143,23 @@ test('P9: header and profile reset point to same forge; accessibility, FX opt-ou
  assert.match(css,/forced-colors:active/);
  assert.match(css,/env\(|max-height:94dvh/);
 });
+
+test('P10: interactive studio has two review presets and safe local-only identity composition',()=>{
+ const preview=read('renaissance-p10-showcase.html');
+ for(const identifier of ['id="stage-root"','id="race"','id="classe"','id="druid-preset"','id="warlock-preset"','id="lite"','id="scene-title"','id="jobs-count"']){
+  assert.ok(preview.includes(identifier),'missing review control '+identifier);
+ }
+ assert.ok(preview.includes('./visual-identity-compositor.js?v=002'));
+ assert.ok(preview.includes('const query=new URLSearchParams(location.search)'));
+ assert.ok(preview.includes('buttons.some(b=>b.dataset.job===j)'),'only whitelisted deep-link jobs');
+ assert.ok(preview.includes('[...r.options].some(o=>o.value===rq)'),'only whitelisted races');
+ assert.ok(preview.includes('[...c.options].some(o=>o.value===cq)'),'only whitelisted classes');
+ assert.ok(!preview.includes('localStorage.setItem('),'standalone studio does not commit profile');
+ assert.ok(!preview.includes('fetch('),'no external preview backend');
+ assert.ok(preview.includes('prefers-reduced-motion:reduce'));
+ assert.ok(preview.includes('max-width:760px'));
+ const engine=read('visual-identity-compositor.js');
+ assert.ok(engine.includes("link.href='./renaissance-p10-showcase.html'"),'real app links to interactive studio');
+ const css=read('visual-identity-compositor.css');
+ assert.ok(css.includes('binch-character-card:has(.binch-identity-composition)::before'),'legacy duplicate class landscape is disabled once loaded');
+});
