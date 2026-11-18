@@ -108,7 +108,7 @@ test('Tournée IDEL: une seule entrée officielle chiffrée et accès legacy uni
  assert.match(home,/id="openTourneeSecure"/);
  assert.doesNotMatch(home,/id="openTourneeCurrent"/);
  assert.match(home,/id="tourneeLegacyExport"/);
- assert.match(home,/href="\.\/tournee\.html" id="tourneeLegacyExport"/);
+ assert.match(home,/href="\.\/tournee\.html\?legacy=1" id="tourneeLegacyExport"/);
  assert.match(home,/\['tour','Tournée \(chiffrée\)','tournee-complete\.html'\]/);
  assert.match(home,/id==='tourfull'\?'tour':id/);
  assert.doesNotMatch(home,/claude\.ai\/artifact/);
