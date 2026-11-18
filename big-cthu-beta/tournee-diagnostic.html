@@ -19,7 +19,8 @@ window.addEventListener('DOMContentLoaded',()=>{
  const fmt=v=>v==='present-contenu-inconnu'?'Présent (non ouvert)':v==='absent'?'Absent':'Inconnu';
  function run(){
   if(!api){$('items').textContent='Script de diagnostic non chargé : ouvre cette page avec une connexion réseau.';return}
-  const p=api.probe(window.localStorage);
+  let storage;try{storage=window.localStorage}catch(e){storage={get length(){throw Error('Stockage inaccessible')}}}
+  const p=api.probe(storage);
   $('items').replaceChildren(
    row('Ancienne liste de patients',p.legacy.status==='present'?p.legacy.count+' entrée(s)':p.legacy.status),
    row('Coffre complet historique',fmt(p.vaults.original)),
