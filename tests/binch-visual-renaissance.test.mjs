@@ -247,3 +247,18 @@ test('Revue visuelle PR : captures sur classe connue, sans déploiement',()=>{
  assert.ok(css.includes('grid-row:3'),'mobile quest focus stays below search and filters');
  assert.ok(css.includes('grid-template-columns:repeat(3,minmax(0,1fr))'));
 });
+
+test('Gardien félin original : illustration de classe décorative et adaptée au mobile',()=>{
+ const svg=source('renaissance-feral-spirit.svg'),css=source('visual-renaissance.css');
+ assert.ok(svg.includes('viewBox="0 0 900 650"'));
+ assert.ok(svg.includes('aria-labelledby='));
+ assert.ok(svg.includes('Esprit du félin'));
+ assert.ok(svg.includes('</svg>'));
+ assert.ok(css.includes('html[data-binch-identity=druid] #page-hub .binch-character-card::before'));
+ assert.ok(css.includes('url("./renaissance-feral-spirit.svg")'));
+ assert.ok(css.includes('background-blend-mode:normal,screen'));
+ assert.ok(css.includes('auto 60%'));
+ assert.ok(css.includes('auto 46%'));
+ const low=source('visual-renaissance-details.css');
+ assert.ok(low.includes('html[data-binch-detail="lite"] #page-hub .binch-character-card::before'),'lite mode overrides heavy spirit graphics');
+});
