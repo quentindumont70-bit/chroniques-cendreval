@@ -1,0 +1,110 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {runInNewContext} from 'node:vm';
+
+const read=name=>readFileSync(new URL('../public/binch/'+name,import.meta.url),'utf8');
+function harness(initial={}){
+ const state=new Map([['grimoire.hub.v3',JSON.stringify(initial)]]);
+ const writes=[];
+ const localStorage={
+  getItem(key){return state.has(key)?state.get(key):null},
+  setItem(key,value){writes.push([key,value]);state.set(key,value)}
+ };
+ const window={addEventListener(){},location:{reload(){}}};
+ const document={readyState:'loading',addEventListener(){}};
+ const context={window,document,localStorage,encodeURIComponent};
+ runInNewContext(read('visual-identity-compositor.js'),context,{filename:'visual-identity-compositor.js'});
+ return {api:window.BinchVisualIdentity,state,writes};
+}
+
+test('P9: 8 architectures raciales × 9 scènes/classes × 9 signatures de métiers',()=>{
+ const {api}=harness();
+ const races=['Humain','Nain','Elfe','Gnome','Orc','MortVivant','Tauren','Troll'];
+ const classes=['Guerrier','Paladin','Chasseur','Voleur','Prêtre','Chaman','Mage','Démoniste','Druide'];
+ const jobs=['Minage','Ingénierie','Herboristerie','Alchimie','Dépeçage','Travail du cuir','Forge','Enchantement','Couture'];
+ const raceArt=new Set(),classArt=new Set();
+ for(const race of races){
+  const c=api.compose({race,classe:'Druide',jobs:['Herboristerie']});
+  assert.ok(c.vars['--br-race-art'].startsWith('url("data:image/svg+xml,'));
+  raceArt.add(c.vars['--br-race-art']);
+ }
+ for(const classe of classes){
+  const c=api.compose({race:'Tauren',classe});
+  classArt.add(c.vars['--br-class-world']);
+ }
+ for(const job of jobs)assert.equal(api.compose({jobs:[job]}).jobs[0].name,job);
+ assert.equal(raceArt.size,8,'each race has genuinely different architectural SVG path');
+ assert.equal(classArt.size,9,'each class uses a distinct vector landscape');
+});
+
+test('P9: composite identity differs structurally, not merely via colour',()=>{
+ const {api}=harness();
+ const a=api.compose({race:'Tauren',classe:'Druide',jobs:['Herboristerie','Alchimie']});
+ const b=api.compose({race:'MortVivant',classe:'Démoniste',jobs:['Ingénierie','Enchantement']});
+ assert.notEqual(a.vars['--br-race-art'],b.vars['--br-race-art']);
+ assert.notEqual(a.vars['--br-class-world'],b.vars['--br-class-world']);
+ assert.notEqual(a.race.architecture,b.race.architecture);
+ assert.notEqual(a.classe.id,b.classe.id);
+ assert.notEqual(a.jobs[0].effect,b.jobs[0].effect);
+ assert.match(a.signature,/Tauren · Druide · Herboristerie \/ Alchimie/);
+ assert.match(b.signature,/Mort-vivant · Démoniste · Ingénierie \/ Enchantement/);
+});
+
+test('P9: preview and cancel are read-only; explicit commit keeps level, checklists and guild data',()=>{
+ const original={
+  onboarded:true,step:2,race:'Tauren',classe:'Druide',
+  jobs:['Minage','Ingénierie'],data:{pseudo:'Aventurier',level:36,notes:'Rendez-vous de guilde'},
+  checks:[true,false,true],map:4,customSetting:{keep:true}
+ };
+ const {api,state,writes}=harness(original);
+ const preview=api.compose({race:'MortVivant',classe:'Démoniste',jobs:['Enchantement','Couture']});
+ assert.equal(preview.profile.race,'MortVivant');
+ assert.equal(writes.length,0,'preview cannot save');
+ assert.deepEqual(JSON.parse(state.get('grimoire.hub.v3')),original,'cancel needs no rollback');
+ assert.equal(api.commit(preview.profile),true);
+ assert.equal(writes.length,1);
+ const saved=JSON.parse(state.get('grimoire.hub.v3'));
+ assert.equal(saved.race,'MortVivant');
+ assert.equal(saved.classe,'Démoniste');
+ assert.deepEqual(saved.jobs,['Enchantement','Couture']);
+ assert.deepEqual(saved.data,original.data,'character + guild info preserved');
+ assert.deepEqual(saved.checks,original.checks);
+ assert.equal(saved.map,4);
+ assert.deepEqual(saved.customSetting,{keep:true});
+});
+
+test('P9: no third job, duplicate, unknown key or arbitrary CSS/HTML input may enter profile',()=>{
+ const {api}=harness();
+ const draft=api.clean({
+  race:'<img onerror=alert(1)>',classe:'Démoniste',
+  jobs:['Minage','Minage','Enchantement','Unknown','Herboristerie']
+ });
+ assert.equal(draft.race,'Humain');
+ assert.deepEqual(Array.from(draft.jobs),['Minage','Enchantement']);
+ const c=api.compose(draft);
+ assert.ok(!c.vars['--br-race-art'].includes('<img'));
+});
+
+test('P9: header and profile reset point to same forge; accessibility, FX opt-out and mobile rules exist',()=>{
+ const html=read('index.html'),css=read('visual-identity-compositor.css'),js=read('visual-identity-compositor.js');
+ assert.match(html,/id="binch-profile-trigger" type="button"/);
+ assert.match(html,/visual-identity-compositor\.css\?v=001/);
+ assert.match(html,/visual-identity-compositor\.js\?v=001/);
+ assert.match(js,/rebuild\.onclick=event=>/);
+ assert.match(js,/modal\.showModal\(\)/);
+ assert.match(js,/aria-pressed/);
+ assert.match(js,/aria-labelledby/);
+ assert.match(js,/window\.location\.reload\(\)/);
+ assert.ok(!js.includes('fetch('),'no surprise requests or pricing');
+ assert.match(css,/data-br-race=tauren/);
+ assert.match(css,/data-br-race=forsaken/);
+ assert.match(css,/data-br-class=druid/);
+ assert.match(css,/data-br-class=warlock/);
+ assert.match(css,/data-br-jobs~="leaves"/);
+ assert.match(css,/prefers-reduced-motion:reduce/);
+ assert.match(css,/data-binch-detail=lite/);
+ assert.match(css,/max-width:720px/);
+ assert.match(css,/forced-colors:active/);
+ assert.match(css,/env\(|max-height:94dvh/);
+});
