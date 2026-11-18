@@ -130,3 +130,35 @@ Cette passe ajoute du code à l'application existante ; elle ne concerne pas la 
 10. Préparer une revue humaine ciblée, puis seulement une fusion et un déploiement autorisés.
 
 **Distinction des preuves :** les tests techniques et captures headless valident la présence et le rendu de certaines interfaces ; ils ne prouvent ni la fluidité tactile iPhone ni la justesse de la synchronisation WoW.
+
+## Passe P6 — approfondissement artistique des modules (18 novembre)
+
+Dix chantiers codés et publiés sur la PR #234 (sans fusion) :
+
+1. Nouvelle illustration originale de constellation farouche : griffes, lune et étoiles. Ne représente pas un arbre de talents officiel.
+2. Bandeau visuel du Grimoire retravaillé autour du guide existant, sans points inventés.
+3. Douze guides de spécialisations existants habillés de leurs blasons de classe originaux.
+4. Fond de chapitre lié à l'identité de classe sélectionnée, sans modifier le profil.
+5. Nouveau paysage de forge et minage avec cristaux et engrenages sur les fiches des métiers.
+6. Salle du Conseil : carte de campagne, bougies et bannières derrière les données déclarées de guilde.
+7. L'Oracle Faith : astrolabe et constellations abstraites, sans modifier ses recommandations.
+8. Reliquaire : finitions et contraste des cartes de Trésors, sans attribuer de récompense.
+9. Adaptation mobile et désactivation des effets lourds en mode léger et mouvement réduit.
+10. Galerie artistique étendue aux quatre nouvelles scènes, avec nouveaux tests et contrôle SVG.
+
+Les scènes nouvelles sont renaissance-feral-constellation.svg, renaissance-workshop.svg, renaissance-gm-council.svg et renaissance-faith-oracle.svg. Les styles et tests sont dans visual-renaissance-finale.css et tests/binch-visual-renaissance-finale.test.mjs.
+
+### Dix prochains chantiers
+
+1. Obtenir les CI vertes sur le dernier commit et valider les 26 SVG.
+2. Examiner uniquement les captures où un défaut de rendu est vérifiable.
+3. Vérifier que le décor des talents ne masque aucun texte.
+4. Vérifier les douze blasons sur mobile et en 1080p.
+5. Tester Forge, Conseil et Faith avec le mode léger.
+6. Vérifier le HUD sur iPhone en portrait et paysage.
+7. Essayer la galerie d'art au clavier et en tactile.
+8. Distinguer les objectifs du carnet local et les quêtes réellement validées en jeu.
+9. Revoir les différences avec la branche principale sans forcer une fusion conflictuelle.
+10. Organiser les essais réels et obtenir la validation explicite avant intégration et déploiement.
+
+Aucune action utilisateur requise pour cette passe. Branche conservée en brouillon, sans dépense ni déploiement.
