@@ -158,7 +158,7 @@ test('Tournée V241: la barre de sauvegarde ne recouvre plus la tournée sur iPh
  assert.match(html,/id="tour-save-menu" aria-expanded="false" aria-controls="tour-save-actions"/);
  assert.match(html,/id="tour-recovery-launch" hidden/);
  assert.match(html,/id="tour-save-text" role="status" aria-live="polite"/);
- assert.match(html,/#tour-save-retry/);
+ assert.match(html,/id="tour-save-retry" hidden/);
 });
 
 test('Tournée V241: les outils s’ouvrent et se referment sans toucher au coffre',()=>{
