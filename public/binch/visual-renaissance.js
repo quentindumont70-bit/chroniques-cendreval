@@ -62,6 +62,7 @@ function start(){
  observer.observe(app,{childList:true,subtree:true});setTimeout(()=>observer.disconnect(),12000);
 }
 document.addEventListener('binch:adventure-ready',mount);
+document.addEventListener('DOMContentLoaded',refreshPortals); // other deferred modules may create tabs later
 document.addEventListener('binch:profile-change',applyAmbience);
 document.addEventListener('grimoire:sync',applyAmbience);
 window.addEventListener('storage',e=>{if(e.key===KEY){ambience=readAmbience();applyAmbience()}});
