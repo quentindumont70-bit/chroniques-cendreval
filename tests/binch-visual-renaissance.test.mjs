@@ -80,7 +80,7 @@ test('Renaissance : image originale, accessibilité mobile et animation réduite
  assert.ok(html.includes('./visual-renaissance-worlds.css?v=001'));
 
  assert.ok(html.indexOf('./visual-renaissance.css?v=001')>html.indexOf('./ultimate-identities.css?v=001'),'design loaded after class theme');
- assert.ok(html.indexOf('./visual-renaissance.js?v=004')>html.indexOf('./player-home.js'),'home mounted before visual enhancement');
+ assert.ok(html.indexOf('./visual-renaissance.js?v=005')>html.indexOf('./player-home.js'),'home mounted before visual enhancement');
  assert.equal(html.match(/\.\/visual-renaissance\.js\?v=004/g)?.length,1);
 });
 test('Renaissance P2 : neuf vrais paysages originaux distincts branchés aux neuf classes',()=>{
@@ -134,7 +134,7 @@ test('Atelier visuel : neuf paysages disponibles dans une galerie sans données 
   assert.ok(gallery.includes('src="./renaissance-sigil-'+id+'.svg"'),'original crest '+id);
  }
  assert.ok(gallery.includes('aria-pressed='));
- assert.ok(gallery.includes("getElementById('scenes').addEventListener('click'"));
+ assert.ok(gallery.includes("classesList.addEventListener('click'"));
  assert.ok(gallery.includes('Les données, les profils et la Bourse AH ne sont pas modifiés'));
  assert.ok(!gallery.includes('fetch('),'preview is self-contained, no remote fetch');
  assert.ok(gallery.includes('prefers-reduced-motion:reduce'));
@@ -176,6 +176,7 @@ test('Mode graphique léger: préférence locale réversible sans altérer les s
  assert.ok(css.includes('var(--br-world-art)'));
  const js=source('visual-renaissance.js');
  assert.ok(js.includes('Mode léger — économiser les effets graphiques'));
+ assert.ok(js.includes("window.matchMedia?.('(prefers-reduced-motion: reduce)')"));
  assert.ok(js.includes("getItem('grimoire.hub.v3')"),'gallery may read the class to choose an illustration');
  assert.ok(!js.includes("setItem('grimoire.hub.v3'"),'visual controls must never write to a game profile');
 });
