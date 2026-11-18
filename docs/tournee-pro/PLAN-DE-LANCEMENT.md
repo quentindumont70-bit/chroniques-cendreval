@@ -38,7 +38,7 @@ Le prix mensuel doit payer un avantage concret (mises à jour stables, accompagn
 | 3 | **Restauration démontrable** | round-trip sur 1/24/500 patients FICTIFS, sans modification des notes ni écrasement | P0 | **V251 : tests automatisés + vérification fichier ; iOS réel encore à valider** |
 | 4 | **Un seul parcours installé** | distinguer explicitement PWA installée/Safari, migration guidée, jamais de copie implicite | P0 | **V252 : identification visible de l'espace ; transfert guidé encore à construire** |
 | 5 | **Refonte UI terrain** | accueil utile en 5 secondes, contraste iPhone, une action principale par écran, états vides | P1 | **V253 : accueil prioritaire et mobile ; direction artistique premium Medical Ops à venir** |
-| 6 | **Cœur métier fiable** | rappels journaliers, cycles, absences, modifications et journal sans régression | P1 | Existant à consolider |
+| 6 | **Cœur métier fiable** | rappels journaliers, cycles, absences, modifications et journal sans régression | P1 | V254 : brouillons des post-it protégés avant actualisation ; tests terrain à compléter |
 | 7 | **Onboarding et exemples** | prise en main ≤5 min avec données fictives et import explicite | P1 | À construire |
 | 8 | **Suite de tests appareil réel** | iOS PWA/Android, hors ligne, fermeture forcée, mise à jour, conflit de deux onglets | P0 | Tests automatisés partiels |
 | 9 | **Conformité et exploitation** | finalité, RGPD, registre, responsabilités, contrats, HDS si hébergement confié à un tiers ; support et incidents | P0 AVANT VENTE | À instruire |
@@ -97,3 +97,9 @@ Une nouvelle hiérarchie privilégie les passages du jour, la progression, la pr
 **Direction artistique approuvée pour une phase dédiée : Medical Ops du futur**, héritée de l'ambiance Medical Ops de Big Cthu, avec identité professionnelle autonome et haut niveau de finition. Objectif : cockpit clinique élégant, typographie hiérarchisée, surfaces et animations discrètes, palette médico-technologique, contraste, affichage une main, vitesse perceptible, micro-interactions sûres. Les thèmes alternatifs viendront après. Cette direction ne doit pas sacrifier lisibilité, accessibilité, sobriété batterie ni continuité de service sur iPhone.
 
 **Critères de passage** : tests métier et hors ligne verts, pas de stockage modifié, contraste/lecture du jour, boutons ≥44 px, vrai iPhone à confirmer avant toute promesse commerciale. La phase V253 améliore la structure, **elle n'est pas la refonte graphique époustouflante finale**.
+
+## Golipette V254 — brouillons de post-it et mise à jour iOS
+
+Avant qu'une nouvelle version recharge la PWA, les brouillons multiligne sont enregistrés dans le **coffre chiffré local existant**, sans nouvelle base. Les écritures de post-it sont sérialisées. Si la persistance échoue, l'actualisation est refusée et le brouillon reste dans la session actuelle. En passant l'application en arrière-plan, une sauvegarde est tentée, sans garantie si iOS termine immédiatement le processus. Tests CI sur deux dates fictives, échec d'écriture et reprise avant rechargement.
+
+Ce mécanisme ne constitue pas une sauvegarde hors appareil ; il ne remplace pas les vérifications iPhone réel et hors connexion ni la future sauvegarde externe.
