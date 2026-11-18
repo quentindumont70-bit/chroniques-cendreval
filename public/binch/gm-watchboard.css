@@ -5,3 +5,12 @@
 @media(max-width:770px){#binch-gm-watch-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.binch-gm-watch-grid{grid-template-columns:1fr}.binch-gm-watch header button{width:100%}}
 @media(max-width:390px){.binch-gm-watch{padding:12px}.binch-gm-watch-event{flex-wrap:wrap}.binch-gm-watch-event button{width:100%}}
 @media(prefers-reduced-motion:reduce){.binch-gm-watch *{scroll-behavior:auto}}
+
+.binch-gm-watch-checklist{margin-top:14px;padding:15px;border:1px solid #5b7068;border-radius:12px;background:#172b2a}
+.binch-gm-watch-checklist>p{font-size:.77rem;color:#c5d2c5;margin:0 0 10px}
+.binch-gm-watch-checklist ol{margin:0;padding-left:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:8px 14px}
+.binch-gm-watch-checklist li{padding:8px 12px;border:1px solid #55695e;border-radius:8px;background:#223333;overflow-wrap:anywhere}
+.binch-gm-watch-checklist li strong,.binch-gm-watch-checklist li small{display:block}
+.binch-gm-watch-checklist li strong{font-size:.82rem;color:#f0d49f}
+.binch-gm-watch-checklist li small{font-size:.74rem;color:#c2d5c9;margin-top:4px}
+@media(max-width:440px){.binch-gm-watch-checklist{padding:11px}.binch-gm-watch-checklist ol{grid-template-columns:1fr}}
