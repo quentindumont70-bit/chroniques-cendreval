@@ -10,6 +10,17 @@
  --br-scene-filter:saturate(1.04) contrast(1.07);
  --br-scene-glow:radial-gradient(circle at 82% 23%,#edae5c35,transparent 34%);
 }
+/* Nine genuinely distinct original illustrations: never fake the class by tinting one screenshot. */
+:root{--br-world-art:url("./renaissance-citadel.svg")}
+html[data-binch-identity=druid]{--br-world-art:url("./renaissance-world-druid.svg")}
+html[data-binch-identity=warrior]{--br-world-art:url("./renaissance-world-warrior.svg")}
+html[data-binch-identity=mage]{--br-world-art:url("./renaissance-world-mage.svg")}
+html[data-binch-identity=priest]{--br-world-art:url("./renaissance-world-priest.svg")}
+html[data-binch-identity=paladin]{--br-world-art:url("./renaissance-world-paladin.svg")}
+html[data-binch-identity=rogue]{--br-world-art:url("./renaissance-world-rogue.svg")}
+html[data-binch-identity=hunter]{--br-world-art:url("./renaissance-world-hunter.svg")}
+html[data-binch-identity=shaman]{--br-world-art:url("./renaissance-world-shaman.svg")}
+html[data-binch-identity=warlock]{--br-world-art:url("./renaissance-world-warlock.svg")}
 /* One world, nine magical signatures. These follow the existing class identity. */
 :root{--br-class-aura:radial-gradient(circle at 74% 62%,#88a99a24,transparent 45%);--br-race-rune:"✧"}
 html[data-binch-identity=druid]{--br-class-aura:radial-gradient(circle at 76% 70%,#79cb6b40,transparent 42%)}
@@ -90,7 +101,7 @@ html[data-binch-ambience=embers]{
 #page-hub .binch-character-card::before{
  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
  background-image:linear-gradient(90deg,#061115d9 0%,#081b1dc2 23%,#12202143 68%,#08151d20 100%),
-  var(--br-class-aura),var(--br-scene-glow),url("./renaissance-citadel.svg");
+  var(--br-class-aura),var(--br-scene-glow),var(--br-world-art);
  background-position:center;background-size:cover;
  filter:var(--br-scene-filter);
 }
@@ -250,7 +261,7 @@ html[data-binch-ambience=embers]{
  }
  #page-hub .binch-character-card::before{
   background-position:58% center;
-  background-image:linear-gradient(90deg,#071315e8,#071518c9 58%,#0a171b91),var(--br-class-aura),var(--br-scene-glow),url("./renaissance-citadel.svg")
+  background-image:linear-gradient(90deg,#071315e8,#071518c9 58%,#0a171b91),var(--br-class-aura),var(--br-scene-glow),var(--br-world-art)
  }
  #page-hub .binch-character-card .binch-portrait{
   width:89px;grid-column:1;grid-row:1;justify-self:start;
