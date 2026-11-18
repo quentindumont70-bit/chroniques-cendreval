@@ -37,7 +37,7 @@ const PROGRESS_PREFIX='binch.specs.progress.v1.';
 function progressKey(){
  try{
   const p=JSON.parse(localStorage.getItem('grimoire.hub.v3'))||{},d=p.data||{};
-  const name=String(d.pseudo||'').trim().toLocaleLowerCase('fr'),cls=String(p.classe||''),realm=String(d.realm||p.realm||'non-renseigné').trim().toLocaleLowerCase('fr');
+  const name=String(d.pseudo||'').trim().toLocaleLowerCase('fr'),cls=String(p.classe||''),last=JSON.parse(localStorage.getItem('grimoire.bridge.last'))||{},syncedRealm=String(last.name||'').trim().toLocaleLowerCase('fr')===name?last.realm:null,realm=String(d.realm||p.realm||syncedRealm||'non-renseigné').trim().toLocaleLowerCase('fr');
   if(!name||cls!=='Druide')return null;
   return PROGRESS_PREFIX+[name,realm,p.race||'',cls].map(x=>encodeURIComponent(String(x))).join('.');
  }catch{return null}
@@ -51,7 +51,7 @@ function confirmProgress(lvl){
  try{localStorage.setItem(key,JSON.stringify({confirmedThrough:lvl,updatedAt:new Date().toISOString()}));return true}catch{return false}
 }
 function importedLevel(){
- try{const p=JSON.parse(localStorage.getItem('grimoire.hub.v3'))||{},l=JSON.parse(localStorage.getItem('grimoire.bridge.last'))||{},n=String(p.data?.pseudo||'').trim().toLowerCase(),match=n&&n===String(l.name||'').trim().toLowerCase(),level=Number(match?l.level:p.data?.level);return Number.isInteger(level)?Math.max(10,Math.min(60,level)):10}catch{return 10}
+ try{const p=JSON.parse(localStorage.getItem('grimoire.hub.v3'))||{},l=JSON.parse(localStorage.getItem('grimoire.bridge.last'))||{},n=String(p.data?.pseudo||'').trim().toLowerCase(),realm=String(p.data?.realm||p.realm||'').trim().toLowerCase(),importRealm=String(l.realm||'').trim().toLowerCase(),match=n&&n===String(l.name||'').trim().toLowerCase()&&(!realm||!importRealm||realm===importRealm),level=Number(match?l.level:p.data?.level);return Number.isInteger(level)?Math.max(10,Math.min(60,level)):10}catch{return 10}
 }
 function level(){return levelLocked?state.level:importedLevel()}
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch{}document.dispatchEvent(new Event('binch:specs-change'))}
