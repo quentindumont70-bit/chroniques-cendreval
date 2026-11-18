@@ -5,7 +5,7 @@ const read=k=>{try{return JSON.parse(localStorage.getItem(k))||{}}catch{return {
 const fmt=n=>Number(n).toLocaleString('fr-FR');
 function snapshot(){
  const p=read('grimoire.hub.v3'),d=p.data||{},last=read('grimoire.bridge.last');
- const name=String(d.pseudo||last.name||'Aventurier'),race=p.race||'',cls=p.classe||'',same=!!last.name&&last.name.trim().toLocaleLowerCase('fr')===name.trim().toLocaleLowerCase('fr');
+ const name=String(d.pseudo||last.name||'Aventurier'),race=p.race||'',cls=p.classe||'',expectedRealm=String(d.realm||p.realm||'').trim().toLocaleLowerCase('fr'),importRealm=String(last.realm||'').trim().toLocaleLowerCase('fr'),same=!!last.name&&last.name.trim().toLocaleLowerCase('fr')===name.trim().toLocaleLowerCase('fr')&&(!expectedRealm||!importRealm||expectedRealm===importRealm);
  const inv=same&&Array.isArray(last.inventory)?last.inventory:[],cnt=id=>inv.filter(x=>Number(x.id)===id).reduce((n,x)=>{const q=Number(x.count);return n+(Number.isSafeInteger(q)&&q>0?q:0)},0);
  const xp=same&&last.xp!=null&&last.xp!==''?Number(last.xp):null,xpMax=same&&last.xpMax!=null&&last.xpMax!==''?Number(last.xpMax):null;
  const jobsKey=name.trim().toLowerCase()+'-'+race+'-'+cls,skills=read('grimoire.craft.v1').imports?.[jobsKey]?.skills||{};
