@@ -2277,8 +2277,8 @@ function showLegacyRecovery(){
  const button=document.getElementById('tour-recovery-launch'),direct=document.getElementById('tour-recovery-direct');
  button.hidden=false;
  const empty=recoverySpaceEmpty(secureState);
- direct.hidden=!empty;
- saveStatus('saved',empty?'Ancienne sauvegarde détectée. La liste active est vide : touche « Retrouver mes patients ».':'Tournée ouverte. Une ancienne sauvegarde est également conservée sur cet appareil.');
+ if(direct)direct.hidden=!empty;
+ saveStatus('saved',empty?'Ancienne sauvegarde détectée (récupération facultative). La liste active est vide : touche « Retrouver mes patients ».':'Tournée ouverte. Une ancienne sauvegarde est également conservée sur cet appareil.');
 }
 const PORTABLE_FORMAT='bigcthu-tournee-complete-portable-v1';
 function validPortableState(state){
