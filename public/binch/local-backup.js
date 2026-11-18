@@ -1,7 +1,7 @@
 /* La Binch — export/import privé des plannings locaux, sans serveur tiers. */
 (()=>{'use strict';
 const $=id=>document.getElementById(id);
-const PREFIXES=['binch.guild.','binch.custom.objectives.v1.','binch.leveling.log.v1.','binch.session.plan.v1.','binch.zone.plan.v1.','binch.route.done.v1.','binch.route.pins.v1.','binch.gear.sets.v1.'];
+const PREFIXES=['binch.guild.','binch.custom.objectives.v1.','binch.leveling.log.v1.','binch.session.plan.v1.','binch.zone.plan.v1.','binch.route.done.v1.','binch.route.pins.v1.','binch.gear.sets.v1.','binch.specs.progress.v1.'];
 const EXACT=['grimoire.hub.v3','binch.lfg.local.v1','binch.ah.market.v1','binch.ah.scope.v1','binch.ah.craft.v1','binch.ah.trading.v1','binch.faith.goal.v1','binch.specs.focus.v1'];
 const MAX_KEYS=300,MAX_FILE=2*1024*1024;
 function eligible(k){return EXACT.includes(k)||PREFIXES.some(prefix=>k.startsWith(prefix));}
