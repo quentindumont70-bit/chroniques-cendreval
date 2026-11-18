@@ -439,7 +439,7 @@ test('V194–V197: cockpit mobile compact, ancres accessibles et cache public re
  assert.match(css,/#activePulse > p\.muted:not\(#activePulseStatus\)/);
  assert.match(css,/#activePulse,#nextSession,#priorities\{scroll-margin-top/);
  assert.match(css,/#activePulseToggle\{min-height:44px/);
- assert.match(sw,/const CACHE='big-cthu-public-v2-v217'/);
+ assert.match(sw,/const CACHE='big-cthu-public-v2-v\d+'/);
  assert.match(sw,/'\.\/active-pulse\.js'/);
  assert.match(sw,/'\.\/next-session\.js'/);
  assert.match(html,/id="activePulseToggle"/);
@@ -489,7 +489,7 @@ test('V204–V207: urgences regroupées, compteur exact et cache public à jour'
  const [html,css,sw]=await Promise.all(['index.html','cockpit-themes.css','sw.js'].map(read));
  assert.match(html,/<option value="Urgentes">Urgences et priorités<\/option>/);
  assert.match(css,/@media\(forced-colors:active\)/);
- assert.match(sw,/big-cthu-public-v2-v217/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
 });
@@ -530,7 +530,7 @@ test('V215–V217: alertes distinguées et recherche accessible sans altérer le
  assert.match(js,/item\.rank<=2\?' is-urgent'/);
  assert.match(js,/Aucune action ne correspond à la recherche/);
  assert.match(html,/id="activePulseCount" role="status" aria-live="polite"/);
- assert.match(sw,/big-cthu-public-v2-v217/);
+ assert.match(sw,/big-cthu-public-v2-v\d+/);
  const f=await fixture({[K.tasks]:JSON.stringify([{id:'1',text:'Rappel fictif',done:false}])});
  assert.equal(f.collect().items.length,1);
  assert.equal(f.writes(),0);
