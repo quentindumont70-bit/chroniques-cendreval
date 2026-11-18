@@ -118,3 +118,18 @@ test('Renaissance P2 : trésors, Faith et GM empruntent des scènes sans modifie
  assert.ok(!js.includes('fetch('),'artwork must not trigger remote services');
  assert.ok(!js.includes('BinchRewards.'),'ornaments must not award treasure');
 });
+
+test('Atelier visuel : neuf paysages disponibles dans une galerie sans données WoW',()=>{
+ const gallery=source('renaissance-atelier.html');
+ assert.ok(gallery.includes('<!doctype html>'));
+ assert.ok(gallery.includes('name="viewport"'));
+ for(const id of ['druid','warrior','mage','priest','paladin','rogue','hunter','shaman','warlock']){
+  assert.ok(gallery.includes('data-class="'+id+'"'),'class button '+id);
+  assert.ok(gallery.includes('src="./renaissance-world-'+id+'.svg"'),'image '+id);
+ }
+ assert.ok(gallery.includes('aria-pressed='));
+ assert.ok(gallery.includes("getElementById('scenes').addEventListener('click'"));
+ assert.ok(gallery.includes('Les données, les profils et la Bourse AH ne sont pas modifiés'));
+ assert.ok(!gallery.includes('fetch('),'preview is self-contained, no remote fetch');
+ assert.ok(gallery.includes('prefers-reduced-motion:reduce'));
+});
