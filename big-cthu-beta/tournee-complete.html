@@ -2330,7 +2330,7 @@ function recoverySpaceEmpty(state){
 }
 async function recoverOldVault(fileMode){
  try{
-  if(!recoveryPatientListEmpty(secureState))throw Error('La liste actuelle contient des patients. Récupération bloquée pour ne pas les écraser. Aucun changement effectué.');
+  if(!recoveryPatientListEmpty(secureState))throw Error('La liste actuelle contient déjà des patients. Récupération bloquée pour ne rien écraser. Aucun changement effectué.');
   const password=document.getElementById('tour-pass').value;
   let state;
   if(fileMode){
