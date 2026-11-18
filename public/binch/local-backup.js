@@ -2,12 +2,12 @@
 (()=>{'use strict';
 const $=id=>document.getElementById(id);
 const PREFIXES=['binch.guild.','binch.custom.objectives.v1.','binch.leveling.log.v1.','binch.session.plan.v1.','binch.zone.plan.v1.','binch.route.done.v1.','binch.route.pins.v1.','binch.gear.sets.v1.'];
-const EXACT=['grimoire.hub.v3','binch.lfg.local.v1','binch.ah.market.v1','binch.ah.scope.v1','binch.ah.craft.v1'];
+const EXACT=['grimoire.hub.v3','binch.lfg.local.v1','binch.ah.market.v1','binch.ah.scope.v1','binch.ah.craft.v1','binch.ah.trading.v1','binch.faith.goal.v1','binch.specs.focus.v1'];
 const MAX_KEYS=300,MAX_FILE=2*1024*1024;
 function eligible(k){return EXACT.includes(k)||PREFIXES.some(prefix=>k.startsWith(prefix));}
 function collect(){
  const result={};let count=0;for(let i=0;i<localStorage.length&&count<MAX_KEYS;i++){const k=localStorage.key(i);
-  if(!k||!eligible(k))continue;const v=localStorage.getItem(k);if(typeof v==='string'&&v.length<=200000){result[k]=v;count++;}
+  if(!k||!eligible(k))continue;const v=localStorage.getItem(k);if(typeof v==='string'&&v.length<=200000){try{JSON.parse(v);result[k]=v;count++}catch{}}
  }
  return result;
 }
@@ -16,8 +16,8 @@ function init(){
  const page=$('page-hub');if(!page||$('binch-local-backup'))return;
  const details=document.createElement('details');details.id='binch-local-backup';details.className='panel section';
  details.innerHTML='<summary>Mes sauvegardes locales <small>Exporter ou restaurer les données locales de La Binch</small></summary>'+
- '<p>Conserve une copie des objectifs, plans de zones, préparations de guilde, LFG, Bourse d’Azeroth et ensembles d’équipement enregistrés localement. Les données restent sur cet appareil sauf si tu choisis toi-même un fichier à conserver ou transférer.</p>'+
- '<p class="muted"><strong>Important :</strong> cette sauvegarde n’inclut pas les fichiers WoW SavedVariables, ni les permissions de synchronisation, ni une sauvegarde cloud. Le fichier exporté peut contenir ton nom de personnage.</p>'+
+ '<p>Conserve une copie des objectifs, sessions de leveling, builds épinglés, préférences Faith, stratégies AH, plans de zones, guilde et équipement enregistrés localement. Les données restent sur cet appareil sauf export volontaire.</p>'+
+ '<p class="muted"><strong>Important :</strong> cette sauvegarde n’inclut pas les fichiers WoW SavedVariables, le dernier import brut GrimoireSync, les permissions de synchronisation, ni une sauvegarde cloud. Après restauration, réimporte ton personnage pour disposer de données fraîches. Le fichier exporté peut contenir ton nom de personnage.</p>'+
  '<div class="binch-backup-actions"><button type="button" id="binch-backup-export">Exporter mes données locales</button><label class="binch-backup-upload">Restaurer depuis JSON<input id="binch-backup-import" type="file" accept=".json,application/json" hidden></label></div>'+
  '<p id="binch-backup-status" role="status" aria-live="polite">Aucun transfert effectué.</p>';
  page.append(details);
