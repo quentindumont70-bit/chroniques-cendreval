@@ -185,7 +185,7 @@ html[data-binch-ambience=embers]{
  border-radius:13px!important;
 }
 #page-hub .binch-renaissance-portals{
- display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
  gap:12px;margin:0 0 18px;
 }
 #page-hub .binch-renaissance-portal{
@@ -202,6 +202,8 @@ html[data-binch-ambience=embers]{
 #page-hub .binch-renaissance-portal[data-to=specs]{--portal-color:#d2af71}
 #page-hub .binch-renaissance-portal[data-to=metiers]{--portal-color:#8dbdd4}
 #page-hub .binch-renaissance-portal[data-to=gm]{--portal-color:#d7a78e}
+#page-hub .binch-renaissance-portal[data-to=command]{--portal-color:#ccaae6}
+#page-hub .binch-renaissance-portal[data-to=tresors]{--portal-color:#d9a5e9}
 #page-hub .binch-renaissance-portal .binch-portal-icon{
  flex:none;display:grid;place-items:center;width:54px;height:54px;
  border-radius:12px;border:1px solid var(--portal-color);
