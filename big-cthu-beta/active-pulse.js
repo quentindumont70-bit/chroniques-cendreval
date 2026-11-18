@@ -86,7 +86,7 @@ function collect(expanded=false,limit=8,kind='all',term='',pinned=[]){
   matchedCompact+=Math.min(shown.length,source.limit);
   matchedUrgent+=shown.filter(item=>item.rank<=2).length;
   matchedUrgentCompact+=shown.slice(0,source.limit).filter(item=>item.rank<=2).length;
-  const ordered=shown.slice().sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||Number(pinnedItem(source,b))-Number(pinnedItem(source,a)));
+  const ordered=shown.slice().sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||(a.rank<=2&&b.rank<=2?a.rank-b.rank:0)||Number(pinnedItem(source,b))-Number(pinnedItem(source,a))||a.rank-b.rank);
   for(const item of ordered.slice(0,expanded?limit:source.limit))results.push({...item,timeGroup:period(source,item),kind:source.kind,favoriteKey:favoriteKey(source,item),favorite:pinnedItem(source,item),url:source.kind==='Maison'&&item.id?'./maison.html#job='+encodeURIComponent(item.id):source.kind==='Agenda'&&item.id?'./agenda.html#event='+encodeURIComponent(item.id):source.kind==='Captures'&&item.id?'./capture.html#capture='+encodeURIComponent(item.id):source.kind==='Priorités'&&item.id?'#priority-'+encodeURIComponent(item.id):source.kind==='Musique'&&item.id?'./musique.html#studio='+encodeURIComponent(item.id):source.kind==='Stock'&&item.id?'./garde-manger.html#food='+encodeURIComponent(item.id):source.kind==='Jeux'&&item.id?'#session='+encodeURIComponent(item.id):source.url});
  }
  counts.Urgentes=urgentTotal;
@@ -99,13 +99,19 @@ function node(tag,text,className){
  if(className)x.className=className;
  return x;
 }
-let expanded=false,selectedKind='all',pageSize=8,searchTerm='',pinMessage='';
+let expanded=false,selectedKind='all',pageSize=8,searchTerm='',pinMessage='',searchFrame=false;
+function scheduleSearchRender(){
+ if(searchFrame)return;
+ if(typeof requestAnimationFrame!=='function'){render();return}
+ searchFrame=true;
+ requestAnimationFrame(()=>{searchFrame=false;render()});
+}
 function render(){
  const root=$('activePulseList');if(!root)return;
  const pins=window.BigCthuActionFavorites;
  const pinState=pins?pins.read():{ids:[],blocked:false};
  const {items,warnings,total,compactVisible,counts,urgentCompact,matchCounts,matchedTotal,matchedCompact,matchedUrgent,matchedUrgentCompact,matchedToday,matchedWeek,matchedUndated,compactToday,compactWeek,compactUndated}=collect(expanded,pageSize,selectedKind,searchTerm,pinState.ids);
- const visible=(selectedKind==='all'?items:selectedKind==='Urgentes'?items.filter(item=>item.rank<=2):selectedKind==='Aujourd’hui'?items.filter(item=>['late','today'].includes(item.timeGroup)):selectedKind==='Semaine'?items.filter(item=>['late','today','week'].includes(item.timeGroup)):selectedKind==='Sans date'?items.filter(item=>item.timeGroup==='undated'):items.filter(item=>item.kind===selectedKind)).slice().sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||Number(b.favorite)-Number(a.favorite)||a.rank-b.rank);
+ const visible=(selectedKind==='all'?items:selectedKind==='Urgentes'?items.filter(item=>item.rank<=2):selectedKind==='Aujourd’hui'?items.filter(item=>['late','today'].includes(item.timeGroup)):selectedKind==='Semaine'?items.filter(item=>['late','today','week'].includes(item.timeGroup)):selectedKind==='Sans date'?items.filter(item=>item.timeGroup==='undated'):items.filter(item=>item.kind===selectedKind)).slice().sort((a,b)=>(a.rank<=2?0:1)-(b.rank<=2?0:1)||(a.rank<=2&&b.rank<=2?a.rank-b.rank:0)||Number(b.favorite)-Number(a.favorite)||a.rank-b.rank);
  const available=selectedKind==='all'?matchedTotal:selectedKind==='Urgentes'?matchedUrgent:selectedKind==='Aujourd’hui'?matchedToday:selectedKind==='Semaine'?matchedWeek:selectedKind==='Sans date'?matchedUndated:(matchCounts[selectedKind]||0);
  const compact=selectedKind==='all'?matchedCompact:selectedKind==='Urgentes'?matchedUrgentCompact:selectedKind==='Aujourd’hui'?compactToday:selectedKind==='Semaine'?compactWeek:selectedKind==='Sans date'?compactUndated:Math.min(available,2);
  root.replaceChildren();
@@ -125,7 +131,7 @@ function render(){
  const category=$('activePulseCategory');if(category){category.value=selectedKind;category.onchange=()=>{selectedKind=category.value;expanded=false;pageSize=8;render()}}
  const fast=[['activePulseToday','Aujourd’hui'],['activePulseWeek','Semaine']];
  for(const [id,kind] of fast){const button=$(id);if(!button)continue;button.setAttribute('aria-pressed',selectedKind===kind?'true':'false');button.onclick=()=>{selectedKind=selectedKind===kind?'all':kind;expanded=false;pageSize=8;render()}}
- const search=$('activePulseSearch');if(search){if(search.value!==searchTerm)search.value=searchTerm;search.oninput=()=>{searchTerm=search.value.slice(0,100);expanded=false;pageSize=8;render()};search.onkeydown=e=>{if(e.key==='Escape'&&searchTerm){searchTerm='';expanded=false;pageSize=8;render()}}}
+ const search=$('activePulseSearch');if(search){if(search.value!==searchTerm)search.value=searchTerm;search.oninput=()=>{const next=search.value.slice(0,100);if(next===searchTerm)return;searchTerm=next;expanded=false;pageSize=8;scheduleSearchRender()};search.onkeydown=e=>{if(e.key==='Escape'&&searchTerm){searchTerm='';expanded=false;pageSize=8;render()}}}
  const clear=$('activePulseClear');if(clear){clear.hidden=!searchTerm;clear.onclick=()=>{searchTerm='';expanded=false;pageSize=8;render();if(search&&typeof search.focus==='function')search.focus()}}
  const pinPick=$('activePulsePinPick'),pinButton=$('activePulsePinButton'),pinStatus=$('activePulsePinStatus');
  if(pinPick&&pinButton){
@@ -134,8 +140,12 @@ function render(){
   for(const item of visible){if(!item.favoriteKey)continue;
    const option=node('option',(item.favorite?'★ ':'')+item.kind+' · '+item.title.slice(0,65));option.value=item.favoriteKey;pinPick.append(option);
   }
-  const choices=visible.filter(item=>item.favoriteKey);
-  const current=choices.some(item=>item.favoriteKey===previous)?previous:(choices[0]?.favoriteKey||'');
+  for(const reference of pinState.ids){
+   if(visible.some(item=>item.favoriteKey===reference))continue;
+   const option=node('option','★ Favori hors sélection · '+reference.split(':')[0]);option.value=reference;pinPick.append(option);
+  }
+  const choices=[...visible.filter(item=>item.favoriteKey).map(item=>item.favoriteKey),...pinState.ids];
+  const current=choices.includes(previous)?previous:(choices[0]||'');
   pinPick.value=current;
   const updatePinButton=()=>{const pinned=pinState.ids.includes(pinPick.value);pinButton.textContent=pinned?'Retirer des favoris':'Épingler cette action';pinButton.disabled=!pinPick.value||pinState.blocked||!pins};
   pinPick.onchange=updatePinButton;updatePinButton();
