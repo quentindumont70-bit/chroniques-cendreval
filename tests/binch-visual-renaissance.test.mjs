@@ -20,7 +20,7 @@ function harness(initial='dusk'){
  const hero=new Element('section');hero.querySelector=s=>s==='.binch-kicker'?{parentElement:copy}:null;
  const home={querySelector:s=>s==='.binch-character-card'?hero:null};
  const tab=id=>({dataset:{page:id},click(){clicked.push(id)}});
- const tabs=['progression','specs','metiers','gm'].map(tab);
+ const tabs=['progression','specs','metiers','gm','command','tresors'].map(tab);
  const nav={querySelectorAll:()=>tabs};
  const root={dataset:{}};
  const document={
@@ -43,12 +43,14 @@ test('Renaissance : ambiance persistante et sélection sans mutation WoW',()=>{
 });
 test('Renaissance : portails naviguent vers les vraies rubriques, montage idempotent',()=>{
  const x=harness();assert.equal(x.p.mount(),true);assert.equal(x.p.mount(),true);
- assert.equal(x.nodes.passages.children.length,4);
+ assert.equal(x.nodes.passages.children.length,6);
  assert.equal(x.hero.children.filter(node=>node.id==='binch-renaissance-ambiences').length,1);
  assert.equal(x.ambienceButtons.length,3);
  assert.ok(x.portalButtons.every(b=>b.disabled===false));
+ assert.equal(x.portalButtons.filter(b=>b.disabled).length,0);
  assert.equal(x.p.navigate('specs'),true);assert.deepEqual(x.clicked,['specs']);
  assert.equal(x.p.navigate('module-qui-n-existe-pas'),false);
+ assert.equal(x.p.navigate('tresors'),true);assert.deepEqual(x.clicked,['specs','tresors']);
  x.ambienceButtons[1].onclick();assert.equal(x.root.dataset.binchAmbience,'moon');
  assert.equal(x.ambienceButtons[1].attributes['aria-pressed'],'true');
 });
@@ -132,4 +134,21 @@ test('Atelier visuel : neuf paysages disponibles dans une galerie sans données 
  assert.ok(gallery.includes('Les données, les profils et la Bourse AH ne sont pas modifiés'));
  assert.ok(!gallery.includes('fetch('),'preview is self-contained, no remote fetch');
  assert.ok(gallery.includes('prefers-reduced-motion:reduce'));
+});
+
+test('Emblèmes de classe et métiers: originaux et connectés aux interfaces',()=>{
+ const css=source('visual-renaissance-details.css'),html=source('index.html');
+ for(const cls of ['druid','warrior','mage','priest','paladin','rogue','hunter','shaman','warlock']){
+  const file='renaissance-sigil-'+cls+'.svg';
+  assert.ok(source(file).includes('aria-label='));
+  assert.ok(css.includes('renaissance-sigil-'+cls+'.svg'));
+ }
+ for(const job of ['mining','engineering']){
+  assert.ok(source('renaissance-profession-'+job+'.svg').includes('viewBox="0 0 256 256"'));
+  assert.ok(css.includes('renaissance-profession-'+job+'.svg'));
+ }
+ assert.ok(html.includes('data-job="${esc(j)}"'));
+ assert.ok(html.includes('visual-renaissance-details.css?v=001'));
+ assert.ok(css.includes('prefers-reduced-motion:reduce'));
+ assert.ok(css.includes('forced-colors:active'));
 });
