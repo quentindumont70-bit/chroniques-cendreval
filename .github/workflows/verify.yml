@@ -35,7 +35,9 @@ jobs:
       - name: Tests AH et navigation mobile de La Binch
         run: node --test tests/binch-ah-trading.test.mjs tests/binch-ah-portfolio.test.mjs tests/binch-ah-feed.test.mjs tests/binch-ah-mobile.test.mjs tests/binch-ahledger.test.mjs
       - name: Vérifier la Renaissance visuelle de La Binch
-        run: node --test tests/binch-visual-renaissance.test.mjs
+        run: |
+          node --test tests/binch-visual-renaissance.test.mjs
+          python3 -c "import xml.etree.ElementTree as ET; ET.parse('public/binch/renaissance-citadel.svg')"
       - name: Vérifier la présence de Big Cthu dans le paquet Pages
         run: |
           node scripts/stage-big-cthu-beta.mjs
