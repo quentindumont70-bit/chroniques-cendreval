@@ -62,3 +62,35 @@ Deux scènes vectorielles 1920×1080 originales et plus détaillées remplacent 
 - `renaissance-p9-hero-warlock.svg` : nécropole gothique, éclipse, portail runique, brumes et signature occulte.
 
 Elles sont branchées sur les deux surfaces d'accueil (hero initial et carte cinématique) tout en conservant les données et les boutons existants. Le fichier de tests P9 vérifie leur présence et leur raccordement. 28 SVG Renaissance sont désormais contrôlés dans la CI. Il reste à faire valider leur qualité visuelle sur un écran réel et à produire les sept scènes suivantes au même niveau.
+
+## Golipette P10 — neuf mondes visuels reliés au vrai parcours
+
+### Production réalisée sur la branche dédiée
+
+1. **Guerrier** — Bastion des Serments, fortifications, bannières de guerre, épée monumentale : `renaissance-p10-hero-warrior.svg`.
+2. **Paladin** — Cathédrale de l’Aube, rosace, vitraux et contreforts : `renaissance-p10-hero-paladin.svg`.
+3. **Chasseur** — Poste des Veilleurs, falaises et tour des rangers : `renaissance-p10-hero-hunter.svg`.
+4. **Voleur** — Toits de la Nuit, pont suspendu, silhouettes et pluie : `renaissance-p10-hero-rogue.svg`.
+5. **Prêtre** — Temple des Sept Lueurs, colonnade ouverte et chandelles : `renaissance-p10-hero-priest.svg`.
+6. **Chaman** — Cercle des Éléments, orage, cascade et quatre totems : `renaissance-p10-hero-shaman.svg`.
+7. **Mage** — Observatoire des Arcanes, anneaux, orrery flottant et constellations : `renaissance-p10-hero-mage.svg`.
+8. **Intégration** — les sept scènes sont branchées au moteur `visual-identity-compositor.js`, rejoignant `renaissance-p9-hero-druid.svg` et `renaissance-p9-hero-warlock.svg`. Le vrai créateur utilise aussi les neuf nouveaux visuels, avec versions CSS/JS actualisées.
+9. **Atelier mobile** — `public/binch/renaissance-p10-showcase.html` permet de changer peuple, classe et métiers **sans écrire dans le profil**. Deux préréglages (Tauren Druide Herboristerie/Alchimie ; Mort-vivant Démoniste Ingénierie/Enchantement), mode léger et liens de captures permettent une comparaison immédiate. Un lien vers l’atelier apparaît dans le compagnon.
+10. **Tests ciblés** — vérification XML de **35 SVG** et CI de scène, régression, composition. Captures de deux profils en 1440×960 et 430×860, non publiées sur GitHub Pages.
+
+**Limites :** Les SVG sont des créations vectorielles originales plus détaillées que les fonds initiaux ; ce ne sont pas encore des peintures numériques photoréalistes ni de la 3D. La qualité perçue devra être jugée sur les captures et de vrais appareils. La lenteur de raw.githack ne permet pas de conclure à un défaut de performance de l’application.
+
+### Golipette P11 — dix prochains chantiers, ordre de priorité
+
+1. Examiner les captures P10 Tauren Druide et Réprouvé Démoniste sur ordinateur et iPhone.
+2. Corriger uniquement les défauts visibles : superposition, lisibilité mobile, contraste et éventuels débordements.
+3. Essayer Profil actif sur iPhone : ouvrir, reconfigurer, annuler, appliquer, récupérer le focus.
+4. Mesurer le chargement à froid sur un domaine de test stable ; distinguer latence du relais et poids de l’application.
+5. Définir la direction matte painting AAA : profondeur, matières, lumière crédible et focale claire.
+6. Raffiner en priorité les deux exemples extrêmes Druide/Tauren et Démoniste/Mort-vivant.
+7. Approfondir la diversité architecturale des huit races sans simples variations de palette.
+8. Affiner les signatures métiers, l’accessibilité et les FX désactivables.
+9. Contrôler les neuf classes à 320, 375, 430 px et 1080p, puis les six portails.
+10. Préparer la bêta limitée pour ton frère après revue et approbation ; ne pas fusionner par anticipation.
+
+**Gouvernance :** branche `feature/binch-visual-renaissance-20261118`, PR #234 en brouillon, aucun merge, aucun changement de données WoW ou AH, aucune dépense.
