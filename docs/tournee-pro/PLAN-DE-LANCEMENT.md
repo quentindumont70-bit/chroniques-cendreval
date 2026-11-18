@@ -38,7 +38,7 @@ Le prix mensuel doit payer un avantage concret (mises à jour stables, accompagn
 | 3 | **Restauration démontrable** | round-trip sur 1/24/500 patients FICTIFS, sans modification des notes ni écrasement | P0 | **V251 : tests automatisés + vérification fichier ; iOS réel encore à valider** |
 | 4 | **Un seul parcours installé** | distinguer explicitement PWA installée/Safari, migration guidée, jamais de copie implicite | P0 | **V252 : identification visible de l'espace ; transfert guidé encore à construire** |
 | 5 | **Refonte UI terrain** | accueil utile en 5 secondes, contraste iPhone, une action principale par écran, états vides | P1 | **V253 : accueil prioritaire et mobile ; direction artistique premium Medical Ops à venir** |
-| 6 | **Cœur métier fiable** | rappels journaliers, cycles, absences, modifications et journal sans régression | P1 | V255 : brouillons d'ajout / édition conservés en navigation, mise à jour bloquée si saisie non validée ; tests iOS terrain à compléter |
+| 6 | **Cœur métier fiable** | rappels journaliers, cycles, absences, modifications et journal sans régression | P1 | V258 : garde-fou multi-onglets renforcé (Web Locks quand disponible, comparaison avant chaque sauvegarde) ; iOS réel à tester |
 | 7 | **Onboarding et exemples** | prise en main ≤5 min avec données fictives et import explicite | P1 | V256 : guide fictif en 5 étapes ; essai réel de prise en main et import assisté à valider |
 | 8 | **Suite de tests appareil réel** | iOS PWA/Android, hors ligne, fermeture forcée, mise à jour, conflit de deux onglets | P0 | V257 : contrôle local des pages publiques hors ligne et tests CI ; essais iPhone/Android réels toujours à faire |
 | 9 | **Conformité et exploitation** | finalité, RGPD, registre, responsabilités, contrats, HDS si hébergement confié à un tiers ; support et incidents | P0 AVANT VENTE | À instruire |
@@ -121,3 +121,12 @@ Le guide est ajouté aux fichiers publics précachés du service worker V256. Ce
 La page `tournee-controle-iphone.html`, accessible depuis le guide « Premiers pas », inspecte **uniquement** la présence du cache public V257, ses trois pages essentielles et l'activité du service worker dans le contexte du navigateur courant. Elle n'accède à aucun coffre local, aucune note, aucun patient et n'effectue aucune requête réseau. Elle indique clairement qu'une page en cache ne signifie ni stockage clinique récupérable, ni sauvegarde externe, ni validation d'un vrai redémarrage sous iOS. En l'absence de cache, de contrôle du service worker ou d'accès à CacheStorage, elle signale une vérification incomplète et n'affiche pas de réussite trompeuse.
 
 Une suite de tests Node V257 couvre cache prêt/absent/partiel, service non actif, accès refusé et non-accès aux données sensibles. **La validation sur un iPhone réel reste obligatoire**, de même que les scénarios multi-onglets en environnement fictif ; aucune synchronisation, migration de patients ou infrastructure cloud n'a été ajoutée.
+
+## Golipette V258 — deux fenêtres et coffre local : écriture exclusive
+
+- Écriture chiffrée dans la **clé existante** : un verrou Web Locks par coffre sérialise la comparaison du dernier snapshot, l'écriture et sa relecture, si le navigateur prend en charge cette API. En l'absence de Web Locks, la comparaison optimiste préexistante demeure et **ne constitue pas une atomicité garantie entre processus**.
+- Une fenêtre périmée ne peut plus annoncer « déjà sauvegardé » lorsque son snapshot diverge, même sans modification locale. Un événement `storage` provenant d'une autre fenêtre déclenche rapidement le message de conflit sans remplacer les patients.
+- En cas d'indisponibilité du verrou demandé, l'écriture échoue prudemment ; le coffre antérieur n'est pas effacé. Le bouton Sauvegarder restitue le vrai motif de conflit.
+- Tests fictifs de deux fenêtres simultanées, coffre périmé, événement `storage`, verrou refusé et navigateur sans Web Locks. Aucune synchronisation multi-appareils, aucune donnée médicale transmise, aucune nouvelle base, aucune suppression ni migration.
+
+**Limites non levées :** les anciens onglets utilisant une version non verrouillée, certains navigateurs ne prenant pas en charge Web Locks et la fermeture forcée iOS restent des risques. Essais sur appareil réel et sauvegarde externe indépendante restent indispensables avant vente.

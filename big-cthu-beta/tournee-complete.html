@@ -2677,10 +2677,37 @@ function saveFailure(error){
  saveStatus('error',conflict?'Conflit de sauvegarde : le coffre a changé dans un autre onglet. Écriture refusée pour ne rien écraser. Garde cette page ouverte et ferme les autres onglets après vérification.':'Sauvegarde impossible : tes modifications ne sont pas garanties sur cet appareil. Ne ferme pas la page. Libère de l’espace, puis réessaie.');
 }
 function dirty(){secureGen++;saveStatus('pending','Chiffrement et enregistrement en cours…');clearTimeout(secureTimer);secureTimer=setTimeout(()=>flush().catch(saveFailure),100)}
+// Lock inter-fenetres si pris en charge, avec verification du coffre dans la section exclusive.
+// Sur d'anciens navigateurs, conserver la verification optimiste preexistante.
+function writeEncryptedVaultRecord(record){
+ const write=()=>{
+  if(localStorage.getItem(SECURE_KEY)!==secureLastWrittenRecord)throw Error('Conflit de sauvegarde : coffre modifié dans un autre onglet');
+  localStorage.setItem(SECURE_KEY,record);
+  if(localStorage.getItem(SECURE_KEY)!==record)throw Error('Le navigateur n’a pas confirmé l’enregistrement chiffré');
+  secureLastWrittenRecord=record;
+ };
+ if(typeof navigator!=='undefined'&&navigator.locks&&typeof navigator.locks.request==='function'){
+  return navigator.locks.request('bigcthu-tournee-vault:'+SECURE_KEY,{mode:'exclusive'},write);
+ }
+ return write();
+}
+if(typeof window!=='undefined'&&typeof window.addEventListener==='function'){
+ window.addEventListener('storage',event=>{
+  if(!secureKey||event.key!==SECURE_KEY||event.newValue===secureLastWrittenRecord)return;
+  saveFailure(Error('Conflit de sauvegarde : coffre modifié dans un autre onglet'));
+ });
+}
 async function flush(){
  if(!secureKey)throw Error('Chiffrement non initialisé');
  if(secureActive)return secureActive;
- if(secureSavedGen===secureGen)return;
+ if(secureSavedGen===secureGen){
+  if(localStorage.getItem(SECURE_KEY)!==secureLastWrittenRecord){
+   const error=Error('Conflit de sauvegarde : coffre modifié dans un autre onglet');
+   saveFailure(error);
+   throw error;
+  }
+  return;
+ }
  clearTimeout(secureTimer);
  secureActive=(async()=>{
   let last;
@@ -2689,10 +2716,7 @@ async function flush(){
    const iv=crypto.getRandomValues(new Uint8Array(12));
    const cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},secureKey,enc.encode(JSON.stringify(secureState)));
    const record=JSON.stringify({v:1,salt:to64(secureSalt),iv:to64(iv),cipher:to64(new Uint8Array(cipher))});
-   if(localStorage.getItem(SECURE_KEY)!==secureLastWrittenRecord)throw Error('Conflit de sauvegarde : coffre modifié dans un autre onglet');
-   localStorage.setItem(SECURE_KEY,record);
-   if(localStorage.getItem(SECURE_KEY)!==record)throw Error('Le navigateur n’a pas confirmé l’enregistrement chiffré');
-   secureLastWrittenRecord=record;
+   await writeEncryptedVaultRecord(record);
   }while(last!==secureGen);
   secureSavedGen=last;
   saveStatus('saved','Données chiffrées enregistrées sur cet appareil.');
@@ -3079,7 +3103,7 @@ async function lockTourSafely(){
  button.disabled=true;button.textContent='Sauvegarde en cours…';
  try{await ensureVaultSaved();saveStatus('saved','Données chiffrées enregistrées sur cet appareil.');button.disabled=false;button.textContent='Sauvegarder';idleLockBusy=false}
  catch(e){
-  saveFailure();button.disabled=false;button.textContent='Sauvegarder';
+  saveFailure(e);button.disabled=false;button.textContent='Sauvegarder';
   idleLockBusy=false;
   lastTourActivity=Date.now();
   clearTimeout(idleLockTimer);
