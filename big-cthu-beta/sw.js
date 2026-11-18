@@ -1,5 +1,5 @@
 /* Cache only this public prototype shell. Never cache clinical/UGAP/private data. */
-const CACHE='big-cthu-public-v2-v241';
+const CACHE='big-cthu-public-v2-v242';
 // Only the three public, cinematic background photographs can be stored after a successful first view.
 // Cross-origin images are cached separately from the app shell; no user information enters this cache.
 const PUBLIC_SCENERY_CACHE='big-cthu-public-scenery-v1';
@@ -40,7 +40,7 @@ self.addEventListener('fetch',event=>{
    if(asset)return (await caches.match(asset)) || (await caches.match('./index.html'));
    return caches.match('./index.html');
   };
-  event.respondWith(fetch(r).then(async response=>{
+  event.respondWith(fetch(r,{cache:'no-store'}).then(async response=>{
    if(response.status>=500)return (await offlineCopy())||response;
    return response;
   }).catch(offlineCopy));
