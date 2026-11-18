@@ -37,7 +37,7 @@ jobs:
       - name: Vérifier la Renaissance visuelle de La Binch
         run: |
           node --test tests/binch-visual-renaissance.test.mjs
-          python3 -c "import xml.etree.ElementTree as ET, pathlib; paths=list(pathlib.Path('public/binch').glob('renaissance-*.svg')); assert len(paths)==28, f'Expected 28 original Renaissance SVG assets, got {len(paths)}'; [ET.parse(path) for path in paths]; print('Validated',len(paths),'original SVG artworks')"
+          python3 -c "import xml.etree.ElementTree as ET, pathlib; paths=list(pathlib.Path('public/binch').glob('renaissance-*.svg')); assert len(paths)==35, f'Expected 35 original Renaissance SVG assets, got {len(paths)}'; [ET.parse(path) for path in paths]; print('Validated',len(paths),'original SVG artworks')"
       - name: Capturer la galerie Renaissance pour revue graphique
         if: github.event_name == 'pull_request' && github.head_ref == 'feature/binch-visual-renaissance-20261118'
         shell: bash
