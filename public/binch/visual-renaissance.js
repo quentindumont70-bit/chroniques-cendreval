@@ -65,6 +65,15 @@ function showGallery(){
    const text=document.createElement('span');text.textContent=item[1];
    b.append(icon,text);b.addEventListener('click',()=>choose(item[0]));grid.append(b);
   }
+  grid.addEventListener('keydown',event=>{
+   if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+   const options=[...grid.querySelectorAll('button[data-vision]')];
+   if(!options.length)return;
+   const current=options.indexOf(document.activeElement);
+   const next=event.key==='Home'?0:event.key==='End'?options.length-1:
+    (Math.max(0,current)+(event.key==='ArrowRight'?1:-1)+options.length)%options.length;
+   options[next].focus();choose(options[next].dataset.vision);event.preventDefault();
+  });
   dialog.append(header,info,scene,grid);
   dialog.addEventListener('click',e=>{if(e.target===dialog){dialog.close?dialog.close():dialog.removeAttribute('open')}});
   document.body.append(dialog);
@@ -74,8 +83,8 @@ function showGallery(){
   }catch{}
   choose(id);
  }
- if(typeof dialog.showModal==='function')dialog.showModal();
- else dialog.setAttribute('open','');
+ if(!dialog.open){if(typeof dialog.showModal==='function')dialog.showModal();
+ else dialog.setAttribute('open','');}
  return dialog;
 }
 function attachGalleryButton(hero){
