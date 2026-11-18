@@ -98,6 +98,6 @@ test('V93: aucune session ne se reverrouille après inactivité',async()=>{
  assert.doesNotMatch(saving,/location\.reload\(\)/);
  assert.match(html,/id="tour-lock">Sauvegarder<\/button>/);
  assert.match(html,/id="tour-security-gate" hidden/);
- assert.match(html,/Importer mes patients \(JSON\)/);
+ assert.match(html,/Sauvegarder \/ restaurer/);
  assert.match(html,/autoOpenTournee\(\)\.then/);
 });

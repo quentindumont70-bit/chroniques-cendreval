@@ -113,7 +113,7 @@ test('V97: transfert n impose aucun écran bloquant, aucun code et aucun appel T
  const html=await read();
  assert.match(html,/id="tour-security-gate" hidden/);
  assert.match(html,/id="tour-portable-export"/);
- assert.match(html,/id="tour-recovery-launch"(?: hidden)?>Importer mes patients \(JSON\)/);
+ assert.match(html,/id="tour-recovery-launch"(?: hidden)?>Sauvegarder \/ restaurer/);
  const exportCode=html.slice(html.indexOf('async function exportPortableVault(){'),html.indexOf("document.getElementById('tour-portable-export').addEventListener"));
  assert.match(exportCode,/await ensureVaultSaved\(\)/);
  assert.match(exportCode,/serializePortableVault\(secureState\)/);
