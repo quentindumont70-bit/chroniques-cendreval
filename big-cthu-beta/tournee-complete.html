@@ -2844,10 +2844,31 @@ for(const event of ['pointerdown','keydown','input'])document.addEventListener(e
 document.getElementById('tour-lock').addEventListener('click',lockTourSafely);
 function report(message){document.getElementById('tour-error').textContent=message}
 function launch(){if(secureBooted)return;secureBooted=true;lastTourActivity=Date.now();idleLockTimer=setTimeout(checkTourIdle,IDLE_LOCK_MS);document.body.classList.remove('tournee-locked');document.getElementById('tour-security-gate').hidden=true;let source=document.getElementById('tour-source-js');const script=document.createElement('script');script.textContent=source.textContent;document.body.append(script);source.remove();}
-async function login(fileMode){
- if(secureBooted)return recoverOldVault(fileMode);
- report('L’espace de données actif ne peut pas être ouvert dans ce navigateur. Rien ne sera remplacé. Conserve ta sauvegarde et essaie depuis ton application iPhone habituelle.');
-}
+async function login(fileMode){if(typeof secureBooted!=='undefined'&&secureBooted)return recoverOldVault(fileMode);try{
+ if(!crypto?.subtle)throw Error('Ouvre Tournée en HTTPS dans Safari.');
+ const password=document.getElementById('tour-pass')?.value||'';if(password.length<12)throw Error('Ce coffre ancien ne peut pas être ouvert automatiquement ici. Aucun fichier modifié. Utilise un export JSON depuis ton appareil.');
+ report('Déchiffrement en cours sur cet appareil…');let state,importedEncrypted=null;
+ const full=localStorage.getItem(SECURE_KEY),previous=localStorage.getItem(PREVIOUS_KEY);
+ if(fileMode){
+ if(full||previous)throw Error('Une Tournée chiffrée existe déjà dans ce navigateur. Ne la remplace pas : un nouvel import pourrait écraser tes dossiers. Conserve ta sauvegarde originale.');
+ const file=document.getElementById('tour-file').files[0];if(!file)throw Error('Sélectionne ton fichier JSON.');if(file.size>25*1024*1024)throw Error('Fichier trop volumineux.');
+ const candidate=JSON.parse(await file.text());
+ if(isEncryptedVaultRecord(candidate)){
+  state=await decryptRecord(JSON.stringify(candidate),password);
+  if(!state||typeof state!=='object'||!Array.isArray(JSON.parse(state.tidel_Pl||'null')))throw Error('Coffre chiffré invalide');
+  importedEncrypted={v:1,salt:candidate.salt,iv:candidate.iv,cipher:candidate.cipher};
+ }else state=fillFromBackup(candidate)
+ }
+ else if(full){state=await decryptRecord(full,password);if(!state||typeof state!=='object'||!Array.isArray(JSON.parse(state.tidel_Pl||'null')))throw Error('Données chiffrées invalides.')}
+ else if(previous){const saved=await decryptRecord(previous,password);state=fillFromBackup(saved.data)}
+ else throw Error('Aucune sauvegarde chiffrée ici. Importe ton JSON.');
+ secureState=Object.assign(Object.create(null),state);
+ secureSalt=importedEncrypted?from64(importedEncrypted.salt):full&&!fileMode?from64(JSON.parse(full).salt):crypto.getRandomValues(new Uint8Array(16));
+ secureKey=await keyFor(password,secureSalt);
+ secureLastWrittenRecord=localStorage.getItem(SECURE_KEY);
+ if(!full){if(importedEncrypted){const restored=JSON.stringify(importedEncrypted);localStorage.setItem(SECURE_KEY,restored);secureLastWrittenRecord=restored}else{secureGen++;await flush()}}launch();
+ if(typeof indexedDB!=='undefined')rememberDeviceKey(secureKey,secureSalt).catch(()=>{saveStatus('saved','Données chiffrées enregistrées. Accès automatique indisponible : garde une copie JSON privée.')});
+ }catch(err){report('Ouverture impossible : '+(err?.message||'fichier ou coffre invalide'))}}
 document.getElementById('tour-open').addEventListener('click',()=>login(false));
 function openTourRecovery(){
  const sources=[ORIGINAL_KEY,PREVIOUS_KEY,ALTERNATE_KEY].filter(key=>!!localStorage.getItem(key)).length;
