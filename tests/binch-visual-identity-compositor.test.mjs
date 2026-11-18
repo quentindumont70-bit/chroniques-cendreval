@@ -53,6 +53,26 @@ test('P9: two pilot cinematic artworks are bundled and selected by class',()=>{
  }
 });
 
+test('P10: nine premium storyboards have different original scenery, all linked to the application and creator',()=>{
+ const {api}=harness();
+ const world={Guerrier:'warrior',Paladin:'paladin',Chasseur:'hunter',Voleur:'rogue','Prêtre':'priest',Chaman:'shaman',Mage:'mage',Druide:'druid','Démoniste':'warlock'};
+ const css=read('visual-renaissance-onboarding.css');
+ const scenes=new Set();
+ for(const [classe,id] of Object.entries(world)){
+  const c=api.compose({race:'Tauren',classe});
+  const asset='renaissance-'+(id==='druid'||id==='warlock'?'p9':'p10')+'-hero-'+id+'.svg';
+  assert.ok(c.vars['--br-class-world'].includes(asset),'compositor scene: '+classe);
+  assert.ok(css.includes('url("./'+asset+'")'),'live wizard scene: '+classe);
+  const svg=read(asset);
+  assert.ok(svg.includes('<title>')&&svg.includes('<desc>'),'accessible original art: '+classe);
+  assert.ok(svg.includes('width="1920" height="1080"'),'full-resolution vector art: '+classe);
+  assert.ok(svg.includes('</svg>'),'complete XML art: '+classe);
+  assert.ok(!svg.includes('<image '),'no third-party raster dependency: '+classe);
+  scenes.add(c.vars['--br-class-world']);
+ }
+ assert.equal(scenes.size,9);
+});
+
 test('P9: composite identity differs structurally, not merely via colour',()=>{
  const {api}=harness();
  const a=api.compose({race:'Tauren',classe:'Druide',jobs:['Herboristerie','Alchimie']});
