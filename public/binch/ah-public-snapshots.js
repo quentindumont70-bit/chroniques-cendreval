@@ -18,7 +18,7 @@ async function read(market,item){
   const data=await res.json();
   if(data.market!==market||Number(data.item)!==item||!Array.isArray(data.row)&&data.row!==null)throw Error('Réponse de marché inattendue.');
   const row=data.row;
-  if(row!==null&&(!Array.isArray(row)||row.length<3||row[0]!==null&&!Number.isSafeInteger(row[0])||row[0]<0||row[1]!==null&&!Number.isSafeInteger(row[1])||!Number.isFinite(row[2])))throw Error('Prix / date invalides.');
+  if(row!==null&&(!Array.isArray(row)||row.length<3||(row[0]!==null&&(!Number.isSafeInteger(row[0])||row[0]<0))||(row[1]!==null&&(!Number.isSafeInteger(row[1])||row[1]<0))||!Number.isFinite(row[2])||row[2]<=0||row[2]>Date.now()+3600000))throw Error('Prix, quantité ou date invalides.');
   return {market,item,row,live:data.live===true,now:Number(data.now)||null};
  }finally{clearTimeout(id)}
 }
