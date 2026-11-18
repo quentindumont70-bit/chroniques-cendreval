@@ -83,3 +83,18 @@ test('Forge, conseil de guilde et oracle : scènes originales distinctes, jamais
  assert.ok(css.includes('@media(forced-colors:active)'));
  assert.ok(!css.includes('fetch('));
 });
+
+test('Atelier Renaissance : chaque nouvelle salle possède une illustration consultable',()=>{
+ const gallery=read('renaissance-atelier.html');
+ for(const file of [
+  'renaissance-workshop.svg',
+  'renaissance-gm-council.svg',
+  'renaissance-faith-oracle.svg',
+  'renaissance-feral-constellation.svg'
+ ]){
+  assert.ok(gallery.includes('src="./'+file+'"'),'illustration absent from gallery: '+file);
+  assert.ok(read(file).includes('</svg>'),'missing local original artwork: '+file);
+ }
+ assert.ok(gallery.includes('Galerie des chapitres de La Binch'));
+ assert.ok(gallery.includes('Illustrations originales'));
+});
