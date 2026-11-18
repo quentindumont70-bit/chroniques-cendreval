@@ -536,3 +536,30 @@ test('V215–V217: alertes distinguées et recherche accessible sans altérer le
  assert.equal(f.writes(),0);
  assert.equal(f.network(),0);
 });
+
+
+test('V220–V224: regroupe les échéances du jour et de la semaine sans recopier de données',async()=>{
+ const day=delta=>{const d=new Date();d.setDate(d.getDate()+delta);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+ const f=await fixture({
+  [K.pantry]:JSON.stringify([{id:'old',name:'DLC dépassée',kind:'DLC',date:day(-1)},{id:'soon',name:'DLC proche',kind:'DLC',date:day(3)}]),
+  [K.agenda]:JSON.stringify([{id:'today',title:'Rendez-vous du jour',date:day(0)}]),
+  [K.tasks]:JSON.stringify([{id:'priority',text:'Priorité actuelle',done:false}]),
+  [K.maison]:JSON.stringify([{id:'late',name:'Travail en retard',status:'todo',due:day(-2)},{id:'future',name:'Travail de la semaine',status:'todo',due:day(4)}]),
+  [K.gaming]:JSON.stringify([{id:'game',game:'WoW',text:'Reprendre la quête',done:false}])
+ });
+ const today=JSON.parse(JSON.stringify(f.ctx.testCollect(true,8,'Aujourd’hui')));
+ const week=JSON.parse(JSON.stringify(f.ctx.testCollect(true,8,'Semaine')));
+ const undated=JSON.parse(JSON.stringify(f.ctx.testCollect(true,8,'Sans date')));
+ assert.deepEqual(today.items.map(x=>x.title),['DLC dépassée','Rendez-vous du jour','Travail en retard','Priorité actuelle']);
+ assert.equal(today.counts['Aujourd’hui'],4);
+ assert.equal(week.counts.Semaine,6);
+ assert.equal(week.items.length,6);
+ assert.equal(undated.items.length,1);
+ assert.equal(undated.items[0].title,'WoW');
+ const [html,css]=await Promise.all(['index.html','cockpit-themes.css'].map(read));
+ assert.match(html,/id="activePulseToday" aria-pressed="false"/);
+ assert.match(html,/id="activePulseWeek" aria-pressed="false"/);
+ assert.match(css,/\.active-pulse-next\{white-space:pre-wrap/);
+ assert.equal(f.writes(),0);
+ assert.equal(f.network(),0);
+});
