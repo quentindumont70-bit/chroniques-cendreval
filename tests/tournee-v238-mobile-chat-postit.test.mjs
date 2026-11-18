@@ -114,11 +114,35 @@ test('V238: no real patient details or Topaze automation hardcoded in helper',()
 
 test('Tournée V239: cache hors ligne rafraîchi et nouveau helper présent dans les assets',async()=>{
  const sw=await read('sw.js');
- assert.match(sw,/const CACHE='big-cthu-public-v2-v239'/);
+ assert.match(sw,/const CACHE='big-cthu-public-v2-v\d+'/);
  assert.match(sw,/'\.\/tournee-complete\.html'/);
  assert.match(sw,/'\.\/tournee-quick-core\.js'/);
  const [helper,html]=await Promise.all(['tournee-quick-core.js','tournee-complete.html'].map(read));
  assert.doesNotMatch(helper,/\bfetch\s*\(|XMLHttpRequest|WebSocket/);
  assert.match(html,/function tqWeekWarning\(\)/);
  assert.match(html,/function tqStickyDraft\(el\)/);
+});
+
+test('Tournée V240: accès visible à l’assistant depuis l’en-tête, sans recherche dans la tournée',()=>{
+ assert.match(html,/id="tq-header-chat"/);
+ assert.match(html,/onclick="tqOpenAssistant\(\)"/);
+ assert.match(html,/💬 Assistant/);
+ assert.match(source,/function tqOpenAssistant\(\)/);
+ assert.match(source,/panel\.scrollIntoView\(\{behavior:"smooth",block:"start"\}\)/);
+ assert.match(source,/input\.focus\(\{preventScroll:true\}\)/);
+ assert.match(source,/panel\.classList\.add\("tq-targeted"\)/);
+});
+
+test('Tournée V240: PIN supplémentaire inactif par défaut, réactivation possible, coffre AES-GCM conservé',()=>{
+ assert.match(source,/const TQ_PIN_OPTIN="tq_pin_screen_optin_v240"/);
+ assert.match(source,/function tqPinScreenEnabled\(\)\{return st\.get\(TQ_PIN_OPTIN,false\)===true/);
+ assert.match(source,/function lockNow\(\)\{if\(!tqPinScreenEnabled\(\)\)return;/);
+ assert.match(source,/function tqPinScreenOff\(\)/);
+ assert.match(source,/function tqPinScreenOn\(\)/);
+ assert.match(source,/st\.set\(TQ_PIN_OPTIN,true\)/);
+ assert.match(source,/st\.set\(TQ_PIN_OPTIN,false\)/);
+ assert.match(html,/const ORIGINAL_KEY='bigcthu_tournee_full_encrypted_v1'/);
+ assert.match(html,/AES-GCM/);
+ assert.match(html,/await ensureVaultSaved\(\)/);
+ assert.doesNotMatch(source,/function pinOff\(\)\{[^}]*secureState\s*=/);
 });
