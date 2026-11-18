@@ -7,7 +7,7 @@ function probe(file,marker,bindings,rows={}){
  const source=readFileSync(new URL('../public/binch/'+file,import.meta.url),'utf8');
  assert.ok(source.includes(marker),file+' probe insertion point');
  const storage=new Map(Object.entries(rows));
- const localStorage={getItem:k=>storage.get(k)??null,key:i=>[...storage.keys()][i]??null,get length(){return storage.size}};
+ const localStorage={getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,String(v)),removeItem:k=>storage.delete(k),key:i=>[...storage.keys()][i]??null,get length(){return storage.size}};
  const sandbox={localStorage,document:{readyState:'loading',addEventListener(){}},window:{}};
  runInNewContext(source.replace(marker,'globalThis.__probe={'+bindings+'};\n'+marker),sandbox,{filename:file});
  return Object.assign(sandbox.__probe,{_storage:storage});
