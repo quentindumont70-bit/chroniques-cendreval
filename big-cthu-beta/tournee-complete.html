@@ -2632,6 +2632,7 @@ async function exportPortableVault(){
  try{
   await ensureVaultSaved();
   const data=serializePortableVault(secureState);
+  if(!validVaultState(readPortableVault(JSON.parse(data))))throw Error('Fichier exporté invalide');
   const now=new Date();
   const stamp=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
   const file=new Blob([data],{type:'application/json'});
@@ -2639,9 +2640,11 @@ async function exportPortableVault(){
   anchor.href=url;anchor.download='tournee-complete-PORTABLE-LISIBLE-'+stamp+'.json';
   document.body.append(anchor);anchor.click();
   setTimeout(()=>{anchor.remove();URL.revokeObjectURL(url)},30000);
-  status.textContent='Sauvegarde complète JSON créée localement, sans code. ATTENTION : fichier lisible, à conserver dans un emplacement privé.';
+  status.textContent='Fichier de sauvegarde préparé. Vérifie qu’il a été enregistré dans Fichiers.';
+  document.getElementById('tour-backup-download-status').textContent='Téléchargement proposé. Vérifie le fichier dans Fichiers : Tournée ne peut pas confirmer son enregistrement ailleurs.';
  }catch(e){
-  status.textContent='Export complet impossible : aucune sauvegarde nouvelle garantie. Garde Tournée ouverte et réessaie.';
+  status.textContent='Export impossible : aucune nouvelle copie créée.';
+  document.getElementById('tour-backup-download-status').textContent='Échec de création du fichier. Les données locales sont inchangées.';
  }
 }
 document.getElementById('tour-portable-export').addEventListener('click',exportPortableVault);
@@ -3017,15 +3020,36 @@ async function login(fileMode){if(typeof secureBooted!=='undefined'&&secureBoote
  if(typeof indexedDB!=='undefined')rememberDeviceKey(secureKey,secureSalt).catch(()=>{saveStatus('saved','Données chiffrées enregistrées. Accès automatique indisponible : garde une copie JSON privée.')});
  }catch(err){report('Ouverture impossible : '+(err?.message||'fichier ou coffre invalide'))}}
 document.getElementById('tour-open').addEventListener('click',()=>login(false));
-function openTourRecovery(){
- const sources=[ORIGINAL_KEY,PREVIOUS_KEY,ALTERNATE_KEY].filter(key=>!!localStorage.getItem(key)).length;
- const patients=recoveryPatientListEmpty(secureState)?0:(()=>{try{return JSON.parse(secureState.tidel_Pl).length}catch(_){return 0}})();
- document.getElementById('tour-saved-status').textContent=patients
- ? patients+' patient(s) déjà dans cette application. Un nouvel import ne remplace aucune fiche existante.'
- : 'Aucun patient dans cet espace de l’application. '+sources+' sauvegarde(s) locale(s) détectée(s).';
- document.getElementById('tour-security-gate').hidden=false;
- report('Sélectionne ton export JSON dans Fichiers puis touche « Importer le JSON dans cette application ».');
+function tourPatientCountFrom(state){
+ try{const list=JSON.parse(state?.tidel_Pl||'[]');return Array.isArray(list)?list.length:0}catch(_){return 0}
 }
+function openTourRecovery(){
+ const patients=tourPatientCountFrom(secureState);
+ document.getElementById('tour-saved-status').textContent=patients
+  ? patients+' fiche(s) présentes dans cette application, enregistrées localement.'
+  : 'Aucune fiche dans cet espace actif. Les anciens coffres restent conservés.';
+ document.getElementById('tour-security-gate').hidden=false;
+ report('');
+}
+async function tourPreviewBackupFile(){
+ const target=document.getElementById('tour-backup-preview'),file=document.getElementById('tour-file')?.files?.[0];
+ if(!file){target.textContent='Aucun fichier sélectionné.';return}
+ if(file.size>25*1024*1024){target.textContent='Fichier trop volumineux. Aucun changement.';return}
+ try{
+  const data=JSON.parse(await file.text());
+  if(isEncryptedVaultRecord(data)){
+   target.textContent='Ancien coffre technique : sélectionne un export JSON complet pour changer d’appareil.';
+   return;
+  }
+  const state=data?.format===PORTABLE_FORMAT?readPortableVault(data):fillFromBackup(data);
+  if(!validVaultState(state))throw Error('Format de sauvegarde non reconnu');
+  const count=tourPatientCountFrom(state);
+  target.textContent=count+' fiche(s) détectées dans ce fichier. '+(tourPatientCountFrom(secureState)
+   ?'Des patients sont déjà présents : import bloqué pour préserver leurs données.'
+   :'La liste active est vide : restauration possible sans remplacer les autres notes.');
+ }catch(e){target.textContent='Fichier non reconnu ou endommagé. Aucune donnée modifiée.'}
+}
+document.getElementById('tour-file').addEventListener('change',tourPreviewBackupFile);
 document.getElementById('tour-recovery-launch').addEventListener('click',openTourRecovery);
 document.getElementById('tour-recovery-direct').addEventListener('click',openTourRecovery);
 document.getElementById('tour-recovery-close').addEventListener('click',()=>{document.getElementById('tour-security-gate').hidden=true});
