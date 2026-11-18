@@ -37,7 +37,7 @@ Le prix mensuel doit payer un avantage concret (mises à jour stables, accompagn
 | 2 | **Mises à jour sûres** | actualiser seulement après confirmation de la sauvegarde locale ; refuser sinon | P0 | **V250 implémenté, CI à vérifier** |
 | 3 | **Restauration démontrable** | round-trip sur 1/24/500 patients FICTIFS, sans modification des notes ni écrasement | P0 | **V251 : tests automatisés + vérification fichier ; iOS réel encore à valider** |
 | 4 | **Un seul parcours installé** | distinguer explicitement PWA installée/Safari, migration guidée, jamais de copie implicite | P0 | **V252 : identification visible de l'espace ; transfert guidé encore à construire** |
-| 5 | **Refonte UI terrain** | accueil utile en 5 secondes, contraste iPhone, une action principale par écran, états vides | P1 | À construire |
+| 5 | **Refonte UI terrain** | accueil utile en 5 secondes, contraste iPhone, une action principale par écran, états vides | P1 | **V253 : accueil prioritaire et mobile ; direction artistique premium Medical Ops à venir** |
 | 6 | **Cœur métier fiable** | rappels journaliers, cycles, absences, modifications et journal sans régression | P1 | Existant à consolider |
 | 7 | **Onboarding et exemples** | prise en main ≤5 min avec données fictives et import explicite | P1 | À construire |
 | 8 | **Suite de tests appareil réel** | iOS PWA/Android, hors ligne, fermeture forcée, mise à jour, conflit de deux onglets | P0 | Tests automatisés partiels |
@@ -89,3 +89,11 @@ Une copie JSON portable peut être sélectionnée dans « Mes sauvegardes » pou
 ### Golipette V252 — identifier le bon espace
 
 L'écran « Mes sauvegardes » précise s'il est ouvert dans une application installée sur l'écran d'accueil ou dans un navigateur. Il rappelle que ces espaces peuvent être séparés : un fichier exporté doit être choisi dans le bon espace, **sans synchronisation automatique supposée**. Il ne lit aucun autre navigateur, ne transmet aucune donnée et ne lance aucune migration cachée.
+
+## Golipette V253 — écran d'accueil métier puis refonte Medical Ops
+
+Une nouvelle hiérarchie privilégie les passages du jour, la progression, la prochaine visite, les rappels propres au jour et les actions rapides. Les outils secondaires (assistant local, réglage des semaines, bilan, ambiance) restent accessibles dans une section repliable et via le bouton d'assistant de l'en-tête. Les données et les clés de stockage ne changent pas.
+
+**Direction artistique approuvée pour une phase dédiée : Medical Ops du futur**, héritée de l'ambiance Medical Ops de Big Cthu, avec identité professionnelle autonome et haut niveau de finition. Objectif : cockpit clinique élégant, typographie hiérarchisée, surfaces et animations discrètes, palette médico-technologique, contraste, affichage une main, vitesse perceptible, micro-interactions sûres. Les thèmes alternatifs viendront après. Cette direction ne doit pas sacrifier lisibilité, accessibilité, sobriété batterie ni continuité de service sur iPhone.
+
+**Critères de passage** : tests métier et hors ligne verts, pas de stockage modifié, contraste/lecture du jour, boutons ≥44 px, vrai iPhone à confirmer avant toute promesse commerciale. La phase V253 améliore la structure, **elle n'est pas la refonte graphique époustouflante finale**.
