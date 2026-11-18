@@ -17,11 +17,24 @@
 <p class="foot">Illustrations originales embarquées dans le dépôt, aucune référence à des personnages ou images sous licence. Les données, les profils et la Bourse AH ne sont pas modifiés. Le rendu final doit encore être testé sur de vrais écrans iPhone et Windows.</p></main>
 <script>
 const scenes=[["druid","Druide","Forêt des anciens","❧","#96cb85"],["warrior","Guerrier","Bastion de fer","⚔","#d9b49d"],["mage","Mage","Observatoire arcanique","✧","#a9cfff"],["priest","Prêtre","Temple des aubes","✣","#f0e4c8"],["paladin","Paladin","Citadelle sacrée","✥","#f4bacd"],["rogue","Voleur","Toits de la nuit","◆","#e6d388"],["hunter","Chasseur","Poste des rangers","➶","#bbd798"],["shaman","Chaman","Fort des éléments","ϟ","#8bd6e9"],["warlock","Démoniste","Portail des ombres","☽","#c7a3ea"]];
-document.getElementById('scenes').addEventListener('click',e=>{
- const button=e.target.closest('button[data-class]');if(!button)return;
- const scene=scenes.find(x=>x[0]===button.dataset.class);if(!scene)return;
- document.querySelectorAll('.tile').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+function selectScene(id){
+ const scene=scenes.find(x=>x[0]===id);if(!scene)return false;
+ const buttons=[...document.querySelectorAll('#scenes button[data-class]')];
+ buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.class===id)));
  const hero=document.getElementById('hero');hero.style.setProperty('--scene',"url('./renaissance-world-"+scene[0]+".svg')");hero.style.setProperty('--a',scene[4]);
  document.getElementById('hero-title').textContent=scene[1];document.getElementById('hero-crest').src='./renaissance-sigil-'+scene[0]+'.svg';document.getElementById('hero-description').textContent=scene[2]+' — une scène inédite pour ton personnage.';
+ return true;
+}
+const classesList=document.getElementById('scenes');
+classesList.addEventListener('click',e=>{
+ const b=e.target.closest('button[data-class]');if(b)selectScene(b.dataset.class);
 });
+classesList.addEventListener('keydown',e=>{
+ if(!['ArrowLeft','ArrowRight'].includes(e.key))return;
+ const buttons=[...classesList.querySelectorAll('button[data-class]')],current=buttons.indexOf(document.activeElement);
+ if(current<0)return;
+ const next=buttons[(current+(e.key==='ArrowRight'?1:-1)+buttons.length)%buttons.length];
+ next.focus();selectScene(next.dataset.class);e.preventDefault();
+});
+try{const requested=new URLSearchParams(location.search).get('classe');if(requested)selectScene(requested)}catch{};
 </script></body></html>
