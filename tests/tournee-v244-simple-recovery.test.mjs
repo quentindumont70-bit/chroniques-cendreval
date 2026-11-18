@@ -12,7 +12,7 @@ test('V244: no secondary PIN lock or PIN setup in Tournée interface',async()=>{
 test('V244: recovery shows an actionable button when an old encrypted vault exists',async()=>{
  const html=await read('tournee-complete.html');
  assert.match(html,/id="tour-recovery-direct" hidden>Retrouver mes patients/);
- assert.match(html,/direct\.hidden=!empty/);
+ assert.match(html,/if\(direct\)direct\.hidden=!empty/);
  assert.match(html,/recoverySpaceEmpty\(secureState\)/);
  assert.match(html,/candidates\.push\(\{raw:old,legacy:false\}\)/);
  assert.match(html,/candidates\.push\(\{raw:previous,legacy:true\}\)/);
