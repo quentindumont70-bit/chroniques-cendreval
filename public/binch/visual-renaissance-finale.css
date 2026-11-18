@@ -142,7 +142,7 @@
 #page-specs #binch-specs .binch-specs-step small{
  color:#bfd4c5;font-size:.72rem;line-height:1.4;
 }
-#page-specs #binch-specs-pinned:not([hidden]){
+#binch-specs-pinned:not([hidden]){
  border:1px solid #f2cd8c;
  background:linear-gradient(120deg,#284537f5,#0b2027f5);
  box-shadow:0 13px 35px #000b,inset 0 1px #fff3;
