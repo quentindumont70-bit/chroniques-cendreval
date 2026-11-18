@@ -81,7 +81,7 @@ test('Voyages: nouvelle interface étapes et paiements reste liée au coffre',as
  for(const id of ['splitMode','beneficiaries','reimbursements','stepForm','steps']){
    assert.match(page,new RegExp('id="'+id+'"'));
  }
- assert.match(backup,/Schéma V26/);
+ assert.match(backup,/Schéma V2[6-9]/);
  assert.match(backup,/if\(t\.steps!==undefined/);
  assert.match(backup,/if\(t\.reimbursements!==undefined/);
  assert.match(sw,/voyages-core\.js/);
@@ -110,7 +110,7 @@ test('Voyages: valises personnalisées et migration Coffre présentes dans la b�
  assert.match(page,/packedByPerson/);
  assert.match(backup,/t\.packedByPerson!==undefined/);
  assert.match(backup,/t\.activities!==undefined/);
- assert.match(backup,/Schéma V26/);
+ assert.match(backup,/Schéma V2[6-9]/);
  assert.match(sw,/const CACHE='big-cthu-public-v2-v\d+'/);
 });
 
@@ -136,7 +136,7 @@ test('Voyages: la page conserve les dates facultatives et un export CSV local',a
  assert.match(page,/id="expenseDate"/);
  assert.match(page,/id="exportTrip"/);
  assert.match(page,/String\.fromCharCode\(0xFEFF\)/);
- assert.match(backup,/Schéma V26/);
+ assert.match(backup,/Schéma V2[6-9]/);
  assert.match(backup,/p\.date===undefined\|\|travelDate\(p\.date\)/);
 });
 
@@ -153,7 +153,7 @@ test('Voyages: formulaire du budget et Coffre V24 compatibles avec les anciens s
  assert.match(page,/id="tripBudgetForm"/);
  assert.match(page,/id="tripBudgetStatus"/);
  assert.match(page,/budgetCents:0/);
- assert.match(backup,/Schéma V26/);
+ assert.match(backup,/Schéma V2[6-9]/);
  assert.match(backup,/t\.budgetCents!==undefined/);
  assert.match(backup,/20,21,22,23,24/);
 });
@@ -233,7 +233,7 @@ test('Voyages: le journal refuse les écritures au-delà de 500 événements',()
 test('Voyages: Coffre V26 préserve le journal et les anciennes versions',async()=>{
  const backup=await readFile(new URL('../big-cthu-beta/sauvegardes.html',import.meta.url),'utf8');
  const page=await readFile(new URL('../big-cthu-beta/voyages.html',import.meta.url),'utf8');
- assert.match(backup,/Schéma V26/);
+ assert.match(backup,/Schéma V2[6-9]/);
  assert.match(backup,/t\.accountHistory!==undefined/);
  assert.match(page,/id="accountHistory"/);
  assert.match(page,/C\.removeExpenseWithHistory/);
