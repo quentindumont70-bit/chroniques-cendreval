@@ -809,7 +809,7 @@ function DT(s){const[a,b,c]=s.split("-");return new Date(+a,b-1,+c)}
 function cyk(p,s){const c=p.cyc;if(!c)return"";const ov=tqOverride(p,s),d=DT(s);if(ov)return ov.days.includes(d.getDay())?ov.mode:"";if(s<c.from)return"";const m=addD(s,-((d.getDay()+6)%7)),w=Math.round((DT(m)-DT(c.a))/6048e5),k=((w%2)+2)%2?"gr":"ch";return Array.isArray(c[k])&&c[k].includes(d.getDay())?k:""}
 function sx(p){return cyk(p,day)==="gr"&&p.soinsG?p.soinsG:p.soins}
 function cyTag(p){const k=cyk(p,day);return k==="gr"?`<span class="tag xt">💉 Semaine Granocytes</span>`:k==="ch"?`<span class="tag xt">🧪 Cure de chimio</span>`:""}
-function onDate(p,s){if(p.deb&&s<p.deb)return false;if(p.fin&&s>p.fin)return false;if(p.susp&&suspOf(p,s))return false;const ov=tqOverride(p,s);if(ov)return ov.days.includes(DT(s).getDay());if(p.only)return p.only.includes(s);if(p.rm&&p.rm.includes(s))return false;if(p.add&&p.add.includes(s))return true;return p.cyc?!!cyk(p,s):(p.j||ALL).includes(DT(s).getDay())}
+function onDate(p,s){if(p.deb&&s<p.deb)return false;if(p.fin&&s>p.fin)return false;if(p.susp&&suspOf(p,s))return false;if(p.only)return p.only.includes(s);if(p.rm&&p.rm.includes(s))return false;const ov=tqOverride(p,s);if(ov)return ov.days.includes(DT(s).getDay());if(p.add&&p.add.includes(s))return true;return p.cyc?!!cyk(p,s):(p.j||ALL).includes(DT(s).getDay())}
 function daysOf(p){return p.j||ALL}
 function perDays(p){return PER.filter(s=>onDate(p,s))}
 function short(s){const d=DT(s);return JC[d.getDay()].toLowerCase()+" "+d.getDate()}
@@ -1068,6 +1068,9 @@ function memoForm(pid){document.getElementById("pki").innerHTML=`<div class="gra
 
 /* ===== Post-it local par date, dans les mêmes memos chiffrés que le pense-bête ===== */
 const TQ_STICKY_ID="tq-postit";
+const tqStickyDrafts=Object.create(null);
+function tqStickyShown(d){return Object.prototype.hasOwnProperty.call(tqStickyDrafts,d)?tqStickyDrafts[d]:tqStickyText(d)}
+function tqStickyDraft(el){if(!el||!TQ.validDay(el.dataset.day))return;tqStickyDrafts[el.dataset.day]=el.value;const status=el.closest('.tq-sticky')?.querySelector('#tq-sticky-status');if(status)status.textContent='Non enregistré : touche Enregistrer ou quitte le champ.';}
 function tqStickyRows(d,strict){
  const raw=TOUR_STORE.getItem("tidel_memo_"+d);
  if(raw===null)return [];
@@ -1094,23 +1097,24 @@ async function tqSaveStickyText(d,text){
  return true;
 }
 function tqPostitBlock(){
- const content=tqStickyText(day);
+ const content=tqStickyShown(day);
  return '<section class="tq-sticky" aria-label="Post-it du '+esc(short(day))+'">'+
  '<div class="tq-sticky-head"><span>🗒️ Post-it · '+esc(rel(day))+' '+esc(short(day))+'</span><span class="sub">sur cet appareil</span></div>'+
  '<label class="sub" for="tq-sticky-text">Détails rapides de cette journée</label>'+
- '<textarea id="tq-sticky-text" data-day="'+day+'" maxlength="1000" placeholder="Ex. prise de sang, rendez-vous, matériel à prendre..." onblur="tqStickySave()" aria-describedby="tq-sticky-status">'+esc(content)+'</textarea>'+
+ '<textarea id="tq-sticky-text" data-day="'+day+'" maxlength="1000" placeholder="Ex. prise de sang, rendez-vous, matériel à prendre..." oninput="tqStickyDraft(this)" onblur="tqStickySave(this)" aria-describedby="tq-sticky-status">'+esc(content)+'</textarea>'+
  '<div class="tq-meta"><span id="tq-sticky-status" class="sub" role="status" aria-live="polite">Enregistrement local en quittant le champ</span>'+
  '<button type="button" onclick="tqStickySave()">✓ Enregistrer</button></div></section>';
 }
-async function tqStickySave(){
- const el=document.getElementById("tq-sticky-text");
+async function tqStickySave(el){
+ el=el||document.getElementById("tq-sticky-text");
  if(!el)return;
  const d=el.dataset.day,txt=el.value;
- const status=document.getElementById("tq-sticky-status");
+ const status=el.closest('.tq-sticky')?.querySelector('#tq-sticky-status');
  if(tqBusy){if(status)status.textContent="Sauvegarde déjà en cours…";return}
  try{
   if(status)status.textContent="Chiffrement et sauvegarde en cours…";
   const changed=await tqSaveStickyText(d,txt);
+  if(Object.prototype.hasOwnProperty.call(tqStickyDrafts,d)&&tqStickyDrafts[d]===txt)delete tqStickyDrafts[d];
   if(status)status.textContent=changed?"✓ Post-it enregistré dans le coffre":"✓ Post-it déjà à jour";
   const chip=document.querySelector('[data-tq-day="'+d+'"] .tq-note-icon');
   if(chip)chip.textContent=txt.trim()?"📝":"▧";
