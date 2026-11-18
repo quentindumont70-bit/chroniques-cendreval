@@ -1,0 +1,151 @@
+/* LA BINCH RENAISSANCE — CHAPTERS II–IV
+   Other product surfaces inherit the same etched-stone design language.
+   The financial data layer and page layout remain untouched. */
+#onboarding{
+ min-height:100vh;position:relative;isolation:isolate;
+ background-image:linear-gradient(115deg,#071316e9,#0a17219c 53%,#08131bd6),url("./renaissance-citadel.svg");
+ background-size:cover;background-position:70% center;
+}
+#onboarding::before{
+ content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+ background:radial-gradient(ellipse at 53% 47%,#d3a15b25,transparent 57%);
+}
+#onboarding .onboard-card{
+ border:1px solid var(--br-gold);border-radius:23px;
+ background:linear-gradient(135deg,#142722f5,#0b191ceF 68%,#0d171afa);
+ box-shadow:0 40px 120px #000e,inset 0 1px #ffe4b33b,0 0 0 6px #95754a18;
+}
+#onboarding .onboard-card::before{width:40px;height:40px;border-color:var(--br-gold)}
+#onboarding .onboard-card::after{width:40px;height:40px;border-color:var(--br-gold)}
+#onboarding .onboard-card h1{
+ text-wrap:balance;color:#fff0ce;
+ font-size:clamp(2.15rem,4.9vw,4.1rem);
+ text-shadow:0 4px 16px #0009,0 0 30px #d1a56835;
+}
+#onboarding .choice{
+ min-height:130px;padding:18px;border:1px solid #78684e;
+ border-radius:12px;
+ background:radial-gradient(circle at 95% 8%,#c2a36415,transparent 47%),linear-gradient(155deg,#243630,#10201f);
+ box-shadow:inset 0 1px #fff1,0 8px 19px #0006;
+}
+#onboarding .choice .sigil{color:var(--bi-light,var(--br-gold));text-shadow:0 0 22px var(--glow)}
+#onboarding .choice.selected{
+ border:2px solid var(--bi-metal,var(--br-gold));
+ background:linear-gradient(135deg,#4a4533,#172c27);
+ box-shadow:0 0 0 3px #edcc8742,0 13px 31px #0008,inset 0 0 25px #e0b76c20;
+}
+#onboarding .progress i{height:6px;border-radius:99px}
+#onboarding .btn{min-height:46px;border-radius:10px}
+#onboarding .btn.primary{
+ border-color:#fff0bc;background:linear-gradient(135deg,#fff0b0,#d1a05f);
+ box-shadow:0 8px 24px #ac824043,inset 0 1px #fff8e9;
+}
+#onboarding :is(button,input,select,textarea):focus-visible{outline:3px solid #ffe5a4;outline-offset:3px}
+#app main{padding-top:12px}
+#app main > .page{isolation:isolate}
+#app main > .page > .panel.section:first-child{
+ position:relative;overflow:hidden;isolation:isolate;
+ border-radius:19px;border-color:color-mix(in srgb,var(--bi-metal,#c2a26e) 58%,#5f7368);
+ box-shadow:var(--br-shadow),inset 0 1px #fff1;
+}
+#app :is(#page-progression,#page-metiers,#page-gm,#page-sync,#page-equipment) > .panel.section:first-child::before{
+ content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+ background-image:linear-gradient(100deg,#0b1a1eea,#10211ca1 62%,#132421b5),url("./renaissance-citadel.svg");
+ background-size:cover;background-position:70% 36%;
+ opacity:.7;clip-path:none;border:0;width:auto;height:auto;
+}
+#app :is(#page-progression,#page-metiers,#page-gm,#page-sync,#page-equipment) > .panel.section:first-child::after{
+ content:"✧";position:absolute;right:15px;top:10px;color:var(--br-gold);opacity:.38;
+ font:36px Georgia,serif;pointer-events:none;width:auto;height:auto;border:0;
+}
+#app :is(#page-progression,#page-metiers,#page-gm,#page-sync,#page-equipment) > .panel.section:first-child h2{
+ color:#ffe7b5;text-shadow:0 2px 15px #0008;text-wrap:balance;
+}
+#page-progression .map{
+ border:1px solid #b3996ca0;border-radius:16px;
+ background-image:radial-gradient(ellipse at 40% 35%,#c09b6142,transparent 54%),linear-gradient(140deg,#172620ae,#0d1715d3),url("./binch-backdrop.svg");
+ box-shadow:inset 0 1px #f6dfad35,inset 0 0 70px #070e0fa6,0 15px 37px #0009;
+}
+#page-progression .map-node{
+ border-color:#c6a56d;background:radial-gradient(circle,#34463c,#101b1c);
+ color:#fbe0ab;box-shadow:0 6px 15px #0007;
+}
+#page-progression .map-node.current{box-shadow:0 0 0 5px #d6b56a36,0 0 30px #d6b56a77;background:#786039}
+#page-progression .map-card{
+ border-color:var(--br-edge);border-radius:14px;
+ background:linear-gradient(145deg,#1b302be9,#0a1719f0);
+ box-shadow:0 15px 40px #0009;
+}
+#page-metiers #jobs-content .tile{
+ border:1px solid #9b936b8a;border-radius:14px;
+ background:radial-gradient(circle at 95% 0%,#b9955135,transparent 46%),linear-gradient(148deg,#26352b,#111c1d);
+ box-shadow:0 13px 30px #0009;
+}
+#page-metiers #jobs-content .tile :is(h3,h4,strong){color:#f3d6a0}
+#page-gm .gm-top .gm-stat{
+ border:1px solid #a3895799;border-radius:12px;
+ background:linear-gradient(145deg,#28332c,#111f22);
+ box-shadow:inset 0 1px #fff1,0 9px 20px #0007;
+}
+#page-gm .gm-top .gm-stat b{color:#f0cc90}
+#page-gm :is(.binch-gm-hub,.binch-gm-watch,.binch-guild-planner,.binch-gm-delegations){
+ border-radius:17px;box-shadow:0 14px 42px #0007;
+}
+#page-command .binch-command{
+ border:1px solid var(--br-edge)!important;border-radius:17px;
+ box-shadow:var(--br-shadow);
+}
+#page-equipment .binch-equipment,
+#page-bibliotheque .binch-library-loot{
+ border-radius:17px;border-color:var(--br-edge);
+ box-shadow:0 15px 33px #0007;
+}
+#page-specs #binch-specs{
+ border:1px solid var(--br-edge);border-radius:20px;
+ background-image:radial-gradient(circle at 95% 10%,#b49a513b,transparent 44%),linear-gradient(145deg,#1a2c2c,#0b191c);
+ box-shadow:var(--br-shadow);
+}
+#page-specs .binch-specs-head{
+ position:relative;overflow:hidden;
+ border-bottom:1px solid #bca66e5c;padding-bottom:20px;
+}
+#page-specs .binch-specs-head::before{
+ content:"";pointer-events:none;position:absolute;inset:0 0 auto auto;
+ width:min(400px,64%);height:100%;
+ background:linear-gradient(90deg,#0b171a,transparent),url("./renaissance-citadel.svg") center/cover;
+ opacity:.2;
+}
+#page-specs .binch-specs-head>div,#page-specs .binch-specs-head>button{position:relative;z-index:1}
+#page-specs #binch-specs h2{color:#f5ddab;text-shadow:0 2px 16px #0008}
+#page-specs .binch-spec-card{
+ border-radius:13px;box-shadow:inset 0 1px #fff1,0 7px 15px #0005;
+}
+#page-specs .binch-spec-card.active{border-color:var(--br-gold);box-shadow:0 0 0 2px #eac48052,0 9px 22px #0008}
+#page-hub .binch-edit-profile summary,
+#app main details > summary{
+ text-decoration-thickness:1px;
+}
+#app :is(.panel,.binch-route,.binch-gm-watch,.binch-character-card) :is(button,a,input,select,textarea):focus-visible{
+ outline:3px solid #ffebae;outline-offset:3px;
+}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+ #onboarding .choice:hover{transform:translateY(-3px);border-color:var(--br-gold)}
+ #page-metiers #jobs-content .tile:hover{transform:translateY(-2px)}
+}
+@media(max-width:720px){
+ #onboarding{padding:12px;background-position:75% center}
+ #onboarding .onboard-card{padding:25px 16px;border-radius:15px}
+ #onboarding .choice{min-height:109px;padding:12px}
+ #app main > .page > .panel.section:first-child{border-radius:14px}
+ #page-progression .map{border-radius:12px}
+ #page-gm .gm-top{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+ #page-specs .binch-specs-head::before{width:80%}
+}
+@media(max-width:430px){
+ #onboarding .choices{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #onboarding .onboard-card h1{font-size:2rem}
+ #page-metiers #jobs-content{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+ #onboarding .choice,#page-metiers #jobs-content .tile{animation:none!important;transition:none!important;transform:none!important}
+}
