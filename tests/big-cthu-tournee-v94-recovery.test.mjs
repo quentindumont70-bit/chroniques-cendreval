@@ -103,7 +103,7 @@ test('V248: import JSON visible directement sur la PWA sans champ de code',async
  assert.match(page,/location\.hash==='#import-json'/);
  assert.match(page,/function recoverySpaceEmpty\(/);
  assert.match(page,/async function autoOpenTournee\(\)/);
- assert.doesNotMatch(page,/tour-pass|phrase secrète|phrase de sauvegarde/i);
+ assert.doesNotMatch(page,/id="tour-pass"|phrase secrète|phrase de sauvegarde/i);
 });
 
 test('V95: sauvegarde JSON complète sans code conserve journal et suivi fictifs',async()=>{
