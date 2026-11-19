@@ -235,3 +235,24 @@ html[data-binch-detail="lite"][data-binch-shaaby="true"] #app :is(.tile,.panel.s
  html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-composition{display:none}
  .binch-reforge-preview[data-binch-shaaby-preview="true"]{background:Canvas;border:2px solid CanvasText}
 }
+
+/* The real onboarding displays the premium artwork only after BOTH race and class are selected. */
+#onboarding:has(#race-choices [data-race="Tauren"].selected):has(#class-choices [data-classe="Druide"].selected){
+ --br-selected-world:url("./shaaby-mulgore.webp");
+ background-image:linear-gradient(110deg,#091717f6 0%,#091a20d9 38%,#08161cba 78%),var(--br-selected-world);
+ background-position:center,72% center;
+ background-size:cover;
+}
+#onboarding:has(#race-choices [data-race="Tauren"].selected) #class-choices [data-classe="Druide"]{
+ --br-choice-art:url("./shaaby-mulgore.webp");
+ --br-choice-accent:#c0d39b;
+}
+#onboarding:has(#race-choices [data-race="Tauren"].selected):has(#class-choices [data-classe="Druide"].selected) .onboard-card{
+ border-color:#d6ba86;
+ box-shadow:0 30px 100px #000d,inset 0 1px #fbe9aa26;
+}
+@media(max-width:720px){
+ #onboarding:has(#race-choices [data-race="Tauren"].selected):has(#class-choices [data-classe="Druide"].selected){
+  background-position:center,77% center;
+ }
+}
