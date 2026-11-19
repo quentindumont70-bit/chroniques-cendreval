@@ -2661,7 +2661,7 @@ const TOUR_STORE={
 var secureLastWrittenRecord=null;
 // Un conflit est définitif pour CETTE session : jamais de résolution silencieuse par réessai.
 var secureConflictDetected=false;
-const SECURE_CONFLICT_MESSAGE='Conflit de sauvegarde : une autre fenêtre ou un autre onglet a modifié le coffre. Cet onglet ne peut plus enregistrer. Ne le ferme pas avant d’avoir comparé les changements non sauvegardés. Aucun patient n’a été effacé.';
+const SECURE_CONFLICT_MESSAGE='Conflit de sauvegarde : une autre fenêtre ou un autre onglet a modifié le coffre. Cet onglet ne peut plus enregistrer. Ne le ferme pas avant d’avoir comparé les changements non sauvegardés. Ce blocage ne supprime aucun patient.';
 function tourSaveMenuToggle(){
  const panel=document.getElementById('tour-save-actions');
  const button=document.getElementById('tour-save-menu');

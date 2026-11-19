@@ -41,7 +41,7 @@ test('V259: aucun succès artificiel après conflit, même via status ou export 
  f.api.saveStatus('saved','Données chiffrées enregistrées sur cet appareil.');
  assert.equal(f.bar.dataset.state,'error');
  assert.equal(f.retry.hidden,true);
- assert.match(f.message.textContent,/Aucun patient n’a été effacé/);
+ assert.match(f.message.textContent,/Ce blocage ne supprime aucun patient/);
  await assert.rejects(f.api.ensureVaultSaved(),/Conflit de sauvegarde/);
 });
 test('V259: conflit pendant un chiffrement lent rejette sans modifier le coffre',async()=>{
