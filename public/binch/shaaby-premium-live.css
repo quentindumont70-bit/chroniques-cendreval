@@ -58,10 +58,10 @@ html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-p
  opacity:.75;
 }
 html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-professions::before{
- content:"❧";font-size:2.7rem;right:6%;bottom:9%;
+ content:var(--br-job-glyph);font-size:2.7rem;right:6%;bottom:9%;
 }
 html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-professions::after{
- content:"⚗";font-size:1.65rem;right:17%;bottom:15%;
+ content:var(--br-second-glyph);font-size:1.65rem;right:17%;bottom:15%;
 }
 /* Existing modules remain entirely real: only their surfaces and affordances change. */
 html[data-binch-shaaby="true"] #app .app-head .identity,
