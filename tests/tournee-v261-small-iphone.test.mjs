@@ -42,8 +42,8 @@ test('V261 : à 430 px, entête adaptable, onglets lisibles et bas protégé',as
 });
 test('V261 : à 380 puis 340 px, stats et boutons peuvent passer sur plusieurs lignes',async()=>{
  const css=await cssPromise;
- const small=css.split('@media(max-width:380px)')[1]?.split('@media(max-width:340px)')[0];
- const tiny=css.split('@media(max-width:340px)')[1]?.split('@media(prefers-contrast:more)')[0];
+ const small=css.slice(css.lastIndexOf('@media(max-width:380px)')).split('@media(max-width:340px)')[0];
+ const tiny=css.slice(css.lastIndexOf('@media(max-width:340px)')).split('@media(prefers-contrast:more)')[0];
  assert.ok(small&&tiny);
  assert.match(small,/\.tq-pro-overview-stats\s*\{[^}]*repeat\(2,minmax\(0,1fr\)\)/);
  assert.match(small,/\.tq-sticky-new\s*\{[^}]*display:grid/);
