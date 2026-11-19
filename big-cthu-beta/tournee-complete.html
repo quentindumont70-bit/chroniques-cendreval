@@ -2661,7 +2661,7 @@ const TOUR_STORE={
 var secureLastWrittenRecord=null;
 // Un conflit est définitif pour CETTE session : jamais de résolution silencieuse par réessai.
 var secureConflictDetected=false;
-const SECURE_CONFLICT_MESSAGE='Conflit de sauvegarde : une autre fenêtre a modifié le coffre. Cet onglet ne peut plus enregistrer. Ne le ferme pas avant d’avoir comparé les changements non sauvegardés. Aucun patient n’a été effacé.';
+const SECURE_CONFLICT_MESSAGE='Conflit de sauvegarde : une autre fenêtre ou un autre onglet a modifié le coffre. Cet onglet ne peut plus enregistrer. Ne le ferme pas avant d’avoir comparé les changements non sauvegardés. Aucun patient n’a été effacé.';
 function tourSaveMenuToggle(){
  const panel=document.getElementById('tour-save-actions');
  const button=document.getElementById('tour-save-menu');
@@ -2741,17 +2741,19 @@ async function flush(){
  return secureActive;
 }
 async function ensureVaultSaved(){
+ // Pendant les tests unitaires historiques, cette fonction est isolée sans Storage.
+ function verifySavedSnapshot(){
+  if(typeof localStorage==='undefined')return;
+  if(localStorage.getItem(SECURE_KEY)!==secureLastWrittenRecord){
+   const error=Error('Conflit de sauvegarde : coffre modifié dans un autre onglet');
+   saveFailure(error);
+   throw error;
+  }
+ }
  for(let attempt=0;attempt<5;attempt++){
   await flush();
   if(typeof secureConflictDetected!=='undefined'&&secureConflictDetected)throw Error('Conflit de sauvegarde : session périmée');
-  if(secureSavedGen===secureGen){
-   if(localStorage.getItem(SECURE_KEY)!==secureLastWrittenRecord){
-    const error=Error('Conflit de sauvegarde : coffre modifié dans un autre onglet');
-    saveFailure(error);
-    throw error;
-   }
-   return;
-  }
+  if(secureSavedGen===secureGen)return verifySavedSnapshot();
  }
  throw Error('Des modifications sont encore en cours : réessaie.');
 }
