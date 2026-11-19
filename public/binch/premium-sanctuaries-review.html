@@ -51,6 +51,36 @@ html[data-identity="forsaken"] .picker button[aria-pressed="true"]{background:li
 @media(max-width:390px){.hero,.content{min-height:645px}.content{padding-left:19px;padding-right:19px}.tags span{font-size:.66rem;padding:7px 9px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 @media(forced-colors:active){.hero,.picker button{border:2px solid CanvasText;background:Canvas;color:CanvasText}.hero::before,.engraving{display:none}}
+/* P13 screenshot review: on iPhone leave the character portrait unobstructed.
+   Identity ribbon lives in the sky, text inhabits only the lower third. */
+@media(max-width:760px){
+ .hero::before{
+  background-image:linear-gradient(180deg,#07121b91 0%,#07131a0a 27%,#07151a36 43%,#06121ae0 79%,#06121bf8 100%),var(--world);
+  background-position:center,77% 39%;
+ }
+ html[data-identity="forsaken"] .hero::before{
+  background-image:linear-gradient(180deg,#080e1d9d 0%,#0b12200b 27%,#09101d38 42%,#070e20e4 81%,#070c1bf8 100%),var(--world);
+  background-position:center,80% 42%;
+ }
+ .content{padding:21px 20px 37px;justify-content:flex-end}
+ .mark{position:absolute;top:23px;left:22px;right:auto;margin:0;padding:8px 12px;font-size:.57rem;letter-spacing:.1em;max-width:85%}
+ h1{font-size:clamp(2.08rem,7.5vw,3rem);line-height:1.04;margin:0 0 10px;max-width:370px}
+ .dek{
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;
+  overflow:hidden;font-size:.83rem;line-height:1.48;margin:0 0 12px;
+  max-width:360px;
+ }
+ .tags{margin:0 0 16px;gap:6px}
+ .tags span{font-size:.7rem;padding:6px 8px}
+ .actions{flex-wrap:nowrap;gap:8px;width:100%;max-width:380px}
+ .actions a{flex:0 1 auto;white-space:nowrap;font-size:.7rem;padding:11px 12px;min-height:43px}
+}
+@media(max-width:390px){
+ .content{padding:15px 16px 30px}
+ h1{font-size:clamp(2rem,7.4vw,2.4rem)}
+ .actions a{font-size:.65rem;padding:10px 9px}
+ .mark{left:16px}
+}
 </style>
 </head>
 <body><header class="top"><div class="logo">LA BINCH <small>Renaissance — éditions cinématiques</small></div><a class="back" href="./index.html">Ouvrir le vrai compagnon</a></header>
