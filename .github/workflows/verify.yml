@@ -78,6 +78,8 @@ jobs:
         run: node --test tests/binch-visual-identity-compositor.test.mjs
       - name: Tester le prototype premium Shaaby et son artwork embarqué
         run: node --test tests/binch-shaaby-premium.test.mjs
+      - name: Tester l'intégration Shaaby Premium sur le vrai compagnon
+        run: node --test tests/binch-shaaby-live.test.mjs
       - name: Vérifier la présence de Big Cthu dans le paquet Pages
         run: |
           node scripts/stage-big-cthu-beta.mjs
