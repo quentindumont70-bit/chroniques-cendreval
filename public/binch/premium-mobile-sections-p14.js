@@ -31,7 +31,8 @@
    button.setAttribute('aria-expanded',String(expanded));
    button.setAttribute('aria-label',expanded?'Masquer les rubriques de La Binch':'Afficher toutes les rubriques de La Binch');
    // Hidden links must not become invisible keyboard-focus traps.
-   nav.inert=mobile&&!expanded;
+   // CSS display:none excludes collapsed links from tab order while preserving
+   // programmatic .click() from the existing bottom dock.
    if(mobile&&!expanded)nav.setAttribute('aria-hidden','true');
    else nav.removeAttribute('aria-hidden');
   }
