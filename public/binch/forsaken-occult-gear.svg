@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="500" viewBox="0 0 560 500" fill="none" role="img" aria-label="Sceau du pacte d'ombre"><title>Sceau d'ingénierie occulte</title>
+<defs>
+<linearGradient id="brass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e3c08c"/><stop offset=".3" stop-color="#6c4e47"/><stop offset=".66" stop-color="#ba9c64"/><stop offset="1" stop-color="#2b3035"/></linearGradient>
+<linearGradient id="fel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#67f9ad"/><stop offset=".6" stop-color="#7086db"/><stop offset="1" stop-color="#bd73d2"/></linearGradient>
+<radialGradient id="ghost"><stop stop-color="#9e7ccc" stop-opacity=".35"/><stop offset="1" stop-color="#49225b" stop-opacity="0"/></radialGradient>
+</defs>
+<circle cx="310" cy="260" r="194" fill="url(#ghost)"/>
+<g stroke="url(#brass)" stroke-width="11" stroke-linejoin="miter">
+<path d="M284 18h54l10 37 43 15 29-25 42 35-19 40 25 40 42-6 18 53-37 25v45l35 20-19 53-47-5-28 39 20 42-44 35-35-29-45 12-10 44h-53l-10-43-46-16-37 26-43-38 21-42-27-41-43 6-21-55 35-24v-48l-36-20 19-53 45 3 28-39-20-43 42-33 35 29 45-12Z"/>
+<circle cx="311" cy="252" r="130" stroke-width="8"/>
+</g>
+<path d="M300 98v-34m83 66 28-30m22 112h47m-53 90 30 26m-152 54v45m-101-80-29 34m-34-149h-40m77-113-30-27" stroke="#b2e9b4" stroke-width="4" opacity=".65"/>
+<circle cx="311" cy="251" r="97" stroke="#9ba1dc" stroke-width="3" stroke-dasharray="3 13"/>
+<path d="M311 150 399 285H223Z" stroke="url(#fel)" stroke-width="7"/>
+<path d="M311 350 220 220h182Z" stroke="#a59ddc" stroke-width="4" opacity=".7"/>
+<path d="M311 161c43 0 68 33 68 70 0 27-16 51-31 62l-7 39h-60l-8-39c-20-14-29-37-29-62 0-39 30-70 67-70Z" fill="#182135" stroke="url(#brass)" stroke-width="8"/>
+<path d="M260 235 293 220l-12 38-26-2Zm103 0-33-15 12 38 26-2Z" fill="url(#fel)"/>
+<path d="m304 266-12 27h39l-13-27Z" fill="#91dabb"/>
+<path d="M294 326v35m17-35v37m17-37v36" stroke="#d4bc85" stroke-width="7"/>
+<g stroke="#8de7ac" stroke-width="3" opacity=".65"><path d="M108 112 55 60m0 0 51 12-13 43M451 400l66 59m0 0-13-52-44 3"/></g>
+<g fill="#ceaae5"><circle cx="310" cy="67" r="5"/><circle cx="491" cy="251" r="4"/><circle cx="310" cy="435" r="6"/><circle cx="126" cy="251" r="5"/></g>
+</svg>
