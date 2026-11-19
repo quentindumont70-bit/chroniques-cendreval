@@ -69,6 +69,25 @@ test('P15: real selected jobs receive specific visuals, with no fabricated craft
  assert.ok(html.includes('id="jobs-content"'));
 });
 
+test('P15: six existing portals have different motifs while keeping real working navigation',()=>{
+ const portals=read('premium-portals-p15.css');
+ const real=read('visual-renaissance.js');
+ assert.ok(html.includes('./premium-portals-p15.css?v=001'));
+ const ids=['progression','specs','metiers','gm','command','tresors'];
+ for(const id of ids){
+  assert.ok(portals.includes('data-to="'+id+'"'),'no original visual for portal '+id);
+  assert.ok(real.includes("['"+id+"'"),'source navigation port must exist: '+id);
+ }
+ assert.ok(portals.includes('--p15-portal-material'));
+ assert.ok(portals.includes('repeating-radial-gradient'));
+ assert.ok(portals.includes('repeating-linear-gradient'));
+ assert.ok(portals.includes('conic-gradient'));
+ assert.ok(portals.includes('focus-visible'));
+ assert.ok(portals.includes('prefers-reduced-motion:reduce'));
+ assert.ok(portals.includes('data-binch-detail="lite"'));
+ assert.ok(!portals.includes('localStorage'));
+});
+
 test('P15: early image preload downloads exactly one saved flagship, without writes',()=>{
  const m=html.match(/<script>(\/\* P15: preload[\s\S]*?)<\/script>/);
  assert.ok(m,'missing early profile-aware preload');
