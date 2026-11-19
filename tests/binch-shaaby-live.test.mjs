@@ -56,6 +56,8 @@ test('P12: flagship is a real optimized image—not a 400KB inline demo—and is
  assert.ok(css.includes('#app nav.nav'));
  assert.ok(css.includes('.binch-reforge-preview[data-binch-shaaby-preview="true"]'));
  assert.ok(css.includes('data-binch-detail="lite"'));
+ assert.ok(css.includes('content:var(--br-job-glyph)'),'profession layer uses the selected job');
+ assert.ok(css.includes('content:var(--br-second-glyph)'),'second job is also data driven');
  assert.ok(css.includes('prefers-reduced-motion:reduce'));
  assert.ok(css.includes('max-width:760px'));
  assert.ok(html.includes('./shaaby-premium-live.css?v=002'));
