@@ -22,7 +22,7 @@ test('P15: responsive header keeps the full LA BINCH wordmark visible at 320/390
 });
 
 test('P15: editor is reparented into existing mobile menu, never removed or duplicated',()=>{
- assert.ok(mobile.includes("const editor=document.getElementById('binch-editor-toggle')"));
+ assert.ok(mobile.includes("const editor=$('#binch-editor-toggle')"));
  assert.ok(mobile.includes('nav.append(editor)'));
  assert.ok(mobile.includes("editor.classList.add('p15-nav-editor')"));
  assert.ok(mobile.includes('editorParent.insertBefore(editor'));
