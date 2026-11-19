@@ -43,7 +43,7 @@ test('P14: real current profile keeps both original hero images and data-driven 
  assert.ok(css.includes('#page-progression .panel.section'));
  assert.ok(css.includes('#page-gm .panel.section'));
  assert.ok(css.includes('#page-specs #binch-specs'));
- assert.ok(html.includes('./premium-front-p14.css?v=001'));
+ assert.ok(html.includes('./premium-front-p14.css?v=002'));
  assert.ok(!css.includes('https://'),'no new external image requests');
  assert.ok(!css.includes('@import'),'no blocking external fonts');
 });
