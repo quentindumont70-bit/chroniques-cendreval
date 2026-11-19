@@ -130,3 +130,9 @@ Une suite de tests Node V257 couvre cache prêt/absent/partiel, service non acti
 - Tests fictifs de deux fenêtres simultanées, coffre périmé, événement `storage`, verrou refusé et navigateur sans Web Locks. Aucune synchronisation multi-appareils, aucune donnée médicale transmise, aucune nouvelle base, aucune suppression ni migration.
 
 **Limites non levées :** les anciens onglets utilisant une version non verrouillée, certains navigateurs ne prenant pas en charge Web Locks et la fermeture forcée iOS restent des risques. Essais sur appareil réel et sauvegarde externe indépendante restent indispensables avant vente.
+
+## Golipette V259 — conflit inter-fenêtres : avertissement permanent
+
+Après détection d'un coffre modifié dans un autre onglet, la fenêtre périmée **ne peut plus écrire dans ce coffre**, ni masquer l'erreur derrière un état « enregistrement en cours » ou « enregistré ». Le bouton de réessai est masqué pour ce conflit seulement ; une erreur non conflictuelle (par exemple stockage plein) peut toujours être retentée. Les brouillons restent en mémoire jusqu'à la fermeture : **ils ne sont pas sauvegardés** ; aucune fusion ou réouverture automatique n'est déclenchée. Le message de conflit indique de comparer les changements avant de fermer la fenêtre. Une vérification du snapshot final empêche aussi qu'un contrôle rapide annonce un succès après une modification extérieure détectée.
+
+Tests fictifs : conflit avant écriture, saisie ultérieure, conflit pendant chiffrement, absence de fausse réussite, erreur de stockage récupérable et flux normal. Aucun patient réel, nouveau stockage, réseau, Topaze ou transfert automatique. La reprise iPhone et les conflits d'onglets restent à confirmer sur appareil réel avant commercialisation.
