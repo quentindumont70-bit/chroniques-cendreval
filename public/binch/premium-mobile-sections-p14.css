@@ -104,3 +104,23 @@
   max-height:min(64dvh,620px);
  }
 }
+
+/* In the real iPhone screenshot Faith's long pill crossed the character name.
+   Keep the same working button and spoken label, but show a compact floating sigil. */
+@media(max-width:760px) and (min-height:540px){
+ #binch-faith-dock{
+  display:grid!important;place-items:center;
+  width:48px!important;min-width:48px!important;max-width:48px!important;
+  height:48px!important;min-height:48px!important;
+  padding:0!important;border-radius:50%!important;
+  right:max(12px,env(safe-area-inset-right,0px))!important;
+  bottom:calc(111px + env(safe-area-inset-bottom,0px))!important;
+  font-size:0!important;line-height:0!important;
+  box-shadow:0 6px 23px #000a,0 0 0 2px #b18a9959!important;
+ }
+ #binch-faith-dock::before{
+  content:"✧";font:700 26px/1 Georgia,serif!important;
+  color:#f1d4fa;text-shadow:0 0 12px #d6a7ff8c;
+ }
+ #binch-faith-dock[aria-expanded=true]{border-color:#f5d7ff;outline:2px solid #aa89c5}
+}
