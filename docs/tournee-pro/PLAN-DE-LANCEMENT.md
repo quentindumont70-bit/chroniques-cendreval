@@ -1,6 +1,6 @@
 # Tournée Pro — plan de produit et Golipette de lancement
 
-**Statut :** bêta privée, **interdite à la vente en l'état**. Première cible : infirmiers et infirmières libéraux exerçant seuls en France. Révision : 18 novembre 2026.
+**Statut :** bêta privée, **interdite à la vente en l'état**. Première cible : infirmiers et infirmières libéraux exerçant seuls en France. Révision : 19 novembre 2026.
 
 ## Promesse du produit
 
@@ -37,7 +37,7 @@ Le prix mensuel doit payer un avantage concret (mises à jour stables, accompagn
 | 2 | **Mises à jour sûres** | actualiser seulement après confirmation de la sauvegarde locale ; refuser sinon | P0 | **V250 implémenté, CI à vérifier** |
 | 3 | **Restauration démontrable** | round-trip sur 1/24/500 patients FICTIFS, sans modification des notes ni écrasement | P0 | **V251 : tests automatisés + vérification fichier ; iOS réel encore à valider** |
 | 4 | **Un seul parcours installé** | distinguer explicitement PWA installée/Safari, migration guidée, jamais de copie implicite | P0 | **V252 : identification visible de l'espace ; transfert guidé encore à construire** |
-| 5 | **Refonte UI terrain** | accueil utile en 5 secondes, contraste iPhone, une action principale par écran, états vides | P1 | **V253 : accueil prioritaire et mobile ; direction artistique premium Medical Ops à venir** |
+| 5 | **Refonte UI terrain** | accueil utile en 5 secondes, contraste iPhone, une action principale par écran, états vides | P1 | **V260 : Medical Ops opt-in, première tranche esthétique ; finition et validation iPhone à poursuivre** |
 | 6 | **Cœur métier fiable** | rappels journaliers, cycles, absences, modifications et journal sans régression | P1 | V258 : garde-fou multi-onglets renforcé (Web Locks quand disponible, comparaison avant chaque sauvegarde) ; iOS réel à tester |
 | 7 | **Onboarding et exemples** | prise en main ≤5 min avec données fictives et import explicite | P1 | V256 : guide fictif en 5 étapes ; essai réel de prise en main et import assisté à valider |
 | 8 | **Suite de tests appareil réel** | iOS PWA/Android, hors ligne, fermeture forcée, mise à jour, conflit de deux onglets | P0 | V257 : contrôle local des pages publiques hors ligne et tests CI ; essais iPhone/Android réels toujours à faire |
@@ -136,3 +136,11 @@ Une suite de tests Node V257 couvre cache prêt/absent/partiel, service non acti
 Après détection d'un coffre modifié dans un autre onglet, la fenêtre périmée **ne peut plus écrire dans ce coffre**, ni masquer l'erreur derrière un état « enregistrement en cours » ou « enregistré ». Le bouton de réessai est masqué pour ce conflit seulement ; une erreur non conflictuelle (par exemple stockage plein) peut toujours être retentée. Les brouillons restent en mémoire jusqu'à la fermeture : **ils ne sont pas sauvegardés** ; aucune fusion ou réouverture automatique n'est déclenchée. Le message de conflit indique de comparer les changements avant de fermer la fenêtre. Une vérification du snapshot final empêche aussi qu'un contrôle rapide annonce un succès après une modification extérieure détectée.
 
 Tests fictifs : conflit avant écriture, saisie ultérieure, conflit pendant chiffrement, absence de fausse réussite, erreur de stockage récupérable et flux normal. Aucun patient réel, nouveau stockage, réseau, Topaze ou transfert automatique. La reprise iPhone et les conflits d'onglets restent à confirmer sur appareil réel avant commercialisation.
+
+## Golipette V260 — Medical Ops du futur, premier thème clinique réversible
+
+Le sélecteur 🎨 de Tournée propose désormais un thème **« Medical Ops »**, non activé par défaut. Cette première tranche applique une identité professionnelle sombre, accents cyan à haut contraste, cockpit journalier clarifié, statistiques visibles, ligne de temps, cartes de soins, rappels, barres d'état et zones tactiles adaptées à l'iPhone. Elle reprend les principes du concept Medical Ops de Big Cthu tout en évitant les photographies distantes et les animations lourdes (mode mouvement réduit pris en compte).
+
+Le mode utilise exclusivement le **réglage de thème existant** `tidel_theme` dans le coffre chiffré local : aucune clé nouvelle, aucune migration, aucun patient réimporté et aucun accès réseau lié au visuel. Au lancement, le thème choisi est réappliqué après ouverture du coffre, sans tentative de lire les dossiers en dehors du parcours normal. Une valeur de thème inconnue est ignorée. Un retour instantané vers **Lagon** ou **Nuit** est possible via 🎨.
+
+Tests fictifs V260 : choix, restauration du thème au démarrage, retour à Lagon, éléments tactiles, CSS strictement dédié, préchargement hors ligne et non-régression des composants métier. **Cette livraison n'est pas encore la refonte complète.** Les essais réels iPhone (contraste, navigation à une main, performance et lisibilité), la sauvegarde externe sécurisée et la conformité sont nécessaires avant commercialisation.
