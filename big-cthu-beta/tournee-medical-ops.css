@@ -152,3 +152,88 @@
   animation:none!important;scroll-behavior:auto!important;transition:none!important;
  }
 }
+
+/* V261: petit iPhone, grands caractères et états d'enregistrement visibles. */
+[data-theme=medicalops] .tq-pro-overview-header,
+[data-theme=medicalops] .tq-sticky-head{
+ flex-wrap:wrap;column-gap:10px;row-gap:5px;
+}
+[data-theme=medicalops] .tq-pro-overview-date{white-space:normal;overflow-wrap:anywhere}
+[data-theme=medicalops] .tq-pro-overview-stats>span,
+[data-theme=medicalops] .tq-pro-overview-actions button,
+[data-theme=medicalops] .tq-sticky-label{overflow-wrap:anywhere}
+[data-theme=medicalops] .tq-sticky-actions button,
+[data-theme=medicalops] .tq-sticky-actions .tq-sticky-delete{
+ display:inline-flex;align-items:center;justify-content:center;
+ min-width:44px;min-height:44px;
+}
+[data-theme=medicalops] .tq-sticky-item input,
+[data-theme=medicalops] .tq-sticky-new input,
+[data-theme=medicalops] .tq-sticky textarea,
+[data-theme=medicalops] .tq-chat-form input,
+[data-theme=medicalops] .tq-chat-form textarea,
+[data-theme=medicalops] .tq-week input,
+[data-theme=medicalops] .tq-week select{
+ font-size:max(16px,1em);min-height:44px;
+}
+[data-theme=medicalops] .tq-sticky-new button{min-height:48px}
+[data-theme=medicalops] #tour-save-strip[data-state="error"] #tour-save-text{
+ max-height:none;overflow:visible;overflow-wrap:anywhere;
+}
+[data-theme=medicalops] #tour-save-strip[data-state="error"] #tour-save-summary{
+ align-items:flex-start;min-height:44px;
+}
+[data-theme=medicalops] .tq-pro-extras>summary{overflow-wrap:anywhere}
+@media(max-width:430px){
+ [data-theme=medicalops] header .t{
+  flex-wrap:wrap;justify-content:space-between;row-gap:7px;column-gap:6px;
+ }
+ [data-theme=medicalops] header .ttl{flex:1 0 100%;min-width:0;width:100%}
+ [data-theme=medicalops] header .hbtn{
+  flex:1 1 44px;min-width:44px;max-width:none;width:auto;
+ }
+ [data-theme=medicalops] header .tq-header-access{flex-wrap:wrap}
+ [data-theme=medicalops] nav.tabs button{
+  min-width:0;max-width:none;min-height:66px;
+  padding:8px 2px 9px;font-size:10px;line-height:1.18;
+  white-space:normal;overflow-wrap:anywhere;
+ }
+ [data-theme=medicalops] nav.tabs button svg{
+  width:21px;height:21px;flex-shrink:0;
+ }
+ [data-theme=medicalops] main{
+  padding-bottom:calc(112px + env(safe-area-inset-bottom));
+ }
+ [data-theme=medicalops] .tq-pro-overview-actions button{
+  padding:10px 8px;white-space:normal;overflow-wrap:anywhere;
+ }
+}
+@media(max-width:380px){
+ [data-theme=medicalops] .tq-pro-overview-stats{
+  grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;
+ }
+ [data-theme=medicalops] .tq-pro-overview-stats>span:last-child{
+  grid-column:1/-1;
+ }
+ [data-theme=medicalops] .tq-sticky-new{
+  display:grid;grid-template-columns:minmax(0,1fr);
+ }
+ [data-theme=medicalops] .tq-sticky-new input,
+ [data-theme=medicalops] .tq-sticky-new button{width:100%;min-width:0}
+}
+@media(max-width:340px){
+ [data-theme=medicalops] .tq-pro-overview-actions{
+  grid-template-columns:minmax(0,1fr);
+ }
+ [data-theme=medicalops] .tq-pro-overview-stats{
+  grid-template-columns:minmax(0,1fr);
+ }
+ [data-theme=medicalops] .tq-pro-overview-stats>span:last-child{grid-column:auto}
+}
+@media(prefers-contrast:more){
+ [data-theme=medicalops] .tq-pro-overview,
+ [data-theme=medicalops] .tq-sticky,
+ [data-theme=medicalops] .stop .card{border-width:2px}
+ [data-theme=medicalops] .tq-pro-overview-date,
+ [data-theme=medicalops] .tq-sticky-hint{color:#f0ffff}
+}
