@@ -19,6 +19,23 @@
   button.textContent='☷ Toutes les rubriques · '+count;
   nav.parentNode.insertBefore(button,nav);
   nav.classList.add('p14-nav-managed');
+  // The real visual editor ships as a fixed body-level control. Park its
+  // *existing* button in the full navigation on phones, preserving its
+  // original listener and keyboard semantics. Restore it on desktop.
+  const editor=document.getElementById('binch-editor-toggle');
+  const editorParent=editor?.parentElement||null;
+  const editorNext=editor?.nextSibling||null;
+  function placeEditor(){
+   if(!editor)return;
+   if(window.matchMedia('(max-width:'+MAX+'px)').matches){
+    if(editor.parentElement!==nav){nav.append(editor);editor.classList.add('p15-nav-editor')}
+   }else if(editor.parentElement===nav){
+    editor.classList.remove('p15-nav-editor');
+    if(editorParent?.isConnected)editorParent.insertBefore(editor,editorNext?.parentElement===editorParent?editorNext:null);
+    else document.body.append(editor);
+   }
+  }
+
   function compact(){return window.matchMedia('(max-width:'+MAX+'px)').matches}
   function close(refocus){
    nav.classList.remove('p14-nav-open');
@@ -26,6 +43,7 @@
    if(refocus&&compact())button.focus({preventScroll:true});
   }
   function update(){
+   placeEditor();
    const mobile=compact(),expanded=mobile&&nav.classList.contains('p14-nav-open');
    button.hidden=!mobile;
    button.setAttribute('aria-expanded',String(expanded));
