@@ -192,3 +192,82 @@ html[data-binch-detail="lite"]:is([data-binch-shaaby="true"],[data-binch-forsake
   background-size:150px auto,cover;
  }
 }
+
+/* P14 visual screenshot correction: the old 91px+fluid grid squeezed long names
+   because the cinematic compositor injects extra children. Use a reliable flex
+   stack on iPhone instead. Never remove the level/XP medal or character data. */
+@media(max-width:760px){
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:flex-end!important;
+  align-items:stretch!important;
+  gap:15px!important;
+  padding:clamp(270px,72vw,340px) 19px 23px!important;
+  min-height:clamp(590px,150vw,710px)!important;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-character-card > .binch-portrait{
+  position:absolute!important;
+  top:65px;left:21px;bottom:auto;right:auto;
+  width:70px!important;min-width:70px!important;
+  height:70px!important;
+  grid-column:auto!important;grid-row:auto!important;
+  justify-self:auto!important;
+  z-index:3;
+  opacity:.88;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-character-card > .binch-portrait + div{
+  width:100%!important;
+  min-width:0!important;max-width:100%!important;
+  order:1;
+  grid-column:auto!important;grid-row:auto!important;
+  align-self:stretch!important;
+  text-align:left;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-character-card h1{
+  font:700 clamp(2rem,7.1vw,3.05rem)/1.08 Georgia,serif!important;
+  letter-spacing:-.035em;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  hyphens:none!important;
+  text-wrap:balance;
+  max-width:100%;
+  margin:6px 0 10px!important;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home #binch-home-meta{
+  font-size:.88rem!important;line-height:1.4;
+  max-width:calc(100vw - 55px);
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-character-card .binch-level{
+  position:relative!important;
+  order:2;
+  align-self:flex-start!important;
+  justify-self:auto!important;
+  grid-column:auto!important;grid-row:auto!important;
+  width:103px!important;height:103px!important;
+  min-width:103px!important;min-height:103px!important;
+  max-width:103px!important;max-height:103px!important;
+  padding:15px 10px!important;
+  border-radius:50%!important;
+  margin-top:2px;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-level strong{
+  font-size:2.55rem!important;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-level small{
+  font-size:.55rem!important;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-level #binch-home-zone{
+  max-width:90px;font-size:.58rem!important;
+ }
+}
+@media(max-width:390px){
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card{
+  padding-top:260px!important;
+  padding-inline:16px!important;
+  min-height:595px!important;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-character-card h1{
+  font-size:clamp(1.7rem,7.1vw,2.5rem)!important;
+ }
+}
