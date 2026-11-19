@@ -182,3 +182,63 @@ html[data-binch-detail="lite"] #page-metiers #jobs-content .tile[data-job]::afte
  #page-metiers #jobs-content .tile[data-job]::before,
  #page-metiers #jobs-content .tile[data-job]::after{display:none!important}
 }
+
+/* P15 visual review: pseudo-elements were too faint on the live métier cards.
+   Put each engraving directly on the actual card paint layer with reliable
+   sizing; do not rely on a background shorthand inside ::before. */
+#page-metiers #jobs-content .tile[data-job="Herboristerie"]{
+ background-image:
+  linear-gradient(96deg,#08191cfa 0%,#0b1e20ee 31%,#102825a4 53%,#10292510 100%),
+  url("./profession-herbalism-p15.svg")!important;
+ background-position:center,right -53px center!important;
+ background-size:cover,auto 145%!important;
+ background-repeat:no-repeat!important;
+ border-color:#a9cf9d;
+}
+#page-metiers #jobs-content .tile[data-job="Alchimie"]{
+ background-image:
+  linear-gradient(97deg,#111b2afa 0%,#111b2af2 33%,#11253499 57%,#152a3c09 100%),
+  url("./profession-alchemy-p15.svg")!important;
+ background-position:center,right -57px center!important;
+ background-size:cover,auto 144%!important;
+ background-repeat:no-repeat!important;
+ border-color:#b4d0c7;
+}
+#page-metiers #jobs-content .tile[data-job="Ingénierie"]{
+ background-image:
+  linear-gradient(97deg,#181921fa 0%,#191a25f0 32%,#292b3187 58%,#22252b09 100%),
+  url("./profession-engineering-p15.svg")!important;
+ background-position:center,right -54px center!important;
+ background-size:cover,auto 141%!important;
+ background-repeat:no-repeat!important;
+ border-color:#d7b987;
+}
+#page-metiers #jobs-content .tile[data-job="Enchantement"]{
+ background-image:
+  linear-gradient(97deg,#131429fb 0%,#17142df2 32%,#261c4387 58%,#29234a0a 100%),
+  url("./profession-enchanting-p15.svg")!important;
+ background-position:center,right -53px center!important;
+ background-size:cover,auto 145%!important;
+ background-repeat:no-repeat!important;
+ border-color:#c6aae1;
+}
+#page-metiers #jobs-content .tile[data-job]:is(
+ [data-job="Herboristerie"],[data-job="Alchimie"],
+ [data-job="Ingénierie"],[data-job="Enchantement"]
+)::before{
+ display:none!important;
+}
+@media(max-width:760px){
+ #page-metiers #jobs-content .tile[data-job="Herboristerie"],
+ #page-metiers #jobs-content .tile[data-job="Alchimie"],
+ #page-metiers #jobs-content .tile[data-job="Ingénierie"],
+ #page-metiers #jobs-content .tile[data-job="Enchantement"]{
+  background-size:cover,auto 135%!important;
+  background-position:center,right -57px center!important;
+ }
+}
+@media(forced-colors:active){
+ #page-metiers #jobs-content .tile[data-job]{
+  background-image:none!important;
+ }
+}
