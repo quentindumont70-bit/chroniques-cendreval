@@ -78,7 +78,7 @@ test('V259: cache, commande et risques documentés',async()=>{
  const sw=await readFile(new URL('../big-cthu-beta/sw.js',import.meta.url),'utf8');
  const pkg=await readFile(new URL('../package.json',import.meta.url),'utf8');
  const plan=await readFile(new URL('../docs/tournee-pro/PLAN-DE-LANCEMENT.md',import.meta.url),'utf8');
- assert.match(sw,/big-cthu-public-v2-v260/);
+ assert.match(sw,/big-cthu-public-v2-v261/);
  assert.match(pkg,/tournee-v259-conflict-freeze\.test\.mjs/);
  assert.match(plan,/Golipette V259/);
 });
