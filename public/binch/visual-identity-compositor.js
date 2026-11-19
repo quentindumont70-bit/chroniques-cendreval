@@ -59,6 +59,9 @@ function compose(input){
 function apply(input){
  const c=compose(input),root=document.documentElement;
  root.dataset.brRace=c.race.id;root.dataset.brClass=c.classe.id;
+ // The Shaaby artwork is a flagship only for the authentic saved Tauren/Druide identity.
+ // It must not be applied to other characters or while the initial wizard is unfinished.
+ root.dataset.binchShaaby=String(Boolean(input?.onboarded&&c.profile.race==='Tauren'&&c.profile.classe==='Druide'));
  root.dataset.brJobs=c.jobs.map(j=>j.effect).join(' ');
  for(const [key,value] of Object.entries(c.vars))root.style.setProperty(key,value);
  const note=document.getElementById('binch-identity-signature');
@@ -95,6 +98,7 @@ function field(label,kind,data){
 function refresh(){
  if(!dialog||!draft)return;
  const c=compose(draft),preview=dialog.querySelector('.binch-reforge-preview');
+ preview.dataset.binchShaabyPreview=String(c.profile.race==='Tauren'&&c.profile.classe==='Druide');
  preview.style.setProperty('--br-preview-world',c.vars['--br-class-world']);
  preview.style.setProperty('--br-preview-race',c.vars['--br-race-art']);
  preview.style.setProperty('--br-preview-metal',c.race.metal);
