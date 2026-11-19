@@ -32,7 +32,11 @@ for(const [name,profile] of Object.entries(cases)){
   +"catch(e){document.documentElement.dataset.p14FixtureStorage='blocked';}"
   +"document.addEventListener('DOMContentLoaded',function(){"
   +"if(location.search.includes('reforge=1'))setTimeout(function(){"
-  +"document.getElementById('binch-profile-trigger')?.click();},550);});"
+  +"document.getElementById('binch-profile-trigger')?.click();},550);"
+  +"if(location.search.includes('page=metiers'))setTimeout(function(){"
+  +"document.querySelector('#app nav.nav button[data-page=metiers]')?.click();},700);"
+  +"if(location.search.includes('menu=open'))setTimeout(function(){"
+  +"document.getElementById('binch-p14-sections')?.click();},700);});"
   +'</script>';
  const temp=original.replace('<head>','<head>'+bootstrap);
  if(temp===original)throw Error('Could not seed screenshot fixture');
