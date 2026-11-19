@@ -49,7 +49,7 @@ test('P14: real current profile keeps both original hero images and data-driven 
 });
 
 test('P14: iPhone navigation is collapsible but original tabs and fixed shortcuts stay available',()=>{
- assert.ok(html.includes('./premium-mobile-sections-p14.css?v=002'));
+ assert.ok(html.includes('./premium-mobile-sections-p14.css?v=003'));
  assert.ok(html.includes('./premium-mobile-sections-p14.js?v=001'));
  for(const id of ['binch-p14-sections','p14-nav-managed','p14-nav-open']){
   assert.ok(mobileJS.includes(id));
