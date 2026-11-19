@@ -125,7 +125,7 @@ test('P9: header and profile reset point to same forge; accessibility, FX opt-ou
  const html=read('index.html'),css=read('visual-identity-compositor.css'),js=read('visual-identity-compositor.js');
  assert.match(html,/id="binch-profile-trigger" type="button"/);
  assert.match(html,/visual-identity-compositor\.css\?v=003/);
- assert.match(html,/visual-identity-compositor\.js\?v=005/);
+ assert.match(html,/visual-identity-compositor\.js\?v=006/);
  assert.match(js,/rebuild\.onclick=event=>/);
  assert.match(js,/modal\.showModal\(\)/);
  assert.match(js,/aria-pressed/);
