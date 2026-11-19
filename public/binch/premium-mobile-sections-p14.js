@@ -22,7 +22,7 @@
   // The real visual editor ships as a fixed body-level control. Park its
   // *existing* button in the full navigation on phones, preserving its
   // original listener and keyboard semantics. Restore it on desktop.
-  const editor=document.getElementById('binch-editor-toggle');
+  const editor=$('#binch-editor-toggle');
   const editorParent=editor?.parentElement||null;
   const editorNext=editor?.nextSibling||null;
   function placeEditor(){
