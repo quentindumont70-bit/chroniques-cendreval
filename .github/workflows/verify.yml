@@ -45,6 +45,8 @@ jobs:
           CHROME="$(command -v google-chrome || command -v chromium || true)"
           if [ -z "$CHROME" ]; then echo "Navigateur Chromium absent : captures facultatives ignorées"; exit 0; fi
           mkdir -p renaissance-captures
+          # P14: only CI-local synthetic profiles; real dashboard, not a detached gallery.
+          node tests/helpers/binch-p14-screenshot-fixtures.mjs
           for class in druid mage warlock; do
             "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2500 --window-size=1440,960 --screenshot="renaissance-captures/${class}-desktop.png" "file://$PWD/public/binch/renaissance-atelier.html?classe=${class}"
           done
@@ -64,6 +66,12 @@ jobs:
           "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2600 --window-size=430,860 --screenshot="renaissance-captures/p13-premium-tauren-iphone.png" "file://$PWD/public/binch/premium-sanctuaries-review.html?identity=tauren"
           "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2600 --window-size=1440,960 --screenshot="renaissance-captures/p13-premium-forsaken-desktop.png" "file://$PWD/public/binch/premium-sanctuaries-review.html?identity=forsaken"
           "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2600 --window-size=430,860 --screenshot="renaissance-captures/p13-premium-forsaken-iphone.png" "file://$PWD/public/binch/premium-sanctuaries-review.html?identity=forsaken"
+          # P14: real binch-front with actual profile/name/level/buttons and premium class identity.
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=1440,960 --screenshot="renaissance-captures/p14-real-tauren-desktop.png" "file://$PWD/public/binch/.p14-preview-tauren.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=430,860 --screenshot="renaissance-captures/p14-real-tauren-iphone.png" "file://$PWD/public/binch/.p14-preview-tauren.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=1440,960 --screenshot="renaissance-captures/p14-real-forsaken-desktop.png" "file://$PWD/public/binch/.p14-preview-forsaken.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=430,860 --screenshot="renaissance-captures/p14-real-forsaken-iphone.png" "file://$PWD/public/binch/.p14-preview-forsaken.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4800 --window-size=430,860 --screenshot="renaissance-captures/p14-reforge-iphone.png" "file://$PWD/public/binch/.p14-preview-tauren.html?reforge=1"
           ls -lh renaissance-captures/
       - name: Conserver les captures de revue (3 jours, sans publication Pages)
         if: github.event_name == 'pull_request' && github.head_ref == 'feature/binch-visual-renaissance-20261118'
@@ -87,6 +95,8 @@ jobs:
         run: node --test tests/binch-shaaby-live.test.mjs
       - name: Tester le flagship premium Mort-vivant Démoniste dans le vrai compagnon
         run: node --test tests/binch-forsaken-premium-live.test.mjs
+      - name: Vérifier le vrai accueil premium P14 et la reforge visuelle
+        run: node --test tests/binch-p14-real-front.test.mjs
       - name: Vérifier la présence de Big Cthu dans le paquet Pages
         run: |
           node scripts/stage-big-cthu-beta.mjs
