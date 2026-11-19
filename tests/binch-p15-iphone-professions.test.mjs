@@ -49,7 +49,7 @@ test('P15: 4 new craft engravings are local, original, light assets',()=>{
   assert.ok(professions.includes('url("./'+name+'")'),'craft card must reference '+name);
  }
  assert.equal(new Set(files.map(name=>read(name))).size,4,'engraving art must not be copy/paste');
- assert.ok(html.includes('./premium-professions-p15.css?v=002'));
+ assert.ok(html.includes('./premium-professions-p15.css?v=003'));
 });
 
 test('P15: real selected jobs receive specific visuals, with no fabricated craft data',()=>{
