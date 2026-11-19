@@ -1,0 +1,237 @@
+/* La Binch · Shaaby live flagship P12.
+ * Explicit Tauren/Druide opt-in only. Other profiles keep the existing nine-world compositor.
+ * Art is local WebP, ~300 KB; no external image/script request or duplicated profile data.
+ */
+html[data-binch-shaaby="true"]{
+ --shaaby-bronze:#d5b47d;--shaaby-gold:#f0d5a1;--shaaby-forest:#142820;
+ --shaaby-leaf:#a3c88c;--shaaby-wood:#2b201b;--shaaby-ink:#f4e9ce;
+ --br-gold:var(--shaaby-gold);--br-edge:#9079589a;
+}
+html[data-binch-shaaby="true"] body{
+ background-color:#080f12;
+}
+html[data-binch-shaaby="true"] #app.shell{
+ --br-module:#a3bd86;
+}
+/* The real (data-driven) character card—not an isolated demo—is the hero. */
+html[data-binch-shaaby="true"] #page-hub .binch-character-card{
+ min-height:clamp(555px,51vw,770px);
+ border:1px solid #ddc393c9;
+ border-radius:10px 34px 10px 30px;
+ background:#0b181c;
+ box-shadow:0 35px 90px #000c,inset 0 0 0 6px #e3c58b0c,0 0 0 1px #6f694d;
+ isolation:isolate;
+}
+html[data-binch-shaaby="true"] #page-hub .binch-character-card:has(.binch-identity-composition)::before{
+ background:none!important;filter:none!important;
+}
+html[data-binch-shaaby="true"] #page-hub .binch-character-card > .binch-identity-composition{
+ position:absolute;inset:0;z-index:0;overflow:hidden;
+ pointer-events:none;border-radius:inherit;
+}
+html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-landscape{
+ background-image:
+   linear-gradient(90deg,#051016f6 0%,#07141bdd 23%,#07151d85 41%,#08141916 67%),
+   linear-gradient(0deg,#071217cd,transparent 34%),
+   url("./shaaby-mulgore.webp");
+ background-repeat:no-repeat;background-position:center,center,65% 46%;
+ background-size:cover;
+ filter:saturate(1.08) contrast(1.05);
+}
+/* The tree / Tauren totem are already painted into the scene.
+   Ivy is a physical foreground ornament rather than a giant wireframe overlay. */
+html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-architecture{
+ opacity:.84;
+ background-image:url("./shaaby-ivy-ornament.svg"),url("./shaaby-ivy-ornament.svg");
+ background-position:left -44px top -35px,right -165px bottom -75px;
+ background-size:clamp(210px,28vw,350px) auto,clamp(225px,30vw,360px) auto;
+ background-repeat:no-repeat;
+ mix-blend-mode:normal;filter:drop-shadow(0 11px 10px #0009);
+ mask-image:none;
+}
+html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-aura{
+ background:radial-gradient(ellipse at 72% 18%,#b0d88b2e,transparent 44%),radial-gradient(ellipse at 48% 89%,#4a8a4f30,transparent 45%);
+ opacity:.65;
+}
+html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-professions{
+ color:#d6e6ac;text-shadow:0 0 25px #a9d38c99;
+ opacity:.75;
+}
+html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-professions::before{
+ content:"❧";font-size:2.7rem;right:6%;bottom:9%;
+}
+html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-professions::after{
+ content:"⚗";font-size:1.65rem;right:17%;bottom:15%;
+}
+/* Existing modules remain entirely real: only their surfaces and affordances change. */
+html[data-binch-shaaby="true"] #app .app-head .identity,
+html[data-binch-shaaby="true"] #binch-profile-trigger.identity{
+ border:1px solid #d9c08c9f;
+ border-radius:15px 5px 15px 5px;
+ background:linear-gradient(122deg,#263a2dec,#10211fe9 68%,#30291fd9);
+ box-shadow:inset 0 1px #f2d8ab2b,0 9px 24px #0006;
+ color:#f7eace;
+}
+html[data-binch-shaaby="true"] #binch-profile-trigger.identity::after{
+ content:"✦";color:#c0dca0;
+}
+html[data-binch-shaaby="true"] #binch-profile-trigger.identity:hover{
+ border-color:#e9d49f;box-shadow:0 0 0 2px #d6b97f40,0 10px 32px #0008;
+}
+html[data-binch-shaaby="true"] #app nav.nav{
+ border:1px solid #8d795b9d;border-radius:13px 13px 7px 7px;
+ background:linear-gradient(110deg,#203329f2,#0d1a1af5);
+ box-shadow:inset 0 1px #f1dfb123,0 14px 35px #000a;
+}
+html[data-binch-shaaby="true"] #app nav.nav button{
+ border-radius:9px 9px 4px 4px;
+ background:linear-gradient(138deg,#26372e,#142420);
+ border-color:#8d96735d;
+}
+html[data-binch-shaaby="true"] #app nav.nav button.active{
+ border-color:#dfc487;color:#fff1cc;
+ background:linear-gradient(135deg,#786240,#354d36 76%);
+ box-shadow:inset 0 2px #ffefb36b,0 0 18px #a3ba7d36;
+}
+/* Signature foreground ornament for hero; must never cover buttons. */
+html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-renaissance-stage{
+ border:1px solid #e6c38d6c;
+ border-radius:6px 24px 6px 23px;
+ box-shadow:inset 0 0 0 2px #0003;
+ background:linear-gradient(132deg,#f1dfa00f,transparent 26%,transparent 72%,#f0bd751a);
+}
+html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-kicker{
+ color:#d5e6b0;letter-spacing:.22em;text-shadow:0 2px 13px #00100b;
+}
+html[data-binch-shaaby="true"] #page-hub .binch-character-card h1{
+ color:#ffeed2;text-shadow:0 4px 18px #000c,0 1px 0 #f2d3a18c;
+ font-family:Georgia,Cinzel,serif;
+}
+html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-level{
+ border-color:#b9b98d;box-shadow:0 0 23px #739d594c;
+}
+html[data-binch-shaaby="true"] #app :is(.tile,.binch-route,.binch-gm-watch,.panel.section){
+ border:1px solid #a8916d86;
+ border-radius:14px 20px 9px 15px;
+ background-color:#111f1d;
+ background-image:
+  url("./shaaby-ivy-ornament.svg"),
+  radial-gradient(ellipse at 100% 0%,#527b4b18,transparent 55%),
+  linear-gradient(145deg,#1c2b25f7,#101e1deb 63%,#201e1aee);
+ background-size:120px auto,cover,cover;
+ background-position:right -49px top -22px,center,center;
+ background-repeat:no-repeat;
+ box-shadow:0 16px 35px #0007,inset 0 1px #e7c7931d;
+}
+html[data-binch-shaaby="true"] #app :is(.tile,.binch-route,.binch-gm-watch,.panel.section) :is(h2,h3){
+ color:#f5dfb1;text-shadow:0 2px 15px #0005;
+}
+html[data-binch-shaaby="true"] #page-hub .binch-renaissance-portal{
+ border:1px solid #b5a17a8e;border-radius:15px 16px 8px 13px;
+ background-image:radial-gradient(ellipse at 80% 0%,#a9c98813,transparent 58%),linear-gradient(135deg,#28382b,#131e1d);
+ box-shadow:inset 0 1px #e9cf9a24,0 16px 25px #0005;
+}
+html[data-binch-shaaby="true"] #page-hub .binch-renaissance-portal:hover{
+ border-color:#d7c78e;
+ box-shadow:0 0 0 1px #c5df9a56,0 11px 30px #0009,0 0 25px #93b37029;
+}
+html[data-binch-shaaby="true"] #app :is(button,a,input,select,textarea):focus-visible{
+ outline:3px solid #f5d79a;outline-offset:3px;
+}
+html[data-binch-shaaby="true"] #app :is(button,.btn):hover{
+ transition-duration:.2s;
+}
+/* True reforge preview: selection is a draft and never writes persistent data. */
+.binch-reforge-preview[data-binch-shaaby-preview="true"]{
+ min-height:clamp(250px,33vw,360px);
+ border-color:#dcc48e;
+ background-image:
+  linear-gradient(90deg,#08191eef,#0c1f229c 54%,#0919201a),
+  url("./shaaby-mulgore.webp");
+ background-size:cover;
+ background-position:center,67% center;
+ box-shadow:inset 0 0 0 8px #dcc48e13,0 18px 42px #0008;
+}
+.binch-reforge-preview[data-binch-shaaby-preview="true"]::before{
+ background-image:url("./shaaby-ivy-ornament.svg");
+ background-size:auto 100%;background-position:left bottom;
+ opacity:.27;filter:none;mask-image:none;
+}
+.binch-reforge-preview[data-binch-shaaby-preview="true"] .binch-reforge-summary{
+ font-size:clamp(1.13rem,2.8vw,2.15rem);
+ color:#fce9c8;text-shadow:0 3px 16px #000;
+}
+html[data-binch-shaaby="true"] .binch-reforge-dialog{
+ border-color:#d2b885;border-radius:16px 26px 11px 21px;
+ background:linear-gradient(140deg,#16271fdc,#0b171a 65%,#22211a);
+}
+html[data-binch-shaaby="true"] .binch-reforge-dialog .binch-reforge-frame{
+ background-image:url("./shaaby-ivy-ornament.svg");
+ background-position:right -105px top -67px;background-size:245px auto;
+ background-repeat:no-repeat;
+}
+html[data-binch-shaaby="true"] .binch-reforge-dialog .binch-reforge-set legend{
+ color:#e9d1a0;
+}
+html[data-binch-shaaby="true"] .binch-reforge-dialog .binch-reforge-choice.selected{
+ border-color:#c7cf94;background:linear-gradient(120deg,#35533e,#24352c);
+}
+/* Preserve clean dark-mode mobile readability and simple compositing. */
+@media(max-width:760px){
+ html[data-binch-shaaby="true"] #page-hub .binch-character-card{
+  min-height:560px;border-radius:10px 22px 9px 18px;
+ }
+ html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-landscape{
+  background-image:
+   linear-gradient(180deg,#071418cc 0%,#07141845 33%,#071418cc 72%,#071418f3 100%),
+   linear-gradient(90deg,#07141885,#07141820),
+   url("./shaaby-mulgore.webp");
+  background-position:center,center,71% 42%;
+  background-size:cover;
+ }
+ html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-architecture{
+  background-size:205px auto,190px auto;
+  background-position:left -65px top -45px,right -118px bottom -42px;
+  opacity:.54;
+ }
+ html[data-binch-shaaby="true"] #page-hub .binch-character-card h1{
+  font-size:clamp(1.8rem,7.5vw,3rem);
+ }
+ html[data-binch-shaaby="true"] #app :is(.tile,.panel.section,.binch-route){
+  background-size:95px auto,cover,cover;
+ }
+ .binch-reforge-preview[data-binch-shaaby-preview="true"]{
+  min-height:240px;background-position:center,74% center;
+ }
+}
+@media(max-width:390px){
+ html[data-binch-shaaby="true"] #page-hub .binch-character-card{
+  min-height:525px;
+ }
+ html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-landscape{
+  background-position:center,center,76% 38%;
+ }
+}
+/* Respect reduced motion and the existing real "mode léger" control. */
+@media(prefers-reduced-motion:reduce){
+ html[data-binch-shaaby="true"] #page-hub .binch-character-card *,
+ html[data-binch-shaaby="true"] #app nav.nav button{
+  animation:none!important;transition:none!important;
+ }
+}
+html[data-binch-detail="lite"][data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-aura,
+html[data-binch-detail="lite"][data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-professions{
+ display:none;
+}
+html[data-binch-detail="lite"][data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-landscape{
+ filter:none;
+}
+html[data-binch-detail="lite"][data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-architecture{opacity:.2}
+html[data-binch-detail="lite"][data-binch-shaaby="true"] #app :is(.tile,.panel.section){box-shadow:none}
+@media(forced-colors:active){
+ html[data-binch-shaaby="true"] #app :is(.tile,.panel.section,.binch-character-card){
+  border:2px solid CanvasText;background:Canvas;color:CanvasText;box-shadow:none;
+ }
+ html[data-binch-shaaby="true"] #page-hub .binch-character-card .binch-identity-composition{display:none}
+ .binch-reforge-preview[data-binch-shaaby-preview="true"]{background:Canvas;border:2px solid CanvasText}
+}
