@@ -90,7 +90,7 @@
 
 /* Faith stays accessible without covering the genuine four-button mobile dock. */
 @media(max-width:760px) and (min-height:540px){
- body.binch-mobile-active #binch-faith-dock{
+ #binch-faith-dock{
   bottom:calc(111px + env(safe-area-inset-bottom,0px))!important;
   right:max(12px,env(safe-area-inset-right,0px));
   min-height:43px;
@@ -99,7 +99,7 @@
   font-size:.73rem;
   white-space:nowrap;
  }
- body.binch-mobile-active #binch-faith-dialogue:not([hidden]){
+ #binch-faith-dialogue:not([hidden]){
   bottom:calc(164px + env(safe-area-inset-bottom,0px))!important;
   max-height:min(64dvh,620px);
  }
