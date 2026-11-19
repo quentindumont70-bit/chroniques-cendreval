@@ -337,3 +337,40 @@ html[data-binch-detail="lite"]:is([data-binch-shaaby="true"],[data-binch-forsake
  }
  html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub.binch-front-ready #binch-front .binch-front-hero::before{display:none}
 }
+
+/* Preview-driven reforge: the saved identity stays untouched until Apply. */
+.binch-reforge-dialog[data-binch-preview="shaaby"]{
+ --p14-preview-metal:#d9bd86;--p14-preview-tint:#1c3026;--p14-preview-ornament:url("./shaaby-ivy-ornament.svg");
+ border-color:#d5b684;
+ border-radius:10px 29px 9px 20px;
+}
+.binch-reforge-dialog[data-binch-preview="forsaken"]{
+ --p14-preview-metal:#c1a0d0;--p14-preview-tint:#282035;--p14-preview-ornament:url("./forsaken-occult-gear.svg");
+ border-color:#aa90bc;
+ border-radius:4px 24px 4px 17px;
+}
+.binch-reforge-dialog[data-binch-preview="other"]{
+ --p14-preview-metal:#bea988;--p14-preview-tint:#172329;--p14-preview-ornament:none;
+}
+.binch-reforge-dialog[data-binch-preview] .binch-reforge-frame{
+ background-image:var(--p14-preview-ornament),linear-gradient(130deg,var(--p14-preview-tint),#09141de9);
+ background-size:210px auto,cover;
+ background-position:right -78px top -60px,center;
+ background-repeat:no-repeat;
+}
+.binch-reforge-dialog[data-binch-preview] .binch-reforge-header h2,
+.binch-reforge-dialog[data-binch-preview] .binch-reforge-set legend{
+ color:var(--p14-preview-metal);
+}
+.binch-reforge-dialog[data-binch-preview] .binch-reforge-choice.selected{
+ border-color:var(--p14-preview-metal);
+ box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--p14-preview-metal) 50%,transparent),0 4px 18px #0006;
+}
+.binch-reforge-dialog[data-binch-preview] .binch-reforge-footer{
+ background:linear-gradient(transparent,#09151bdd 35%,#09151bea);
+}
+@media(max-width:760px){
+ .binch-reforge-dialog[data-binch-preview] .binch-reforge-frame{
+  background-size:150px auto,cover;
+ }
+}
