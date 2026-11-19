@@ -2684,7 +2684,7 @@ function saveFailure(error){
 }
 function dirty(){
  secureGen++;
- if(secureConflictDetected){saveStatus('error',SECURE_CONFLICT_MESSAGE);return}
+ if(typeof secureConflictDetected!=='undefined'&&secureConflictDetected){saveStatus('error',SECURE_CONFLICT_MESSAGE);return}
  saveStatus('pending','Chiffrement et enregistrement en cours…');
  clearTimeout(secureTimer);secureTimer=setTimeout(()=>flush().catch(saveFailure),100);
 }
@@ -2692,7 +2692,7 @@ function dirty(){
 // Sur d'anciens navigateurs, conserver la verification optimiste preexistante.
 function writeEncryptedVaultRecord(record){
  const write=()=>{
-  if(secureConflictDetected)throw Error('Conflit de sauvegarde : session périmée, écriture bloquée');
+  if(typeof secureConflictDetected!=='undefined'&&secureConflictDetected)throw Error('Conflit de sauvegarde : session périmée, écriture bloquée');
   if(localStorage.getItem(SECURE_KEY)!==secureLastWrittenRecord)throw Error('Conflit de sauvegarde : coffre modifié dans un autre onglet');
   localStorage.setItem(SECURE_KEY,record);
   if(localStorage.getItem(SECURE_KEY)!==record)throw Error('Le navigateur n’a pas confirmé l’enregistrement chiffré');
@@ -2711,7 +2711,7 @@ if(typeof window!=='undefined'&&typeof window.addEventListener==='function'){
 }
 async function flush(){
  if(!secureKey)throw Error('Chiffrement non initialisé');
- if(secureConflictDetected){
+ if(typeof secureConflictDetected!=='undefined'&&secureConflictDetected){
   const error=Error('Conflit de sauvegarde : session périmée');
   saveFailure(error);
   throw error;
@@ -2743,7 +2743,7 @@ async function flush(){
 async function ensureVaultSaved(){
  for(let attempt=0;attempt<5;attempt++){
   await flush();
-  if(secureConflictDetected)throw Error('Conflit de sauvegarde : session périmée');
+  if(typeof secureConflictDetected!=='undefined'&&secureConflictDetected)throw Error('Conflit de sauvegarde : session périmée');
   if(secureSavedGen===secureGen){
    if(localStorage.getItem(SECURE_KEY)!==secureLastWrittenRecord){
     const error=Error('Conflit de sauvegarde : coffre modifié dans un autre onglet');
