@@ -28,7 +28,7 @@
   function placeEditor(){
    if(!editor)return;
    if(window.matchMedia('(max-width:'+MAX+'px)').matches){
-    if(editor.parentElement!==nav){nav.append(editor);editor.classList.add('p15-nav-editor')}
+    if(editor.parentElement!==nav){nav.prepend(editor);editor.classList.add('p15-nav-editor')}
    }else if(editor.parentElement===nav){
     editor.classList.remove('p15-nav-editor');
     if(editorParent?.isConnected)editorParent.insertBefore(editor,editorNext?.parentElement===editorParent?editorNext:null);
