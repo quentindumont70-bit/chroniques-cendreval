@@ -23,7 +23,7 @@ test('P15: responsive header keeps the full LA BINCH wordmark visible at 320/390
 
 test('P15: editor is reparented into existing mobile menu, never removed or duplicated',()=>{
  assert.ok(mobile.includes("const editor=$('#binch-editor-toggle')"));
- assert.ok(mobile.includes('nav.append(editor)'));
+ assert.ok(mobile.includes('nav.prepend(editor)'));
  assert.ok(mobile.includes("editor.classList.add('p15-nav-editor')"));
  assert.ok(mobile.includes('editorParent.insertBefore(editor'));
  assert.ok(iphone.includes('#app nav.nav.p14-nav-managed #binch-editor-toggle.p15-nav-editor'));
@@ -49,7 +49,7 @@ test('P15: 4 new craft engravings are local, original, light assets',()=>{
   assert.ok(professions.includes('url("./'+name+'")'),'craft card must reference '+name);
  }
  assert.equal(new Set(files.map(name=>read(name))).size,4,'engraving art must not be copy/paste');
- assert.ok(html.includes('./premium-professions-p15.css?v=001'));
+ assert.ok(html.includes('./premium-professions-p15.css?v=002'));
 });
 
 test('P15: real selected jobs receive specific visuals, with no fabricated craft data',()=>{
