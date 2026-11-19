@@ -1,0 +1,154 @@
+/* Tournée V260 — Medical Ops: optional, visual-only clinical cockpit. */
+[data-theme=medicalops]{
+ color-scheme:dark;
+ --bg:#071521;--bg2:#0b2030;--card:#112a3a;--ink:#edf9fc;--mut:#b1cdd6;
+ --acc:#79e7ef;--acc-ink:#05202b;--soft:#183b48;--acc2:#efc486;
+ --warn:#ffd197;--warn-soft:#3a2f26;--ok:#92edc8;--line:#32576a;
+ --hdr:linear-gradient(118deg,#081b29 0%,#103849 55%,#081d2e 100%);
+ --hdr-ink:#e9fbfd;--sh:0 11px 32px rgba(1,12,20,.25),inset 0 1px rgba(177,244,247,.04);
+ --r:18px;--fh:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--tl:#35627b;
+}
+[data-theme=medicalops] body{
+ background:radial-gradient(ellipse 92% 32% at 92% -4%,rgba(24,129,147,.15),transparent 76%),linear-gradient(180deg,#071521 0%,#0a1b2b 42%,#071521 100%);
+ color:var(--ink);
+}
+[data-theme=medicalops] header{
+ border-bottom:1px solid #276375;
+ box-shadow:0 8px 24px rgba(0,10,16,.19),inset 0 1px rgba(168,248,255,.13);
+}
+[data-theme=medicalops] header::before{
+ content:"";pointer-events:none;position:absolute;top:0;right:0;left:0;height:2px;
+ background:linear-gradient(90deg,transparent,#5bd5e2 32%,#9df8f1 70%,transparent);opacity:.7;
+}
+[data-theme=medicalops] header h1{font-weight:850;letter-spacing:-.025em}
+[data-theme=medicalops] header small{color:#d4edf3;opacity:1}
+[data-theme=medicalops] .hbtn{
+ width:44px;height:44px;border:1px solid rgba(158,243,247,.3);
+ background:rgba(14,54,72,.72);border-radius:12px;
+}
+[data-theme=medicalops] .hbtn:focus-visible,
+[data-theme=medicalops] .tc:focus-visible,
+[data-theme=medicalops] .chip:focus-visible,
+[data-theme=medicalops] .ck:focus-visible,
+[data-theme=medicalops] nav.tabs button:focus-visible{
+ outline:3px solid #a6fff1;outline-offset:2px;
+}
+[data-theme=medicalops] main{max-width:770px}
+[data-theme=medicalops] nav.tabs{
+ background:rgba(9,32,48,.95);border-top:1px solid #3b6d7f;
+ box-shadow:0 -7px 22px rgba(0,11,20,.3);
+}
+[data-theme=medicalops] nav.tabs button{color:#bdd5df;min-height:53px}
+[data-theme=medicalops] nav.tabs button.on{color:#85f5ee}
+[data-theme=medicalops] nav.tabs button.on::before{background:#91f2ec;width:44px;height:3px;box-shadow:0 0 14px rgba(106,241,229,.33)}
+[data-theme=medicalops] .chip{min-height:48px;border-radius:13px;background:#112b3c;border-color:#31546a;box-shadow:inset 0 1px rgba(178,244,253,.05)}
+[data-theme=medicalops] .chip.on{background:linear-gradient(135deg,#77e9ef,#49b8cd);color:#04202c;border-color:#90faff}
+[data-theme=medicalops] .chip.today:not(.on){border-color:#78e7ef;color:#96f8f1}
+[data-theme=medicalops] .tq-pro-overview{
+ position:relative;isolation:isolate;overflow:hidden;padding:20px 18px 19px;
+ border-radius:22px;border-color:#4b8793;
+ background:
+  linear-gradient(90deg,rgba(77,187,203,.055) 1px,transparent 1px),
+  linear-gradient(rgba(77,187,203,.055) 1px,transparent 1px),
+  radial-gradient(circle at 100% 0%,rgba(25,146,165,.27),transparent 57%),
+  linear-gradient(137deg,#133447 0%,#0d2434 72%);
+ background-size:36px 36px,36px 36px,auto,auto;
+ box-shadow:0 16px 36px rgba(0,12,20,.32),inset 0 1px rgba(182,252,255,.12);
+}
+[data-theme=medicalops] .tq-pro-overview::before{
+ content:"";position:absolute;left:0;top:0;height:3px;width:100%;
+ background:linear-gradient(90deg,#8df8ee,#2da6bd 70%,transparent);
+}
+[data-theme=medicalops] .tq-pro-overline{letter-spacing:.17em;font-weight:900;font-size:10.5px;color:#9df9ee}
+[data-theme=medicalops] .tq-pro-overline i{background:#99f6d4;box-shadow:0 0 0 3px rgba(120,228,202,.13)}
+[data-theme=medicalops] .tq-pro-overview-date{color:#c5e5ea;font-variant-numeric:tabular-nums}
+[data-theme=medicalops] .tq-pro-overview-summary{
+ font-size:clamp(17px,4vw,21px);font-weight:800;letter-spacing:-.022em;line-height:1.35;
+ margin:13px 0 17px;color:#effdff;
+}
+[data-theme=medicalops] .tq-pro-overview-stats{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:17px;
+}
+[data-theme=medicalops] .tq-pro-overview-stats>span{
+ min-width:0;display:flex;flex-direction:column;gap:0;align-items:flex-start;
+ background:rgba(8,31,46,.78);border:1px solid #396879;border-radius:13px;
+ padding:10px 10px 9px;color:#c0dce4;
+}
+[data-theme=medicalops] .tq-pro-overview-stats strong{
+ font-size:clamp(22px,5vw,29px);line-height:1.14;color:#9bf6f1;letter-spacing:-.035em;
+}
+[data-theme=medicalops] .tq-pro-overview-actions button{
+ min-height:48px;border:1px solid #39677b;border-radius:12px;
+ background:rgba(17,58,75,.9);color:#e4fafb;font-weight:780;
+}
+[data-theme=medicalops] .tq-pro-overview-actions .tq-pro-primary{
+ background:linear-gradient(120deg,#9af5ec,#64ccdc);color:#062431;border-color:#b7fff3;
+ box-shadow:0 6px 17px rgba(44,168,186,.17);
+}
+[data-theme=medicalops] .hero{
+ background:linear-gradient(110deg,#133b4b,#112737);
+ border:1px solid #3b7180;border-radius:20px;box-shadow:var(--sh);
+}
+[data-theme=medicalops] .hero .ring{width:64px;height:64px;flex-basis:64px;box-shadow:0 0 0 5px rgba(84,188,204,.07)}
+[data-theme=medicalops] .hero .ring b{background:#112b3b;color:#ebfbfb}
+[data-theme=medicalops] .hero .k{color:#8df3ed;letter-spacing:.12em}
+[data-theme=medicalops] .stop .card{
+ border:1px solid #2e5466;background:#11293b;border-radius:15px;
+ box-shadow:0 8px 20px rgba(1,10,19,.18);
+}
+[data-theme=medicalops] .stop.isnext .card,
+[data-theme=medicalops] .card.next{
+ border-color:#71dfe9;box-shadow:0 0 0 1px rgba(116,233,238,.42),0 12px 25px rgba(0,12,20,.22);
+}
+[data-theme=medicalops] .stop.isnext .dot{box-shadow:0 0 0 5px rgba(112,230,236,.13)}
+[data-theme=medicalops] .stop .tcol::after{background:#38637a}
+[data-theme=medicalops] .time{color:#e8f9fc;font-variant-numeric:tabular-nums}
+[data-theme=medicalops] .soin{background:#1a3d49;color:#eafafa;border:1px solid #36687b}
+[data-theme=medicalops] .tq-pro-extras,
+[data-theme=medicalops] .blk,
+[data-theme=medicalops] .li{background:#122b3a;border-color:#35576a}
+[data-theme=medicalops] .tq-pro-extras>summary{background:linear-gradient(90deg,rgba(31,108,126,.15),transparent)}
+[data-theme=medicalops] .tq-sticky{
+ transform:none;border-radius:18px;padding:16px;
+ background:linear-gradient(142deg,#1e3941,#172d39);color:#f0faf8;
+ border:1px solid #567d7c;box-shadow:0 8px 25px rgba(0,12,20,.17);
+}
+[data-theme=medicalops] .tq-sticky::before{display:none}
+[data-theme=medicalops] .tq-sticky-head{color:#aef6e5}
+[data-theme=medicalops] .tq-sticky .sub,
+[data-theme=medicalops] .tq-sticky-hint{color:#c6deda}
+[data-theme=medicalops] .tq-sticky-item{background:#102a35;border-color:#467077;color:#ebfcf7}
+[data-theme=medicalops] .tq-sticky-dash{color:#a5f0e9}
+[data-theme=medicalops] .tq-sticky input,
+[data-theme=medicalops] .tq-sticky textarea{
+ color:#f0fbfa;background:#0b2533;border:1px solid #63929c;border-radius:11px;
+}
+[data-theme=medicalops] .tq-sticky input::placeholder,
+[data-theme=medicalops] .tq-sticky textarea::placeholder{color:#bdd0d8;opacity:1}
+[data-theme=medicalops] .tq-sticky button,
+[data-theme=medicalops] .tq-sticky .tq-meta button{
+ background:#1e4754;border:1px solid #5e939d;border-radius:11px;color:#effcfa;
+}
+[data-theme=medicalops] .tq-sticky input:focus-visible,
+[data-theme=medicalops] .tq-sticky textarea:focus-visible,
+[data-theme=medicalops] .tq-sticky button:focus-visible{
+ outline:3px solid #a0fbef;outline-offset:2px;
+}
+[data-theme=medicalops] .tc.on{border-color:#99f5ee}
+[data-theme=medicalops] .tq-theme-help{color:#c4dde3;font-size:12px;line-height:1.5;margin:0 0 12px}
+[data-theme=medicalops] #tour-save-strip[data-state="saved"]{background:#103d37;color:#d6fff0}
+[data-theme=medicalops] #tour-save-strip[data-state="pending"]{background:#57421f;color:#fff1cb}
+[data-theme=medicalops] #tour-save-strip[data-state="error"]{
+ background:#612a2f;color:#fff0ed;border-bottom:2px solid #ffaaa3;
+}
+@media(max-width:380px){
+ [data-theme=medicalops] .tq-pro-overview{padding:15px 12px}
+ [data-theme=medicalops] .tq-pro-overview-stats{gap:5px}
+ [data-theme=medicalops] .tq-pro-overview-stats>span{padding:8px 6px;font-size:11px}
+ [data-theme=medicalops] .tq-pro-overview-actions button{padding:9px 6px}
+}
+@media(prefers-reduced-motion:reduce){
+ [data-theme=medicalops] *,[data-theme=medicalops] *::before,[data-theme=medicalops] *::after{
+  animation:none!important;scroll-behavior:auto!important;transition:none!important;
+ }
+}
