@@ -582,6 +582,7 @@ body.tournee-locked #tour-save-strip{display:none}
 .tq-guide{font-size:12px;color:var(--mut);line-height:1.5}
 @media(max-width:520px){.tq-week-grid{grid-template-columns:1fr}.tq-chat-form input{flex-basis:100%}.tq-week .tq-actions button{flex-basis:100%}}
 </style>
+<link rel="stylesheet" href="./tournee-medical-ops.css">
 </head>
 <body class="tournee-locked tournee-checking"><section id="tour-security-gate" hidden role="dialog" aria-modal="true" aria-labelledby="tour-backup-title">
 <h1 id="tour-backup-title">Mes sauvegardes</h1>
@@ -673,7 +674,7 @@ let P=[];
 const TQ=window.TOURNEE_QUICK;
 try{const l=JSON.parse(TOUR_STORE.getItem("tidel_Pl")||"null");if(Array.isArray(l)&&l.length)P=l}catch(e){}
 const PH={};
-const THEMES=[["auto","Auto","Suit le téléphone","linear-gradient(90deg,#edf3f4 50%,#0a0f15 50%)","#0b6e69","#fff"],["lagon","Lagon","Clair, apaisant","#edf3f4","#0b6e69","#fff"],["nuit","Nuit","Tournée à l'aube","#0a0f15","#62b4ff","#141d27"],["aube","Aube","Chaud, éditorial","#f8f0e6","#b9502a","#fffaf3"],["foret","Forêt","Doux, naturel","#ecf1e8","#3c7448","#fbfcf8"],["neon","Néon","Breakcore mode","#0c0612","#ff3ea5","#180d25"],["soleil","Plein soleil","Contraste max","#ffffff","#000000","#ffe600"],["sakura","Sakura","Cerisiers en fleurs","#fbeef2","#c2185b","#fff8fa"],["espace","Espace","Étoiles filantes","#070a1f","#9d8cff","#121a3a"],["tropiques","Tropiques","Lagon, frangipaniers","#e9f7f3","#00897b","#fffdf6"],["volcan","Volcan","Piton de la Fournaise","#140b0a","#ff6a2b","#22130f"],["marin","Marin","Lagon et petits poissons","#c9f1f0","#0097a7","#f4fdfc"],["aurore","Aurore boréale","Voiles verts et violets","#06121a","#3dffb5","#0e1f2a"],["pluie","Pluie lo-fi","Nuit de pluie en ville","#12131c","#ffb86b","#1c1e2b"],["arcade","Arcade","Rétro 8-bit","#0d0221","#f15bb5","#1a0b38"]];
+const THEMES=[["auto","Auto","Suit le téléphone","linear-gradient(90deg,#edf3f4 50%,#0a0f15 50%)","#0b6e69","#fff"],["lagon","Lagon","Clair, apaisant","#edf3f4","#0b6e69","#fff"],["nuit","Nuit","Tournée à l'aube","#0a0f15","#62b4ff","#141d27"],["medicalops","Medical Ops","Cockpit clinique · V260","#071a27","#76e5ed","#143547"],["aube","Aube","Chaud, éditorial","#f8f0e6","#b9502a","#fffaf3"],["foret","Forêt","Doux, naturel","#ecf1e8","#3c7448","#fbfcf8"],["neon","Néon","Breakcore mode","#0c0612","#ff3ea5","#180d25"],["soleil","Plein soleil","Contraste max","#ffffff","#000000","#ffe600"],["sakura","Sakura","Cerisiers en fleurs","#fbeef2","#c2185b","#fff8fa"],["espace","Espace","Étoiles filantes","#070a1f","#9d8cff","#121a3a"],["tropiques","Tropiques","Lagon, frangipaniers","#e9f7f3","#00897b","#fffdf6"],["volcan","Volcan","Piton de la Fournaise","#140b0a","#ff6a2b","#22130f"],["marin","Marin","Lagon et petits poissons","#c9f1f0","#0097a7","#f4fdfc"],["aurore","Aurore boréale","Voiles verts et violets","#06121a","#3dffb5","#0e1f2a"],["pluie","Pluie lo-fi","Nuit de pluie en ville","#12131c","#ffb86b","#1c1e2b"],["arcade","Arcade","Rétro 8-bit","#0d0221","#f15bb5","#1a0b38"]];
 const ALL=[0,1,2,3,4,5,6], JN=["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"], JC=["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"];
 const st={get(k,d){try{const v=TOUR_STORE.getItem("tidel_"+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{TOUR_STORE.setItem("tidel_"+k,JSON.stringify(v))}catch(e){}}};
 
@@ -932,7 +933,7 @@ el.addEventListener("touchend",e=>{if(!on)return;on=0;const dx=e.changedTouches[
 function closePk(){const k=document.getElementById("pk");if(k.classList.contains("on")&&k.querySelector(".gd .dots")){st.set("guided",1);st.set("news",NEWS)}k.classList.remove("on")}
 function renderPk(){
  const cur=st.get("theme","auto"), fs=st.get("fs",100);
- document.getElementById("pki").innerHTML=`<div class="grab"></div><h3>Ambiance</h3><div class="tg">${THEMES.map(([id,n,d,bg,ac,cd])=>`<button class="tc ${id===cur?"on":""}" onclick="setTheme('${id}')"><div class="pv" style="background:${bg}"><i style="background:${cd};--x:${ac};box-shadow:0 0 0 1px rgba(127,127,127,.2)"></i><b style="position:absolute;top:8px;left:8px;width:18px;height:18px;border-radius:50%;background:${ac}"></b></div><span>${n}<em>${d}</em></span></button>`).join("")}</div>
+ document.getElementById("pki").innerHTML=`<div class="grab"></div><h3>Ambiance</h3><p class="tq-theme-help">Medical Ops est une présentation facultative. Tu peux revenir à Lagon ou Nuit à tout moment, sans déplacer les dossiers.</p><div class="tg">${THEMES.map(([id,n,d,bg,ac,cd])=>`<button type="button" class="tc ${id===cur?"on":""}" aria-pressed="${id===cur}" onclick="setTheme('${id}')"><div class="pv" style="background:${bg}"><i style="background:${cd};--x:${ac};box-shadow:0 0 0 1px rgba(127,127,127,.2)"></i><b style="position:absolute;top:8px;left:8px;width:18px;height:18px;border-radius:50%;background:${ac}"></b></div><span>${n}<em>${d}</em></span></button>`).join("")}</div>
  ${FXT[document.documentElement.dataset.theme]?`<div class="fs"><span>Animations</span><span class="seg"><button class="${st.get("fx",1)?"on":""}" onclick="st.set('fx',1);skStop();skSync();renderPk()">Oui</button><button class="${st.get("fx",1)?"":"on"}" onclick="st.set('fx',0);skStop();renderPk()">Non</button></span></div>`:""}<div class="fs"><span>Son de validation</span><span class="seg"><button class="${st.get("snd",0)?"on":""}" onclick="st.set('snd',1);ding();renderPk()">Oui</button><button class="${st.get("snd",0)?"":"on"}" onclick="st.set('snd',0);renderPk()">Non</button></span></div><div class="fs"><span>Taille du texte</span><span class="seg">${[[92,"A−"],[100,"A"],[112,"A+"],[124,"A++"],[140,"XL"]].map(([v,l])=>`<button class="${fs===v?"on":""}" onclick="setFs(${v})">${l}</button>`).join("")}</span></div>`;
 }
 function setFs(v){st.set("fs",v);document.documentElement.style.fontSize=v+"%";document.body.style.fontSize=(16*v/100)+"px";renderPk()}
@@ -1145,6 +1146,10 @@ let gi=0;
 function guide(i){gi=i;const g=GUIDE[i],el=document.getElementById("pk");document.getElementById("pki").innerHTML=`<div class="grab"></div><div class="gd"><button class="gx" onclick="closePk()" aria-label="Fermer le guide">✕</button><b>${g[0]}</b><h3>${g[1]}</h3><p>${g[2]}</p><div class="dots">${GUIDE.map((_,k)=>`<i class="${k===i?"on":""}"></i>`).join("")}</div><div class="acts" style="justify-content:center">${i?`<button class="btn ghost" onclick="guide(${i-1})">Retour</button>`:""}${i<GUIDE.length-1?`<button class="btn" onclick="guide(${i+1})">Suivant</button>`:`<button class="btn" onclick="st.set('guided',1);st.set('news',NEWS);closePk()">C'est parti</button>`}</div></div>`;el.classList.add("on")}
 function autoAmb(){const t=st.get("theme","auto");if(t!=="auto")return;const dk=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.dataset.theme=dk?"nuit":"lagon"}
 try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",autoAmb)}catch(e){}
+/* V260 : reprendre le thème choisi après déchiffrement, sans nouveau stockage. */
+const tqBootTheme=st.get("theme","auto");
+if(tqBootTheme==="auto")autoAmb();
+else if(THEMES.some(x=>x[0]===tqBootTheme))document.documentElement.dataset.theme=tqBootTheme;
 
 /* ===== V8 : pense-bêtes datés, météo, proverbe, Sakura ===== */
 let DN=[];
