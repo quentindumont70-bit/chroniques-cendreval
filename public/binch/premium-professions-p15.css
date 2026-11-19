@@ -1,0 +1,184 @@
+/* LA BINCH P15 — actual, data-driven profession cards.
+ * Nine métiers keep their real names and content. Four selected flagship jobs
+ * get original SVG engravings; the remaining five get distinct material rules.
+ * Never invent recipe prices, skill levels or quest rewards.
+ */
+#page-metiers #jobs-content .tile[data-job]{
+ position:relative;isolation:isolate;
+ min-height:clamp(190px,22vw,275px);
+ padding:clamp(18px,3vw,29px);
+ overflow:hidden;
+ border:1px solid #927c60;
+ border-radius:8px 23px 8px 18px;
+ background-color:#0b1820;
+ background-image:linear-gradient(125deg,#101e25fc 0%,#172c30ed 53%,#122128a6 100%);
+ box-shadow:0 15px 38px #0008,inset 0 1px #f4e3c41c;
+ transition:border-color .22s,box-shadow .22s;
+}
+#page-metiers #jobs-content .tile[data-job]>:is(h2,h3,.value,p,div){
+ position:relative;z-index:2;
+ max-width:70%;
+}
+#page-metiers #jobs-content .tile[data-job] .value{
+ font:700 clamp(1.2rem,2vw,1.75rem)/1.2 Georgia,serif;
+ letter-spacing:.012em;
+ text-shadow:0 2px 15px #000b;
+}
+#page-metiers #jobs-content .tile[data-job] p{
+ color:#d9e6dd;
+ font-size:.85rem;line-height:1.6;
+ text-shadow:0 2px 9px #000c;
+}
+#page-metiers #jobs-content .tile[data-job]::before{
+ content:"";position:absolute;inset:0;
+ width:auto;height:auto;
+ pointer-events:none;z-index:0;
+ border:0;opacity:1;
+ background:linear-gradient(95deg,#0b171cf7 0%,#0b1925cc 46%,#0b182415 93%),
+  var(--p15-trade-illustration,none) right -48px center/auto 110% no-repeat;
+}
+#page-metiers #jobs-content .tile[data-job]::after{
+ content:"";position:absolute;
+ right:12px;top:12px;width:13px;height:13px;
+ pointer-events:none;z-index:1;
+ border-top:1px solid var(--p15-trade-line,#ceb58a);
+ border-right:1px solid var(--p15-trade-line,#ceb58a);
+ box-shadow:none;opacity:.9;
+}
+#page-metiers #jobs-content .tile[data-job]:hover{
+ border-color:var(--p15-trade-line,#e1c697);
+ box-shadow:0 22px 45px #000a,inset 0 0 0 1px color-mix(in srgb,var(--p15-trade-line,#e1c697) 30%,transparent);
+}
+#page-metiers #jobs-content .tile[data-job="Herboristerie"]{
+ --p15-trade-illustration:url("./profession-herbalism-p15.svg");
+ --p15-trade-line:#a7daaa;
+ background-image:linear-gradient(134deg,#0a241dfb,#11382bd0,#142821a2);
+ border-radius:23px 8px 23px 11px;
+}
+#page-metiers #jobs-content .tile[data-job="Alchimie"]{
+ --p15-trade-illustration:url("./profession-alchemy-p15.svg");
+ --p15-trade-line:#b9d7c9;
+ background-image:linear-gradient(141deg,#122b30fb,#1a3037eb,#183244b9);
+ border-radius:11px 28px 9px 20px;
+}
+#page-metiers #jobs-content .tile[data-job="Ingénierie"]{
+ --p15-trade-illustration:url("./profession-engineering-p15.svg");
+ --p15-trade-line:#e9c997;
+ background-image:linear-gradient(136deg,#272528fa,#343b38dd,#1b2832ad);
+ border-radius:5px 24px 5px 20px;
+}
+#page-metiers #jobs-content .tile[data-job="Enchantement"]{
+ --p15-trade-illustration:url("./profession-enchanting-p15.svg");
+ --p15-trade-line:#c6afef;
+ background-image:linear-gradient(136deg,#1b1d37fb,#2e2754db,#161d37b4);
+ border-radius:24px 6px 22px 7px;
+}
+#page-metiers #jobs-content .tile[data-job="Minage"]{
+ --p15-trade-line:#d6b18f;
+ background-image:repeating-linear-gradient(132deg,#9e846116 0 3px,transparent 3px 24px),
+ linear-gradient(135deg,#292c30,#182c33);
+ border-radius:4px 20px 4px 15px;
+}
+#page-metiers #jobs-content .tile[data-job="Forge"]{
+ --p15-trade-line:#edaa78;
+ background-image:radial-gradient(ellipse at 85% 70%,#ffb45338,transparent 42%),
+ linear-gradient(135deg,#38271f,#18252d);
+ border-radius:5px 20px 7px 18px;
+}
+#page-metiers #jobs-content .tile[data-job="Couture"]{
+ --p15-trade-line:#d6bcdb;
+ background-image:repeating-linear-gradient(38deg,#d7bae311 0 2px,transparent 2px 16px),
+ linear-gradient(141deg,#2a2133,#1d3035);
+ border-radius:18px 7px 20px 7px;
+}
+#page-metiers #jobs-content .tile[data-job="Dépeçage"]{
+ --p15-trade-line:#d1b69b;
+ background-image:repeating-radial-gradient(ellipse at 90% 75%,#a4805a12 0 2px,transparent 2px 19px),
+ linear-gradient(135deg,#312925,#1b292d);
+ border-radius:22px 7px 14px 6px;
+}
+#page-metiers #jobs-content .tile[data-job="Travail du cuir"]{
+ --p15-trade-line:#d8bc91;
+ background-image:repeating-linear-gradient(90deg,#dbad6e17 0 1px,transparent 1px 13px),
+ linear-gradient(150deg,#312b24,#172b2e);
+ border-radius:7px 19px 9px 23px;
+}
+#page-metiers.active:has(#jobs-content .tile[data-job="Herboristerie"]){
+ --p15-herb-aura:radial-gradient(ellipse at 95% 5%,#83e39c18,transparent 40%);
+}
+#page-metiers.active #jobs-content .tile[data-job="Herboristerie"]::after{
+ content:"❧";width:auto;height:auto;border:0;
+ right:18px;top:24px;font:38px/1 Georgia,serif;
+ color:#b9e7a7;opacity:0;
+ filter:drop-shadow(0 0 7px #88c78b);
+ animation:p15-leaf-appears 17s ease-in-out infinite;
+}
+@keyframes p15-leaf-appears{
+ 0%,58%,93%,100%{opacity:0;transform:translate3d(0,-7px,0) rotate(-20deg)}
+ 65%{opacity:.48;transform:translate3d(-7px,12px,0) rotate(-4deg)}
+ 81%{opacity:.38;transform:translate3d(-26px,49px,0) rotate(28deg)}
+}
+html[data-br-jobs~="clock"] #page-metiers.active #jobs-content .tile[data-job="Ingénierie"]{
+ border-color:#cbb48e;
+}
+html[data-br-jobs~="runes"] #page-metiers.active #jobs-content .tile[data-job="Enchantement"]{
+ box-shadow:0 16px 37px #0008,inset 0 0 0 1px #bea4df27;
+}
+html[data-br-jobs~="leaves"] #page-metiers .panel.section{
+ background-image:var(--p15-herb-aura),linear-gradient(135deg,#102a22ed,#111d28ec)!important;
+ border-color:#9ec694;
+}
+html[data-br-jobs~="clock"] #page-metiers .panel.section{
+ background-image:linear-gradient(130deg,#32282cf1,#162432ed),url("./profession-engineering-p15.svg")!important;
+ background-size:cover,230px auto;background-position:center,right -85px top -55px;
+ background-repeat:no-repeat;
+ border-color:#b6a182;
+}
+html[data-br-jobs~="runes"]:not([data-br-jobs~="clock"]) #page-metiers .panel.section{
+ background-image:linear-gradient(135deg,#202035ed,#132332e9),url("./profession-enchanting-p15.svg")!important;
+ background-size:cover,230px auto;background-position:center,right -80px top -60px;
+ background-repeat:no-repeat;border-color:#af99d3;
+}
+/* The profession page must never pretend to show additional jobs. */
+#page-metiers #jobs-content .tile[data-job]:focus-within{
+ outline:3px solid var(--p15-trade-line,#ead2a6);outline-offset:3px;
+}
+@media(max-width:760px){
+ #page-metiers #jobs-content .tile[data-job]{
+  min-height:198px;padding:20px 16px;
+ }
+ #page-metiers #jobs-content .tile[data-job]::before{
+  background-position:center,right -38px center;
+  background-size:cover,auto 105%;
+ }
+ #page-metiers #jobs-content .tile[data-job] > :is(.value,p,div){
+  max-width:75%;
+ }
+ #page-metiers #jobs-content .tile[data-job] .value{
+  font-size:clamp(1.15rem,5vw,1.55rem);
+ }
+ #page-metiers #jobs-content .tile[data-job] p{font-size:.78rem}
+}
+@media(max-width:390px){
+ #page-metiers #jobs-content .tile[data-job]{min-height:170px;padding:15px 14px}
+ #page-metiers #jobs-content .tile[data-job]::before{
+  background-position:center,right -48px center;
+  background-size:cover,auto 96%;
+ }
+ #page-metiers #jobs-content .tile[data-job] > :is(.value,p,div){max-width:78%}
+}
+@media(prefers-reduced-motion:reduce){
+ #page-metiers #jobs-content .tile[data-job]::after{
+  animation:none!important;opacity:.5;
+ }
+}
+html[data-binch-detail="lite"] #page-metiers #jobs-content .tile[data-job]::after{
+ animation:none!important;opacity:.4;
+}
+@media(forced-colors:active){
+ #page-metiers #jobs-content .tile[data-job]{
+  border:2px solid CanvasText!important;background:Canvas!important;color:CanvasText!important;
+ }
+ #page-metiers #jobs-content .tile[data-job]::before,
+ #page-metiers #jobs-content .tile[data-job]::after{display:none!important}
+}
