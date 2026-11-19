@@ -134,6 +134,20 @@ test('P14: actual toggle opens, closes and restores access on desktop without ne
  assert.equal(navAttributes.has('aria-hidden'),false);
 });
 
+test('P14: actual cinematic mobile hero is one full-width column with readable names and XP intact',()=>{
+ const hero=read('premium-front-p14.css');
+ assert.ok(hero.includes('display:flex!important;'));
+ assert.ok(hero.includes('flex-direction:column!important;'));
+ assert.ok(hero.includes('min-height:clamp(590px,150vw,710px)!important;'));
+ assert.ok(hero.includes('.binch-portrait + div'));
+ assert.ok(hero.includes('overflow-wrap:normal!important'));
+ assert.ok(hero.includes('word-break:normal!important'));
+ assert.ok(hero.includes('.binch-level strong'));
+ assert.ok(hero.includes('width:103px!important;height:103px!important'));
+ assert.ok(!hero.includes('.binch-level{display:none'));
+ assert.ok(hero.includes('max-width:390px'));
+});
+
 test('P14: reforge materials track unsaved draft instead of stored identity',()=>{
  for(const x of ['shaaby','forsaken','other']){
   assert.ok(css.includes('data-binch-preview="'+x+'"'),'missing reforge visual state '+x);
