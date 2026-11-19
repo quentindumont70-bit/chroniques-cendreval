@@ -85,3 +85,20 @@ test('P13: previews are read-only and identity engine keeps existing game data u
  assert.equal(h.original.data.pseudo,'Nécromancien');
  assert.equal(h.original.guild.rank,'GM');
 });
+
+test('P13: gallery compares two original premiums without modifying actual saved profile',()=>{
+ const html=read('premium-sanctuaries-review.html');
+ assert.match(html,/<title>La Binch Renaissance — Deux sanctuaires premium<\/title>/);
+ assert.ok(html.includes('url("./shaaby-mulgore.webp")'));
+ assert.ok(html.includes('url("./forsaken-warlock-premium.webp")'));
+ assert.ok(html.includes('data-pick="tauren"'));
+ assert.ok(html.includes('data-pick="forsaken"'));
+ assert.ok(html.includes("new URLSearchParams(location.search).get('identity')"));
+ assert.ok(html.includes("chosen==='forsaken'?'forsaken':'tauren'"));
+ assert.ok(html.includes('./index.html'));
+ assert.ok(html.includes('aria-pressed'));
+ assert.ok(html.includes('max-width:760px'));
+ assert.ok(html.includes('prefers-reduced-motion:reduce'));
+ assert.ok(!html.includes('localStorage'));
+ assert.ok(!html.includes('fetch('));
+});
