@@ -61,7 +61,7 @@ test('P12: flagship is a real optimized image—not a 400KB inline demo—and is
  assert.ok(css.includes('prefers-reduced-motion:reduce'));
  assert.ok(css.includes('max-width:760px'));
  assert.ok(html.includes('./shaaby-premium-live.css?v=002'));
- assert.ok(html.includes('./visual-identity-compositor.js?v=004'));
+ assert.ok(html.includes('./visual-identity-compositor.js?v=005'));
  assert.ok(!html.includes('data:image/webp;base64'),'do not inline entire artwork into live app');
 });
 
