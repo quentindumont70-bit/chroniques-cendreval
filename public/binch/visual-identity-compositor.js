@@ -101,6 +101,8 @@ function refresh(){
  const c=compose(draft),preview=dialog.querySelector('.binch-reforge-preview');
  preview.dataset.binchShaabyPreview=String(c.profile.race==='Tauren'&&c.profile.classe==='Druide');
  preview.dataset.binchForsakenPreview=String(c.profile.race==='MortVivant'&&c.profile.classe==='Démoniste');
+ // Reforge's surrounding materials follow the unsaved preview, not the saved character.
+ dialog.dataset.binchPreview=c.profile.race==='Tauren'&&c.profile.classe==='Druide'?'shaaby':c.profile.race==='MortVivant'&&c.profile.classe==='Démoniste'?'forsaken':'other';
  preview.style.setProperty('--br-preview-world',c.vars['--br-class-world']);
  preview.style.setProperty('--br-preview-race',c.vars['--br-race-art']);
  preview.style.setProperty('--br-preview-metal',c.race.metal);
