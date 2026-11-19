@@ -6,88 +6,156 @@ import {runInNewContext} from 'node:vm';
 const read=(name)=>readFileSync(new URL('../public/binch/'+name,import.meta.url),'utf8');
 const html=read('index.html');
 const css=read('premium-front-p14.css');
+const mobileCSS=read('premium-mobile-sections-p14.css');
+const mobileJS=read('premium-mobile-sections-p14.js');
 const compositor=read('visual-identity-compositor.js');
 
-test('P14: the real app uses binch-front and the legacy card is hidden',()=>{
- assert.match(html,/root\.id='binch-front'/);
- assert.match(html,/#page-hub\.binch-front-ready>\.hero,#page-hub\.binch-front-ready>#hub-cards\{display:none\}/);
- assert.match(html,/class=\\"binch-front-hero\\"/);
- assert.match(html,/id=\\"binch-front-name\\"/);
- assert.match(html,/id=\\"binch-front-level\\"/);
- assert.match(html,/id=\\"binch-front-tasks\\"/);
- assert.match(html,/id=\\"binch-front-craft\\"/);
- assert.match(html,/id=\\"binch-front-guild\\"/);
- assert.ok(html.includes('./premium-front-p14.css?v=001'),'new live style must be linked');
+test('P14: real homepage is player-home; duplicate legacy front is hidden',()=>{
+ const playerCSS=read('player-home.css');
+ const playerJS=read('player-home.js');
+ assert.match(playerCSS,/#page-hub\.binch-adventure-ready>#binch-front\{display:none!important\}/);
+ assert.match(playerJS,/root\.id='binch-adventure-home'/);
+ assert.match(playerJS,/class="binch-character-card"/);
+ assert.match(playerJS,/id="binch-home-name"/);
+ assert.match(playerJS,/id="binch-home-level"/);
+ assert.match(playerJS,/id="binch-priority-guard"/);
+ assert.match(playerJS,/class="binch-route"/);
+ for(const part of [
+  '#page-hub.binch-adventure-ready #binch-adventure-home',
+  '.binch-character-card',
+  '.binch-priority-guard',
+  '.binch-route',
+  '.binch-route-step',
+  '.binch-guard-list',
+  '.binch-edit-profile'
+ ])assert.ok(css.includes(part),'P14 must style visible working interface: '+part);
+ assert.ok(!css.includes('#page-hub.binch-front-ready'),'P14 must not waste styling on hidden front');
 });
 
-test('P14: class artwork is applied to the real visible front, not only gallery or hidden hero',()=>{
- for(const token of [
-  '#page-hub.binch-front-ready #binch-front .binch-front-hero',
-  'data-binch-shaaby="true"',
-  'data-binch-forsaken="true"',
-  'url("./shaaby-mulgore.webp")',
-  'url("./forsaken-warlock-premium.webp")',
-  'var(--p14-hero-art)',
-  'var(--p14-ornament)',
-  'min-height:clamp(540px',
-  '.binch-front-person',
-  '.binch-front-stat',
-  '#binch-front-name'
- ]){
-  assert.ok(css.includes(token),'P14 real home missing '+token);
+test('P14: real current profile keeps both original hero images and data-driven modules',()=>{
+ const shaaby=read('shaaby-premium-live.css'),forsaken=read('forsaken-warlock-premium-live.css');
+ assert.ok(shaaby.includes('url("./shaaby-mulgore.webp")'));
+ assert.ok(forsaken.includes('url("./forsaken-warlock-premium.webp")'));
+ assert.ok(css.includes('data-binch-shaaby="true"'));
+ assert.ok(css.includes('data-binch-forsaken="true"'));
+ assert.ok(css.includes('var(--p14-ornament)'));
+ assert.ok(css.includes('#page-metiers #jobs-content .tile'));
+ assert.ok(css.includes('#page-progression .panel.section'));
+ assert.ok(css.includes('#page-gm .panel.section'));
+ assert.ok(css.includes('#page-specs #binch-specs'));
+ assert.ok(html.includes('./premium-front-p14.css?v=001'));
+ assert.ok(!css.includes('https://'),'no new external image requests');
+ assert.ok(!css.includes('@import'),'no blocking external fonts');
+});
+
+test('P14: iPhone navigation is collapsible but original tabs and fixed shortcuts stay available',()=>{
+ assert.ok(html.includes('./premium-mobile-sections-p14.css?v=001'));
+ assert.ok(html.includes('./premium-mobile-sections-p14.js?v=001'));
+ for(const id of ['binch-p14-sections','p14-nav-managed','p14-nav-open']){
+  assert.ok(mobileJS.includes(id));
+  assert.ok(mobileCSS.includes(id));
  }
- assert.ok(css.includes('var(--br-class-world)'),'other classes keep their P10 art');
- assert.ok(!css.includes('@import'),'no extra blocking CSS fetch');
- assert.ok(!css.includes('https://'),'no remote requests');
-});
-
-test('P14: actionable dashboard remains functional; no duplicate page, fake data or routes',()=>{
- for(const target of ['progression','sync','crafting','gm','discoveries']){
-  assert.ok(html.includes('data-binch-target=\\"'+target+'\\"'),'real action retained: '+target);
+ assert.ok(mobileJS.includes("aria-controls"));
+ assert.ok(mobileJS.includes("aria-expanded"));
+ assert.ok(mobileJS.includes("aria-hidden"));
+ assert.ok(mobileJS.includes("key==='Escape'"));
+ assert.ok(mobileJS.includes("nav.classList.toggle('p14-nav-open',opening)"));
+ assert.ok(mobileCSS.includes('display:none!important'));
+ assert.ok(mobileCSS.includes('display:grid!important'));
+ assert.ok(mobileCSS.includes('max-width:760px'));
+ assert.ok(mobileCSS.includes('max-width:390px'));
+ assert.ok(mobileCSS.includes('binch-renaissance-dock'));
+ assert.ok(mobileCSS.includes('prefers-reduced-motion:reduce'));
+ assert.ok(mobileCSS.includes('forced-colors:active'));
+ for(const page of ['hub','progression','metiers','gm','sync']){
+  assert.ok(html.includes('data-page="'+page+'"'),'keep original working route '+page);
  }
- for(const selector of ['.binch-front-task','.binch-front-widget','#page-metiers','#page-progression','#page-gm']){
-  assert.ok(css.includes(selector),'real module intentionally themed: '+selector);
+ // Never mark the original nav inert: the existing fixed dock performs .click() on it.
+ assert.ok(!mobileJS.includes('nav.inert='));
+});
+
+test('P14: actual toggle opens, closes and restores access on desktop without new navigation',()=>{
+ let mobile=true,created;
+ const navAttributes=new Map();
+ const classes=new Set();
+ const listeners={};
+ const nav={
+  id:'',classList:{
+   add(x){classes.add(x)},remove(x){classes.delete(x)},contains(x){return classes.has(x)},
+   toggle(x,force){if(force)classes.add(x);else classes.delete(x)}
+  },
+  parentNode:{insertBefore(node,target){assert.equal(target,nav);created=node}},
+  setAttribute(key,value){navAttributes.set(key,value)},
+  removeAttribute(key){navAttributes.delete(key)},
+  querySelectorAll(query){assert.equal(query,'button[data-page]');return Array.from({length:18},()=>({}))},
+  addEventListener(type,fn){listeners['nav-'+type]=fn}
+ };
+ const buttonAttributes=new Map(),buttonListeners={};
+ const button={
+  type:'',id:'',hidden:false,textContent:'',
+  setAttribute(k,v){buttonAttributes.set(k,v)},
+  getAttribute(k){return buttonAttributes.get(k)},
+  addEventListener(k,fn){buttonListeners[k]=fn},
+  scrollIntoView(){},
+  focus(){this.focused=true}
+ };
+ const app={},docListeners={},winListeners={};
+ const document={
+  readyState:'complete',
+  querySelector(selector){
+   return {'#app':app,'#app nav.nav':nav,'#binch-p14-sections':created}[selector]??null;
+  },
+  createElement(name){assert.equal(name,'button');return button},
+  addEventListener(type,fn){docListeners[type]=fn}
+ };
+ const window={
+  matchMedia(q){assert.equal(q,'(max-width:760px)');return {matches:mobile}},
+  addEventListener(type,fn){winListeners[type]=fn}
+ };
+ runInNewContext(mobileJS,{window,document});
+ assert.equal(created,button);
+ assert.equal(buttonAttributes.get('aria-expanded'),'false');
+ assert.equal(navAttributes.get('aria-hidden'),'true');
+ assert.equal(button.hidden,false);
+ assert.ok(classes.has('p14-nav-managed'));
+ buttonListeners.click();
+ assert.ok(classes.has('p14-nav-open'));
+ assert.equal(buttonAttributes.get('aria-expanded'),'true');
+ assert.equal(navAttributes.has('aria-hidden'),false);
+ listeners['nav-click']({target:{closest(){return {dataset:{page:'gm'}}}}});
+ assert.ok(!classes.has('p14-nav-open'));
+ assert.equal(buttonAttributes.get('aria-expanded'),'false');
+ buttonListeners.click();
+ docListeners.keydown({key:'Escape',preventDefault(){}});
+ assert.ok(!classes.has('p14-nav-open'));
+ assert.ok(button.focused);
+ mobile=false;winListeners.resize();
+ assert.equal(button.hidden,true);
+ assert.equal(navAttributes.has('aria-hidden'),false);
+});
+
+test('P14: reforge materials track unsaved draft instead of stored identity',()=>{
+ for(const x of ['shaaby','forsaken','other']){
+  assert.ok(css.includes('data-binch-preview="'+x+'"'),'missing reforge visual state '+x);
  }
- assert.ok(css.includes('#binch-front .binch-front-task:hover'));
- assert.ok(css.includes('focus-visible'));
- assert.ok(!css.includes('display:none!important}#binch-front'),'must not hide real data');
-});
-
-test('P14: visual targets adapt mobile, low-motion, lite mode and forced contrast',()=>{
- assert.ok(css.includes('@media(max-width:1050px)'));
- assert.ok(css.includes('@media(max-width:760px)'));
- assert.ok(css.includes('@media(max-width:390px)'));
- assert.ok(css.includes('@media(prefers-reduced-motion:reduce)'));
- assert.ok(css.includes('data-binch-detail="lite"'));
- assert.ok(css.includes('@media(forced-colors:active)'));
- assert.ok(css.includes('background-position:center,80% 34%'),'warlock mobile focus preserved');
- assert.ok(css.includes('background-position:center,77% 36%'),'druid mobile focus preserved');
- assert.ok(css.includes('grid-template-columns:75px 1fr'),'small mobile stat layout');
-});
-
-test('P14: reforge materials follow uncommitted preview; persisted identity is unchanged',()=>{
  assert.ok(compositor.includes("dialog.dataset.binchPreview=c.profile.race==='Tauren'&&c.profile.classe==='Druide'?'shaaby'"));
- for(const preview of ['shaaby','forsaken','other']){
-  assert.ok(css.includes('data-binch-preview="'+preview+'"'),'missing preview design '+preview);
- }
- assert.ok(css.includes('var(--p14-preview-ornament)'));
- const localStorage={getItem(){return JSON.stringify({onboarded:true,race:'Tauren',classe:'Druide',jobs:['Minage'],data:{pseudo:'Shaaby',level:42}})},setItem(){throw Error('Preview must never write')}};
  const root={dataset:{},style:{setProperty(){}}};
  const document={readyState:'loading',documentElement:root,addEventListener(){},getElementById(){return null}};
  const window={location:{reload(){}},addEventListener(){}};
+ const localStorage={getItem(){return JSON.stringify({onboarded:true,race:'Tauren',classe:'Druide',jobs:['Minage'],data:{pseudo:'Shaaby',level:42}})},setItem(){throw Error('Preview cannot save')}};
  runInNewContext(compositor,{window,document,localStorage,encodeURIComponent});
  const c=window.BinchVisualIdentity.compose({race:'MortVivant',classe:'Démoniste',jobs:['Ingénierie','Enchantement']});
  assert.equal(c.signature,'Mort-vivant · Démoniste · Ingénierie / Enchantement');
  assert.equal(root.dataset.binchShaaby,undefined);
 });
 
-test('P14: CI captures seed actual real hub using ephemeral synthetic fixtures only',()=>{
- const script=readFileSync(new URL('./helpers/binch-p14-screenshot-fixtures.mjs',import.meta.url),'utf8');
- assert.ok(script.includes("original=readFileSync(resolve(dir,'index.html')"));
- assert.ok(script.includes("localStorage.setItem('grimoire.hub.v3'"));
- assert.ok(script.includes("'.p14-preview-'+name+'.html'"));
- assert.ok(script.includes("profile synthetic")||script.includes("synthetic CI profile"));
- assert.ok(script.includes("race:'Tauren',classe:'Druide'"));
- assert.ok(script.includes("race:'MortVivant',classe:'Démoniste'"));
- assert.ok(!html.includes('p14FixtureStorage'),'temporary fixture not in published app');
+test('P14: captures show actual working player home with synthetic-only profiles',()=>{
+ const fixture=readFileSync(new URL('./helpers/binch-p14-screenshot-fixtures.mjs',import.meta.url),'utf8');
+ assert.ok(fixture.includes("readFileSync(resolve(dir,'index.html')"));
+ assert.ok(fixture.includes("localStorage.setItem('grimoire.hub.v3'"));
+ assert.ok(fixture.includes("'.p14-preview-'+name+'.html'"));
+ assert.ok(fixture.includes('synthetic CI profile'));
+ assert.ok(fixture.includes("race:'Tauren',classe:'Druide'"));
+ assert.ok(fixture.includes("race:'MortVivant',classe:'Démoniste'"));
+ assert.ok(!html.includes('p14FixtureStorage'),'synthetic screenshot fixture stays out of real app');
 });
