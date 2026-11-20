@@ -4,6 +4,8 @@ import {readFile} from 'node:fs/promises';
 import {runInNewContext,Script} from 'node:vm';
 
 const read=name=>readFile(new URL('../big-cthu-beta/'+name,import.meta.url),'utf8');
+// Les fonctions rendues par vm appartiennent à un autre realm JavaScript.
+const assertSame=(actual,expected)=>assert.deepEqual(JSON.parse(JSON.stringify(actual)),expected);
 const c0=()=>({a:'2026-11-02',from:'2026-11-01',ch:[1,4],gr:[2,5]});
 async function core(){
  const s=await read('tournee-quick-core.js'),module={exports:{}};
@@ -48,12 +50,12 @@ async function fixture({override=[],patient=null,corrupt=false,today='2026-11-20
 }
 test('V263 : calendrier de 14 jours (lundi à dimanche), labels basés sur le vrai cycle',async()=>{
  const f=await fixture(),weeks=Array.from(f.api.fortnight(f.p,'2026-11-20'));
- assert.deepEqual(weeks.map(x=>x.week),['2026-11-16','2026-11-23']);
- assert.deepEqual(weeks.map(x=>x.effective),['ch','gr']);
+ assertSame(weeks.map(x=>x.week),['2026-11-16','2026-11-23']);
+ assertSame(weeks.map(x=>x.effective),['ch','gr']);
  assert.equal(weeks[0].days.length,7);assert.equal(weeks[1].days.length,7);
- assert.deepEqual(weeks[0].days.map(x=>x.date),['2026-11-16','2026-11-17','2026-11-18','2026-11-19','2026-11-20','2026-11-21','2026-11-22']);
- assert.deepEqual(weeks[0].days.filter(x=>x.active).map(x=>x.date),['2026-11-16','2026-11-19']);
- assert.deepEqual(weeks[1].days.filter(x=>x.active).map(x=>x.date),['2026-11-24','2026-11-27']);
+ assertSame(weeks[0].days.map(x=>x.date),['2026-11-16','2026-11-17','2026-11-18','2026-11-19','2026-11-20','2026-11-21','2026-11-22']);
+ assertSame(weeks[0].days.filter(x=>x.active).map(x=>x.date),['2026-11-16','2026-11-19']);
+ assertSame(weeks[1].days.filter(x=>x.active).map(x=>x.date),['2026-11-24','2026-11-27']);
  const html=f.api.block(f.p);
  assert.match(html,/Aperçu du planning enregistré/);
  assert.match(html,/Passages prévus de la semaine du 2026-11-16/);
@@ -66,9 +68,9 @@ test('V263 : l inversion des semaines est visible dans le calendrier de la fiche
  const after=f.TQ.togglePhase(f.p.cyc,'2026-11-20');
  const updated={...f.p,cyc:after};
  const weeks=Array.from(f.api.fortnight(updated,'2026-11-20'));
- assert.deepEqual(weeks.map(x=>x.effective),['gr','ch']);
- assert.deepEqual(weeks[0].days.filter(x=>x.active).map(x=>x.date),['2026-11-17','2026-11-20']);
- assert.deepEqual(weeks[1].days.filter(x=>x.active).map(x=>x.date),['2026-11-23','2026-11-26']);
+ assertSame(weeks.map(x=>x.effective),['gr','ch']);
+ assertSame(weeks[0].days.filter(x=>x.active).map(x=>x.date),['2026-11-17','2026-11-20']);
+ assertSame(weeks[1].days.filter(x=>x.active).map(x=>x.date),['2026-11-23','2026-11-26']);
  assert.match(f.api.block(updated),/Semaine prochaine/);
  assert.match(f.api.block(updated),/Granocytes/);
  assert.equal(f.TQ.weekMode(after,'2026-11-09'),f.TQ.weekMode(f.p.cyc,'2026-11-09'));
@@ -79,7 +81,7 @@ test('V263 : une exception de semaine affiche le traitement EFFECTIF, pas seulem
  assert.equal(w[0].base,'ch');
  assert.equal(w[0].effective,'gr');
  assert.equal(w[0].override.mode,'gr');
- assert.deepEqual(w[0].days.filter(x=>x.active).map(x=>x.date),['2026-11-16','2026-11-18']);
+ assertSame(w[0].days.filter(x=>x.active).map(x=>x.date),['2026-11-16','2026-11-18']);
  const html=f.api.block(f.p);
  assert.match(html,/Exception manuelle prioritaire · cycle de fond : Chimio/);
  assert.match(html,/le type de semaine affiché peut donc ne pas changer/);
@@ -92,14 +94,14 @@ test('V263 : ajout ponctuel hors cycle et suppression d une date visibles sans a
  assert.equal(w.days[2].extra,true);
  assert.equal(w.days[3].active,false);
  const html=f.api.block(patient);
- assert.match(html,/Mar 2026-11-18 : passage ponctuel/);
+ assert.match(html,/Mer 2026-11-18 : passage ponctuel/);
  assert.match(html,/Jeu 2026-11-19 : pas de passage/);
  assert.match(html,/signe \+ indique un passage hors cycle/);
 });
 test('V263 : date exclusive et suspension modifient les jours prévus affichés',async()=>{
  const patient={id:'FICTIF-123',n:'TEST Calendrier',cyc:c0(),only:['2026-11-18','2026-11-19'],suspDates:['2026-11-19']};
  const f=await fixture({patient}),w=f.api.fortnight(patient,'2026-11-20')[0];
- assert.deepEqual(w.days.filter(x=>x.active).map(x=>x.date),['2026-11-18']);
+ assertSame(w.days.filter(x=>x.active).map(x=>x.date),['2026-11-18']);
  assert.equal(w.days[2].extra,true);
  assert.equal(w.days[3].active,false);
  assert.match(f.api.block(patient),/2026-11-18 : passage ponctuel/);
