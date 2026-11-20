@@ -20,7 +20,7 @@ function validPhaseFlips(cycle){
  return flips===undefined||(Array.isArray(flips)&&flips.length<=52&&flips.every((week,i)=>validDay(week)&&monday(week)===week&&(i===0||flips[i-1]<week)));
 }
 function weekMode(cycle,week){
- if(!cycle||!validDay(cycle.a)||!validDay(week)||!validDays(cycle.ch)||!validDays(cycle.gr)||!validPhaseFlips(cycle))return '';
+ if(!cycle||!validDay(cycle.a)||!validDay(week)||!Array.isArray(cycle.ch)||!Array.isArray(cycle.gr)||!validPhaseFlips(cycle))return '';
  const target=monday(week);
  const diff=Math.round((parseDay(target)-parseDay(monday(cycle.a)))/604800000);
  const base=((diff%2)+2)%2?'gr':'ch';
