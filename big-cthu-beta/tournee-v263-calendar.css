@@ -65,3 +65,24 @@
 @media(prefers-reduced-motion:reduce){
  .tq-cycle-day{transition:none}
 }
+
+/* V264: one-handed shortcuts to the existing, safeguarded week editor. */
+.tq-cycle-edit-actions{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:9px;margin:12px 0 14px;
+}
+.tq-cycle-edit-actions button{
+ display:flex;align-items:center;justify-content:center;
+ white-space:normal;overflow-wrap:anywhere;line-height:1.25;
+ min-height:48px;min-width:0;padding:11px 8px;text-align:center;font-weight:750;
+ border:1px solid var(--line);border-radius:12px;
+}
+.tq-cycle-edit-actions button:focus-visible{
+ outline:3px solid var(--acc);outline-offset:2px;
+}
+[data-theme=medicalops] .tq-cycle-edit-actions button{
+ background:#204356;color:#ecf9ff;border-color:#5a8b9a;
+}
+@media(max-width:350px){
+ .tq-cycle-edit-actions{grid-template-columns:minmax(0,1fr)}
+}
