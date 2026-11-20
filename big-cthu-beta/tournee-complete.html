@@ -583,6 +583,7 @@ body.tournee-locked #tour-save-strip{display:none}
 @media(max-width:520px){.tq-week-grid{grid-template-columns:1fr}.tq-chat-form input{flex-basis:100%}.tq-week .tq-actions button{flex-basis:100%}}
 </style>
 <link rel="stylesheet" href="./tournee-medical-ops.css">
+<link rel="stylesheet" href="./tournee-v262-mobile.css">
 </head>
 <body class="tournee-locked tournee-checking"><section id="tour-security-gate" hidden role="dialog" aria-modal="true" aria-labelledby="tour-backup-title">
 <h1 id="tour-backup-title">Mes sauvegardes</h1>
@@ -611,7 +612,7 @@ body.tournee-locked #tour-save-strip{display:none}
 <p id="tour-error" role="status"></p>
 <p class="tour-backup-legal">Version privée en développement : cette version n'est pas un hébergement HDS certifié. Conserve des copies indépendantes et protégées.</p>
 </section>
-<div id="tour-save-strip" data-state="saved" aria-label="Sauvegarde locale de Tournée"><div id="tour-save-summary"><span id="tour-save-text" role="status" aria-live="polite">Données chiffrées enregistrées sur cet appareil.</span><button type="button" id="tour-save-retry" hidden>Réessayer</button><button type="button" id="tour-recovery-direct">Mes sauvegardes</button><button type="button" id="tour-save-menu" aria-expanded="false" aria-controls="tour-save-actions" onclick="tourSaveMenuToggle()">⋯ Outils</button></div><div id="tour-save-actions" hidden><span id="tour-network-state" aria-live="off" title="État réseau, indépendant de la sauvegarde locale">Connexion à déterminer</span><div class="tour-save-buttons"><button type="button" id="tour-absence-open">Absences &amp; modifications</button><button type="button" id="tour-lock">Sauvegarder</button><button type="button" id="tour-recovery-launch">Sauvegarder / restaurer</button><button type="button" id="tour-onboarding-open" onclick="window.open('./tournee-demarrage.html','_blank','noopener,noreferrer')">Premiers pas · guide</button></div></div></div>
+<div id="tour-save-strip" data-state="saved" aria-label="Sauvegarde locale de Tournée"><div id="tour-save-summary"><span id="tour-save-text" role="status" aria-live="polite">Données chiffrées enregistrées sur cet appareil.</span><button type="button" id="tour-save-details" aria-expanded="false" aria-label="Afficher ou masquer le détail de l’erreur de sauvegarde" onclick="tourSaveDetailsToggle()">Détails</button><button type="button" id="tour-save-retry" hidden>Réessayer</button><button type="button" id="tour-recovery-direct">Mes sauvegardes</button><button type="button" id="tour-save-menu" aria-expanded="false" aria-controls="tour-save-actions" onclick="tourSaveMenuToggle()">⋯ Outils</button></div><div id="tour-save-actions" hidden><span id="tour-network-state" aria-live="off" title="État réseau, indépendant de la sauvegarde locale">Connexion à déterminer</span><div class="tour-save-buttons"><button type="button" id="tour-absence-open">Absences &amp; modifications</button><button type="button" id="tour-lock">Sauvegarder</button><button type="button" id="tour-recovery-launch">Sauvegarder / restaurer</button><button type="button" id="tour-onboarding-open" onclick="window.open('./tournee-demarrage.html','_blank','noopener,noreferrer')">Premiers pas · guide</button></div></div></div>
 <section id="tour-absence-panel" hidden aria-label="Absences et modifications de Tournée">
 <div class="ap-inner">
 <div class="ap-closebar"><button id="ap-close" type="button">← Retour à Tournée</button><span class="ap-caption">Journal local chiffré</span></div>
@@ -905,7 +906,56 @@ async function tqChatApply(){
 const IC={nav:'<svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8z"/></svg>',tel:'<svg viewBox="0 0 24 24"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>',chk:'<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'};
 let PER=(()=>{const a=[],d=new Date(2026,10,6);while(d<=new Date(2026,10,16)){a.push(d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"));d.setDate(d.getDate()+1)}return a})();
 function DT(s){const[a,b,c]=s.split("-");return new Date(+a,b-1,+c)}
-function cyk(p,s){const c=p.cyc;if(!c)return"";const ov=tqOverride(p,s),d=DT(s);if(ov)return ov.days.includes(d.getDay())?ov.mode:"";if(s<c.from)return"";const m=addD(s,-((d.getDay()+6)%7)),w=Math.round((DT(m)-DT(c.a))/6048e5),k=((w%2)+2)%2?"gr":"ch";return Array.isArray(c[k])&&c[k].includes(d.getDay())?k:""}
+function cyk(p,s){const c=p.cyc;if(!c)return"";const ov=tqOverride(p,s),d=DT(s);if(ov)return ov.days.includes(d.getDay())?ov.mode:"";if(c.from&&s<c.from)return"";const k=TQ&&TQ.weekMode(c,s);return k&&Array.isArray(c[k])&&c[k].includes(d.getDay())?k:""}
+
+/* V262 — accessible from an existing patient's file; never modifies completed visits. */
+let tqPhaseBusy=false;
+function tqCyclePhaseBlock(p){
+ if(!p||!p.cyc||!TQ||typeof TQ.togglePhase!=='function')return '';
+ const week=TQ.monday(TODAY),next=TQ.add(week,7);
+ const mode=TQ.weekMode(p.cyc,week),following=TQ.weekMode(p.cyc,next);
+ if(!mode||!following)return '<div class="warnbox">Cycle incomplet : impossible d’inverser. Vérifie les jours et la date de référence.</div>';
+ const label=k=>k==='ch'?'Chimio':'Granocytes';
+ const exceptions=tqWeeks(false).filter(x=>x.pid===p.id&&x.week>=week&&x.week<=next);
+ return '<section class="blk tq-cycle-switch" aria-label="Alternance chimio et Granocytes">'+
+ '<div class="lab">⇄ Alternance des semaines</div>'+
+ '<div class="tq-cycle-pair"><span>Cette semaine <b>'+label(mode)+'</b></span><span>Semaine suivante <b>'+label(following)+'</b></span></div>'+
+ (exceptions.length?'<p class="tq-cycle-warning">Attention : des exceptions manuelles de planning existent pour cette semaine ou la prochaine et restent prioritaires.</p>':'')+
+ '<button type="button" class="btn tq-cycle-button" onclick="tqCyclePhaseSwitchById(\''+esc(p.id).replace(/'/g,"&#39;")+'\')">⇄ Inverser Granocytes / chimio</button>'+
+ '<p class="sub">Bascule à partir de cette semaine uniquement. Les semaines antérieures et les passages déjà cochés restent inchangés. Un second appui rétablit l’alternance précédente.</p></section>';
+}
+async function tqCyclePhaseSwitchById(pid){
+ if(tqPhaseBusy)return false;
+ const p=P.find(x=>x.id===pid);
+ if(!p||!p.cyc||!TQ||typeof TQ.togglePhase!=='function'){toast('Cycle introuvable : aucune modification.');return false}
+ try{
+  const start=TQ.monday(TODAY),next=TQ.add(start,7);
+  const modified=TQ.togglePhase(p.cyc,start),before=TQ.weekMode(p.cyc,start),after=TQ.weekMode(modified,start);
+  if(!before||!after||before===after)throw Error('Le cycle ne peut pas être inversé.');
+  // Refuse silently overwriting manual exceptions; they are kept and visibly signalled.
+  const exceptions=tqWeeks(true).filter(x=>x.pid===pid&&x.week>=start);
+  const treatment=k=>k==='ch'?'Chimio':'Granocytes';
+  const warning=exceptions.length?'\n\nAttention : '+exceptions.length+' exception(s) de semaine enregistrée(s) restent prioritaires sur le cycle. Elles ne seront pas supprimées.':'';
+  if(!confirm('Inverser le cycle pour '+p.n+' à partir de la semaine du '+start+' ?\n\nCette semaine : '+treatment(before)+' → '+treatment(after)+'.\nSemaine suivante : '+treatment(TQ.weekMode(p.cyc,next))+' → '+treatment(TQ.weekMode(modified,next))+'.\nLes semaines passées et les passages réalisés restent inchangés.'+warning))return false;
+  tqPhaseBusy=true;
+  const old=P;P=P.map(item=>item.id===pid?{...item,cyc:modified}:item);
+  let confirmed=false;
+  try{
+   if(!(await cfgSave('Alternance modifiée')))throw Error('Échec de sauvegarde de la fiche.');
+   confirmed=true;
+   await ensureVaultSaved();
+  }catch(error){
+   if(!confirmed)P=old;
+   toast('Alternance non confirmée : conserve cette page ouverte et vérifie la sauvegarde.');
+   if(confirmed&&typeof saveFailure==='function')saveFailure(error);
+   return false;
+  }
+  render();fiche(pid,true);
+  toast('Alternance enregistrée. Vérifie les passages des prochaines semaines.');
+  return true;
+ }catch(error){toast(error.message||'Inversion impossible.');return false}
+ finally{tqPhaseBusy=false}
+}
 function sx(p){return cyk(p,day)==="gr"&&p.soinsG?p.soinsG:p.soins}
 function cyTag(p){const k=cyk(p,day);return k==="gr"?`<span class="tag xt">💉 Semaine Granocytes</span>`:k==="ch"?`<span class="tag xt">🧪 Cure de chimio</span>`:""}
 function onDate(p,s){if(p.deb&&s<p.deb)return false;if(p.fin&&s>p.fin)return false;if(p.susp&&suspOf(p,s))return false;if(p.only)return p.only.includes(s);if(p.rm&&p.rm.includes(s))return false;const ov=tqOverride(p,s);if(ov)return ov.days.includes(DT(s).getDay());if(p.add&&p.add.includes(s))return true;return p.cyc?!!cyk(p,s):(p.j||ALL).includes(DT(s).getDay())}
@@ -1043,7 +1093,7 @@ function fiche(id,keep){curF=id;document.getElementById('sheet').classList.remov
  <div class="blk"><div class="lab">Adresse</div><div class="big" style="font-weight:700">${p.a}</div>
  <div class="acts" style="margin-top:11px"><a class="btn" href="${maps(p.a)}" target="_blank" rel="noopener">${IC.nav}Itinéraire</a>${(p.tel||[]).map(telBtns).join("")}<button class="btn ghost" onclick="copyTxt('${esc(p.a).replace(/'/g,"\\'")}')">⧉ Adresse</button></div>${p.telNote?`<div class="sub" style="margin-top:7px">Contact : ${p.telNote}</div>`:""}</div>
  ${smsBlock(p)}${naisBlock(p)}${p.acces?`<div class="blk"><div class="lab">🔑 Accès</div>${p.acces}</div>`:""}
- <div class="blk"><div class="lab">🩺 Soins</div>${sx(p)}${p.alerte?`<div><span class="tag">⚠ ${p.alerte}</span></div>`:""}</div>${p.hab?`<div class="blk"><div class="lab">💬 À savoir</div><div style="white-space:pre-line">${esc(p.hab)}</div></div>`:""}
+ <div class="blk"><div class="lab">🩺 Soins</div>${sx(p)}${p.alerte?`<div><span class="tag">⚠ ${p.alerte}</span></div>`:""}</div>${tqCyclePhaseBlock(p)}${p.hab?`<div class="blk"><div class="lab">💬 À savoir</div><div style="white-space:pre-line">${esc(p.hab)}</div></div>`:""}
  ${ardBlock(p)}<div class="blk"><div class="lab">📌 Pense-bêtes</div>${around(day,7,45).flatMap(s=>memos(s).filter(m=>m.p===p.id).map(m=>`<div class="sub" style="margin:3px 0"><b>${short(s)}</b> · ${esc(m.t)}</div>`)).join("")||`<div class="sub">Aucun pour l'instant.</div>`}<button class="btn ghost" style="margin-top:8px" onclick="memoForm('${p.id}')">＋ Ajouter un pense-bête</button></div>
  ${cHist(p)}${dossierBlock(p)}${trtBlock(p)}${hospBlock(p)}${rdvBlock(p)}${friseBlock(p)}${typeof fhBlock==="function"?fhBlock(p):""}${ordoFiche(p)}${(p.taches||[]).length?`<div class="blk"><div class="lab">🔔 Rappels périodiques</div>${p.taches.map(tk=>`<button class="rt ${taskDone(p,tk)?"d":""}" onclick="togTask('${p.id}','${tk.k}')"><i class="mini">${IC.chk}</i><span>${tk.txt} <em class="sub">· ${tk.f==="hebdo"?"1×/semaine":"1×/mois"}</em></span></button>`).join("")}</div>`:""}
  ${p.labo?`<div class="blk"><div class="lab">🧪 Laboratoire</div>Suivi chez <b>${p.labo}</b>${CTPRO.filter(c=>c.g===p.labo).map(proRow).join("")}</div>`:""}
@@ -2667,6 +2717,14 @@ var secureLastWrittenRecord=null;
 // Un conflit est définitif pour CETTE session : jamais de résolution silencieuse par réessai.
 var secureConflictDetected=false;
 const SECURE_CONFLICT_MESSAGE='Conflit de sauvegarde : une autre fenêtre ou un autre onglet a modifié le coffre. Cet onglet ne peut plus enregistrer. Ne le ferme pas avant d’avoir comparé les changements non sauvegardés. Ce blocage ne supprime aucun patient.';
+function tourSaveDetailsToggle(){
+ const bar=document.getElementById('tour-save-strip'),button=document.getElementById('tour-save-details');
+ if(!bar||!button||bar.dataset.state!=='error')return;
+ const expanded=bar.dataset.expanded!=='true';
+ bar.dataset.expanded=String(expanded);
+ button.setAttribute('aria-expanded',String(expanded));
+ button.textContent=expanded?'Réduire':'Détails';
+}
 function tourSaveMenuToggle(){
  const panel=document.getElementById('tour-save-actions');
  const button=document.getElementById('tour-save-menu');
@@ -2680,6 +2738,11 @@ function saveStatus(state,message){
  if(conflicted){state='error';message=SECURE_CONFLICT_MESSAGE}
  const bar=document.getElementById('tour-save-strip');if(!bar)return;
  bar.dataset.state=state;document.getElementById('tour-save-text').textContent=message;
+ if(state!=='error'){
+  bar.dataset.expanded='false';
+  const detail=document.getElementById('tour-save-details');
+  if(detail&&typeof detail.setAttribute==='function'){detail.setAttribute('aria-expanded','false');detail.textContent='Détails'}
+ }
  document.getElementById('tour-save-retry').hidden=state!=='error'||conflicted;
 }
 function saveFailure(error){
