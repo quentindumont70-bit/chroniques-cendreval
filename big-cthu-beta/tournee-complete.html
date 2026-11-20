@@ -683,6 +683,8 @@ const st={get(k,d){try{const v=TOUR_STORE.getItem("tidel_"+k);return v==null?d:J
 /* ===== Golipette: weekly clinical cycle exceptions, inside the existing encrypted vault ===== */
 const TQ_WEEK_KEY="tidel_cyc_week_override_v1";
 let tqBusy=false,tqPending=null,tqWeekState={patient:"",week:"",mode:"ch",open:false};
+// V265 : une fiche ouvre une édition d une seule semaine ; le planning complet reste accessible ailleurs.
+let tqWeekTargetIndex=null;
 function tqWeeks(strict){
  if(!TQ){if(strict)throw Error("Outil de planning non chargé. Recharge Tournée.");return []}
  const raw=TOUR_STORE.getItem(TQ_WEEK_KEY);
@@ -937,6 +939,8 @@ function tqWeekEditorFromFile(pid,weekIndex){
  try{tqWeeks(true)}catch(error){toast('Planning illisible : ouverture annulée, aucune donnée modifiée.');return false}
  const sheet=document.getElementById('sheet');
  if(!sheet||!sheet.classList.contains('on'))return false;
+ // V265 : éditer uniquement la semaine choisie. Toute autre exception reste inchangée.
+ tqWeekTargetIndex=weekIndex;
  // Reuse the real two-week editor in the Tournée tab, with all existing safeguards.
  tqProToolsOpen=true;
  tab='tour';
@@ -957,7 +961,7 @@ function tqWeekEditorFromFile(pid,weekIndex){
  if(input&&typeof input.focus==='function')input.focus({preventScroll:true});
  if(details&&typeof details.scrollIntoView==='function')details.scrollIntoView({block:'start',behavior:'auto'});
  const status=document.getElementById('tq-week-status');
- if(status)status.textContent='Fiche présélectionnée · '+(weekIndex===0?'cette semaine':'semaine prochaine')+'. Contrôle les deux semaines et les jours avant de confirmer.';
+ if(status)status.textContent='Fiche présélectionnée · '+(weekIndex===0?'cette semaine':'semaine prochaine')+'. Seule cette semaine sera enregistrée. Contrôle les jours et le type avant confirmation.';
  return true;
 }
 function tqCyclePhaseBlock(p){
@@ -1555,7 +1559,7 @@ function tqWeekDate(n){return TQ.add(TQ.monday(TODAY),n*7)}
 function tqWeekRow(idx){
  const title=idx===0?"Cette semaine":"Semaine prochaine";
  const week=tqWeekDate(idx);
- return '<div class="tq-week-slot" data-week="'+esc(week)+'">'+
+ return '<div class="tq-week-slot" data-week="'+esc(week)+'" '+((tqWeekTargetIndex!==null&&tqWeekTargetIndex!==idx)?'hidden':'')+'>'+
  '<label>'+title+' · '+esc(short(week))+' → '+esc(short(TQ.add(week,6)))+
  '<select id="tq-mode-'+idx+'" aria-label="'+title+'" onchange="tqWeekModeChanged('+idx+')">'+
  '<option value="auto">Cycle habituel (sans exception)</option><option value="ch">Semaine chimio</option><option value="gr">Semaine Granocytes</option></select></label>'+
@@ -1566,14 +1570,15 @@ function tqWeekRow(idx){
 function tqWeekBlock(){
  if(!TQ)return '<div class="tq-week">Gestion des cycles indisponible. Recharge la page.</div>';
  const cycles=P.filter(p=>p&&p.id&&p.cyc&&Array.isArray(p.cyc.ch)&&Array.isArray(p.cyc.gr));
- return '<section class="tq-week" aria-label="Exceptions ponctuelles de chimio et Granocytes">'+
+ const focused=tqWeekTargetIndex===0||tqWeekTargetIndex===1;
+ return '<section class="tq-week'+(focused?' tq-week-targeted':'')+'" aria-label="Exceptions ponctuelles de chimio et Granocytes">'+
  '<details id="tq-week-details"><summary>🔁 Modifier les semaines chimio / Granocytes</summary>'+
- '<p>Choisis un patient déjà suivi. Ici, tu peux inverser ponctuellement ses deux semaines, ou modifier précisément les jours de passage sans casser son cycle normal. Les modifications restent dans ton coffre chiffré.</p>'+
+ '<p>'+(focused?'Édition ciblée : <b>seule '+(tqWeekTargetIndex===0?'cette semaine':'la semaine prochaine')+' sera enregistrée</b>. L’autre semaine et ses exceptions restent inchangées. Vérifie les jours et le type avant de confirmer.':'Choisis un patient déjà suivi. Ici, tu peux inverser ponctuellement ses deux semaines, ou modifier précisément les jours de passage sans casser son cycle normal. Les modifications restent dans ton coffre chiffré.')+'</p>'+
  '<label class="fl" for="tq-week-patient">Patient avec cycle enregistré<select id="tq-week-patient" onchange="tqWeekFill()"><option value="">Choisir un patient</option>'+
  cycles.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.n)+'</option>').join('')+'</select></label>'+
  '<div class="tq-week-grid">'+tqWeekRow(0)+tqWeekRow(1)+'</div>'+
- '<div class="tq-actions"><button type="button" onclick="tqWeekApply()">✓ Enregistrer les deux semaines</button>'+
- '<button type="button" onclick="tqWeekInvert()">⇄ Inverser chimio / Granocytes</button></div>'+
+ '<div class="tq-actions"><button type="button" onclick="tqWeekApply()">'+(focused?'✓ Enregistrer cette semaine':'✓ Enregistrer les deux semaines')+'</button>'+
+ (focused?'':'<button type="button" onclick="tqWeekInvert()">⇄ Inverser chimio / Granocytes</button>')+'</div>'+
  '<p class="tq-status" id="tq-week-status" role="status" aria-live="polite">'+(cycles.length?'Sélectionne un patient.':'Aucun patient avec cycle enregistré sur cet appareil.')+'</p>'+
  '</details></section>';
 }
@@ -1605,7 +1610,8 @@ function tqWeekPlanned(){
  const choose=document.getElementById('tq-week-patient'),p=P.find(x=>x.id===(choose&&choose.value));
  if(!p||!p.cyc)throw Error('Sélectionne un patient dont le cycle est configuré.');
  const decisions=[];
- for(let i=0;i<2;i++){
+ const indices=(tqWeekTargetIndex===0||tqWeekTargetIndex===1)?[tqWeekTargetIndex]:[0,1];
+ for(const i of indices){
   const week=tqWeekDate(i),mode=document.getElementById('tq-mode-'+i).value;
   const days=tqWeekInputs(i).filter(x=>x.checked).map(x=>Number(x.dataset.day));
   if(mode!=='auto'&&!TQ.validDays(days))throw Error('Sélectionne au moins un jour pour '+(i===0?'cette semaine':'la semaine prochaine')+'.');
@@ -1632,6 +1638,7 @@ async function tqWeekApply(){
 }
 function tqWeekInvert(){
  const choose=document.getElementById('tq-week-patient'),p=P.find(x=>x.id===(choose&&choose.value)),status=document.getElementById('tq-week-status');
+ if(tqWeekTargetIndex!==null){if(status)status.textContent='Cette édition concerne une seule semaine. La seconde n’est pas modifiée.';return}
  if(!p||!p.cyc){if(status)status.textContent='Sélectionne un patient avec cycle.';return}
  for(let i=0;i<2;i++){
   const week=tqWeekDate(i),existing=tqOverride(p,week);
@@ -2478,7 +2485,7 @@ const NEWS="v42";
 const NEWSL=[["🕯️","Pense-bête : une bougie sur chaque ligne copie le pense-bête pour l'appli Garde-fou (Big Cthu), où tous tes pense-bêtes se regroupent par domaine."],["🌅","Préparer demain : dès 16 h, un bandeau ouvre la préparation du lendemain (patients, horaires, allergies, RDV, ardoise, sac à compléter) avec résumé copiable."],["🗓","Infos : les 30 prochains jours (débuts, fins, reprises, RDV, anniversaires, charge par jour) et les statistiques par patient avec export CSV."],["🎂","Anniversaires des patients : renseigne la date de naissance sur la fiche (ou dans Infos). L'accueil affiche ceux du jour et de la semaine."],["📑","Dans Infos : rapport de remplacement, anomalies du jour, vérification avant facturation (avec CSV pour Topaze) et check-up de l'appli."],["👆","Le guide et les astuces se parcourent aussi en glissant le doigt à gauche ou à droite."],["📍","« Ce qui change aujourd'hui » regroupe en un seul endroit tout ce qui sort de la routine : passage exceptionnel, horaire modifié, cure de chimio, reprise après suspension, RDV, ardoise, constantes à surveiller."],["💬","Nouveau champ « À savoir » dans la fiche (habitudes, relationnel, particularités)."],["🎯","Mode routine en option (Infos) : plus rien à cocher, les passages prévus sont considérés faits. Par défaut, tu valides toujours les soins comme avant."],["🧾","Ardoise par patient : ce que tu avances (pain, courses…), le total dû, un rappel quand tu le vois, et un récap dans Transmissions."],["🔍","La recherche trouve aussi un médicament, une allergie, un antécédent, une hospitalisation ou un médecin."],["⚖️","Nouvelles constantes : poids et INR. Le tableau n'affiche que les colonnes qui ont des valeurs."],["📋","Dans Infos : taux de fiches complétées et piluliers de la semaine."],["⚠️","Mode tournée : allergies, RDV du jour et traitements s'affichent maintenant pour chaque patient. Le pilulier à préparer entre dans les rappels de la semaine."],["🧭","Fiche patient : une barre de raccourcis (Accès, Soins, Traitements, Constantes, Photos, Notes) pour aller directement au bon endroit."],["🏁","Fin de journée : rappel des absences à supprimer sur Topaze. Le guide et le PDF intègrent aussi les nouveautés."],["📷","Photos par catégorie (accès, soin / plaie, dossier médical, autre) avec légende, et comparateur avant / après pour les plaies."],["💊","Traitements par moment de la journée, consignes et « vue pilulier » pour le préparer sans erreur."],["🏥","Hospitalisations avec résumé, 📅 RDV et examens du patient (repère le jour J), et frise chronologique du patient."],["🚫","Récap des absences (onglet Transmissions, bandeau orange sur la tournée) : par patient, à traiter / semaine / mois, avec case « supprimé sur Topaze » et alerte si un patient est coché fait ET absent."],["📈","Courbes de constantes dans chaque fiche : TA, FC, T°, SpO₂, dextro, EVA sur 60 jours, avec zone repère."],["⏸","Suspendre un patient (hospitalisation, vacances) ou clôturer sa prise en charge depuis ✏️ : il disparaît de la tournée aux bonnes dates, avec rappel de reprise."],["📊","Bilan mensuel dans Infos : passages, absences, saisie Topaze, export CSV."],["💬","Fiche patient : prévenir par SMS (« J'arrive dans 10, 20, 30 min » ou « léger retard ») en un tap, sans info de santé."],["🚑","Fiche urgence : bouton 15 + résumé prêt à dicter au régulateur (adresse, accès, allergies, médecin)."],["🔒","Écran de confidentialité optionnel par code à 4 chiffres, dans Infos."],["💾","Rappel de sauvegarde si la dernière date de plus de 7 jours."],["👆","Glisse à gauche ou à droite pour changer de jour, ou touche la date pour ouvrir le calendrier du mois."],["❤️","Saisis les constantes depuis chaque carte : les valeurs anormales passent en rouge ou en bleu."],["🚪","« Absent » met le patient en gris et ajoute « Déclarer l'absence sur Topaze » au pense-bête."],["🩺","Les points de vigilance du jour regroupent constantes anormales, problèmes répétés et ordonnances."],["🎒","Stock du sac de soins dans l'onglet Pense-bête : un tap sur un article manquant l'ajoute aux achats."],["🩻","Sur chaque fiche : dossier court (médecin, allergies) et synthèse 7 jours à envoyer au médecin."]];
 function newsOpen(){document.getElementById("pki").innerHTML=`<div class="grab"></div><h3>Quoi de neuf</h3>${NEWSL.map(([i,t])=>`<div class="nw1"><b>${i}</b><span>${t}</span></div>`).join("")}<button class="btn" style="width:100%;justify-content:center;margin-top:12px" onclick="st.set('news',NEWS);closePk()">Compris</button>`;document.getElementById("pk").classList.add("on")}
 
-function render(){header();document.getElementById("app").innerHTML=tab==="tour"?viewTour():tab==="pat"?viewPat():tab==="notes"?viewNotes():tab==="ordo"?viewOrdo():tab==="pb"?viewPb():tab==="remp"?viewRem():viewInfo();navBadge();pbBadge();nextBar();syncUI();chipFix();absBadge();infoNav()}
+function render(){if(tab!=="tour")tqWeekTargetIndex=null;header();document.getElementById("app").innerHTML=tab==="tour"?viewTour():tab==="pat"?viewPat():tab==="notes"?viewNotes():tab==="ordo"?viewOrdo():tab==="pb"?viewPb():tab==="remp"?viewRem():viewInfo();navBadge();pbBadge();nextBar();syncUI();chipFix();absBadge();infoNav()}
 document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;document.querySelectorAll("nav.tabs button").forEach(x=>x.classList.toggle("on",x===b));window.scrollTo(0,0);render()});
 (function(){const fs=st.get("fs",100);if(fs!==100)setFs(fs)})();
 if(location.hash==="#print")printView();else{render();lockNow()}netUI();loadMeteo();skSync();if(location.hash!=='#print'){if(!st.get('guided',0)){st.set('guided',1);setTimeout(()=>guide(0),400)}else if(st.get('news','')!==NEWS){st.set('news',NEWS);setTimeout(newsOpen,600)}}

@@ -176,3 +176,11 @@ Après V263, chaque fiche disposant d'un cycle présente **« ✎ Ajuster cette 
 Le raccourci est une **navigation uniquement**, sans nouveau formulaire patient, base, import, mutation ou API. Si le dossier n'a plus de cycle, si la fiche est fermée ou si les exceptions sont illisibles, aucun changement de planning n'est lancé. Il n'écrase jamais une exception en la masquant. En cas d'impossibilité d'afficher l'éditeur après navigation, un message prudent est présenté. L'utilisateur peut toujours revenir à la fiche par Patients.
 
 Petites cibles adaptées à l'iPhone (au moins 48 px de hauteur), bouton sur une colonne aux écrans de 350 px, focus visible en Medical Ops ; CSS et service worker publics mis à jour en V264. Neuf tests fictifs couvrent la transition, la sélection du bon patient et de la bonne semaine, les refus, la réutilisation du chemin de sauvegarde existant et l'absence de transfert. **Les tests sur iPhone réel et la vérification de la prescription restent obligatoires avant usage clinique et commercial.**
+
+## Golipette V265 — depuis la fiche, n'enregistrer que la semaine ciblée
+
+V264 ouvre l'éditeur des semaines depuis la fiche d'un patient ayant un cycle. V265 supprime le risque de modifier **l'autre semaine** en enregistrant depuis ce raccourci : seules les décisions concernant la semaine visée sont produites, prévisualisées et soumises au circuit de sauvegarde chiffré existant. Les exceptions de la seconde semaine, celles d'autres patients et les semaines historiques restent intactes.
+
+L'éditeur affiche explicitement « seule cette semaine sera enregistrée », masque les contrôles de l'autre semaine et retire le bouton d'inversion groupée dans ce mode. En revenant à l'éditeur général depuis Tournée, les deux semaines restent éditables normalement. La cible est réinitialisée en quittant l'onglet Tournée. Pas de nouveau stockage, d'import, de facturation Topaze ni de traitement médical automatique.
+
+Tests fictifs V265 : mode une ou deux semaines, préservation de la seconde et des autres patients, retour au cycle normal uniquement pour la semaine visée, annulation, panne d'enregistrement, refus de jours invalides, affichage ciblé, cache V265 et contrôle de la navigation. Le planning doit rester conforme à la prescription et être testé sur le véritable iPhone avant emploi clinique.

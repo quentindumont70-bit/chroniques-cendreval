@@ -86,3 +86,8 @@
 @media(max-width:350px){
  .tq-cycle-edit-actions{grid-template-columns:minmax(0,1fr)}
 }
+
+/* V265: a shortcut edits one week; never show the other week's controls. */
+.tq-week-slot[hidden]{display:none!important}
+.tq-week-targeted .tq-week-grid{grid-template-columns:minmax(0,1fr)}
+.tq-week .tq-actions button{min-height:48px}
