@@ -60,7 +60,7 @@ test('P16: activation is exactly saved onboarded Tauren Chaman; other races/clas
 });
 test('P16: authentic character card, wizard and unsaved reforge all use unique storm artwork',()=>{
  assert.ok(html.includes('./tauren-shaman-storm-p16.css?v=001'));
- assert.ok(html.includes('./visual-identity-compositor.js?v=007'));
+ assert.ok(html.includes('./visual-identity-compositor.js?v=008'));
  for(const x of [
   '#page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card',
   'data-binch-storm="true"', 'data-br-class="shaman"',
