@@ -33,6 +33,6 @@ test('P11: functional profile preview, events and reduced effects are accessible
 
 test('P11: legitimate entry from the companion and P10 workshop',()=>{
  const engine=read('visual-identity-compositor.js'),studio=read('renaissance-p10-showcase.html');
- assert.ok(engine.includes("premium.href='./shaaby-mulgore-premium.html'"));
+ assert.ok(engine.includes("premium.href='./premium-sanctuaries-review.html?identity='+featured"),'companion opens the identity-aware premium gallery');
  assert.ok(studio.includes('href="./shaaby-mulgore-premium.html"'));
 });
