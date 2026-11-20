@@ -3,12 +3,13 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0c131b">
-<title>La Binch Renaissance — Deux sanctuaires premium</title>
-<meta name="description" content="Deux univers premium originaux : Shaaby Tauren Druide et le nécromancien Mort-vivant Démoniste. Galerie de revue artistique, profil inchangé.">
+<title>La Binch Renaissance — Trois sanctuaires premium</title>
+<meta name="description" content="Trois univers premium originaux : Tauren Druide, Mort-vivant Démoniste et Tauren Chaman. Galerie de revue artistique, profil inchangé.">
 <style>
 *{box-sizing:border-box}
 :root{--accent:#d9bc83;--soft:#bedaaa;--panel:#0a1d1ae9;--border:#c4a674a3;--world:url("./shaaby-mulgore.webp");--sigil:url("./shaaby-ivy-ornament.svg");--cover:70% 45%;color-scheme:dark}
 html[data-identity="forsaken"]{--accent:#d7b4e7;--soft:#9af0c7;--panel:#0d1225ea;--border:#b191cba3;--world:url("./forsaken-warlock-premium.webp");--sigil:url("./forsaken-occult-gear.svg");--cover:67% 48%}
+html[data-identity="storm"]{--accent:#bbdcf1;--soft:#eacba0;--panel:#0b2534ef;--border:#d1b78cba;--world:url("./tauren-shaman-storm-p16.webp");--sigil:url("./tauren-shaman-storm-totem-p16.svg");--cover:72% 43%}
 body{margin:0;background:#060c14;color:#f5e9da;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 button,a{font:inherit}
 button:focus-visible,a:focus-visible{outline:3px solid #fff0bd;outline-offset:3px}
@@ -81,11 +82,40 @@ html[data-identity="forsaken"] .picker button[aria-pressed="true"]{background:li
  .actions a{font-size:.65rem;padding:10px 9px}
  .mark{left:16px}
 }
+/* P16 third flagship: raw cinematic artwork stays the focus; three worlds differ structurally. */
+html[data-identity="storm"] .hero{
+ border-left:5px solid #82cee4;
+ border-radius:7px 34px 7px 24px;
+ box-shadow:0 38px 115px #000e,0 0 0 5px #9fd1de0f;
+}
+html[data-identity="storm"] .hero::before{
+ background-image:linear-gradient(91deg,#071420fa 0%,#081826dd 23%,#0b20317e 44%,#07172310 76%),
+ linear-gradient(0deg,#081626d5,transparent 32%),var(--world);
+ background-position:center,center,72% 43%;
+}
+html[data-identity="storm"] .engraving{
+ left:-90px;right:auto;top:-60px;opacity:.32;width:280px;height:280px;
+}
+html[data-identity="storm"] h1{color:#ffefdc}
+html[data-identity="storm"] .actions a{background:linear-gradient(127deg,#e9d8ae,#98baca);color:#10222a}
+html[data-identity="storm"] .actions .sub{background:#102631d5;color:#f1e0be}
+html[data-identity="storm"] .picker button[aria-pressed="true"]{
+ background:linear-gradient(129deg,#2a424a,#172834);
+}
+@media(max-width:760px){
+ .picker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .picker button[data-pick="storm"]{grid-column:1/-1}
+ html[data-identity="storm"] .hero::before{
+  background-image:linear-gradient(180deg,#0714229d 0%,#07142210 28%,#091b2a45 44%,#071827e2 79%,#071421fa 100%),var(--world);
+  background-position:center,78% 41%;
+ }
+ html[data-identity="storm"] .engraving{left:-63px;top:-32px;width:180px;opacity:.22}
+}
 </style>
 </head>
 <body><header class="top"><div class="logo">LA BINCH <small>Renaissance — éditions cinématiques</small></div><a class="back" href="./index.html">Ouvrir le vrai compagnon</a></header>
 <main>
-<div class="pretitle"><span class="eyebrow">L'Atelier des identités vivantes</span><span class="series">Deux créations originales · P13</span></div>
+<div class="pretitle"><span class="eyebrow">L'Atelier des identités vivantes</span><span class="series">Trois créations originales · P16</span></div>
 <section class="hero" aria-label="Présentation cinématique de l'identité sélectionnée">
  <span class="engraving" aria-hidden="true"></span>
  <div class="content">
@@ -95,19 +125,21 @@ html[data-identity="forsaken"] .picker button[aria-pressed="true"]{background:li
   <div class="tags" id="tags"><span>Tauren</span><span>Druide</span><span>Herboristerie</span><span>Alchimie</span></div>
   <div class="actions"><a href="./index.html">Explorer dans La Binch</a><a class="sub" id="art" href="./shaaby-mulgore.webp" target="_blank" rel="noopener">Voir l'artwork seul</a></div>
  </div>
- <span class="caption" id="caption">Sanctuaire I / II — Mulgore</span>
+ <span class="caption" id="caption">Sanctuaire I / III — Mulgore</span>
 </section>
 <div class="picker" aria-label="Choisir un sanctuaire à comparer">
  <button type="button" data-pick="tauren" aria-pressed="true"><strong>01 · Shaaby</strong><span>Tauren · Druide · Nature vivante</span></button>
  <button type="button" data-pick="forsaken" aria-pressed="false"><strong>02 · Le Nécromancien</strong><span>Mort-vivant · Démoniste · Forge occulte</span></button>
+ <button type="button" data-pick="storm" aria-pressed="false"><strong>03 · Cœur de l'Orage</strong><span>Tauren · Chaman · Éléments déchaînés</span></button>
 </div>
 <div class="note"><span>Galerie artistique indépendante. La sélection ne modifie ni le profil ni les données WoW.</span><span>Illustrations WebP locales · aucun compte ni synchronisation</span></div>
 </main>
 <script>
 (()=>{
  const meta={
- tauren:{mark:'Mulgore · Sanctuaire de Shaaby',name:'La Sérénité des Racines',dek:'Shaaby contemple les plaines de Mulgore, sa pipe de feuillerêve à la main. Autour de lui, les totems taurens, le lierre druidique et les secrets des plantes anciennes.',tags:['Tauren','Druide','Herboristerie','Alchimie'],art:'./shaaby-mulgore.webp',caption:'Sanctuaire I / II — Mulgore'},
- forsaken:{mark:'Les terres de la Peste · Citadelle interdite',name:'Le Pacte des Ombres',dek:'Un nécromancien aux yeux verts veille sur sa nécropole sous une lune froide. La magie démoniaque traverse ses machines runiques, entre engrenages de bronze et enchantements interdits.',tags:['Mort-vivant','Démoniste','Ingénierie','Enchantement'],art:'./forsaken-warlock-premium.webp',caption:'Sanctuaire II / II — Nécropole'}
+ tauren:{mark:'Mulgore · Sanctuaire de Shaaby',name:'La Sérénité des Racines',dek:'Shaaby contemple les plaines de Mulgore, sa pipe de feuillerêve à la main. Autour de lui, les totems taurens, le lierre druidique et les secrets des plantes anciennes.',tags:['Tauren','Druide','Herboristerie','Alchimie'],art:'./shaaby-mulgore.webp',caption:'Sanctuaire I / III — Mulgore'},
+ forsaken:{mark:'Les terres de la Peste · Citadelle interdite',name:'Le Pacte des Ombres',dek:'Un nécromancien aux yeux verts veille sur sa nécropole sous une lune froide. La magie démoniaque traverse ses machines runiques, entre engrenages de bronze et enchantements interdits.',tags:['Mort-vivant','Démoniste','Ingénierie','Enchantement'],art:'./forsaken-warlock-premium.webp',caption:'Sanctuaire II / III — Nécropole'},
+ storm:{mark:'Hautes-terres des Esprits · Autel du Tonnerre',name:'Le Cœur de l’Orage',dek:'Un chaman tauren s’élève face à la tempête : les cornes des totems retiennent la foudre, tandis que les plaines et les cascades se perdent dans la brume. Un monde de pierre, d’eau, de vent et de feu — à l’opposé du calme de Shaaby.',tags:['Tauren','Chaman','Totems','Puissance des éléments'],art:'./tauren-shaman-storm-p16.webp',caption:'Sanctuaire III / III — Le Cœur de l’Orage'}
  };
  const buttons=[...document.querySelectorAll('[data-pick]')];
  function select(k){
@@ -120,7 +152,7 @@ html[data-identity="forsaken"] .picker button[aria-pressed="true"]{background:li
  }
  buttons.forEach(b=>b.addEventListener('click',()=>select(b.dataset.pick)));
  const chosen=new URLSearchParams(location.search).get('identity');
- select(chosen==='forsaken'?'forsaken':'tauren');
+ select(chosen==='storm'?'storm':chosen==='forsaken'?'forsaken':'tauren');
 })();
 </script>
 </body></html>
