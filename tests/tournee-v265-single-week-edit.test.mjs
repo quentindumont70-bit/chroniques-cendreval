@@ -86,6 +86,7 @@ test('V265 : panneau ciblé masque les contrôles de l autre semaine et son inve
  const f=await fixture({target:0});
  const html=f.api.tqWeekBlock();
  assert.match(html,/Enregistrer cette semaine/);
+ assert.match(html,/class="tq-week tq-week-targeted"/);
  assert.match(html,/seule cette semaine sera enregistrée/);
  assert.doesNotMatch(html,/onclick="tqWeekInvert\(\)"/);
  assert.match(html,/data-week="2026-11-16" >/);
