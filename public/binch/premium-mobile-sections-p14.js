@@ -36,6 +36,30 @@
    }
   }
 
+  // Original search palette and original OST stay fully functional: move their
+  // actual DOM nodes, including attached handlers, into the mobile drawer.
+  const moved=new Map();
+  function placeUtility(node,cssClass,position){
+   if(!node)return;
+   if(compact()){
+    if(node.parentElement!==nav){
+     if(!moved.has(node))moved.set(node,{parent:node.parentElement,next:node.nextSibling});
+     if(position==='first')nav.prepend(node);else nav.append(node);
+     node.classList.add(cssClass);
+    }
+   }else if(node.parentElement===nav){
+    node.classList.remove(cssClass);
+    const original=moved.get(node),parent=original?.parent;
+    if(parent?.isConnected)parent.insertBefore(node,original.next?.parentElement===parent?original.next:null);
+    else document.body.append(node);
+   }
+  }
+  function placeUtilities(){
+   // Put the quick-search button first, the real editor next; OST is accessible
+   // within the scrollable menu, not permanently above the artwork.
+   placeUtility($('#binch-quicknav-launch'),'p16-nav-search','first');
+   placeUtility($('#binch-ost'),'p16-nav-ost','last');
+  }
   function compact(){return window.matchMedia('(max-width:'+MAX+'px)').matches}
   function close(refocus){
    nav.classList.remove('p14-nav-open');
@@ -44,6 +68,7 @@
   }
   function update(){
    placeEditor();
+   placeUtilities();
    const mobile=compact(),expanded=mobile&&nav.classList.contains('p14-nav-open');
    button.hidden=!mobile;
    button.setAttribute('aria-expanded',String(expanded));
