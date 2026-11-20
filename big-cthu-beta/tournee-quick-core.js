@@ -14,10 +14,28 @@ function validOverride(x){return !!x&&typeof x==='object'&&typeof x.pid==='strin
 function validateList(x){return Array.isArray(x)&&x.length<=500&&x.every(validOverride)&&new Set(x.map(y=>y.pid+'|'+y.week)).size===x.length;}
 function overrideFor(list,pid,day){return list.find(x=>x.pid===pid&&x.week===monday(day))||null;}
 function update(list,entries){if(!validateList(list)||!Array.isArray(entries)||!entries.length||!entries.every(validOverride))throw Error('Semaines invalides. Aucune modification appliquée.');const key=x=>x.pid+'|'+x.week;const all=new Map(list.map(x=>[key(x),x]));for(const e of entries)all.set(key(e),e);const out=[...all.values()];if(!validateList(out))throw Error('Limite des exceptions de semaines atteinte.');return out;}
+// Un basculement s'applique a partir de la semaine choisie : aucun historique clinique reecrit.
+function validPhaseFlips(cycle){
+ const flips=cycle&&cycle.phaseFlips;
+ return flips===undefined||(Array.isArray(flips)&&flips.length<=52&&flips.every((week,i)=>validDay(week)&&monday(week)===week&&(i===0||flips[i-1]<week)));
+}
 function weekMode(cycle,week){
- if(!cycle||!validDay(cycle.a)||!validDay(week)||!Array.isArray(cycle.ch)||!Array.isArray(cycle.gr))return '';
- const diff=Math.round((parseDay(monday(week))-parseDay(monday(cycle.a)))/604800000);
- return ((diff%2)+2)%2?'gr':'ch';
+ if(!cycle||!validDay(cycle.a)||!validDay(week)||!Array.isArray(cycle.ch)||!Array.isArray(cycle.gr)||!validPhaseFlips(cycle))return '';
+ const target=monday(week);
+ const diff=Math.round((parseDay(target)-parseDay(monday(cycle.a)))/604800000);
+ const base=((diff%2)+2)%2?'gr':'ch';
+ const switches=(cycle.phaseFlips||[]).filter(start=>start<=target).length;
+ return switches%2?(base==='ch'?'gr':'ch'):base;
+}
+function togglePhase(cycle,week){
+ if(!cycle||!validDay(week)||!validDay(cycle.a)||!validDays(cycle.ch)||!validDays(cycle.gr)||!validPhaseFlips(cycle))throw Error('Cycle invalide : aucune modification appliquee.');
+ const target=monday(week),old=cycle.phaseFlips||[];
+ const flips=old.includes(target)?old.filter(d=>d!==target):old.concat(target).sort();
+ if(flips.length>52)throw Error('Historique des inversions plein : aucune modification appliquee.');
+ const next={...cycle};
+ if(flips.length)next.phaseFlips=flips;
+ else delete next.phaseFlips;
+ return next;
 }
 function cycleDays(cycle,mode){const days=cycle&&cycle[mode];return validDays(days)?days.slice():null;}
 function dayNames(days){return days.slice().sort((a,b)=>((a+6)%7)-((b+6)%7)).map(x=>DAY[x]).join(' · ');}
@@ -76,7 +94,7 @@ function patientMatches(text,patients){
   return full.split(' ').some(name=>name.length>=4&&line.includes(' '+name+' '));
  });
 }
-const api={PHI_WEEK_KEY,norm,validDay,add,monday,validDays,validOverride,validateList,overrideFor,update,weekMode,cycleDays,dayNames,dateHere,parseCommand,patientMatches};
+const api={PHI_WEEK_KEY,norm,validDay,add,monday,validDays,validOverride,validateList,overrideFor,update,validPhaseFlips,weekMode,togglePhase,cycleDays,dayNames,dateHere,parseCommand,patientMatches};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 if(root)root.TOURNEE_QUICK=api;
 })(typeof window!=='undefined'?window:null);
