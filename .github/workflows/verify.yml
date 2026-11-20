@@ -79,6 +79,12 @@ jobs:
           "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=430,860 --screenshot="renaissance-captures/p15-tauren-herbalism-iphone.png" "file://$PWD/public/binch/.p14-preview-tauren.html?page=metiers"
           "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=430,860 --screenshot="renaissance-captures/p15-forsaken-engineering-iphone.png" "file://$PWD/public/binch/.p14-preview-forsaken.html?page=metiers"
           "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=430,860 --screenshot="renaissance-captures/p15-full-menu-iphone.png" "file://$PWD/public/binch/.p14-preview-tauren.html?menu=open"
+          # P16: inspect genuinely mounted adventure home, not the old hidden hero.
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=1440,960 --screenshot="renaissance-captures/p16-shaman-real-desktop.png" "file://$PWD/public/binch/.p14-preview-storm.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=430,860 --screenshot="renaissance-captures/p16-shaman-real-iphone.png" "file://$PWD/public/binch/.p14-preview-storm.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=320,800 --screenshot="renaissance-captures/p16-shaman-real-320.png" "file://$PWD/public/binch/.p14-preview-storm.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=430,860 --screenshot="renaissance-captures/p16-shaman-reforge-iphone.png" "file://$PWD/public/binch/.p14-preview-storm.html?reforge=1"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=3000 --window-size=430,860 --screenshot="renaissance-captures/p16-three-sanctuaries-iphone.png" "file://$PWD/public/binch/premium-sanctuaries-review.html?identity=storm"
           ls -lh renaissance-captures/
       - name: Conserver les captures de revue (3 jours, sans publication Pages)
         if: github.event_name == 'pull_request' && github.head_ref == 'feature/binch-visual-renaissance-20261118'
@@ -108,6 +114,10 @@ jobs:
         run: |
           node --test tests/binch-p15-iphone-professions.test.mjs
           python3 -c "import xml.etree.ElementTree as ET,glob; assets=glob.glob('public/binch/profession-*-p15.svg'); assert len(assets)==4; [ET.parse(p) for p in assets]; print('4 original profession SVGs validated')"
+      - name: P16 — contrôler le vrai flagship Tauren Chaman et son SVG
+        run: |
+          node --test tests/binch-p16-storm-flagship.test.mjs
+          python3 -c "import xml.etree.ElementTree as ET; ET.parse('public/binch/tauren-shaman-storm-totem-p16.svg'); print('P16 original storm totem valid XML')"
       - name: Vérifier la présence de Big Cthu dans le paquet Pages
         run: |
           node scripts/stage-big-cthu-beta.mjs
