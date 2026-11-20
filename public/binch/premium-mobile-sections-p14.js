@@ -59,6 +59,10 @@
    // within the scrollable menu, not permanently above the artwork.
    placeUtility($('#binch-quicknav-launch'),'p16-nav-search','first');
    placeUtility($('#binch-ost'),'p16-nav-ost','last');
+   // Move the original character-switch and performance-details controls too.
+   // Reparenting retains their attached listeners, native details state and focus.
+   placeUtility($('#app .profile-switch'),'p16-nav-switch','last');
+   placeUtility($('#binch-display-comfort'),'p16-nav-comfort','last');
   }
   function compact(){return window.matchMedia('(max-width:'+MAX+'px)').matches}
   function close(refocus){
