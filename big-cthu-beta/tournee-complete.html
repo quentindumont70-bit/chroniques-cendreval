@@ -584,6 +584,7 @@ body.tournee-locked #tour-save-strip{display:none}
 </style>
 <link rel="stylesheet" href="./tournee-medical-ops.css">
 <link rel="stylesheet" href="./tournee-v262-mobile.css">
+<link rel="stylesheet" href="./tournee-v263-calendar.css">
 </head>
 <body class="tournee-locked tournee-checking"><section id="tour-security-gate" hidden role="dialog" aria-modal="true" aria-labelledby="tour-backup-title">
 <h1 id="tour-backup-title">Mes sauvegardes</h1>
@@ -910,19 +911,52 @@ function cyk(p,s){const c=p.cyc;if(!c)return"";const ov=tqOverride(p,s),d=DT(s);
 
 /* V262 — accessible from an existing patient's file; never modifies completed visits. */
 let tqPhaseBusy=false;
+/* V263 : fortnight view shows the EFFECTIVE plan, including clinical week overrides. */
+function tqCycleFortnight(p,reference){
+ if(!p||!p.cyc||!TQ||typeof TQ.weekMode!=='function')return [];
+ const anchor=TQ.monday(reference||TODAY),entries=tqWeeks(true);
+ return [anchor,TQ.add(anchor,7)].map((week,idx)=>{
+  const base=TQ.weekMode(p.cyc,week);
+  if(!base)throw Error('Cycle illisible : contrôle requis avant inversion.');
+  const override=TQ.overrideFor(entries,p.id,week);
+  const effective=override?override.mode:base;
+  const days=Array.from({length:7},(_,offset)=>{
+   const date=TQ.add(week,offset),active=onDate(p,date);
+   const treatment=active?cyk(p,date):'';
+   return {date,active,treatment:treatment||'',extra:active&&!treatment};
+  });
+  return {week,idx,base,effective,override,days};
+ });
+}
 function tqCyclePhaseBlock(p){
  if(!p||!p.cyc||!TQ||typeof TQ.togglePhase!=='function')return '';
- const week=TQ.monday(TODAY),next=TQ.add(week,7);
- const mode=TQ.weekMode(p.cyc,week),following=TQ.weekMode(p.cyc,next);
- if(!mode||!following)return '<div class="warnbox">Cycle incomplet : impossible d’inverser. Vérifie les jours et la date de référence.</div>';
  const label=k=>k==='ch'?'Chimio':'Granocytes';
- const exceptions=tqWeeks(false).filter(x=>x.pid===p.id&&x.week>=week&&x.week<=next);
+ let weeks;
+ try{weeks=tqCycleFortnight(p,TODAY)}catch(error){
+  return '<section class="blk tq-cycle-switch"><div class="warnbox" role="alert">Cycle ou exceptions de semaines illisibles : aucune inversion proposée. Vérifie le coffre et conserve une sauvegarde.</div></section>';
+ }
+ if(!weeks.length)return '';
+ const hasOverrides=weeks.some(w=>w.override);
+ const calendar=weeks.map(w=>
+  '<div class="tq-cycle-week">'+
+   '<div class="tq-cycle-week-title"><span>'+(w.idx===0?'Cette semaine':'Semaine prochaine')+' · '+esc(w.week)+'</span><strong>'+label(w.effective)+'</strong></div>'+
+   (w.override?'<div class="tq-cycle-override">Exception manuelle prioritaire · cycle de fond : '+label(w.base)+'</div>':'')+
+   '<div class="tq-cycle-weekdays" role="list" aria-label="Passages prévus de la semaine du '+esc(w.week)+'">'+
+    w.days.map(item=>{
+     const dow=DT(item.date).getDay(),word=JC[dow],state=item.active?(item.extra?'passage ponctuel':'passage prévu'):'pas de passage';
+     return '<span role="listitem" class="tq-cycle-day'+(item.active?' is-on':'')+(item.extra?' is-extra':'')+'" title="'+esc(word+' '+item.date+' : '+state)+'" aria-label="'+esc(word+' '+item.date+' : '+state)+'">'+
+      '<small>'+esc(word.substring(0,2))+'</small><b>'+DT(item.date).getDate()+'</b><i aria-hidden="true">'+(item.active?(item.extra?'+':'●'):'–')+'</i></span>';
+    }).join('')+
+   '</div></div>'
+ ).join('');
  return '<section class="blk tq-cycle-switch" aria-label="Alternance chimio et Granocytes">'+
- '<div class="lab">⇄ Alternance des semaines</div>'+
- '<div class="tq-cycle-pair"><span>Cette semaine <b>'+label(mode)+'</b></span><span>Semaine suivante <b>'+label(following)+'</b></span></div>'+
- (exceptions.length?'<p class="tq-cycle-warning">Attention : des exceptions manuelles de planning existent pour cette semaine ou la prochaine et restent prioritaires.</p>':'')+
- '<button type="button" class="btn tq-cycle-button" onclick="tqCyclePhaseSwitchById('+esc(JSON.stringify(p.id))+')">⇄ Inverser Granocytes / chimio</button>'+
- '<p class="sub">Bascule à partir de cette semaine uniquement. Les semaines antérieures et les passages déjà cochés restent inchangés. Un second appui rétablit l’alternance précédente.</p></section>';
+  '<div class="lab">⇄ Alternance des semaines</div>'+
+  '<p class="sub tq-cycle-intro">Aperçu du planning enregistré : les jours colorés sont prévus, le signe + indique un passage hors cycle. Vérifie avec la prescription.</p>'+
+  '<div class="tq-cycle-pair"><span>Cette semaine <b>'+label(weeks[0].effective)+'</b></span><span>Semaine suivante <b>'+label(weeks[1].effective)+'</b></span></div>'+
+  '<div class="tq-cycle-calendar">'+calendar+'</div>'+
+  (hasOverrides?'<p class="tq-cycle-warning" role="note">Des exceptions manuelles restent prioritaires. Le bouton inverse le <b>cycle de fond</b>, pas ces exceptions : le type de semaine affiché peut donc ne pas changer.</p>':'')+
+  '<button type="button" class="btn tq-cycle-button" onclick="tqCyclePhaseSwitchById('+esc(JSON.stringify(p.id))+')">⇄ Inverser Granocytes / chimio</button>'+
+  '<p class="sub">Bascule à partir de cette semaine uniquement. Les semaines antérieures et les passages déjà cochés restent inchangés. Un second appui rétablit l’alternance précédente.</p></section>';
 }
 async function tqCyclePhaseSwitchById(pid){
  if(tqPhaseBusy)return false;
@@ -935,7 +969,7 @@ async function tqCyclePhaseSwitchById(pid){
   // Refuse silently overwriting manual exceptions; they are kept and visibly signalled.
   const exceptions=tqWeeks(true).filter(x=>x.pid===pid&&x.week>=start);
   const treatment=k=>k==='ch'?'Chimio':'Granocytes';
-  const warning=exceptions.length?'\n\nAttention : '+exceptions.length+' exception(s) de semaine enregistrée(s) restent prioritaires sur le cycle. Elles ne seront pas supprimées.':'';
+  const warning=exceptions.length?'\n\nATTENTION : '+exceptions.length+' exception(s) manuelle(s) restent prioritaires. Le bouton inverse seulement le cycle de fond : les traitements ou jours réellement affichés par ces exceptions NE changeront PAS. Vérifie ces semaines dans le planificateur.':'';
   if(!confirm('Inverser le cycle pour '+p.n+' à partir de la semaine du '+start+' ?\n\nCette semaine : '+treatment(before)+' → '+treatment(after)+'.\nSemaine suivante : '+treatment(TQ.weekMode(p.cyc,next))+' → '+treatment(TQ.weekMode(modified,next))+'.\nLes semaines passées et les passages réalisés restent inchangés.'+warning))return false;
   tqPhaseBusy=true;
   const old=P;P=P.map(item=>item.id===pid?{...item,cyc:modified}:item);
