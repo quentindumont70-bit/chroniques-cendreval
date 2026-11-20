@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071317"><title>La Binch Renaissance — Atelier des identités vivantes</title>
+<script>
+// P10 fast first paint: preload exactly the selected scene, never the other eight.
+(()=>{
+ const scene={Guerrier:'renaissance-p10-hero-warrior.svg',Paladin:'renaissance-p10-hero-paladin.svg',
+  Chasseur:'renaissance-p10-hero-hunter.svg',Voleur:'renaissance-p10-hero-rogue.svg',
+  'Prêtre':'renaissance-p10-hero-priest.svg',Chaman:'renaissance-p10-hero-shaman.svg',
+  Mage:'renaissance-p10-hero-mage.svg','Démoniste':'renaissance-p9-hero-warlock.svg',
+  Druide:'renaissance-p9-hero-druid.svg'};
+ const picked=new URLSearchParams(location.search).get('classe')||'Druide';
+ const link=document.createElement('link');link.rel='preload';link.as='image';
+ const asset=scene[picked]||scene.Druide;
+ link.href='./'+asset;document.head.append(link);
+ document.documentElement.style.setProperty('--world','url("./'+asset+'")');
+})();
+</script>
+<style>
+:root{color-scheme:dark;font-family:Inter,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;--metal:#cbaa75;--light:#bce4a5;--aura:#398d64;--world:url("./renaissance-p9-hero-druid.svg");--architecture:none;--matter:#1e392e;background:#070e16;color:#f7ead6}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 100% 10%,#3f40303b,transparent 48%),#071014}
+a{color:inherit;text-underline-offset:4px}
+.top{max-width:1480px;margin:0 auto;padding:22px clamp(14px,3vw,44px);display:flex;justify-content:space-between;gap:24px;align-items:center}
+.logo{font:800 clamp(1.18rem,2.3vw,1.65rem) Georgia,serif;letter-spacing:.12em;color:#f4daa8}
+.logo em{font:700 .7rem system-ui,sans-serif;letter-spacing:.16em;display:block;color:#bdbfaf;text-transform:uppercase;font-style:normal;margin-top:5px}
+.top a{font-size:.83rem;color:#f2d5a9;border:1px solid #846e58;border-radius:8px;padding:10px 14px;text-decoration:none}
+.top a:hover,.top a:focus-visible{background:#293832}
+main{max-width:1480px;margin:0 auto;padding:0 clamp(14px,3vw,44px) 60px}
+.intro{display:flex;align-items:end;justify-content:space-between;gap:30px;flex-wrap:wrap;margin:10px 0 20px}
+.eyebrow{color:#e4ba76;font:.77rem system-ui,sans-serif;letter-spacing:.22em;font-weight:800;text-transform:uppercase}
+.intro h1{font:700 clamp(2.05rem,5vw,4rem)/1.09 Georgia,serif;letter-spacing:-.015em;color:#fff0ce;margin:9px 0}
+.intro p{color:#b9c8c5;font-size:.9rem;line-height:1.55;max-width:620px;margin-bottom:0}
+.status{border:1px solid #8f8e7d;border-radius:12px;padding:11px 15px;color:#c4d8c4;font-size:.72rem;line-height:1.5}
+.stage{position:relative;isolation:isolate;overflow:hidden;min-height:clamp(440px,49vw,675px);border-radius:clamp(16px,2vw,36px);border:2px solid var(--metal);box-shadow:0 28px 95px #000e,inset 0 0 0 1px #fff1c226;background:var(--matter)}
+.stage::before{content:"";position:absolute;inset:0;background-image:linear-gradient(90deg,#061118f7,#061820df 27%,#0a172060 58%,#0a161830),var(--world);background-size:cover;background-position:center;filter:saturate(1.1) contrast(1.1)}
+.stage::after{content:"";position:absolute;inset:13px;border:1px solid color-mix(in srgb,var(--metal) 60%,transparent);border-radius:inherit;pointer-events:none}
+.architecture{position:absolute;inset:0 0 0 55%;background:var(--architecture) right 5% bottom 7%/auto 54% no-repeat;opacity:.16;mix-blend-mode:screen;mask-image:linear-gradient(90deg,transparent,#000 35%);pointer-events:none}
+.aura{position:absolute;inset:0;background:radial-gradient(ellipse at 77% 36%,color-mix(in srgb,var(--aura) 28%,transparent),transparent 58%);pointer-events:none}
+.ribbon{position:absolute;top:30px;left:30px;padding:9px 18px;font:.7rem system-ui,sans-serif;letter-spacing:.19em;text-transform:uppercase;font-weight:750;color:#f6ddaf;background:#091620aa;border:1px solid var(--metal);border-radius:7px}
+.stagecopy{position:absolute;z-index:1;left:clamp(25px,5vw,70px);right:15px;bottom:clamp(34px,5vw,70px);max-width:590px}
+.stagecopy h2{font:700 clamp(2.25rem,5.6vw,5.2rem)/1.06 Georgia,serif;color:#fff2d6;letter-spacing:-.025em;text-shadow:0 6px 30px #000;max-width:580px;margin:13px 0}
+.stagecopy p{font-size:clamp(.89rem,1.5vw,1.1rem);line-height:1.65;color:#e0e5de;text-shadow:0 3px 12px #000c;margin:0 0 16px}
+.crest{display:flex;align-items:center;gap:10px}
+.crest img{width:52px;height:52px;filter:drop-shadow(0 0 12px var(--aura))}
+.crest strong{color:var(--light);font:700 1.1rem Georgia,serif}
+.profession-orbit{position:absolute;right:clamp(26px,6vw,90px);bottom:60px;z-index:1;display:flex;gap:17px;font:3rem Georgia,serif;color:var(--metal);text-shadow:0 0 22px var(--aura);opacity:.6;pointer-events:none}
+.profession-orbit span:first-child{animation:breath 15s ease-in-out infinite}
+.profession-orbit span:last-child{font-size:.68em;margin-top:-25px;opacity:.75}
+@keyframes breath{0%,70%,100%{transform:translateY(0) rotate(0);opacity:.55}85%{transform:translate(-16px,-19px) rotate(9deg);opacity:1}}
+[data-race="dwarf"] .stage{border-radius:4px 24px 4px 24px;border-width:5px}
+[data-race="elf"] .stage{border-radius:64px 10px 64px 10px}
+[data-race="orc"] .stage{border-radius:0 38px 0 38px;border-left-width:9px}
+[data-race="forsaken"] .stage{border-radius:3px 34px 3px 34px;border-top-style:dashed}
+[data-race="tauren"] .stage{border-radius:46px 46px 10px 10px;border-bottom-width:7px}
+[data-race="troll"] .stage{border-radius:8px 38px 5px 38px;border-right-width:7px}
+[data-race="gnome"] .stage{border-style:double;border-width:6px}
+[data-class="druid"] .aura{background:radial-gradient(ellipse at 70% 78%,#32694a66,transparent 55%)}
+[data-class="warlock"] .aura{background:radial-gradient(ellipse at 79% 38%,#723c9f66,transparent 56%)}
+[data-class="mage"] .aura{background:radial-gradient(ellipse at 83% 29%,#627bba75,transparent 54%)}
+[data-class="paladin"] .aura{background:radial-gradient(ellipse at 82% 19%,#f1dca266,transparent 54%)}
+[data-class="shaman"] .aura{background:radial-gradient(ellipse at 80% 44%,#578dcc44,transparent 60%)}
+.controlboard{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:25px}
+.controlboard section{border:1px solid #5a6a61;border-radius:18px;padding:clamp(16px,3vw,25px);background:linear-gradient(145deg,#152b2d,#0e1d26);box-shadow:0 12px 30px #0006}
+.controlboard h3{font:700 1.4rem Georgia,serif;color:#f4dcae;margin:3px 0 17px}
+.controlboard h3 small{display:block;font:.73rem system-ui,sans-serif;color:#a9b6b0;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}
+.fieldgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+label{display:flex;flex-direction:column;gap:7px;font-size:.78rem;color:#cbd9d0;font-weight:700;letter-spacing:.03em}
+select{appearance:none;width:100%;min-height:48px;border:1px solid #698178;background:#182d31;color:#faf1de;border-radius:9px;padding:10px 34px 10px 12px;font:600 .91rem system-ui,sans-serif;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,#e5c899 50%),linear-gradient(135deg,#e5c899 50%,transparent 50%);background-position:calc(100% - 21px) 21px,calc(100% - 15px) 21px;background-size:6px 6px;background-repeat:no-repeat}
+button{cursor:pointer}
+button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #ffecac;outline-offset:3px}
+.jobgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.job{min-height:49px;display:flex;align-items:center;gap:8px;text-align:left;border:1px solid #4f7169;background:#102125;color:#d5e0d6;border-radius:9px;padding:8px 10px;font-size:.78rem;font-weight:650}
+.job span{font:1.34rem Georgia,serif;color:#e5bc82}
+.job[aria-pressed="true"]{border-color:#e2bf84;background:#304335;color:#fff4d9;box-shadow:inset 0 0 0 1px #e0c17d55}
+.job:disabled{opacity:.42;cursor:not-allowed}
+.jobnote{font-size:.76rem;color:#9aafa8;margin:13px 0 0}
+.compare{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+.compare button,.toggle button{border:1px solid #bca171;border-radius:9px;background:#2a3635;color:#fff0cd;min-height:44px;padding:10px 13px;font-size:.78rem;font-weight:800}
+.compare button:hover,.toggle button:hover{background:#46554b}
+.toggle{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.toggle button[aria-pressed="true"]{background:#dcc18c;color:#10201a}
+.footer{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding:23px 0;font-size:.75rem;color:#adbeb5}
+.footer a{color:#e9d09d}
+html[data-detail="lite"] .architecture,html[data-detail="lite"] .profession-orbit,html[data-detail="lite"] .aura{display:none}
+html[data-detail="lite"] .stage::before{filter:none}
+@media(max-width:760px){.controlboard{grid-template-columns:1fr}.stage{min-height:550px}.stage::before{background-image:linear-gradient(180deg,#07131ac9,#07141b61 25%,#07141bd9 74%),var(--world)}.stagecopy{bottom:25px;left:23px;right:23px}.profession-orbit{right:35px;bottom:250px;font-size:2.2rem}.ribbon{top:20px;left:20px}.architecture{inset:0 0 0 35%;background-size:auto 43%;background-position:right bottom 8%;opacity:.12}.top{padding-top:15px}}
+@media(max-width:760px){
+ .intro{margin:0 0 12px;gap:7px}
+ .intro .eyebrow{font-size:.64rem;letter-spacing:.14em}
+ .intro h1{font-size:clamp(1.65rem,6.2vw,2.15rem);margin:6px 0 4px}
+ .intro p{font-size:.8rem;line-height:1.43;max-width:36ch}
+ .intro .status{display:none}
+ .stage{min-height:510px}
+ .ribbon{font-size:.62rem;letter-spacing:.11em}
+ .stagecopy{bottom:21px}
+ .top{padding-top:12px;padding-bottom:12px}
+}
+@media(max-width:410px){.jobgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.stage{min-height:490px}.crest img{width:43px;height:43px}}
+@media(prefers-reduced-motion:reduce){.profession-orbit span:first-child{animation:none!important}}
+@media(forced-colors:active){.controlboard section,.stage,.job,select{border:2px solid CanvasText;background:Canvas;color:CanvasText}.stage::before,.architecture,.aura{display:none}.job[aria-pressed=true]{outline:3px solid Highlight}}
+</style>
+<script src="./visual-identity-compositor.js?v=002" defer></script>
+</head>
+<body>
+<header class="top"><div class="logo">LA BINCH <em>Renaissance · Atelier cinématique P10</em></div><div style="display:flex;gap:8px;flex-wrap:wrap"><a href="./shaaby-mulgore-premium.html" style="background:#2c4b35;border-color:#c9d99d">Shaaby · Édition premium ✦</a><a href="./index.html">Ouvrir le compagnon</a></div></header>
+<main>
+<section class="intro"><div><div class="eyebrow">La forge des héritages · Neuf mondes uniques</div><h1>Ton identité. Ton sanctuaire.</h1><p>Race, classe et métiers forgent ton sanctuaire. Aperçu seulement : ton profil ne sera pas modifié.</p></div><div class="status">Édition P10 · Œuvres originales locales<br>8 architectures · 9 mondes · 9 métiers</div></section>
+<section id="stage-root" data-race="tauren" data-class="druid" class="stage" role="img" aria-label="Prévisualisation du sanctuaire personnel">
+<div class="architecture" aria-hidden="true"></div><div class="aura" aria-hidden="true"></div><div class="ribbon">Azeroth · Sanctuaire personnel</div>
+<div class="stagecopy"><div class="crest"><img id="seal" src="./renaissance-sigil-druid.svg" alt="" width="52" height="52"><strong id="class-name">Druide · Forêt des anciens</strong></div><h2 id="scene-title">Sanctuaire des Racines</h2><p id="scene-intro">Héritage tauren, puissance du Druide, rites d’Herboristerie et d’Alchimie.</p><span class="eyebrow" id="scene-signature">Tauren · Druide · Herboristerie / Alchimie</span></div>
+<div class="profession-orbit" aria-hidden="true"><span id="job-a">❧</span><span id="job-b">⚗</span></div>
+</section>
+<div class="controlboard">
+<section aria-labelledby="identity-header"><h3 id="identity-header"><small>Chapitre I et II</small>Le peuple et la vocation</h3>
+<div class="fieldgrid">
+<label for="race">Race<select id="race"><option>Humain</option><option>Nain</option><option>Elfe</option><option>Gnome</option><option>Orc</option><option>MortVivant</option><option selected>Tauren</option><option>Troll</option></select></label>
+<label for="classe">Classe<select id="classe"><option>Guerrier</option><option>Paladin</option><option>Chasseur</option><option>Voleur</option><option>Prêtre</option><option>Chaman</option><option>Mage</option><option>Démoniste</option><option selected>Druide</option></select></label></div>
+<div class="compare"><button type="button" id="druid-preset">Tauren · Druide</button><button type="button" id="warlock-preset">Réprouvé · Démoniste</button></div>
+<div class="toggle"><button type="button" aria-pressed="false" id="lite">Mode léger</button><span class="jobnote">Prévisualisation uniquement · aucune sauvegarde</span></div>
+</section>
+<section aria-labelledby="jobs-header"><h3 id="jobs-header"><small>Chapitre III</small>Signatures de métier</h3>
+<div class="jobgrid" role="group" aria-label="Choisir jusqu’à deux métiers">
+<button class="job" type="button" data-job="Minage" aria-pressed="false"><span>◆</span>Minage</button>
+<button class="job" type="button" data-job="Ingénierie" aria-pressed="false"><span>⚙</span>Ingénierie</button>
+<button class="job" type="button" data-job="Herboristerie" aria-pressed="true"><span>❧</span>Herboristerie</button>
+<button class="job" type="button" data-job="Alchimie" aria-pressed="true"><span>⚗</span>Alchimie</button>
+<button class="job" type="button" data-job="Dépeçage" aria-pressed="false"><span>◇</span>Dépeçage</button>
+<button class="job" type="button" data-job="Travail du cuir" aria-pressed="false"><span>◈</span>Travail du cuir</button>
+<button class="job" type="button" data-job="Forge" aria-pressed="false"><span>⚒</span>Forge</button>
+<button class="job" type="button" data-job="Enchantement" aria-pressed="false"><span>✧</span>Enchantement</button>
+<button class="job" type="button" data-job="Couture" aria-pressed="false"><span>⌁</span>Couture</button>
+</div><p class="jobnote" id="jobs-count" aria-live="polite">2/2 métiers choisis · Aucun changement dans le profil enregistré</p>
+</section>
+</div>
+<div class="footer"><span>9 scènes vectorielles cinématiques originales · P10 · aucune publicité ni donnée externe</span><a href="./index.html">Revenir au Quartier Général</a></div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+ const engine=window.BinchVisualIdentity;
+ const r=document.getElementById('race'),c=document.getElementById('classe'),root=document.getElementById('stage-root');
+ const buttons=[...document.querySelectorAll('button[data-job]')];
+ const titles={Guerrier:'Bastion des Serments',Paladin:'Cathédrale de l’Aube',Chasseur:'Poste des Veilleurs',Voleur:'Les Toits de la Nuit','Prêtre':'Temple des Sept Lueurs',Chaman:'Cercle des Éléments',Mage:'Observatoire des Arcanes','Démoniste':'La Citadelle Interdite',Druide:'Sanctuaire des Racines'};
+ const subtitles={Guerrier:'La guerre a forgé cette forteresse.',Paladin:'Sous la lumière, les vitraux veillent.',Chasseur:'Une sentinelle domine la canopée.',Voleur:'Chaque toit dissimule un chemin.','Prêtre':'L’aube révèle un havre de paix.',Chaman:'Les éléments se répondent dans l’orage.',Mage:'Les constellations dessinent la magie.',Démoniste:'La nécropole brûle de secrets.',Druide:'Les racines protègent le sanctuaire.'};
+ let selected=['Herboristerie','Alchimie'];
+ function refresh(){
+  const p=engine.compose({race:r.value,classe:c.value,jobs:selected});
+  const vars=p.vars;
+  document.documentElement.style.setProperty('--world',vars['--br-class-world']);
+  document.documentElement.style.setProperty('--architecture',vars['--br-race-art']);
+  document.documentElement.style.setProperty('--matter',p.race.matter);
+  document.documentElement.style.setProperty('--metal',p.race.metal);
+  document.documentElement.style.setProperty('--light',p.classe.light);
+  document.documentElement.style.setProperty('--aura',p.classe.aura);
+  document.documentElement.dataset.race=p.race.id;document.documentElement.dataset.class=p.classe.id;
+  root.dataset.race=p.race.id;root.dataset.class=p.classe.id;
+  document.getElementById('scene-title').textContent=titles[c.value];
+  document.getElementById('scene-intro').textContent=subtitles[c.value];
+  document.getElementById('scene-signature').textContent=p.signature;
+  document.getElementById('class-name').textContent=c.value+' · '+p.race.name;
+  document.getElementById('seal').src='./renaissance-sigil-'+p.classe.id+'.svg';
+  document.getElementById('job-a').textContent=p.jobs[0]?.glyph||'';
+  document.getElementById('job-b').textContent=p.jobs[1]?.glyph||'';
+  buttons.forEach(b=>{const checked=selected.includes(b.dataset.job);b.setAttribute('aria-pressed',String(checked));b.disabled=!checked&&selected.length>=2;});
+  document.getElementById('jobs-count').textContent=selected.length+'/2 métiers choisis · Aucun changement dans le profil enregistré';
+  root.setAttribute('aria-label','Prévisualisation : '+p.signature);
+ }
+ r.addEventListener('change',refresh);c.addEventListener('change',refresh);
+ buttons.forEach(b=>b.addEventListener('click',()=>{
+  const job=b.dataset.job;if(selected.includes(job))selected=selected.filter(j=>j!==job);
+  else if(selected.length<2)selected.push(job);refresh();
+ }));
+ document.getElementById('druid-preset').addEventListener('click',()=>{r.value='Tauren';c.value='Druide';selected=['Herboristerie','Alchimie'];refresh()});
+ document.getElementById('warlock-preset').addEventListener('click',()=>{r.value='MortVivant';c.value='Démoniste';selected=['Ingénierie','Enchantement'];refresh()});
+ document.getElementById('lite').addEventListener('click',event=>{const active=document.documentElement.dataset.detail!=='lite';document.documentElement.dataset.detail=active?'lite':'rich';event.currentTarget.setAttribute('aria-pressed',String(active))});
+ // Read-only deep links for CI screenshots; only whitelist existing options.
+ try{
+  const query=new URLSearchParams(location.search);
+  const rq=query.get('race'),cq=query.get('classe'),jobsQuery=query.get('jobs');
+  if([...r.options].some(o=>o.value===rq))r.value=rq;
+  if([...c.options].some(o=>o.value===cq))c.value=cq;
+  if(jobsQuery!==null)selected=[...new Set(jobsQuery.split(',').filter(j=>buttons.some(b=>b.dataset.job===j)))].slice(0,2);
+ }catch{}
+ refresh();
+});
+</script>
+</body></html>

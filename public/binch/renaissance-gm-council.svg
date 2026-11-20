@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 670" role="img" aria-labelledby="title desc">
+<title id="title">La Salle du Conseil — carte de campagne</title>
+<desc id="desc">Scène originale d'un conseil de guilde fantastique : grande carte de campagne sur une table, bougies, bannières et fenêtre de citadelle.</desc>
+<defs><linearGradient id="stone" x2=".18" y2="1"><stop stop-color="#263c46"/><stop offset="1" stop-color="#0c1c24"/></linearGradient><radialGradient id="light"><stop stop-color="#f7d898" stop-opacity=".63"/><stop offset=".3" stop-color="#f6bd73" stop-opacity=".2"/><stop offset="1" stop-color="#d4ab79" stop-opacity="0"/></radialGradient><linearGradient id="map" x2=".2" y2="1"><stop stop-color="#ddc49c"/><stop offset="1" stop-color="#a58962"/></linearGradient><g id="candle"><path d="M-8 0v-73h16V0z" fill="#d4bc96" stroke="#e4cd9d" stroke-width="3"/><path d="M0-80q-17-14 0-36 17 23 0 36" fill="#ffdf99"/><path d="M-14 0h28" stroke="#bb945e" stroke-width="8"/></g></defs>
+<path fill="url(#stone)" d="M0 0h1400v670H0z"/><path d="M0 0h1400v116H0z" fill="#22343b"/>
+<path d="M686 0v354m-192-201h383M532 156v159q156 88 310 0V156" stroke="#688077" stroke-width="19" fill="none"/>
+<path d="M539 316q150-75 293 0v-161H539Z" fill="#6f8b83" opacity=".24"/>
+<circle cx="690" cy="220" r="255" fill="url(#light)"/>
+<path d="M138 0v358l80-51 79 51V0zm958 0v358l79-51 80 51V0" fill="#533c48" stroke="#b49a76" stroke-width="9"/>
+<path d="M184 59v221m958-221v221" stroke="#d1bc93" stroke-width="9"/><path d="M134 60h167m786 0h172" stroke="#ab865b" stroke-width="15"/>
+<path d="M138 0v358l80-51 79 51V0m799 0v358l79-51 80 51V0" fill="none" stroke="#c2a671" stroke-width="4"/>
+<path d="M-20 441q710-160 1440 0v260H-20Z" fill="#122b31"/>
+<path d="M174 449 1210 419l102 172-1077 59z" fill="#513e2c" stroke="#a68154" stroke-width="20"/>
+<path d="M210 455 1181 430l87 144-1002 54Z" fill="url(#map)" stroke="#e2c99b" stroke-width="6"/>
+<g fill="none" stroke="#756a52" opacity=".7"><path d="M260 493q92-59 214-13t205 1q118-38 214-5t241-2"/><path d="M312 573q129-79 279-41t253-5q118-49 269 9"/><path d="M506 461q-55 94-23 141M821 448q-9 89 50 128"/></g>
+<g fill="#536757" stroke="#7b8266" stroke-width="4"><path d="m385 489 75 26-26 43-80 12-51-33z"/><path d="m738 467 108 10 26 62-75 34-89-40z"/><path d="m1012 491 91 2 44 61-97 15-64-42z"/></g>
+<g fill="#8a433b" stroke="#e3c89b" stroke-width="5"><circle cx="443" cy="506" r="13"/><circle cx="779" cy="522" r="13"/><circle cx="1060" cy="522" r="13"/></g>
+<circle cx="721" cy="524" r="25" fill="none" stroke="#8a7453" stroke-width="5"/><path d="M721 502v44m-22-22h44" stroke="#806441" stroke-width="4"/>
+<g><use href="#candle" x="223" y="453"/><use href="#candle" x="1185" y="438"/><use href="#candle" x="136" y="482"/></g>
+<path d="M0 609q295-31 579 11t821-18v68H0Z" fill="#0c1c22"/>
+</svg>

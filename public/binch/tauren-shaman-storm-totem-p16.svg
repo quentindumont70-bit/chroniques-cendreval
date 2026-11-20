@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="680" viewBox="0 0 760 680" fill="none">
+<title>Totem de l'orage — gravure et parure taurènes du Chaman</title>
+<desc>Totem de bois et pierre, cornes sculptées, plumes de cuivre et énergie d'orage cyan. Ornement de décor uniquement.</desc>
+<defs>
+<linearGradient id="wood" x1="140" y1="100" x2="520" y2="625" gradientUnits="userSpaceOnUse"><stop stop-color="#b18d60"/><stop offset=".28" stop-color="#3d3c34"/><stop offset=".58" stop-color="#836244"/><stop offset="1" stop-color="#1a2b2d"/></linearGradient>
+<linearGradient id="thunder" x1="100" y1="30" x2="620" y2="450" gradientUnits="userSpaceOnUse"><stop stop-color="#d8faff"/><stop offset=".35" stop-color="#4ed4ee"/><stop offset=".78" stop-color="#4387cb"/><stop offset="1" stop-color="#9cfad2"/></linearGradient>
+<linearGradient id="bronze" x1="90" y1="0" x2="630" y2="480" gradientUnits="userSpaceOnUse"><stop stop-color="#f4d19b"/><stop offset=".35" stop-color="#785940"/><stop offset=".68" stop-color="#dcb782"/><stop offset="1" stop-color="#4c4645"/></linearGradient>
+<radialGradient id="mist"><stop stop-color="#68d7ec" stop-opacity=".22"/><stop offset="1" stop-color="#315970" stop-opacity="0"/></radialGradient>
+<filter id="blur"><feGaussianBlur stdDeviation="9"/></filter>
+</defs>
+<circle cx="381" cy="274" r="241" fill="url(#mist)"/>
+<g opacity=".68" stroke="#030d18" stroke-width="33" stroke-linecap="round" filter="url(#blur)">
+ <path d="M387 643 374 146M317 139q-133-21-133-130m222 129Q551 119 557 13"/>
+</g>
+<path d="M356 648 363 150 397 150 420 650Z" fill="url(#wood)" stroke="url(#bronze)" stroke-width="9"/>
+<path d="M310 145C193 149 154 91 150 25c60 44 125 61 201 46l29 49c68-52 152-50 236-94-16 93-73 150-203 128" stroke="url(#bronze)" stroke-width="23" stroke-linejoin="round"/>
+<path d="M312 143C194 146 163 84 154 27m260 124C553 146 603 61 616 27" stroke="#f4dfb7" stroke-width="5" opacity=".62"/>
+<path d="M331 175 380 123 432 178v90l-52 38-49-38Z" fill="#0c2532" stroke="url(#bronze)" stroke-width="12"/>
+<path d="M376 139v45m-39 33 43-22 46 22m-75 42 29 13 29-13" stroke="url(#thunder)" stroke-width="6" stroke-linecap="round" opacity=".86"/>
+<path d="m382 192-19 40 17-5-9 40 29-54-20 5 10-26" fill="url(#thunder)"/>
+<path d="M342 346h73m-73 23h73m-66 23h60M355 474h51m-49 18h47" stroke="url(#bronze)" stroke-width="6" stroke-linecap="round" opacity=".75"/>
+<path d="M353 414q29 14 61 0m-55 104q26-10 47 0" stroke="url(#thunder)" stroke-width="4" opacity=".65"/>
+<g stroke="url(#bronze)" stroke-width="6" stroke-linecap="round">
+ <path d="M349 263c-47 34-99 39-146 21m211-21c48 36 105 34 153 18"/>
+ <path d="M263 302 233 388l34 68m222-148 30 82-35 67"/>
+ <path d="M206 284q-40-21-57-65m423 62q41-24 54-58"/>
+</g>
+<g stroke="url(#thunder)" stroke-width="3" opacity=".72">
+ <path d="m191 183-41 41 35 8-56 68 26-58-30-5 45-50"/>
+ <path d="m550 102 37 46-31 8 53 44-36-25-33-4 30-40"/>
+ <path d="m323 405-28 40 14 9-31 48m168-91 32 26-16 19 26 36"/>
+</g>
+<g fill="url(#bronze)" stroke="#edd0a3" stroke-width="2">
+<path d="M225 348q-35 60-18 110 40-37 47-90Z"/>
+<path d="M515 341q34 67 14 125-34-42-44-102Z"/>
+<path d="M193 388q-34 65-7 107 40-40 34-87Z"/>
+<path d="M542 385q36 68 7 108-36-43-31-86Z"/>
+</g>
+<g fill="#c8eefd" opacity=".76"><circle cx="166" cy="209" r="4"/><circle cx="583" cy="153" r="6"/><circle cx="282" cy="442" r="3"/><circle cx="468" cy="438" r="3"/><circle cx="376" cy="91" r="5"/></g>
+<path d="M140 570c73-24 152-23 201 9m85 3c62-37 128-46 195-18" stroke="#88acaa" stroke-opacity=".28" stroke-width="3" stroke-dasharray="5 14"/>
+</svg>

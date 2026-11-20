@@ -1,0 +1,240 @@
+/* Renaissance P3 — artifacts, tactical atlas, quest chronicle, talents and handheld polish.
+ No gameplay logic and no invented game information. */
+:root{--br-sigil-art:none;--br-sigil-color:#dec58c}
+html[data-binch-identity="druid"]{--br-sigil-art:url("./renaissance-sigil-druid.svg");--br-sigil-color:#a6ce8e}
+html[data-binch-identity="warrior"]{--br-sigil-art:url("./renaissance-sigil-warrior.svg");--br-sigil-color:#d1b69a}
+html[data-binch-identity="mage"]{--br-sigil-art:url("./renaissance-sigil-mage.svg");--br-sigil-color:#9dd6f7}
+html[data-binch-identity="priest"]{--br-sigil-art:url("./renaissance-sigil-priest.svg");--br-sigil-color:#efe2c0}
+html[data-binch-identity="paladin"]{--br-sigil-art:url("./renaissance-sigil-paladin.svg");--br-sigil-color:#edc0d2}
+html[data-binch-identity="rogue"]{--br-sigil-art:url("./renaissance-sigil-rogue.svg");--br-sigil-color:#e5dc8f}
+html[data-binch-identity="hunter"]{--br-sigil-art:url("./renaissance-sigil-hunter.svg");--br-sigil-color:#a7cb90}
+html[data-binch-identity="shaman"]{--br-sigil-art:url("./renaissance-sigil-shaman.svg");--br-sigil-color:#94d9e0}
+html[data-binch-identity="warlock"]{--br-sigil-art:url("./renaissance-sigil-warlock.svg");--br-sigil-color:#cdacf0}
+#page-hub .binch-portrait{isolation:isolate;overflow:visible}
+#page-hub .binch-portrait::before{
+ content:"";position:absolute;z-index:1;pointer-events:none;inset:6%;border-radius:40%;
+ background:var(--br-sigil-art) center/contain no-repeat;
+ filter:drop-shadow(0 4px 20px var(--br-sigil-color));opacity:.96;
+}
+#page-hub .binch-portrait > span{position:relative;z-index:0}
+html[data-binch-identity="druid"] #page-hub .binch-portrait > span,
+html[data-binch-identity="warrior"] #page-hub .binch-portrait > span,
+html[data-binch-identity="mage"] #page-hub .binch-portrait > span,
+html[data-binch-identity="priest"] #page-hub .binch-portrait > span,
+html[data-binch-identity="paladin"] #page-hub .binch-portrait > span,
+html[data-binch-identity="rogue"] #page-hub .binch-portrait > span,
+html[data-binch-identity="hunter"] #page-hub .binch-portrait > span,
+html[data-binch-identity="shaman"] #page-hub .binch-portrait > span,
+html[data-binch-identity="warlock"] #page-hub .binch-portrait > span{opacity:.13}
+#page-hub .binch-portrait b{z-index:2}
+#page-hub .binch-character-card .binch-renaissance-chapter{letter-spacing:.17em}
+#page-metiers #jobs-content .tile{
+ --br-job-art:none;--br-job-color:#c9b082;
+ position:relative;isolation:isolate;overflow:hidden;
+ min-height:158px;padding:clamp(16px,2.1vw,26px) clamp(16px,2.2vw,29px);
+ border:1px solid var(--br-job-color);border-left:4px solid var(--br-job-color);
+ background:radial-gradient(circle at 93% 30%,color-mix(in srgb,var(--br-job-color) 20%,transparent),transparent 50%),
+  linear-gradient(132deg,#1a3033,#0c1a21 85%)!important;
+}
+#page-metiers #jobs-content .tile[data-job="Minage"]{--br-job-art:url("./renaissance-profession-mining.svg");--br-job-color:#c9b38c}
+#page-metiers #jobs-content .tile[data-job="Ingénierie"]{--br-job-art:url("./renaissance-profession-engineering.svg");--br-job-color:#89d4e4}
+#page-metiers #jobs-content .tile::before{
+ content:"";float:right;width:clamp(72px,10vw,120px);height:clamp(72px,10vw,120px);
+ margin:0 0 10px 14px;background:var(--br-job-art) center/contain no-repeat;
+ filter:drop-shadow(0 8px 20px color-mix(in srgb,var(--br-job-color) 32%,transparent));
+}
+#page-metiers #jobs-content .tile:not([data-job="Minage"]):not([data-job="Ingénierie"])::before{display:none}
+#page-metiers #jobs-content .tile .value{
+ color:#f3dfbb;font:700 clamp(1.15rem,1.8vw,1.65rem) Cinzel,Georgia,serif;
+ text-shadow:0 2px 18px #000a;margin:4px 0 10px;overflow-wrap:anywhere
+}
+#page-metiers #jobs-content .tile p{font-size:.85rem;line-height:1.65;color:#d4e1d8}
+#page-progression #map.map{
+ position:relative;isolation:isolate;overflow:hidden;
+ background-image:linear-gradient(135deg,#0b1b1de3,#162820a6 45%,#081515d4),
+  radial-gradient(ellipse at 60% 24%,#caa66a35,transparent 58%),
+  url("./renaissance-world-druid.svg");
+ background-size:cover;background-position:55% 50%;
+ box-shadow:inset 0 0 90px #06151aec,inset 0 1px #e8d3a347,0 30px 64px #000b
+}
+#page-progression #map.map::before{
+ content:"";position:absolute;inset:18px;z-index:0;pointer-events:none;
+ border:1px solid #dbc18f5e;border-radius:12px;
+ background:repeating-radial-gradient(circle at 51% 44%,transparent 0 46px,#e1bb7940 47px 48px);
+ opacity:.5;
+}
+#page-progression #map.map::after{
+ content:"✧                 ✥";position:absolute;inset:20px auto auto 24px;
+ font:30px Georgia,serif;letter-spacing:8px;color:#ead0a26e;pointer-events:none;
+ background:none;z-index:0
+}
+#page-progression #map-lines{filter:drop-shadow(0 0 7px #f4db9e6f)}
+#page-progression .map-node{
+ border:2px solid #d8ba80;border-radius:50%;background:radial-gradient(circle,#544d38,#1a2626);
+ color:#fff0bf;box-shadow:0 0 0 4px #102121aa,0 9px 23px #0009;
+ min-width:44px;min-height:44px;z-index:2;
+}
+#page-progression .map-node.current{
+ box-shadow:0 0 0 5px #e5bd7a4d,0 0 28px #e6c887c4,0 9px 23px #0009!important;
+ border-color:#ffe9ac
+}
+#page-progression .map-card{
+ border:1px solid #cfb17d;border-radius:16px;
+ background:linear-gradient(138deg,#213a32f5,#101d24fa)!important;
+ box-shadow:0 15px 42px #000c,inset 0 1px #f3da9a24
+}
+#page-progression .map-card :is(h3,h4){color:#ffe5af}
+#page-hub .binch-priority-guard{
+ border-radius:19px;border:1px solid #d9b888;
+ background:radial-gradient(circle at 90% 2%,#d5b46e30,transparent 35%),
+  linear-gradient(115deg,#19352e,#0c2024 80%)!important;
+ box-shadow:0 25px 55px #000a,inset 0 1px #f9e1aa20;
+}
+#page-hub .binch-priority-guard::before{content:"✥";font:48px Georgia,serif;color:#d8bc8569;position:absolute;right:23px;top:13px;pointer-events:none}
+#page-hub .binch-guard-list>button{
+ border-radius:12px;border-left:4px solid #c8b477!important;
+ background:linear-gradient(112deg,#2c443aa8,#12262abb);
+ box-shadow:0 10px 28px #0007,inset 0 1px #f4e0bb23;min-height:100px;
+}
+#page-hub .binch-guard-list>button:focus-visible{outline:3px solid #fce5a9;outline-offset:3px}
+#page-hub .binch-route-step .binch-route-task{
+ border-radius:12px;
+ background:linear-gradient(125deg,color-mix(in srgb,var(--step-accent) 13%,#1c302d),#081d20 87%);
+ box-shadow:inset 0 1px #ffffff15,0 7px 19px #0005;
+}
+#page-hub .binch-route-step>i{
+ border-radius:50%;color:var(--step-light);
+ border-color:var(--step-accent);background:#172b2d;
+ box-shadow:0 0 0 5px #081b1c,0 0 22px color-mix(in srgb,var(--step-accent) 36%,transparent);
+}
+#page-hub .binch-route-step.pinned .binch-route-task{
+ box-shadow:inset 3px 0 var(--br-gold),0 0 21px #dfb46f2a,0 9px 20px #0008;
+}
+#page-hub .binch-route-step.done .binch-route-task{filter:saturate(.73)}
+#page-hub .binch-route-tools input:focus-visible,#page-hub .binch-route-tools button:focus-visible{
+ outline:3px solid #ffe5a9;outline-offset:2px
+}
+#page-specs #binch-specs .binch-spec-card{
+ position:relative;overflow:hidden;min-height:110px;
+ padding:16px 16px 17px 72px;border-radius:12px;
+ background:radial-gradient(circle at right top,#e6ad6430,transparent 68%),linear-gradient(145deg,#26322e,#131d26);
+}
+#page-specs .binch-spec-card::before{
+ content:"✧";position:absolute;top:20px;left:14px;display:grid;place-items:center;
+ width:43px;height:43px;border:1px solid #c6b18e;border-radius:10px;
+ color:#f2d9a3;background:radial-gradient(circle,#384a3c,#152329);
+ font:27px Georgia,serif;text-shadow:0 0 15px #d7b57870;
+}
+#page-specs .binch-spec-card[data-spec-id="druid-feral"]::before{
+ content:"";background:#192c28 url("./renaissance-sigil-druid.svg") center/cover no-repeat
+}
+#page-specs #binch-specs .binch-spec-card.active{
+ border-color:#f6d08d;background:linear-gradient(120deg,#4f523d,#25352f);
+ box-shadow:0 0 0 2px #d1ac7159,0 13px 31px #0008;
+}
+#page-specs .binch-specs-progress{
+ border:1px solid #dfc18b;border-radius:14px;padding:16px;
+ background:linear-gradient(130deg,#514630,#23332b);
+ box-shadow:inset 0 1px #fff3,0 9px 23px #0006;
+}
+#page-specs .binch-specs-steps{gap:13px}
+#page-specs .binch-specs-step{
+ position:relative;min-height:83px;overflow:hidden;border-radius:12px;
+ background:linear-gradient(135deg,#1f3534,#131e24);
+ border:1px solid #8194897a;padding:15px 16px;box-shadow:inset 0 1px #fff1,0 8px 19px #0005;
+}
+#page-specs .binch-specs-step::before{
+ content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+ background:#718b7d
+}
+#page-specs .binch-specs-step.is-current{
+ background:radial-gradient(circle at 87% 50%,#bf99592f,transparent 58%),linear-gradient(135deg,#4f422e,#242f2a);
+ border-color:#f0c97e;box-shadow:0 0 0 2px #dfba6c37,0 10px 25px #0008;
+}
+#page-specs .binch-specs-step.is-current::before{background:#ffe5a6;box-shadow:0 0 17px #eabf79}
+#page-specs .binch-specs-step.is-done{border-color:#92c99c;background:linear-gradient(130deg,#28473c,#13272a)}
+#page-specs .binch-specs-step.is-done::before{background:#8ec89e}
+#page-specs .binch-specs-step.is-future{opacity:.77}
+#page-specs .binch-specs-range{
+ min-width:59px;padding:8px;background:#111e22;
+ border:1px solid #c5a975;border-radius:10px;
+ font:800 .8rem Cinzel,Georgia,serif;color:#ffe3ab
+}
+#page-specs .binch-specs-step>div strong{color:#f8e6c7;font-size:.89rem}
+#page-specs .binch-specs-step>b{color:#ffdfa0;font:700 1rem Georgia,serif}
+#app nav.nav button.active{position:relative}
+#app nav.nav button.active::after{
+ content:"";position:absolute;bottom:3px;left:24%;right:24%;height:2px;
+ background:linear-gradient(90deg,transparent,#ffebaf,transparent);
+ box-shadow:0 0 10px #ffdeb0
+}
+#app main :is(.panel,.binch-route,.binch-gm-workspace) button{touch-action:manipulation}
+#app main :is(button,a,input,select,textarea):focus-visible{
+ outline:3px solid #fff0bc;outline-offset:3px;
+}
+@media(max-width:720px){
+ #page-metiers #jobs-content .tile{min-height:138px}
+ #page-metiers #jobs-content .tile::before{width:82px;height:82px}
+ #page-progression #map.map{background-position:65% center}
+ #page-progression .map-card{max-height:40%;overflow:auto}
+ #page-hub .binch-portrait::before{inset:7%}
+ #page-specs #binch-specs .binch-spec-card{min-height:99px;padding:12px 12px 12px 63px}
+ #page-specs .binch-spec-card::before{top:14px;left:11px;width:40px;height:40px}
+}
+@media(max-width:410px){
+ #page-metiers #jobs-content .tile::before{float:right;width:70px;height:70px;margin-left:8px}
+ #page-specs .binch-specs-steps{grid-template-columns:1fr}
+ #page-hub .binch-route-step .binch-route-task{min-width:0}
+ #page-hub .binch-route-step .binch-route-task strong{overflow-wrap:anywhere}
+}
+@media(prefers-reduced-motion:reduce){
+ #page-hub .binch-route-step,#page-specs .binch-specs-step,#app nav.nav button{animation:none!important;transition:none!important;transform:none!important}
+}
+@media(forced-colors:active){
+ #page-metiers #jobs-content .tile,#page-specs .binch-specs-step,#page-hub .binch-guard-list>button{background:Canvas!important;border-color:CanvasText!important}
+ #page-hub .binch-portrait::before,#page-progression #map.map::after{display:none!important}
+}
+
+/* Manual low-power mode: preserve static art and content, drop costly effects. */
+html[data-binch-detail="lite"] :is(#app nav.nav,#page-hub .binch-character-card,#page-hub .binch-renaissance-portal,#page-hub .binch-portrait,#page-hub .binch-level,#page-hub .binch-route,#page-hub .binch-priority-guard,#page-gm #binch-gm-watch,#page-command #binch-faith-advisor,#page-tresors .binch-treasure-card,#page-progression #map.map){
+ box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+html[data-binch-detail="lite"] :is(#page-hub .binch-character-card::before,#page-hub .binch-portrait::before,#page-progression #map.map::before,#page-tresors .binch-treasure-card-art,#page-command #binch-faith-advisor::before){
+ filter:none!important;box-shadow:none!important;backdrop-filter:none!important
+}
+html[data-binch-detail="lite"] #page-hub .binch-character-card::before{background-image:linear-gradient(90deg,#061115de,#0a1b1bb7),var(--br-world-art)!important}
+html[data-binch-detail="lite"] :is(#page-hub .binch-renaissance-portal,#page-hub .binch-route-step,#app nav.nav button,#page-tresors .binch-treasure-card){animation:none!important;transition:none!important;transform:none!important}
+html[data-binch-detail="lite"] #page-hub .binch-renaissance-ambiences button[data-binch-detail]{color:#eff7dd;border-color:#ace0b2;background:#335444}
+#page-hub .binch-renaissance-ambiences button[data-binch-detail]{font-size:17px}
+@media(prefers-reduced-motion:reduce){
+ #page-hub .binch-renaissance-portal::after,#page-hub .binch-renaissance-stage{animation:none!important}
+}
+
+/* One-shot cinematic entrance on actual tab switches, never a permanent animation. */
+@keyframes binch-renaissance-enter{
+ from{opacity:.75;transform:translateY(9px)}
+ to{opacity:1;transform:translateY(0)}
+}
+@media(prefers-reduced-motion:no-preference){
+ #app main > .page.active{animation:binch-renaissance-enter .28s ease-out both}
+ #page-tresors .binch-treasure-frame:nth-child(-n+8) .binch-treasure-card{
+  animation:binch-relic-appear .39s ease-out both
+ }
+ #page-tresors .binch-treasure-frame:nth-child(2) .binch-treasure-card{animation-delay:.04s}
+ #page-tresors .binch-treasure-frame:nth-child(3) .binch-treasure-card{animation-delay:.08s}
+ #page-tresors .binch-treasure-frame:nth-child(4) .binch-treasure-card{animation-delay:.12s}
+}
+@keyframes binch-relic-appear{
+ from{opacity:.48;transform:translateY(13px) scale(.985)}
+ to{opacity:1;transform:translateY(0) scale(1)}
+}
+@media(prefers-reduced-motion:reduce){
+ #app main > .page.active,
+ #page-tresors .binch-treasure-frame .binch-treasure-card{
+  animation:none!important;transform:none!important
+ }
+}
+html[data-binch-detail="lite"] #app main > .page.active,
+html[data-binch-detail="lite"] #page-tresors .binch-treasure-frame .binch-treasure-card{
+ animation:none!important;transform:none!important
+}

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="480" viewBox="0 0 700 480" fill="none" role="img" aria-label="Ornement de lierre druidique">
+<title>Volutes de lierre druidique</title>
+<defs>
+ <linearGradient id="stem" x1="0" y1="0" x2="1" y2=".9"><stop stop-color="#183424"/><stop offset=".55" stop-color="#789c62"/><stop offset="1" stop-color="#193a2b"/></linearGradient>
+ <linearGradient id="leaf" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#8cb979"/><stop offset=".35" stop-color="#456d48"/><stop offset=".78" stop-color="#263e2f"/><stop offset="1" stop-color="#b6c88a"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2=".8"><stop stop-color="#ead09c"/><stop offset=".5" stop-color="#9f8a53"/><stop offset="1" stop-color="#ccbb88"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4"/></filter>
+</defs>
+<path d="M-5 462C77 419 47 340 88 285S201 212 182 146 215 55 286-5" stroke="#050f0d" stroke-width="22" opacity=".58" filter="url(#shadow)"/>
+<path d="M-5 462C77 419 47 340 88 285S201 212 182 146 215 55 286-5" stroke="url(#stem)" stroke-width="12" stroke-linecap="round"/>
+<path d="M-5 462C77 419 47 340 88 285S201 212 182 146 215 55 286-5" stroke="url(#gold)" stroke-width="2.2" opacity=".63" stroke-linecap="round"/>
+<g fill="url(#leaf)" stroke="#a9c18b" stroke-width="2.5" stroke-linejoin="round">
+<path d="M64 375C14 390 6 326 34 303c4 35 23 31 50 43 3-34 30-46 56-44-10 52-30 71-76 73Z"/>
+<path d="M89 292C36 259 31 202 63 176c7 35 27 45 44 55 6-37 42-59 71-52-23 58-54 87-89 113Z"/>
+<path d="M170 215C124 170 127 123 146 101c19 37 39 35 52 42 13-32 44-50 66-44-18 61-44 93-94 116Z"/>
+<path d="M191 123C165 68 186 27 219 10c-2 33 15 46 21 53 25-25 55-21 74-8-29 45-65 63-123 68Z"/>
+<path d="M57 436C17 416-12 384 12 352c14 28 30 24 47 27 13-24 43-26 68-13-23 35-42 53-70 70Z"/>
+<path d="M213 81C209 41 224 2 256-11c0 32 22 42 29 46 28-28 59-17 76-1-29 40-80 61-148 47Z"/>
+</g>
+<g stroke="#c3d3a1" stroke-width="2" opacity=".63">
+<path d="M61 370q12-20 50-43M84 279q22-21 72-72M167 202q27-29 70-75M206 105q18-13 73-53M57 429q20-25 56-49"/>
+</g>
+<path d="M177 145c-8-33 0-51 15-60m-92 166c-22-2-37-17-46-36m12 167c25-29 44-24 61-15M244 58c25 8 40 21 47 41" stroke="#769765" stroke-width="4" stroke-linecap="round" opacity=".74"/>
+<g fill="#d9deb0" opacity=".68"><circle cx="63" cy="312" r="2.6"/><circle cx="129" cy="222" r="3"/><circle cx="235" cy="70" r="2"/><circle cx="39" cy="420" r="2.8"/></g>
+</svg>

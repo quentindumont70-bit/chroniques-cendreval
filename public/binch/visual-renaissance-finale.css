@@ -1,0 +1,349 @@
+/* Renaissance V — class worlds, Feral constellation and polished chapter navigation.
+   Pure presentation. Never infer inventory, XP, talent points or game completion. */
+
+/* Every module feels part of the same world without duplicating its actual content. */
+@supports selector(body:has(#app:not(.hidden))){
+ body:has(#app:not(.hidden)){
+  background-image:
+   linear-gradient(180deg,#071014f2 0%,#0a1b1edc 26%,#081217f1 73%,#050b0f 100%),
+   var(--br-world-art);
+  background-repeat:no-repeat;background-position:center top;
+  background-size:cover;
+ }
+}
+#app main{
+ background:transparent;
+}
+#app main>.page.active{
+ position:relative;
+}
+#app main>.page>.panel.section:not(:first-child){
+ border-radius:16px;
+ box-shadow:inset 0 1px #ffffff12,0 9px 27px #0006;
+}
+#app .app-head .brand{min-width:0}
+#app .app-head .brand>div{min-width:0}
+#app .app-head .brand :is(h1,b){text-wrap:balance;overflow-wrap:anywhere}
+
+/* Self-contained constellation motif for the documented Feral route. */
+#page-specs #binch-specs{
+ position:relative;isolation:isolate;overflow:hidden;
+ background-image:radial-gradient(circle at 97% 5%,#b2d89c25,transparent 32%),
+   linear-gradient(145deg,#182d2a,#0b1a22 70%,#122127);
+ box-shadow:0 21px 67px #000b,inset 0 1px #ffeab01f;
+}
+#page-specs #binch-specs::before{
+ content:"";position:absolute;z-index:-1;pointer-events:none;inset:0 0 auto;
+ height:clamp(160px,20vw,245px);
+ background:
+  linear-gradient(90deg,#0b181fe9 0%,#0d1a21b6 42%,#0d1d1e49 100%),
+  url("./renaissance-feral-constellation.svg") right 40%/cover no-repeat;
+ opacity:.54;
+ mask-image:linear-gradient(#000 0%,#000 55%,transparent 100%);
+}
+#page-specs #binch-specs .binch-specs-head{
+ min-height:clamp(145px,18vw,198px);
+ align-items:center;
+}
+#page-specs #binch-specs .binch-specs-head h2{
+ color:#f9e1b2;
+ font-size:clamp(1.55rem,3vw,2.45rem);
+ text-shadow:0 2px 14px #0009;
+}
+#page-specs #binch-specs .binch-specs-head p{
+ max-width:55ch;line-height:1.6;color:#d4e1cd;
+}
+#page-specs #binch-specs-cards{
+ grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));
+ gap:12px;
+}
+#page-specs #binch-specs .binch-spec-card{
+ border-radius:14px;border:1px solid #7c8c72;
+ background:linear-gradient(135deg,#263b36,#132129);
+ box-shadow:inset 0 1px #ffffff19,0 11px 27px #0005;
+ min-height:116px;position:relative;isolation:isolate;overflow:hidden;
+}
+#page-specs #binch-specs .binch-spec-card::after{
+ content:"";pointer-events:none;position:absolute;
+ right:-20px;bottom:-35px;width:115px;height:115px;
+ border:16px solid #c7b5870d;border-radius:50%;
+}
+#page-specs #binch-specs .binch-spec-card[data-spec-id=druid-feral]{
+ background-image:linear-gradient(120deg,#1d3b31ed,#112724ed),
+  url("./renaissance-feral-spirit.svg");
+ background-size:cover;background-position:75% center;
+}
+#page-specs #binch-specs .binch-spec-card.active{
+ border:2px solid #f3d39b;
+ box-shadow:0 0 0 3px #ceaa6a39,0 15px 35px #0008,inset 0 1px #ffe9bc38;
+}
+#page-specs #binch-specs-summary{
+ border-radius:15px;border:1px solid #a1a886;
+ background:radial-gradient(ellipse at right top,#4f805338,transparent 56%),
+ linear-gradient(125deg,#172e2c,#112027);
+ box-shadow:0 12px 33px #0007,inset 0 1px #fff1;
+}
+#page-specs #binch-specs-summary h3{color:#f2d69c}
+#page-specs #binch-specs-route{scroll-margin-top:85px}
+#page-specs #binch-specs .binch-specs-progress{
+ position:relative;isolation:isolate;overflow:hidden;
+ padding:clamp(15px,2.6vw,25px);
+ min-height:105px;
+ align-items:center;
+ border:1px solid #dcbe80;
+ border-radius:15px;
+ background-image:
+  linear-gradient(100deg,#172926f9 0%,#19322ee6 46%,#152b3080 100%),
+  url("./renaissance-feral-constellation.svg");
+ background-position:center;background-size:cover;
+ box-shadow:0 15px 32px #0008,inset 0 1px #fff2;
+}
+#page-specs #binch-specs .binch-specs-progress::after{
+ content:"✧";font:48px Georgia,serif;color:#e1cd9b6a;
+ text-shadow:0 0 18px #b7d39b8d;position:absolute;
+ right:20px;top:10px;pointer-events:none;
+}
+#page-specs #binch-specs .binch-specs-progress strong{
+ font:700 clamp(1.05rem,2.4vw,1.65rem) Cinzel,Georgia,serif;
+ color:#ffe9bc;text-shadow:0 3px 17px #0008;
+}
+#page-specs #binch-specs .binch-specs-progress span{
+ max-width:43ch;color:#d7ebd5;line-height:1.5;
+}
+#page-specs #binch-specs .binch-specs-steps{
+ position:relative;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));
+ gap:11px;margin:19px 0;
+}
+#page-specs #binch-specs .binch-specs-step{
+ min-width:0;min-height:98px;border-radius:12px;
+ border-color:#708f79;
+ background:linear-gradient(120deg,#213932,#10232a);
+}
+#page-specs #binch-specs .binch-specs-step.is-current{
+ background-image:
+ radial-gradient(circle at 100% 0%,#edce8a42,transparent 58%),
+ linear-gradient(135deg,#3e422e,#152a2c);
+ border:2px solid #dfc484;
+ box-shadow:inset 0 1px #fff2,0 0 0 3px #d5c2812d,0 11px 31px #0007;
+}
+#page-specs #binch-specs .binch-specs-step.is-current .binch-specs-range{
+ border-color:#fff2b5;color:#fff0c7;
+ box-shadow:0 0 16px #e1cb9850;
+}
+#page-specs #binch-specs .binch-specs-step.is-done{
+ border-color:#88cfa5;background:linear-gradient(120deg,#25473b,#112a2b);
+}
+#page-specs #binch-specs .binch-specs-step.is-future{
+ opacity:.8;background:linear-gradient(120deg,#17272a,#111d23);
+}
+#page-specs #binch-specs .binch-specs-step strong{
+ font:700 .88rem Cinzel,Georgia,serif;color:#f7e8c9;
+}
+#page-specs #binch-specs .binch-specs-step small{
+ color:#bfd4c5;font-size:.72rem;line-height:1.4;
+}
+#binch-specs-pinned:not([hidden]){
+ border:1px solid #f2cd8c;
+ background:linear-gradient(120deg,#284537f5,#0b2027f5);
+ box-shadow:0 13px 35px #000b,inset 0 1px #fff3;
+}
+#page-specs #binch-specs :is(a,button,input,select):focus-visible{
+ outline:3px solid #ffe9aa;outline-offset:3px;
+}
+
+/* Collectibles: richer physical texture, no false unlocks. */
+#page-tresors .binch-treasure-card{
+ background-image:
+ radial-gradient(ellipse at 20% -20%,color-mix(in srgb,var(--treasure-accent) 23%,transparent),transparent 70%),
+ repeating-linear-gradient(140deg,transparent 0 13px,#ffffff04 14px 15px),
+ linear-gradient(135deg,#2c2740,#131c2b 74%)!important;
+}
+#page-tresors .binch-treasure-card[aria-pressed=true]{
+ outline:2px solid var(--treasure-accent);outline-offset:3px;
+}
+#page-tresors .binch-treasure-card strong{overflow-wrap:anywhere}
+
+/* GM war table: bring resources and events forward, with no fake synced roster. */
+#page-gm .binch-gm-watch-grid>div{
+ background-image:radial-gradient(circle at 85% 0%,#d5bc7740,transparent 52%),
+ linear-gradient(120deg,#1a2d2b,#111f27);
+}
+#page-gm .binch-gm-watch-event strong{font-size:.88rem;color:#ffe5b9}
+#page-gm #binch-gm-watch :is(button,summary){
+ min-height:44px;touch-action:manipulation;
+}
+
+/* Mobile: avoid gigantic images and hidden body overflow on iPhone. */
+@media(max-width:850px){
+ #page-specs #binch-specs .binch-specs-head{min-height:135px}
+ #page-specs #binch-specs::before{height:210px;opacity:.4}
+ #page-specs #binch-specs .binch-specs-progress{min-height:92px}
+}
+@media(max-width:540px){
+ #page-specs #binch-specs{padding:15px 11px}
+ #page-specs #binch-specs .binch-specs-head{min-height:0;padding-bottom:16px;gap:10px}
+ #page-specs #binch-specs .binch-specs-head h2{font-size:1.55rem}
+ #page-specs #binch-specs-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ #page-specs #binch-specs .binch-spec-card{min-height:112px;padding:12px 10px 12px 54px}
+ #page-specs #binch-specs .binch-spec-card::before{left:6px;top:18px;width:38px;height:38px}
+ #page-specs #binch-specs .binch-specs-progress{
+  display:grid;grid-template-columns:1fr;gap:6px;min-height:105px;
+  padding:14px 13px;
+ }
+ #page-specs #binch-specs .binch-specs-steps{grid-template-columns:1fr}
+ #page-specs #binch-specs .binch-specs-step{min-height:83px;padding:10px}
+ #page-specs #binch-specs .binch-specs-progress::after{font-size:34px;right:9px}
+ #page-gm .binch-gm-watch-grid>div{min-width:0}
+}
+@media(max-width:370px){
+ #page-specs #binch-specs-cards{grid-template-columns:1fr}
+ #page-specs #binch-specs .binch-spec-card{min-height:90px}
+}
+@media(prefers-reduced-motion:reduce){
+ #page-specs #binch-specs *,#page-tresors .binch-treasure-card{
+  animation:none!important;transition:none!important;
+ }
+}
+html[data-binch-detail=lite] body:has(#app:not(.hidden)){
+ background-image:linear-gradient(#0b191d,#0b1218);
+}
+html[data-binch-detail=lite] #page-specs #binch-specs::before{
+ background:none!important;display:none;
+}
+html[data-binch-detail=lite] #page-specs #binch-specs .binch-specs-progress{
+ background-image:linear-gradient(120deg,#183129,#10242b)!important;
+ box-shadow:none!important;
+}
+html[data-binch-detail=lite] #page-specs #binch-specs,
+html[data-binch-detail=lite] #page-specs #binch-specs .binch-spec-card{
+ box-shadow:none!important;backdrop-filter:none!important;
+}
+@media(forced-colors:active){
+ #page-specs #binch-specs,#page-specs #binch-specs-summary,
+ #page-specs #binch-specs .binch-specs-progress,
+ #page-specs #binch-specs .binch-specs-step{
+ background:Canvas!important;border-color:CanvasText!important;color:CanvasText;
+ }
+ #page-specs #binch-specs::before{display:none!important}
+}
+
+/* Twelve real guide cards, nine original heraldic marks. */
+#page-specs #binch-specs .binch-spec-card{--br-guide-crest:none}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="druid-feral"]{--br-guide-crest:url("./renaissance-sigil-druid.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="druid-bear"]{--br-guide-crest:url("./renaissance-sigil-druid.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="druid-cat"]{--br-guide-crest:url("./renaissance-sigil-druid.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="druid-resto"]{--br-guide-crest:url("./renaissance-sigil-druid.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="hunter-bm"]{--br-guide-crest:url("./renaissance-sigil-hunter.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="warrior-arms"]{--br-guide-crest:url("./renaissance-sigil-warrior.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="mage-frost"]{--br-guide-crest:url("./renaissance-sigil-mage.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="shaman-enh"]{--br-guide-crest:url("./renaissance-sigil-shaman.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="warlock-aff"]{--br-guide-crest:url("./renaissance-sigil-warlock.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="rogue-combat"]{--br-guide-crest:url("./renaissance-sigil-rogue.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="priest-shadow"]{--br-guide-crest:url("./renaissance-sigil-priest.svg")}
+#page-specs #binch-specs .binch-spec-card[data-spec-id="paladin-ret"]{--br-guide-crest:url("./renaissance-sigil-paladin.svg")}
+
+#page-specs #binch-specs .binch-spec-card[data-spec-id]::before{
+ content:"";position:absolute;top:14px;left:13px;
+ width:48px;height:48px;border:0;border-radius:0;
+ background:var(--br-guide-crest) center/contain no-repeat;
+ filter:drop-shadow(0 5px 12px #bca67a6d);
+ box-shadow:none;pointer-events:none;
+}
+#page-specs #binch-specs .binch-spec-card[data-spec-id]{
+ padding-left:72px;
+}
+@media(max-width:540px){
+ #page-specs #binch-specs .binch-spec-card[data-spec-id]{padding-left:56px}
+ #page-specs #binch-specs .binch-spec-card[data-spec-id]::before{
+  top:15px;left:7px;width:39px;height:39px;
+ }
+}
+@media(forced-colors:active){
+ #page-specs #binch-specs .binch-spec-card[data-spec-id]::before{display:none}
+ #page-specs #binch-specs .binch-spec-card[data-spec-id]{padding-left:12px}
+}
+html[data-binch-detail=lite] #page-specs #binch-specs .binch-spec-card[data-spec-id]::before{
+ filter:none!important
+}
+
+/* Three purpose-built chapters: forging, guild strategy and Faith's astral compass. */
+#page-metiers>.panel.section:first-child::before{
+ background-image:linear-gradient(90deg,#101b1ff2,#142521ca 64%,#0e1b20b5),url("./renaissance-workshop.svg")!important;
+ background-position:72% center!important;opacity:.78!important;
+}
+#page-metiers>.panel.section:first-child{
+ border-color:#bc9b68!important;background:linear-gradient(120deg,#1c2d2b,#121f26);
+}
+#page-metiers>.panel.section:first-child h2{color:#ffe5b5}
+#page-metiers #jobs-content .tile[data-job=Minage]{
+ background-image:linear-gradient(100deg,#152c33e8,#192a30d6),url("./renaissance-workshop.svg")!important;
+ background-position:70% 45%;background-size:cover;
+}
+#page-metiers #jobs-content .tile[data-job="Ingénierie"]{
+ background-image:linear-gradient(95deg,#142832ed,#152a30bb),url("./renaissance-workshop.svg")!important;
+ background-position:45% 62%;background-size:cover;
+}
+#page-gm #binch-gm-watch::before,
+#page-gm #binch-gm-workspace::before,
+#page-gm .binch-gm-hub::after{
+ background-image:linear-gradient(85deg,#07191ce8,#101e21b9 65%,#09181da8),
+ url("./renaissance-gm-council.svg")!important;
+ background-position:75% center!important;background-size:cover!important;
+ opacity:.55!important;
+}
+#page-gm #binch-gm-watch-stats{
+ position:relative;z-index:1;
+}
+#page-gm #binch-gm-watch-stats div{
+ border:1px solid #a88a6296;
+ background:linear-gradient(120deg,#354237ee,#17282ceb);
+}
+#page-gm #binch-gm-watch-stats b{
+ color:#ffe3ac;text-shadow:0 0 19px #d0a76e68;
+}
+#page-command #binch-faith-advisor{
+ background-image:linear-gradient(100deg,#17252ceb,#1b1f32de 58%,#1a2233ca),
+ url("./renaissance-faith-oracle.svg")!important;
+ background-position:right center!important;background-size:cover!important;
+}
+#page-command #binch-faith-advisor::before{
+ background:url("./renaissance-faith-oracle.svg") 65% center/cover!important;
+ opacity:.32!important;mask-image:radial-gradient(circle,#000,transparent 74%);
+}
+#page-command #binch-faith-advisor :is(h3,h4,strong){text-shadow:0 2px 14px #10101c9c}
+#page-command #binch-faith-goal{
+ background:#111d2af2;border-color:#b7a4e0;
+}
+@media(max-width:720px){
+ #page-command #binch-faith-advisor{
+  background-image:linear-gradient(90deg,#111c2af4,#1b2340df),url("./renaissance-faith-oracle.svg")!important;
+  background-position:70% 45%!important;
+ }
+ #page-gm #binch-gm-watch::before,#page-gm #binch-gm-workspace::before{
+  background-position:63% center!important;opacity:.38!important;
+ }
+ #page-metiers #jobs-content .tile[data-job=Minage],
+ #page-metiers #jobs-content .tile[data-job="Ingénierie"]{background-position:50% 55%}
+}
+html[data-binch-detail=lite] #page-command #binch-faith-advisor{
+ background-image:linear-gradient(120deg,#151d2a,#23253a)!important;
+}
+html[data-binch-detail=lite] #page-gm #binch-gm-watch::before,
+html[data-binch-detail=lite] #page-gm #binch-gm-workspace::before,
+html[data-binch-detail=lite] #page-gm .binch-gm-hub::after,
+html[data-binch-detail=lite] #page-metiers>.panel.section:first-child::before{
+ display:none!important;
+}
+html[data-binch-detail=lite] #page-metiers #jobs-content .tile[data-job=Minage],
+html[data-binch-detail=lite] #page-metiers #jobs-content .tile[data-job="Ingénierie"]{
+ background-image:linear-gradient(120deg,#14292c,#101c24)!important;
+}
+@media(forced-colors:active){
+ #page-metiers>.panel.section:first-child,
+ #page-metiers #jobs-content .tile[data-job=Minage],
+ #page-metiers #jobs-content .tile[data-job="Ingénierie"],
+ #page-command #binch-faith-advisor{
+  background:Canvas!important;border-color:CanvasText!important;
+ }
+ #page-command #binch-faith-advisor::before{display:none!important}
+}

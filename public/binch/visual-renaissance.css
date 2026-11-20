@@ -1,0 +1,323 @@
+/*
+ LA BINCH — RENAISSANCE / P1
+ Original world backdrop, layered forged-metal surfaces and class-aware accents.
+ A CSS-only facelift on top of the EXISTING game application. No gameplay mutation.
+*/
+:root{
+ --br-gold:#e5bb77;--br-burnished:#9b7947;--br-stone:#101e20;
+ --br-glass:#0d191be8;--br-edge:#b9a07875;--br-text:#f5e9d2;
+ --br-mist:#95ad9b;--br-shadow:0 22px 70px #02070ac9;
+ --br-scene-filter:saturate(1.04) contrast(1.07);
+ --br-scene-glow:radial-gradient(circle at 82% 23%,#edae5c35,transparent 34%);
+}
+/* Nine genuinely distinct original illustrations: never fake the class by tinting one screenshot. */
+:root{--br-world-art:url("./renaissance-citadel.svg")}
+html[data-binch-identity=druid]{--br-world-art:url("./renaissance-world-druid.svg")}
+html[data-binch-identity=warrior]{--br-world-art:url("./renaissance-world-warrior.svg")}
+html[data-binch-identity=mage]{--br-world-art:url("./renaissance-world-mage.svg")}
+html[data-binch-identity=priest]{--br-world-art:url("./renaissance-world-priest.svg")}
+html[data-binch-identity=paladin]{--br-world-art:url("./renaissance-world-paladin.svg")}
+html[data-binch-identity=rogue]{--br-world-art:url("./renaissance-world-rogue.svg")}
+html[data-binch-identity=hunter]{--br-world-art:url("./renaissance-world-hunter.svg")}
+html[data-binch-identity=shaman]{--br-world-art:url("./renaissance-world-shaman.svg")}
+html[data-binch-identity=warlock]{--br-world-art:url("./renaissance-world-warlock.svg")}
+/* One world, nine magical signatures. These follow the existing class identity. */
+:root{--br-class-aura:radial-gradient(circle at 74% 62%,#88a99a24,transparent 45%);--br-race-rune:"✧"}
+html[data-binch-identity=druid]{--br-class-aura:radial-gradient(circle at 76% 70%,#79cb6b40,transparent 42%)}
+html[data-binch-identity=warrior]{--br-class-aura:radial-gradient(circle at 75% 68%,#c5a28b36,transparent 46%)}
+html[data-binch-identity=mage]{--br-class-aura:radial-gradient(circle at 76% 66%,#64bbf34a,transparent 43%)}
+html[data-binch-identity=priest]{--br-class-aura:radial-gradient(circle at 76% 52%,#f6e8b94b,transparent 47%)}
+html[data-binch-identity=paladin]{--br-class-aura:radial-gradient(circle at 75% 63%,#f0b8d04c,transparent 43%)}
+html[data-binch-identity=rogue]{--br-class-aura:radial-gradient(circle at 78% 72%,#bfbe6140,transparent 40%)}
+html[data-binch-identity=hunter]{--br-class-aura:radial-gradient(circle at 73% 68%,#95bc7040,transparent 44%)}
+html[data-binch-identity=shaman]{--br-class-aura:radial-gradient(circle at 77% 63%,#60bedc4b,transparent 48%)}
+html[data-binch-identity=warlock]{--br-class-aura:radial-gradient(circle at 73% 59%,#b37bea4b,transparent 45%)}
+html[data-binch-ancestry=tauren]{--br-race-rune:"◉"}
+html[data-binch-ancestry=orc]{--br-race-rune:"✦"}
+html[data-binch-ancestry=troll]{--br-race-rune:"⟡"}
+html[data-binch-ancestry=undead]{--br-race-rune:"☾"}
+html[data-binch-ancestry=human]{--br-race-rune:"⚜"}
+html[data-binch-ancestry=elf]{--br-race-rune:"☽"}
+html[data-binch-ancestry=dwarf]{--br-race-rune:"◆"}
+html[data-binch-ancestry=gnome]{--br-race-rune:"⚙"}
+html[data-binch-ancestry=skyborne]{--br-race-rune:"✵"}
+html[data-binch-ambience=moon]{
+ --br-gold:#c9d8ed;--br-burnished:#789bb1;--br-edge:#8bb7d47d;
+ --br-scene-filter:hue-rotate(30deg) saturate(.85) brightness(.82);
+ --br-scene-glow:radial-gradient(circle at 82% 22%,#93baf74a,transparent 35%);
+}
+html[data-binch-ambience=embers]{
+ --br-gold:#f3b77d;--br-burnished:#b7744c;--br-edge:#d9955d7a;
+ --br-scene-filter:sepia(.29) saturate(1.23) contrast(1.1);
+ --br-scene-glow:radial-gradient(circle at 82% 28%,#ee794555,transparent 39%);
+}
+#app.shell{max-width:1440px;padding-inline:clamp(12px,2.8vw,36px)}
+#app .app-head{padding:clamp(12px,1.7vw,23px) 3px 15px;position:relative;z-index:2}
+#app .app-head .brand{gap:14px}
+#app .app-head .mark{
+ border:1px solid #f7da9aa5;border-radius:50%;
+ box-shadow:0 0 0 3px #0c1b1b,0 0 0 4px #a887525e,0 0 36px #c79d5238;
+ background:radial-gradient(circle at 32% 20%,#ad925569,#162c25 62%,#08120f)
+}
+#app .app-head .identity{
+ border:1px solid var(--br-edge);border-radius:12px;
+ background:linear-gradient(135deg,#1f2b29ed,#0a1516e9);
+ box-shadow:inset 0 1px #ffffff1a,0 10px 22px #0007;
+}
+#app nav.nav{
+ top:0;z-index:40;gap:7px;padding:12px;
+ border:1px solid #8c774d88;border-radius:17px;
+ background:linear-gradient(145deg,#182424f5,#0b1416f7);
+ box-shadow:0 16px 30px #000a,inset 0 1px #e9d3a323;
+ -webkit-backdrop-filter:blur(13px);backdrop-filter:blur(13px);
+ scrollbar-width:thin;scroll-snap-type:x proximity;
+}
+#app nav.nav button{
+ scroll-snap-align:start;flex:none;min-height:44px;padding:9px 14px;
+ border:1px solid #6e7c7366;border-radius:9px;
+ background:linear-gradient(150deg,#2a3330,#152120);
+ color:#d5d6c9;font-weight:700;letter-spacing:.01em;
+ text-shadow:0 1px 1px #0007;
+ transition:background .18s,border-color .18s,box-shadow .18s,transform .18s;
+}
+#app nav.nav button.active{
+ color:#fff2cb;border-color:var(--br-gold);
+ background:linear-gradient(135deg,#6e5630,#283d33 76%);
+ box-shadow:inset 0 1px #fff6d14a,0 2px 13px #c59e5b3b;
+}
+#app nav.nav button:hover{border-color:var(--br-gold)}
+#app nav.nav button:focus-visible{outline:3px solid #ffebbd;outline-offset:3px}
+#page-hub{--br-module:#90b29e}
+#page-hub .binch-character-card{
+ position:relative;isolation:isolate;overflow:hidden;
+ min-height:clamp(375px,38vw,535px);
+ grid-template-columns:clamp(105px,11vw,154px) minmax(0,1fr) minmax(115px,162px);
+ align-items:end;column-gap:clamp(13px,2vw,31px);
+ border:1px solid var(--br-gold);border-radius:24px;
+ padding:clamp(25px,4.1vw,62px) clamp(18px,4.1vw,62px);
+ background:linear-gradient(90deg,#071416f7 0%,#09171ce8 27%,#10232394 57%,#0b18255e 100%);
+ box-shadow:0 30px 75px #000c,inset 0 1px #ffefd049,0 0 0 5px #89724b1c;
+}
+#page-hub .binch-character-card::before{
+ content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+ background-image:linear-gradient(90deg,#061115d9 0%,#081b1dc2 23%,#12202143 68%,#08151d20 100%),
+  var(--br-class-aura),var(--br-scene-glow),var(--br-world-art);
+ background-position:center;background-size:cover;
+ filter:var(--br-scene-filter);
+}
+/* Emerald guardian of the forest: original decorative art, no combat or talent data. */
+html[data-binch-identity=druid] #page-hub .binch-character-card::before{
+ background-image:
+  linear-gradient(90deg,#061315e8 0%,#08191acf 25%,#101d1d60 65%,#08151d2b 100%),
+  url("./renaissance-feral-spirit.svg"),
+  var(--br-class-aura),var(--br-scene-glow),var(--br-world-art);
+ background-size:cover,auto 87%,cover,cover,cover;
+ background-position:center,92% 100%,center,center,center;
+ background-repeat:no-repeat;
+ background-blend-mode:normal,screen,normal,normal,normal;
+}
+@media(max-width:720px){
+ html[data-binch-identity=druid] #page-hub .binch-character-card::before{
+  background-size:cover,auto 60%,cover,cover,cover;
+  background-position:center,100% 100%,center,center,60% center;
+ }
+}
+@media(max-width:420px){
+ html[data-binch-identity=druid] #page-hub .binch-character-card::before{
+  background-size:cover,auto 46%,cover,cover,cover;
+ }
+}
+#page-hub .binch-character-card::after{
+ content:"";position:absolute;pointer-events:none;
+ inset:auto 4% 10px;left:4%;height:2px;
+ background:linear-gradient(90deg,transparent,var(--br-gold),#f3d6a6,transparent);
+ box-shadow:0 0 16px #dab8758a;opacity:1
+}
+#page-hub .binch-renaissance-stage{
+ position:absolute;pointer-events:none;inset:11px;z-index:0;
+ border:1px solid #ebca834a;border-radius:16px;
+ background:linear-gradient(145deg,#ffdf9512,transparent 23%,transparent 72%,#d6b47011);
+ clip-path:polygon(0 0,calc(100% - 36px) 0,100% 36px,100% 100%,36px 100%,0 calc(100% - 36px));
+}
+#page-hub .binch-renaissance-stage::before,
+#page-hub .binch-renaissance-stage::after{
+ content:var(--br-race-rune);font:34px Georgia,serif;position:absolute;color:#f0ce82ad;
+ text-shadow:0 0 20px #e4bf7b;top:8px;left:17px;
+}
+#page-hub .binch-renaissance-stage::after{content:"✥";top:auto;bottom:7px;left:auto;right:17px}
+#page-hub .binch-character-card > :not(.binch-renaissance-stage){
+ position:relative;z-index:2;min-width:0;
+}
+#page-hub .binch-character-card .binch-kicker,
+#page-hub .binch-route .binch-kicker{
+ color:var(--br-gold);letter-spacing:.24em;font-size:.69rem;
+ text-shadow:0 0 17px #d4a15a7a;
+}
+#page-hub .binch-character-card h1{
+ font-size:clamp(2.3rem,5.8vw,5.9rem);
+ line-height:1.04;letter-spacing:-.035em;overflow-wrap:anywhere;
+ color:#ffefc8;text-shadow:0 4px 2px #071516,0 0 42px #dca86845;
+}
+#page-hub #binch-home-meta{font-size:clamp(.86rem,1.3vw,1.05rem);color:#e3e4d3;text-shadow:0 2px 7px #00120d}
+#page-hub #binch-fresh{color:#f0d69c}
+#page-hub #binch-fresh .fresh{color:#aaf4c5}
+#page-hub .binch-portrait{
+ align-self:center;width:clamp(105px,11vw,154px);
+ border:2px solid var(--br-gold);
+ border-radius:47% 47% 43% 43%;
+ background:radial-gradient(circle at 45% 25%,color-mix(in srgb,var(--bi-metal,#c7a475) 45%,#1e4236),#102e2a 48%,#091314 76%);
+ box-shadow:0 0 0 6px #081b1ccf,0 0 0 8px #d2a75e65,0 0 41px #deb8755e,inset 0 0 28px #0009;
+}
+#page-hub .binch-portrait span{filter:drop-shadow(0 3px 12px #d5a86b55)}
+#page-hub .binch-portrait b{border-color:var(--br-gold);background:#182b2b}
+#page-hub .binch-level{
+ align-self:center;min-width:138px;min-height:162px;
+ border:1px solid var(--br-gold)!important;
+ background:radial-gradient(circle,#304239 0%,#0b1b1c 57%,#061113 60%);
+ box-shadow:0 0 0 4px #071619,0 0 0 6px #bca16c55,0 12px 28px #0008,0 0 35px #c99f594b!important;
+}
+#page-hub .binch-level strong{color:#ffe3a8;text-shadow:0 0 24px #dfb87865}
+#page-hub .binch-xp-bar{border-color:var(--br-gold);box-shadow:0 0 11px #d9bb7840}
+#page-hub .binch-route{
+ position:relative;overflow:hidden;border:1px solid var(--br-edge);border-radius:20px;
+ background:radial-gradient(ellipse at 85% 0%,#386d5537,transparent 38%),linear-gradient(145deg,#152624,#081316);
+ box-shadow:var(--br-shadow),inset 0 1px #fff2;
+}
+#page-hub .binch-route::after{
+ content:"✦";pointer-events:none;position:absolute;right:14px;top:10px;
+ color:var(--bi-metal,#d3b37d);opacity:.3;font:50px Georgia,serif
+}
+#page-hub .binch-route-step{
+ border-radius:13px;transition:transform .19s,border-color .19s;
+}
+#page-hub .binch-route-task{border:1px solid #6f8c796b;border-radius:12px;background:linear-gradient(120deg,#20383188,#0c1b1b73)}
+#page-hub .binch-route-step.pinned .binch-route-task{border-color:#e1b76caa;box-shadow:inset 3px 0 #e7bd79,0 7px 21px #0005}
+#page-hub .binch-route-step.done{opacity:.73}
+#page-hub .binch-route-step button:focus-visible{outline:3px solid #ffefc0;outline-offset:2px}
+#page-hub .binch-route-tools input{
+ border-color:#8c987e;background:#101f1de8;border-radius:9px;
+ box-shadow:inset 0 1px 8px #0005;
+}
+#page-hub #binch-ultimate-briefing{
+ border:1px solid var(--br-edge)!important;border-radius:20px!important;
+ box-shadow:var(--br-shadow),inset 0 1px #fff2;
+}
+#page-hub .binch-ultimate-recommendation{
+ background:linear-gradient(135deg,#33443588,#172e2caa)!important;
+ border-radius:13px!important;
+}
+#page-hub .binch-renaissance-portals{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:12px;margin:0 0 18px;
+}
+#page-hub .binch-renaissance-portal{
+ --portal-color:#c5aa76;position:relative;isolation:isolate;overflow:hidden;
+ display:flex;align-items:center;text-align:left;gap:13px;
+ min-height:103px;padding:15px 17px;border:1px solid color-mix(in srgb,var(--portal-color) 65%,#2c4943);
+ border-radius:14px;
+ background:radial-gradient(circle at 100% 0%,color-mix(in srgb,var(--portal-color) 16%,transparent),transparent 70%),linear-gradient(145deg,#23332f,#0a191b);
+ color:#f3e7ce;box-shadow:inset 0 1px #ffffff18,0 12px 27px #0007;cursor:pointer;
+ transition:transform .2s,box-shadow .2s,border-color .2s;
+}
+#page-hub .binch-renaissance-portal::after{content:"";position:absolute;inset:auto -30px -45px auto;width:150px;height:130px;border-radius:50%;border:18px solid color-mix(in srgb,var(--portal-color) 10%,transparent);z-index:-1}
+#page-hub .binch-renaissance-portal[data-to=progression]{--portal-color:#a6cd8d}
+#page-hub .binch-renaissance-portal[data-to=specs]{--portal-color:#d2af71}
+#page-hub .binch-renaissance-portal[data-to=metiers]{--portal-color:#8dbdd4}
+#page-hub .binch-renaissance-portal[data-to=gm]{--portal-color:#d7a78e}
+#page-hub .binch-renaissance-portal[data-to=command]{--portal-color:#ccaae6}
+#page-hub .binch-renaissance-portal[data-to=tresors]{--portal-color:#d9a5e9}
+#page-hub .binch-renaissance-portal .binch-portal-icon{
+ flex:none;display:grid;place-items:center;width:54px;height:54px;
+ border-radius:12px;border:1px solid var(--portal-color);
+ font:34px Georgia,serif;color:var(--portal-color);
+ background:#08191899;text-shadow:0 0 23px var(--portal-color);
+}
+#page-hub .binch-renaissance-portal strong{display:block;font:700 clamp(.85rem,1vw,1.1rem) Cinzel,Georgia,serif;color:#fff0d0;line-height:1.25}
+#page-hub .binch-renaissance-portal small{display:block;margin-top:7px;font-size:.72rem;color:#c2d0c5;line-height:1.35}
+#page-hub .binch-renaissance-portal:focus-visible{outline:3px solid #ffe5a0;outline-offset:3px}
+#page-hub .binch-renaissance-ambiences{
+ position:absolute!important;top:25px;right:29px;
+ z-index:6!important;display:flex;align-items:center;gap:6px;
+ padding:6px;border:1px solid #d8bf8d75;border-radius:999px;
+ background:#081719e6;box-shadow:0 8px 25px #0009;
+}
+#page-hub .binch-renaissance-ambiences span{font-size:.59rem;letter-spacing:.09em;text-transform:uppercase;color:#f4dbad;margin:0 5px}
+#page-hub .binch-renaissance-ambiences button{
+ display:grid;place-items:center;width:34px;height:34px;padding:0;
+ border:1px solid #a78c6470;border-radius:50%;background:#1c2926;
+ color:#ead6ae;font-size:15px;cursor:pointer;
+}
+#page-hub .binch-renaissance-ambiences button[aria-pressed=true]{border-color:#ffe7b0;background:#665137;box-shadow:0 0 0 2px #ffe5b036,0 0 18px #e7b16f85}
+#page-hub .binch-renaissance-ambiences button:focus-visible{outline:3px solid #ffe6ad;outline-offset:2px}
+#page-hub .binch-renaissance-chapter{
+ display:inline-flex;align-items:center;gap:7px;margin:0 0 10px;
+ font:700 .72rem Cinzel,Georgia,serif;letter-spacing:.13em;text-transform:uppercase;
+ color:#ffe4b1;text-shadow:0 1px 7px #0008;
+}
+#page-hub .binch-renaissance-chapter::before{content:"✧";font-size:1.1rem}
+#page-hub .binch-renaissance-credits{font-size:.71rem;line-height:1.5;color:#bdd0c5}
+#app :is(#page-gm,#page-command,#page-progression,#page-metiers,#page-bibliotheque) .panel,
+#app :is(#page-gm,#page-command,#page-progression,#page-metiers,#page-bibliotheque) section[class*=hub]{
+ border-radius:15px;border-color:color-mix(in srgb,var(--bi-metal,#cfa76d) 44%,#577165);
+ box-shadow:inset 0 1px #ffffff12,0 16px 34px #0006;
+}
+#app :is(#page-gm,#page-command,#page-progression,#page-metiers,#page-bibliotheque) h2{
+ letter-spacing:-.02em;text-wrap:balance;
+}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+ #page-hub .binch-renaissance-portal:hover{transform:translateY(-4px);border-color:var(--portal-color);box-shadow:0 16px 38px #000a,0 0 20px color-mix(in srgb,var(--portal-color) 16%,transparent)}
+ #page-hub .binch-route-step:not(.done):hover{transform:translateX(2px)}
+ #app nav.nav button:hover{transform:translateY(-1px)}
+}
+@media(max-width:1080px){
+ #page-hub .binch-renaissance-portals{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #page-hub .binch-character-card{grid-template-columns:115px minmax(0,1fr) 135px;gap:16px}
+ #page-hub .binch-character-card .binch-level{width:130px;height:148px;min-width:130px;min-height:148px}
+}
+@media(max-width:720px){
+ #app.shell{padding-inline:11px}
+ #app .app-head{gap:10px}
+ #app nav.nav{margin-inline:-2px;padding:8px 7px;border-radius:12px;gap:6px}
+ #app nav.nav button{min-height:44px;padding:8px 12px;font-size:.77rem}
+ #page-hub .binch-character-card{
+  min-height:485px;grid-template-columns:91px minmax(0,1fr);
+  align-items:center;gap:13px;padding:72px 18px 24px;
+ }
+ #page-hub .binch-character-card::before{
+  background-position:58% center;
+  background-image:linear-gradient(90deg,#071315e8,#071518c9 58%,#0a171b91),var(--br-class-aura),var(--br-scene-glow),var(--br-world-art)
+ }
+ #page-hub .binch-character-card .binch-portrait{
+  width:89px;grid-column:1;grid-row:1;justify-self:start;
+ }
+ #page-hub .binch-character-card > div:nth-child(3){grid-column:2;grid-row:1}
+ #page-hub .binch-character-card .binch-level{
+  grid-column:1/-1!important;grid-row:2;justify-self:center;
+  width:137px!important;height:137px!important;min-width:137px!important;min-height:137px!important;
+ }
+ #page-hub .binch-character-card h1{font-size:clamp(1.9rem,7.5vw,3.6rem)}
+ #page-hub .binch-renaissance-ambiences{top:18px;right:17px}
+ #page-hub .binch-renaissance-ambiences span{font-size:.56rem}
+ #page-hub .binch-renaissance-portal{min-height:89px;padding:12px}
+ #page-hub .binch-renaissance-portal .binch-portal-icon{width:41px;height:41px;font-size:26px}
+ #page-hub .binch-renaissance-portal strong{font-size:.82rem}
+ #page-hub .binch-renaissance-portal small{font-size:.69rem}
+}
+@media(max-width:420px){
+ #page-hub .binch-renaissance-portals{gap:8px}
+ #page-hub .binch-renaissance-portal{gap:8px;padding:10px;min-height:98px;flex-direction:column;align-items:flex-start}
+ #page-hub .binch-renaissance-portal .binch-portal-icon{width:34px;height:34px;font-size:22px}
+ #page-hub .binch-renaissance-portal small{margin-top:3px}
+ #page-hub .binch-character-card{min-height:465px;padding:65px 13px 22px;grid-template-columns:76px minmax(0,1fr);gap:10px}
+ #page-hub .binch-character-card .binch-portrait{width:73px}
+ #page-hub .binch-character-card h1{font-size:clamp(1.65rem,7.5vw,2.8rem)}
+ #page-hub .binch-renaissance-ambiences{top:13px;right:10px}
+ #page-hub .binch-renaissance-ambiences span{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+ #app nav.nav button,#page-hub .binch-renaissance-portal,#page-hub .binch-route-step{animation:none!important;transition:none!important;transform:none!important}
+}
+@media(forced-colors:active){
+ #page-hub .binch-character-card,#page-hub .binch-renaissance-portal,#app nav.nav{border:1px solid CanvasText;background:Canvas}
+ #page-hub .binch-renaissance-stage{display:none}
+}
