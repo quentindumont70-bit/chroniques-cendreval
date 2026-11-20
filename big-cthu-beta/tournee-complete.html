@@ -921,7 +921,7 @@ function tqCyclePhaseBlock(p){
  '<div class="lab">⇄ Alternance des semaines</div>'+
  '<div class="tq-cycle-pair"><span>Cette semaine <b>'+label(mode)+'</b></span><span>Semaine suivante <b>'+label(following)+'</b></span></div>'+
  (exceptions.length?'<p class="tq-cycle-warning">Attention : des exceptions manuelles de planning existent pour cette semaine ou la prochaine et restent prioritaires.</p>':'')+
- '<button type="button" class="btn tq-cycle-button" onclick="tqCyclePhaseSwitchById(\''+esc(p.id).replace(/'/g,"&#39;")+'\')">⇄ Inverser Granocytes / chimio</button>'+
+ '<button type="button" class="btn tq-cycle-button" onclick="tqCyclePhaseSwitchById('+esc(JSON.stringify(p.id))+')">⇄ Inverser Granocytes / chimio</button>'+
  '<p class="sub">Bascule à partir de cette semaine uniquement. Les semaines antérieures et les passages déjà cochés restent inchangés. Un second appui rétablit l’alternance précédente.</p></section>';
 }
 async function tqCyclePhaseSwitchById(pid){
