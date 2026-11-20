@@ -23,6 +23,10 @@ const cases={
  forsaken:{
   step:2,onboarded:true,race:'MortVivant',classe:'Démoniste',jobs:['Ingénierie','Enchantement'],
   data:{...baseData,pseudo:'Le Nécromancien',role:'DPS distance'},checks:[],map:0
+ },
+ storm:{
+  step:2,onboarded:true,race:'Tauren',classe:'Chaman',jobs:['Minage','Forge'],
+  data:{...baseData,pseudo:'Corne-de-Tonnerre',role:'DPS distance'},checks:[],map:0
  }
 };
 for(const [name,profile] of Object.entries(cases)){
