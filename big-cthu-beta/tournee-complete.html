@@ -928,6 +928,38 @@ function tqCycleFortnight(p,reference){
   return {week,idx,base,effective,override,days};
  });
 }
+/* V264: shortcut into the existing weekly editor. No second patient form or storage key. */
+function tqWeekEditorFromFile(pid,weekIndex){
+ const p=P.find(x=>x.id===pid);
+ if(!p||!p.cyc||!TQ||!TQ.validDay(TODAY))return false;
+ if(weekIndex!==0&&weekIndex!==1)return false;
+ // Never switch into an editor with an unreadable exception list.
+ try{tqWeeks(true)}catch(error){toast('Planning illisible : ouverture annulée, aucune donnée modifiée.');return false}
+ const sheet=document.getElementById('sheet');
+ if(!sheet||!sheet.classList.contains('on'))return false;
+ // Reuse the real two-week editor in the Tournée tab, with all existing safeguards.
+ tqProToolsOpen=true;
+ tab='tour';
+ sheet.classList.remove('on','fm','ed');
+ const navButtons=document.querySelectorAll('nav.tabs button');
+ navButtons.forEach(button=>button.classList.toggle('on',button.dataset.t==='tour'));
+ render();
+ const parent=document.getElementById('tq-pro-extras'),details=document.getElementById('tq-week-details'),select=document.getElementById('tq-week-patient');
+ if(!parent||!details||!select){
+  toast('Éditeur de semaines indisponible. Aucune modification effectuée.');
+  return false;
+ }
+ parent.open=true;
+ details.open=true;
+ select.value=pid;
+ tqWeekFill();
+ const input=document.getElementById('tq-mode-'+weekIndex);
+ if(input&&typeof input.focus==='function')input.focus({preventScroll:true});
+ if(details&&typeof details.scrollIntoView==='function')details.scrollIntoView({block:'start',behavior:'auto'});
+ const status=document.getElementById('tq-week-status');
+ if(status)status.textContent='Fiche présélectionnée · '+(weekIndex===0?'cette semaine':'semaine prochaine')+'. Contrôle les deux semaines et les jours avant de confirmer.';
+ return true;
+}
 function tqCyclePhaseBlock(p){
  if(!p||!p.cyc||!TQ||typeof TQ.togglePhase!=='function')return '';
  const label=k=>k==='ch'?'Chimio':'Granocytes';
@@ -954,6 +986,10 @@ function tqCyclePhaseBlock(p){
   '<p class="sub tq-cycle-intro">Aperçu du planning enregistré : les jours colorés sont prévus, le signe + indique un passage hors cycle. Vérifie avec la prescription.</p>'+
   '<div class="tq-cycle-pair"><span>Cette semaine <b>'+label(weeks[0].effective)+'</b></span><span>Semaine suivante <b>'+label(weeks[1].effective)+'</b></span></div>'+
   '<div class="tq-cycle-calendar">'+calendar+'</div>'+
+  '<div class="tq-cycle-edit-actions" aria-label="Ajuster les semaines de ce patient">'+
+    '<button type="button" class="btn ghost" onclick="tqWeekEditorFromFile('+esc(JSON.stringify(p.id))+',0)">✎ Ajuster cette semaine</button>'+
+    '<button type="button" class="btn ghost" onclick="tqWeekEditorFromFile('+esc(JSON.stringify(p.id))+',1)">✎ Ajuster la semaine prochaine</button>'+
+  '</div>'+
   (hasOverrides?'<p class="tq-cycle-warning" role="note">Des exceptions manuelles restent prioritaires. Le bouton inverse le <b>cycle de fond</b>, pas ces exceptions : le type de semaine affiché peut donc ne pas changer.</p>':'')+
   '<button type="button" class="btn tq-cycle-button" onclick="tqCyclePhaseSwitchById('+esc(JSON.stringify(p.id))+')">⇄ Inverser Granocytes / chimio</button>'+
   '<p class="sub">Bascule à partir de cette semaine uniquement. Les semaines antérieures et les passages déjà cochés restent inchangés. Un second appui rétablit l’alternance précédente.</p></section>';
