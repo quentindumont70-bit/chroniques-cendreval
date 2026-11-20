@@ -56,7 +56,7 @@ test('P13: visual layers are real app, mobile, professions and reforge draft pre
  const css=read('forsaken-warlock-premium-live.css');
  const html=read('index.html');
  assert.ok(html.includes('./forsaken-warlock-premium-live.css?v=001'));
- assert.ok(html.includes('./visual-identity-compositor.js?v=007'));
+ assert.ok(html.includes('./visual-identity-compositor.js?v=008'));
  assert.ok(css.includes('url("./forsaken-warlock-premium.webp")'));
  assert.ok(css.includes('url("./forsaken-occult-gear.svg")'));
  assert.ok(css.includes('#page-hub .binch-character-card'));
