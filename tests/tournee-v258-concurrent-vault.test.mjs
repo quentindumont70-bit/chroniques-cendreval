@@ -111,7 +111,7 @@ test('V258 : pas de transmission réseau ni deuxième base, cache actualisé et 
  assert.doesNotMatch(code,/fetch\s*\(|XMLHttpRequest|sendBeacon|indexedDB\.open|location\.reload/);
  assert.match(code,/navigator\.locks\.request\('bigcthu-tournee-vault:'\+SECURE_KEY/);
  assert.match(code,/window\.addEventListener\('storage'/);
- assert.match(sw,/big-cthu-public-v2-v264/);
- assert.match(control,/big-cthu-public-v2-v264/);
+ assert.match(sw,/big-cthu-public-v2-v265/);
+ assert.match(control,/big-cthu-public-v2-v265/);
  assert.match(packageJson,/tests\/tournee-v258-concurrent-vault\.test\.mjs/);
 });
