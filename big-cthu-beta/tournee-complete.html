@@ -1571,7 +1571,7 @@ function tqWeekBlock(){
  if(!TQ)return '<div class="tq-week">Gestion des cycles indisponible. Recharge la page.</div>';
  const cycles=P.filter(p=>p&&p.id&&p.cyc&&Array.isArray(p.cyc.ch)&&Array.isArray(p.cyc.gr));
  const focused=tqWeekTargetIndex===0||tqWeekTargetIndex===1;
- return '<section class="tq-week" aria-label="Exceptions ponctuelles de chimio et Granocytes">'+
+ return '<section class="tq-week'+(focused?' tq-week-targeted':'')+'" aria-label="Exceptions ponctuelles de chimio et Granocytes">'+
  '<details id="tq-week-details"><summary>🔁 Modifier les semaines chimio / Granocytes</summary>'+
  '<p>'+(focused?'Édition ciblée : <b>seule '+(tqWeekTargetIndex===0?'cette semaine':'la semaine prochaine')+' sera enregistrée</b>. L’autre semaine et ses exceptions restent inchangées. Vérifie les jours et le type avant de confirmer.':'Choisis un patient déjà suivi. Ici, tu peux inverser ponctuellement ses deux semaines, ou modifier précisément les jours de passage sans casser son cycle normal. Les modifications restent dans ton coffre chiffré.')+'</p>'+
  '<label class="fl" for="tq-week-patient">Patient avec cycle enregistré<select id="tq-week-patient" onchange="tqWeekFill()"><option value="">Choisir un patient</option>'+
