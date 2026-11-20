@@ -143,8 +143,8 @@ test('P16 first-fold correction keeps original commands reachable with less over
  assert.ok(nav.includes("placeUtility($('#binch-ost'),'p16-nav-ost','last')"));
  assert.ok(nav.includes("placeUtility($('#app .profile-switch'),'p16-nav-switch','last')"));
  assert.ok(nav.includes("placeUtility($('#binch-display-comfort'),'p16-nav-comfort','last')"));
- assert.ok(css.includes('binch-storm-glimmer 25s'));
- assert.ok(read('premium-firstfold-p16.css').includes('#binch-display-comfort.p16-nav-comfort'));
+ assert.ok(read('tauren-shaman-storm-p16.css').includes('binch-storm-glimmer 25s'));
+ assert.ok(css.includes('#binch-display-comfort.p16-nav-comfort'));
  assert.ok(nav.includes('parent.insertBefore(node,original.next?.parentElement===parent?original.next:null)'));
  assert.ok(ost.includes("shell.id='binch-ost'"));
  assert.ok(quick.includes("launch.id='binch-quicknav-launch'"));
