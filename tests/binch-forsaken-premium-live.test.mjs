@@ -56,7 +56,7 @@ test('P13: visual layers are real app, mobile, professions and reforge draft pre
  const css=read('forsaken-warlock-premium-live.css');
  const html=read('index.html');
  assert.ok(html.includes('./forsaken-warlock-premium-live.css?v=001'));
- assert.ok(html.includes('./visual-identity-compositor.js?v=006'));
+ assert.ok(html.includes('./visual-identity-compositor.js?v=007'));
  assert.ok(css.includes('url("./forsaken-warlock-premium.webp")'));
  assert.ok(css.includes('url("./forsaken-occult-gear.svg")'));
  assert.ok(css.includes('#page-hub .binch-character-card'));
@@ -88,13 +88,13 @@ test('P13: previews are read-only and identity engine keeps existing game data u
 
 test('P13: gallery compares two original premiums without modifying actual saved profile',()=>{
  const html=read('premium-sanctuaries-review.html');
- assert.match(html,/<title>La Binch Renaissance — Deux sanctuaires premium<\/title>/);
+ assert.match(html,/<title>La Binch Renaissance — Trois sanctuaires premium<\/title>/);
  assert.ok(html.includes('url("./shaaby-mulgore.webp")'));
  assert.ok(html.includes('url("./forsaken-warlock-premium.webp")'));
  assert.ok(html.includes('data-pick="tauren"'));
  assert.ok(html.includes('data-pick="forsaken"'));
  assert.ok(html.includes("new URLSearchParams(location.search).get('identity')"));
- assert.ok(html.includes("chosen==='forsaken'?'forsaken':'tauren'"));
+ assert.ok(html.includes("chosen==='storm'?'storm':chosen==='forsaken'?'forsaken':'tauren'"));
  assert.ok(html.includes('./index.html'));
  assert.ok(html.includes('aria-pressed'));
  assert.ok(html.includes('max-width:760px'));
