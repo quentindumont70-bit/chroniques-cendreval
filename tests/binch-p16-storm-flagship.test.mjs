@@ -129,8 +129,8 @@ test('P16 first-fold correction keeps original commands reachable with less over
  const nav=read('premium-mobile-sections-p14.js');
  const ost=read('soundscape.js');
  const quick=read('ultimate-quicknav.js');
- assert.ok(html.includes('./premium-firstfold-p16.css?v=001'));
- assert.ok(html.includes('./premium-mobile-sections-p14.js?v=004'));
+ assert.ok(html.includes('./premium-firstfold-p16.css?v=002'));
+ assert.ok(html.includes('./premium-mobile-sections-p14.js?v=005'));
  assert.ok(css.includes('#app .app-head > .app-tools'),'real header wrapper targeted');
  assert.ok(css.includes('grid-template-columns:minmax(108px,.94fr) minmax(0,1.4fr)'));
  assert.ok(css.includes('#app .app-head .app-tools #mini-name'));
@@ -141,6 +141,10 @@ test('P16 first-fold correction keeps original commands reachable with less over
  assert.ok(css.includes('.binch-ost-body'),'OST settings accessible within menu');
  assert.ok(nav.includes("placeUtility($('#binch-quicknav-launch'),'p16-nav-search','first')"));
  assert.ok(nav.includes("placeUtility($('#binch-ost'),'p16-nav-ost','last')"));
+ assert.ok(nav.includes("placeUtility($('#app .profile-switch'),'p16-nav-switch','last')"));
+ assert.ok(nav.includes("placeUtility($('#binch-display-comfort'),'p16-nav-comfort','last')"));
+ assert.ok(css.includes('binch-storm-glimmer 25s'));
+ assert.ok(read('premium-firstfold-p16.css').includes('#binch-display-comfort.p16-nav-comfort'));
  assert.ok(nav.includes('parent.insertBefore(node,original.next?.parentElement===parent?original.next:null)'));
  assert.ok(ost.includes("shell.id='binch-ost'"));
  assert.ok(quick.includes("launch.id='binch-quicknav-launch'"));
