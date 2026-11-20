@@ -123,3 +123,26 @@ test('P16: real dashboard CI fixture adds only a synthetic shaman profile',()=>{
  assert.ok(fixtures.includes("'.p14-preview-'+name+'.html'"));
  assert.ok(!html.includes('p14-preview-storm.html'));
 });
+
+test('P16 first-fold correction keeps original commands reachable with less overhead',()=>{
+ const css=read('premium-firstfold-p16.css');
+ const nav=read('premium-mobile-sections-p14.js');
+ const ost=read('soundscape.js');
+ const quick=read('ultimate-quicknav.js');
+ assert.ok(html.includes('./premium-firstfold-p16.css?v=001'));
+ assert.ok(html.includes('./premium-mobile-sections-p14.js?v=004'));
+ assert.ok(css.includes('#app .app-head > .app-tools'),'real header wrapper targeted');
+ assert.ok(css.includes('grid-template-columns:minmax(108px,.94fr) minmax(0,1.4fr)'));
+ assert.ok(css.includes('#app .app-head .app-tools #mini-name'));
+ assert.ok(css.includes('padding-top:clamp(230px,63vw,295px)'),'name should appear on first viewport');
+ assert.ok(css.includes('max-width:390px'));
+ assert.ok(css.includes('#binch-quicknav-launch.p16-nav-search'));
+ assert.ok(css.includes('#binch-ost.p16-nav-ost'));
+ assert.ok(css.includes('.binch-ost-body'),'OST settings accessible within menu');
+ assert.ok(nav.includes("placeUtility($('#binch-quicknav-launch'),'p16-nav-search','first')"));
+ assert.ok(nav.includes("placeUtility($('#binch-ost'),'p16-nav-ost','last')"));
+ assert.ok(nav.includes('parent.insertBefore(node,original.next?.parentElement===parent?original.next:null)'));
+ assert.ok(ost.includes("shell.id='binch-ost'"));
+ assert.ok(quick.includes("launch.id='binch-quicknav-launch'"));
+ assert.ok(!css.includes('display:none!important}#binch-profile-trigger'),'do not hide profile button');
+});
