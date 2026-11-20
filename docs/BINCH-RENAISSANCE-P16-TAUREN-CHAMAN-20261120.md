@@ -49,3 +49,11 @@ Ce ne sont pas trois filtres de couleur. Les sujets, la géographie, la focale, 
 10. Recette bêta de 5 minutes avec le frère testeur, puis accord explicite seulement avant toute fusion.
 
 **Critère de succès permanent :** chaque combinaison premium doit impressionner par une scène originale, une structure de panneaux identifiable, de vraies fonctions, une ergonomie mobile irréprochable et des performances mesurées.
+
+## Retouche après inspection réelle des captures automatiques
+
+L'inspection des fichiers `p16-shaman-real-iphone.png` et `p16-shaman-real-320.png` de la première CI a montré que la **galerie séparée était spectaculaire**, mais que le **vrai compagnon** affichait trop de commandes avant le portrait : en-tête sur trois rangées, recherche de rubriques redondante avec le menu « Toutes les rubriques », commandes OST et nom de personnage trop bas.
+
+La retouche `premium-firstfold-p16.css` compacte réellement `.app-head > .app-tools`, donne deux lignes au nom long, et rapproche le titre de la première fenêtre. `premium-mobile-sections-p14.js` **déplace les contrôles existants** `#binch-quicknav-launch` et `#binch-ost` à l'intérieur du menu mobile, tout en conservant leurs listeners et en les restaurant à leur place à l'agrandissement. Pas de nouvelle navigation ni suppression de l'OST. Le paramétrage de musique est affiché en plein flux dans le menu déroulant plutôt qu'un popup hors de l'écran.
+
+Les cinq captures P16 sont relancées pour vérifier le résultat sur 1440×960, 430×860, 320×800, reforge et galerie. **L'inspection sur Safari physique demeure à réaliser**. Une éventuelle collision restante doit être corrigée sur la base de cette nouvelle capture plutôt qu'avec une refonte supplémentaire sans preuve.
