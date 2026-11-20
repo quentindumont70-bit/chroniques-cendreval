@@ -31,6 +31,15 @@ async function phaseFixture({saveWorks=true,vaultWorks=true,exception=false,conf
   saveFailure:error=>events.push('saveFailure:'+error.message),
   document:{getElementById:()=>null}
  };
+ // V263 : les anciens tests de V262 émulent désormais le calendrier effectif fictif.
+ ctx.DT=date=>new Date(date+'T12:00:00');
+ ctx.JC=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+ ctx.cyk=(patient,date)=>{
+  const ov=TQ.overrideFor(ctx.tqWeeks(),patient.id,date);
+  const k=ov?ov.mode:TQ.weekMode(patient.cyc,date);
+  return (ov?ov.days:patient.cyc[k]).includes(ctx.DT(date).getDay())?k:'';
+ };
+ ctx.onDate=(patient,date)=>!!ctx.cyk(patient,date);
  const part=(await appPart()).part;
  runInNewContext(part+'\nthis.api={block:tqCyclePhaseBlock,switch:tqCyclePhaseSwitchById};',ctx,{timeout:1000});
  return {ctx,TQ,events,saved,api:ctx.api,p};
@@ -148,7 +157,7 @@ test('V262 : cache offline, tests complets et documentation; aucun réseau dans 
   readFile(new URL('../docs/tournee-pro/PLAN-DE-LANCEMENT.md',import.meta.url),'utf8'),
   read('tournee-v262-mobile.css'),read('tournee-quick-core.js')
  ]);
- assert.match(sw,/big-cthu-public-v2-v262/);
+ assert.match(sw,/big-cthu-public-v2-v263/);
  assert.match(sw,/'\.\/tournee-v262-mobile\.css'/);
  assert.match(pkg,/tests\/tournee-v262-cycle-switch-banner\.test\.mjs/);
  assert.match(plan,/Golipette V262/);

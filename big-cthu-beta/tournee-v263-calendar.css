@@ -1,0 +1,67 @@
+/* V263: two-week, in-file calendar for existing treatment cycles.
+   Visual only: does not contact a server or alter the clinical vault. */
+.tq-cycle-intro{margin:6px 0 13px;line-height:1.48}
+.tq-cycle-calendar{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin:13px 0 15px}
+.tq-cycle-week{
+ min-width:0;border:1px solid var(--line);border-radius:15px;
+ padding:12px;background:var(--card);box-shadow:inset 0 1px rgba(194,233,255,.04);
+}
+.tq-cycle-week-title{
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+ gap:7px;font-size:13px;font-weight:700;color:var(--mut);margin-bottom:12px;
+}
+.tq-cycle-week-title strong{
+ font-size:14px;background:var(--soft);border:1px solid var(--line);
+ color:var(--ink);padding:5px 10px;border-radius:999px;
+}
+.tq-cycle-override{
+ margin:-3px 0 12px;padding:7px 9px;border:1px dashed var(--warn);
+ border-radius:9px;color:var(--ink);font-size:12px;
+}
+.tq-cycle-weekdays{
+ display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;
+}
+.tq-cycle-day{
+ min-width:0;min-height:70px;border:1px solid var(--line);
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ border-radius:11px;padding:5px 1px;background:var(--bg2);color:var(--mut);
+ text-align:center;line-height:1.15;
+}
+.tq-cycle-day small{font-size:11px;color:inherit;font-weight:600}
+.tq-cycle-day b{font-size:15px;font-variant-numeric:tabular-nums;margin:5px 0 3px;color:var(--ink)}
+.tq-cycle-day i{font-size:14px;line-height:1;font-style:normal;min-height:12px}
+.tq-cycle-day.is-on{
+ background:var(--soft);color:var(--ink);
+ border-color:var(--acc);box-shadow:inset 0 1px rgba(255,255,255,.07);
+}
+.tq-cycle-day.is-on i{color:var(--acc);font-weight:800}
+.tq-cycle-day.is-extra{border-style:dashed;border-color:var(--warn)}
+.tq-cycle-day.is-extra i{color:var(--warn)}
+.tq-cycle-switch .tq-cycle-warning{
+ margin:10px 0 12px;border-left:3px solid var(--warn);
+ background:var(--warn-soft);color:var(--ink);padding:11px;
+ border-radius:9px;font-size:13px;line-height:1.45;
+}
+[data-theme=medicalops] .tq-cycle-week{
+ background:linear-gradient(146deg,#153747,#0b2334);border-color:#4a7b8a;
+}
+[data-theme=medicalops] .tq-cycle-day{background:#0b2635;border-color:#355f70;color:#c1d7df}
+[data-theme=medicalops] .tq-cycle-day.is-on{background:#174451;border-color:#99f3e9;color:#fff}
+[data-theme=medicalops] .tq-cycle-day.is-on i{color:#9bf9f1}
+@media(max-width:390px){
+ .tq-cycle-week{padding:9px}
+ .tq-cycle-weekdays{gap:3px}
+ .tq-cycle-day{min-height:63px;border-radius:9px}
+ .tq-cycle-day small{font-size:10px}
+ .tq-cycle-day b{font-size:14px}
+}
+@media(max-width:340px){
+ .tq-cycle-week{padding:7px}
+ .tq-cycle-weekdays{gap:2px}
+ .tq-cycle-day{min-height:58px;padding:4px 0}
+ .tq-cycle-day small{font-size:9px}
+ .tq-cycle-day b{font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){
+ .tq-cycle-day{transition:none}
+}
