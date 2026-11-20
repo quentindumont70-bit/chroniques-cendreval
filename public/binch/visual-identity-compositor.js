@@ -63,6 +63,8 @@ function apply(input){
  // It must not be applied to other characters or while the initial wizard is unfinished.
  root.dataset.binchShaaby=String(Boolean(input?.onboarded&&c.profile.race==='Tauren'&&c.profile.classe==='Druide'));
  root.dataset.binchForsaken=String(Boolean(input?.onboarded&&c.profile.race==='MortVivant'&&c.profile.classe==='Démoniste'));
+ // P16 third cinematic flagship: same Tauren race, entirely different shamanic world.
+ root.dataset.binchStorm=String(Boolean(input?.onboarded&&c.profile.race==='Tauren'&&c.profile.classe==='Chaman'));
  root.dataset.brJobs=c.jobs.map(j=>j.effect).join(' ');
  for(const [key,value] of Object.entries(c.vars))root.style.setProperty(key,value);
  const note=document.getElementById('binch-identity-signature');
@@ -101,8 +103,9 @@ function refresh(){
  const c=compose(draft),preview=dialog.querySelector('.binch-reforge-preview');
  preview.dataset.binchShaabyPreview=String(c.profile.race==='Tauren'&&c.profile.classe==='Druide');
  preview.dataset.binchForsakenPreview=String(c.profile.race==='MortVivant'&&c.profile.classe==='Démoniste');
+ preview.dataset.binchStormPreview=String(c.profile.race==='Tauren'&&c.profile.classe==='Chaman');
  // Reforge's surrounding materials follow the unsaved preview, not the saved character.
- dialog.dataset.binchPreview=c.profile.race==='Tauren'&&c.profile.classe==='Druide'?'shaaby':c.profile.race==='MortVivant'&&c.profile.classe==='Démoniste'?'forsaken':'other';
+ dialog.dataset.binchPreview=c.profile.race==='Tauren'&&c.profile.classe==='Druide'?'shaaby':c.profile.race==='Tauren'&&c.profile.classe==='Chaman'?'storm':c.profile.race==='MortVivant'&&c.profile.classe==='Démoniste'?'forsaken':'other';
  preview.style.setProperty('--br-preview-world',c.vars['--br-class-world']);
  preview.style.setProperty('--br-preview-race',c.vars['--br-race-art']);
  preview.style.setProperty('--br-preview-metal',c.race.metal);
