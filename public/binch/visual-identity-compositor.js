@@ -199,11 +199,22 @@ function attach(){
   link.id='binch-p10-expo';link.href='./renaissance-p10-showcase.html';
   portfolio.append(link);
  }
- if(portfolio&&!document.getElementById('binch-shaaby-premium-expo')){
-  const premium=el('a','binch-p10-expo binch-shaaby-premium-expo','Découvrir le sanctuaire premium de Shaaby ✧');
-  premium.id='binch-shaaby-premium-expo';premium.href='./shaaby-mulgore-premium.html';
-  premium.setAttribute('aria-label','Ouvrir la maquette artistique premium de Shaaby dans Mulgore');
-  portfolio.append(premium);
+ // One functional gallery link; its highlight follows the saved class, not a draft.
+ if(portfolio){
+  let premium=document.getElementById('binch-shaaby-premium-expo');
+  if(!premium){
+   premium=el('a','binch-p10-expo binch-shaaby-premium-expo','');
+   premium.id='binch-shaaby-premium-expo';
+   portfolio.append(premium);
+  }
+  const saved=read();
+  const featured=saved?.onboarded&&saved.race==='Tauren'&&saved.classe==='Chaman'?'storm':
+   saved?.onboarded&&saved.race==='MortVivant'&&saved.classe==='Démoniste'?'forsaken':'tauren';
+  premium.href='./premium-sanctuaries-review.html?identity='+featured;
+  premium.textContent=featured==='storm'?'Contempler le Cœur de l’Orage ✦':
+   featured==='forsaken'?'Contempler le Pacte des Ombres ✦':
+   saved?.onboarded&&saved.race==='Tauren'&&saved.classe==='Druide'?'Contempler le sanctuaire de Shaaby ✦':'Comparer les trois sanctuaires premium ✦';
+  premium.setAttribute('aria-label','Ouvrir la galerie artistique premium, sans modifier le profil');
  }
  if(cinematic&&!cinematic.querySelector('.binch-identity-composition')){
   const layer=el('div','binch-identity-composition');layer.setAttribute('aria-hidden','true');
