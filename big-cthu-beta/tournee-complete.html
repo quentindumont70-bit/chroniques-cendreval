@@ -586,6 +586,7 @@ body.tournee-locked #tour-save-strip{display:none}
 <link rel="stylesheet" href="./tournee-v262-mobile.css">
 <link rel="stylesheet" href="./tournee-v263-calendar.css">
 <link rel="stylesheet" href="./tournee-v266-intake.css">
+<link rel="stylesheet" href="./tournee-v267-patients.css">
 </head>
 <body class="tournee-locked tournee-checking"><section id="tour-security-gate" hidden role="dialog" aria-modal="true" aria-labelledby="tour-backup-title">
 <h1 id="tour-backup-title">Mes sauvegardes</h1>
@@ -1136,12 +1137,18 @@ function viewTour(){
 }
 const FL=[["all","Tous"],["l2","Lyon 2e"],["l5","Lyon 5e"],["res","Résidence"],["tj","Tous les jours"],["jp","Jours particuliers"]];
 
-function viewPat(){return `<input type="search" placeholder="Nom, rue, soin…" value="${esc(q)}" oninput="q=this.value;document.getElementById('pl').innerHTML=patList()"><div class="filters">${FL.map(([k,l])=>`<button class="${flt===k?"on":""}" onclick="flt='${k}';render()">${l}</button>`).join("")}</div><div id="pl">${patList()}</div>`}
+function viewPat(){return `<section class="tq-patient-create" aria-label="Gestion des patients"><button type="button" class="tq-patient-create-button" onclick="editP()">＋ Nouveau patient</button><p>Créer une fiche complète : premier passage, horaire, accès et soins.</p></section><input type="search" placeholder="Nom, rue, soin…" value="${esc(q)}" oninput="q=this.value;document.getElementById('pl').innerHTML=patList()"><div class="filters">${FL.map(([k,l])=>`<button class="${flt===k?"on":""}" onclick="flt='${k}';render()">${l}</button>`).join("")}</div><div id="pl">${patList()}</div>`}
 function psortOf(){return st.get("psort","manual")}
 function psortSet(v){st.set("psort",v);render()}
 function ageDays(p){const b=naisOf(p);if(!b)return null;return (Date.now()-new Date(b+"T12:00:00").getTime())/864e5}
 function sortPats(L){const m=psortOf();if(m==="manual")return L;const c=L.slice();if(m==="az"||m==="za"){c.sort((a,b)=>a[0].n.localeCompare(b[0].n,"fr",{sensitivity:"base"})*(m==="za"?-1:1))}else{c.sort((a,b)=>{const x=ageDays(a[0]),y=ageDays(b[0]);if(x===null&&y===null)return 0;if(x===null)return 1;if(y===null)return -1;return m==="age_asc"?x-y:y-x})}return c}
-function sortRow(){const m=psortOf(),on=(v)=>m===v?"background:var(--ink);color:var(--bg);":"";const nb=EDIT&&!q&&flt==="all"?`<button class="btn" style="flex:1;justify-content:center;margin:0" onclick="editP()">＋ Nouveau patient</button>`:"";return `<div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">${nb}<button onclick="psortSet('${m==="az"?"manual":"az"}')" aria-label="Trier de A à Z" style="min-width:64px;min-height:44px;border-radius:12px;border:1px solid var(--line);font-weight:700;${on("az")}">▲ A-Z</button><button onclick="psortSet('${m==="za"?"manual":"za"}')" aria-label="Trier de Z à A" style="min-width:64px;min-height:44px;border-radius:12px;border:1px solid var(--line);font-weight:700;${on("za")}">▼ Z-A</button></div>`}
+function sortRow(){
+ const m=psortOf();
+ return '<div class="tq-patient-sort-actions" role="group" aria-label="Tri alphabétique rapide">'+
+  '<button type="button" class="tq-patient-sort-btn'+(m==="az"?' is-active':'')+'" aria-pressed="'+(m==="az")+'" onclick="psortSet(\''+(m==="az"?'manual':'az')+'\')" title="Trier les patients de A à Z">▲ A-Z</button>'+
+  '<button type="button" class="tq-patient-sort-btn'+(m==="za"?' is-active':'')+'" aria-pressed="'+(m==="za")+'" onclick="psortSet(\''+(m==="za"?'manual':'za')+'\')" title="Trier les patients de Z à A">▼ Z-A</button>'+
+ '</div>';
+}
 function patList(){
  const L=sortPats(P.map((p,i)=>[p,i]).filter(([p])=>match(p)));
  return `<select aria-label="Trier les patients" onchange="psortSet(this.value)" style="width:100%;margin-bottom:10px"><option value="manual" ${psortOf()==="manual"?"selected":""}>Ordre de tournée</option><option value="az" ${psortOf()==="az"?"selected":""}>Nom A → Z</option><option value="za" ${psortOf()==="za"?"selected":""}>Nom Z → A</option><option value="age_asc" ${psortOf()==="age_asc"?"selected":""}>Âge croissant (plus jeunes d'abord)</option><option value="age_desc" ${psortOf()==="age_desc"?"selected":""}>Âge décroissant (plus âgés d'abord)</option></select>`+sortRow()+L.map(([p,i])=>{const ph=photosOf(p);return `${EDIT&&!q&&flt==="all"?`<div class="mv"><button onclick="mvP('${p.id}',-1)" aria-label="Monter">▲</button><button onclick="mvP('${p.id}',1)" aria-label="Descendre">▼</button></div>`:""}<button class="li" onclick="fiche('${p.id}')"><span class="av">${ph.length?`<img src="${ph[0]}" alt="">`:initials(p.n)}</span><span class="x"><div><b>${p.n}</b> ${picts(p)}</div><div class="sub">${p.h.replace(" fin","")} · ${p.soins.replace(/<[^>]+>/g," ")}</div></span><span class="ar">›</span></button>`}).join("")||`<div class="empty"><b>🔍</b>Aucun résultat</div>`;
