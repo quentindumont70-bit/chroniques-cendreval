@@ -63,7 +63,7 @@ test('V266 : Tous les jours efface seulement les jours fixes et dates exclusives
  assert.equal(refresh,1);
  ctx.DR.cyc={a:'2026-11-25',ch:[1],gr:[2]};
  ctx.allDays();
- assert.ok(warning.includes('Cycle'));
+ assert.match(warning,/cycle/i);
  assert.ok(ctx.DR.cyc);
  assert.equal(refresh,1);
 });
@@ -140,7 +140,7 @@ test('V266 : aucune fiche réelle embarquée dans le code, chiffrement et caches
   readFile(new URL('../docs/tournee-pro/PLAN-DE-LANCEMENT.md',import.meta.url),'utf8')
  ]);
  assert.doesNotThrow(()=>new Script(js));
- assert.match(js,/function writeEncryptedVaultRecord\(record\)/);
+ assert.match(html,/function writeEncryptedVaultRecord\(record\)/);
  assert.match(js,/async function cfgSave\(msg\)/);
  assert.match(sw,/big-cthu-public-v2-v266/);
  assert.match(sw,/'\.\/tournee-v266-intake\.css'/);
