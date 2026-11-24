@@ -77,7 +77,7 @@ test('V260 : feuille de style publique mise en cache pour l utilisation hors lig
  const sw=await read('sw.js');
  const pkg=await readFile(new URL('../package.json',import.meta.url),'utf8');
  const plan=await readFile(new URL('../docs/tournee-pro/PLAN-DE-LANCEMENT.md',import.meta.url),'utf8');
- assert.match(sw,/big-cthu-public-v2-v265/);
+ assert.match(sw,/big-cthu-public-v2-v266/);
  assert.match(sw,/'\.\/tournee-medical-ops\.css'/);
  assert.doesNotMatch(sw,/tidel_Pl|indexedDB|localStorage/);
  assert.match(pkg,/tests\/tournee-v260-medical-ops-theme\.test\.mjs/);
