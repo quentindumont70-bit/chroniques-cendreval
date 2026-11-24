@@ -300,3 +300,12 @@ html[data-binch-detail="lite"][data-binch-mage-library="true"] #page-hub .binch-
  }
  html[data-binch-mage-library="true"] #page-hub .binch-identity-composition{display:none!important}
 }
+
+/* Keyboard-first magic: focus is as legible as a mouse hover, not just ornament. */
+html[data-binch-mage-library="true"] #page-hub #binch-adventure-home :is(button,a,input):focus-visible,
+html[data-binch-mage-library="true"] #app nav.nav :is(button,a):focus-visible,
+.binch-reforge-dialog[data-binch-preview="mage-library"] :is(button,select,input):focus-visible{
+ outline:3px solid #b1eeff!important;
+ outline-offset:3px!important;
+ box-shadow:0 0 0 6px #071623e0,0 0 0 8px #efd0a06e!important;
+}
