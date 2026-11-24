@@ -67,7 +67,7 @@ test('P17 Gnome Mage: exact saved race/class flag only, and no storage writes',(
  assert.equal(base.unknownField,'preserve');
 });
 test('P17 Gnome Mage: real character card, active actions, onboarding and preview carry the art',()=>{
- assert.ok(html.includes('./gnome-mage-library-p17.css?v=002'));
+ assert.ok(html.includes('./gnome-mage-library-p17.css?v=003'));
  assert.ok(html.includes('./visual-identity-compositor.js?v=009'));
  for(const phrase of [
   '#page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card',
@@ -108,6 +108,17 @@ test('P17: new home is mobile readable, accessible, without permanent CPU animat
  assert.ok(css.includes('.binch-level strong'),'real visible level remains');
  assert.ok(css.includes('min-height:44px'),'minimum input tap target');
 });
+test('P17 desktop: full navigation remains operable in one horizontal ribbon above first hero',()=>{
+ assert.ok(css.includes('@media(min-width:761px)'));
+ assert.ok(css.includes('display:flex!important'));
+ assert.ok(css.includes('flex-flow:row nowrap!important'));
+ assert.ok(css.includes('overflow-x:auto!important'));
+ assert.ok(css.includes('scroll-snap-type:x proximity'));
+ assert.ok(css.includes('max-height:76px!important'));
+ assert.ok(css.includes('focus-visible'));
+ assert.ok(!css.includes('nav.nav button{display:none'));
+});
+
 test('P17: four galleries compare independent worlds read-only on phone',()=>{
  assert.match(gallery,/<title>La Binch Renaissance — Quatre sanctuaires premium<\/title>/);
  for(const key of ['tauren','forsaken','storm','mage'])assert.ok(gallery.includes('data-pick="'+key+'"'));
