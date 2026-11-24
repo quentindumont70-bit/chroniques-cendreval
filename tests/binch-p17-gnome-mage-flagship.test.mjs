@@ -67,7 +67,7 @@ test('P17 Gnome Mage: exact saved race/class flag only, and no storage writes',(
  assert.equal(base.unknownField,'preserve');
 });
 test('P17 Gnome Mage: real character card, active actions, onboarding and preview carry the art',()=>{
- assert.ok(html.includes('./gnome-mage-library-p17.css?v=001'));
+ assert.ok(html.includes('./gnome-mage-library-p17.css?v=002'));
  assert.ok(html.includes('./visual-identity-compositor.js?v=009'));
  for(const phrase of [
   '#page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card',
