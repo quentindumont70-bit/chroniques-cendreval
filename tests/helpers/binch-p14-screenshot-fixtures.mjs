@@ -27,6 +27,10 @@ const cases={
  storm:{
   step:2,onboarded:true,race:'Tauren',classe:'Chaman',jobs:['Minage','Forge'],
   data:{...baseData,pseudo:'Corne-de-Tonnerre',role:'DPS distance'},checks:[],map:0
+ },
+ mage:{
+  step:2,onboarded:true,race:'Gnome',classe:'Mage',jobs:['Alchimie','Ingénierie'],
+  data:{...baseData,pseudo:'Archimède',level:'37',role:'DPS distance'},checks:[],map:0
  }
 };
 for(const [name,profile] of Object.entries(cases)){
