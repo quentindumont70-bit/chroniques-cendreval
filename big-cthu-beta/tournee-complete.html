@@ -3314,12 +3314,14 @@ function checkTourIdle(){
 for(const event of ['pointerdown','keydown','input'])document.addEventListener(event,noteTourActivity,{passive:true});
 document.getElementById('tour-lock').addEventListener('click',lockTourSafely);
 function report(message){document.getElementById('tour-error').textContent=message}
-window.tourneeSafeRefresh=async()=>{
+window.tourneeSafeRefresh=async(canReload)=>{
  if(!secureBooted||!secureKey)throw Error('Stockage local indisponible : actualisation annulée.');
  if(typeof window.tourneeSavePostitDrafts==='function')await window.tourneeSavePostitDrafts();
  await ensureVaultSaved();
  if(secureSavedGen!==secureGen)throw Error('Enregistrement incomplet : actualisation annulée.');
+ if(typeof canReload==='function'&&!canReload())return false;
  location.reload();
+ return true;
 };
 
 function launch(){if(secureBooted)return;secureBooted=true;lastTourActivity=Date.now();idleLockTimer=setTimeout(checkTourIdle,IDLE_LOCK_MS);document.body.classList.remove('tournee-locked');document.getElementById('tour-security-gate').hidden=true;let source=document.getElementById('tour-source-js');const script=document.createElement('script');script.textContent=source.textContent;document.body.append(script);source.remove();}
