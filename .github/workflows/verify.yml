@@ -85,6 +85,13 @@ jobs:
           "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=320,800 --screenshot="renaissance-captures/p16-shaman-real-320.png" "file://$PWD/public/binch/.p14-preview-storm.html"
           "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=430,860 --screenshot="renaissance-captures/p16-shaman-reforge-iphone.png" "file://$PWD/public/binch/.p14-preview-storm.html?reforge=1"
           "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=3000 --window-size=430,860 --screenshot="renaissance-captures/p16-three-sanctuaries-iphone.png" "file://$PWD/public/binch/premium-sanctuaries-review.html?identity=storm"
+          # P17: visible real Gnome Mage identity, no detached UI mockup and only CI-synthetic profiles.
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4300 --window-size=1440,960 --screenshot="renaissance-captures/p17-mage-real-desktop.png" "file://$PWD/public/binch/.p14-preview-mage.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4300 --window-size=430,860 --screenshot="renaissance-captures/p17-mage-real-iphone.png" "file://$PWD/public/binch/.p14-preview-mage.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4300 --window-size=320,800 --screenshot="renaissance-captures/p17-mage-real-320.png" "file://$PWD/public/binch/.p14-preview-mage.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4800 --window-size=430,860 --screenshot="renaissance-captures/p17-mage-reforge-iphone.png" "file://$PWD/public/binch/.p14-preview-mage.html?reforge=1"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=3000 --window-size=430,860 --screenshot="renaissance-captures/p17-four-sanctuaries-iphone.png" "file://$PWD/public/binch/premium-sanctuaries-review.html?identity=mage"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4300 --window-size=430,860 --screenshot="renaissance-captures/p17-mage-metiers-iphone.png" "file://$PWD/public/binch/.p14-preview-mage.html?page=metiers"
           ls -lh renaissance-captures/
       - name: Conserver les captures de revue (3 jours, sans publication Pages)
         if: github.event_name == 'pull_request' && github.head_ref == 'feature/binch-visual-renaissance-20261118'
@@ -118,6 +125,10 @@ jobs:
         run: |
           node --test tests/binch-p16-storm-flagship.test.mjs
           python3 -c "import xml.etree.ElementTree as ET; ET.parse('public/binch/tauren-shaman-storm-totem-p16.svg'); print('P16 original storm totem valid XML')"
+      - name: P17 — vérifier le vrai flagship Gnome Mage et les quatre mondes
+        run: |
+          node --test tests/binch-p17-gnome-mage-flagship.test.mjs
+          python3 -c "import xml.etree.ElementTree as ET; ET.parse('public/binch/gnome-mage-astrolabe-p17.svg'); print('P17 original armillary SVG valid XML')"
       - name: Vérifier la présence de Big Cthu dans le paquet Pages
         run: |
           node scripts/stage-big-cthu-beta.mjs
