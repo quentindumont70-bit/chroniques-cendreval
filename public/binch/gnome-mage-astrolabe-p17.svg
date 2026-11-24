@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" width="720" height="720" fill="none">
+<title>Grand astrolabe des Équations — gravure originale du Mage gnome</title>
+<desc>Sphère armillaire asymétrique, engrenages miniatures, compas et trajectoires astrales en laiton et bleu d'arcane</desc>
+<defs>
+<linearGradient id="brass" x1="75" y1="84" x2="628" y2="648" gradientUnits="userSpaceOnUse"><stop stop-color="#ffe0a9"/><stop offset=".28" stop-color="#917454"/><stop offset=".54" stop-color="#e9be79"/><stop offset=".78" stop-color="#6d5b53"/><stop offset="1" stop-color="#edc18b"/></linearGradient>
+<linearGradient id="aether" x1="98" y1="101" x2="600" y2="550" gradientUnits="userSpaceOnUse"><stop stop-color="#b6ecff"/><stop offset=".4" stop-color="#62b5da"/><stop offset=".75" stop-color="#8a8ddc"/><stop offset="1" stop-color="#d5c2ef"/></linearGradient>
+<radialGradient id="mist"><stop stop-color="#84d9fc" stop-opacity=".21"/><stop offset="1" stop-color="#4286cd" stop-opacity="0"/></radialGradient>
+</defs>
+<circle cx="360" cy="359" r="310" fill="url(#mist)"/>
+<g stroke="url(#brass)" fill="none">
+<circle cx="360" cy="359" r="277" stroke-width="13" stroke-dasharray="100 10 12 10"/>
+<circle cx="360" cy="359" r="249" stroke-width="3" stroke-dasharray="2 18"/>
+<circle cx="360" cy="359" r="211" stroke-width="8"/>
+<circle cx="360" cy="359" r="184" stroke-width="2"/>
+<ellipse cx="360" cy="359" rx="108" ry="245" stroke-width="9" transform="rotate(38 360 359)"/>
+<ellipse cx="360" cy="359" rx="100" ry="245" stroke-width="5" transform="rotate(-43 360 359)"/>
+<ellipse cx="360" cy="359" rx="247" ry="85" stroke-width="7" transform="rotate(-21 360 359)"/>
+<path d="M360 35v40m0 570v40M35 359h40m570 0h40M130 129l33 34m394 394 33 33m0-460-33 33m-394 394-33 33" stroke-width="9"/>
+<path d="M312 57h96M312 660h96M57 311v96M660 311v96" stroke-width="2"/>
+</g>
+<g fill="url(#brass)" stroke="#342f32" stroke-width="2">
+<path d="M346 51 360 7l14 44 22 18-36 5-36-5Z"/>
+<path d="m649 345 40 14-40 14-15 25-6-39 6-39Z"/>
+<path d="m346 668 14 45 14-45 20-19-34-3-34 3Z"/>
+<path d="m71 345-41 14 41 14 13 24 7-38-7-38Z"/>
+</g>
+<g stroke="url(#aether)" stroke-width="3" fill="none" opacity=".88">
+<circle cx="360" cy="359" r="131" stroke-dasharray="9 9"/>
+<circle cx="360" cy="359" r="75"/>
+<path d="m360 226 20 84 77 49-77 47-20 84-19-84-78-47 78-49Z" stroke-width="6"/>
+<path d="M215 359h290m-145-145v290M257 256l206 206m0-206L257 462" opacity=".44"/>
+<path d="M360 273v35m0 102v35M272 359h35m106 0h35" stroke-linecap="round" stroke-width="7"/>
+</g>
+<g stroke="url(#brass)" fill="#132a3b" fill-opacity=".6">
+<circle cx="360" cy="359" r="43" stroke-width="9"/>
+<circle cx="360" cy="359" r="15" stroke-width="5"/>
+<path d="m173 131 19 2 6 17 18 2 6-16 17 7-4 17 15 11 15-9 12 15-9 15 8 16 18 1v19l-17 5-2 18-16 6-12-12-18 4-5 17-18-3-2-18-17-8-14 10-13-14 9-16-9-16-17-1-2-19 18-5 7-18-10-13Z" stroke-width="4" transform="translate(-38 -27) scale(.87)"/>
+<circle cx="162" cy="170" r="42" stroke-width="5"/>
+<circle cx="162" cy="170" r="17" stroke-width="5"/>
+</g>
+<g fill="url(#aether)" opacity=".87">
+<circle cx="132" cy="365" r="6"/><circle cx="540" cy="198" r="5"/><circle cx="468" cy="542" r="5"/><circle cx="243" cy="552" r="4"/><circle cx="581" cy="383" r="7"/>
+<path d="m567 94 6 18 19 6-19 6-6 18-6-18-19-6 19-6ZM122 510l6 16 17 6-17 6-6 16-6-16-17-6 17-6Z"/>
+</g>
+<g stroke="#f2d8a6" opacity=".55" fill="none" stroke-width="2">
+<path d="M122 79C230 12 454 12 557 80M564 646c-132 74-312 77-436-2" stroke-dasharray="5 10"/>
+<path d="M38 222q35-112 123-158M684 494q-35 112-123 158"/>
+</g>
+</svg>
