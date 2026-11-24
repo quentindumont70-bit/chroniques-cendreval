@@ -95,7 +95,7 @@ test('V267 : styles sans interaction avec le coffre, code JS valide',async()=>{
  const {html,js}=await source(),css=await read('tournee-v267-patients.css');
  assert.doesNotThrow(()=>new Script(js));
  assert.match(html,/<link rel="stylesheet" href="\.\/tournee-v267-patients\.css">/);
- assert.match(js,/function writeEncryptedVaultRecord\(record\)/);
+ assert.match(html,/function writeEncryptedVaultRecord\(record\)/);
  assert.match(js,/function cfgSave\(msg\)/);
  assert.doesNotMatch(css,/localStorage|indexedDB|fetch\s*\(|WebSocket|tidel_Pl/);
 });
