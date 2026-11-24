@@ -56,3 +56,9 @@ Ce n'est pas une variante colorimétrique de Shaaby (Tauren Druide), de la nécr
 10. Faire le parcours de test de cinq minutes avec le frère, revoir les critiques et demander validation humaine avant une éventuelle fusion.
 
 **Règle durable :** aucune publication ni fusion sans revue ; priorité à l'art de qualité et aux fonctionnalités véritablement actives, pas à la multiplication de démonstrations.
+
+## Revue visuelle réelle — correction desktop P17.1
+
+Les captures GitHub Actions du vrai compagnon à 1440×960 ont montré **17 onglets sur trois rangées**, ce qui masquait la majeure partie de l'artwork sous la ligne de flottaison. Sans toucher aux données, aux routes ni à leurs gestionnaires de clic, `gnome-mage-library-p17.css` affiche désormais sur desktop **un ruban horizontal à une seule rangée**, avec défilement au pointeur ou au clavier, boutons d'au moins 47 px, état focus visible et rappel du panneau « Trouver une rubrique » déjà existant. Le menu mobile compact P16 reste inchangé.
+
+Les captures 430 px, 320 px, reforge et galerie confirment l'illustration spécifique au Mage. Le profil et son niveau restent ceux des données synthétiques temporaires dans la CI ; **ces captures ne mesurent pas la rapidité Safari réelle**. L'ajout du ruban desktop déclenche une nouvelle capture de comparaison avant validation finale.
