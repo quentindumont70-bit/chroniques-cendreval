@@ -192,3 +192,13 @@ Pour un nouvel arrivant, l'édition de fiche prévoit désormais une **date de d
 La case explicite **« En première position de la tournée les jours de passage »** permet de placer un patient prioritaire avant les autres passages, y compris lorsqu'un ordre journalier manuel existe déjà, sans altérer les autres dossiers ni leurs horaires. La sélection peut être retirée depuis la fiche. Le mode reste un paramètre du patient dans le coffre existant, sans autre stockage ou import, et ne doit pas se substituer au jugement soignant sur l'ordre réel des visites.
 
 **Limite majeure** : aucun assistant distant ne peut ouvrir ou remplir le coffre chiffré local du patient ; les données médicales et coordonnées ne sont jamais déposées dans GitHub, dans l'application publique ou dans les tests. L'IDEL remplit et confirme la fiche sur son propre appareil après une sauvegarde de précaution. Tests fictifs V266 : date de début, non-rétroactivité, case de priorité même avec ordre journalier, bouton tous les jours, annulations/erreurs, champ accessible et cache public. Validation iPhone terrain indispensable.
+
+## Golipette V267 — retour iPhone : créer un patient et rendre les tris lisibles
+
+La capture de l'onglet Patients a confirmé deux défauts : le bouton « Nouveau patient » n'apparaissait qu'en mode Édition, et les tris ▲ A-Z et ▼ Z-A pouvaient être pratiquement blanc sur blanc.
+
+La V267 présente un **bouton « ＋ Nouveau patient » toujours visible au début de l'onglet Patients**, avant les filtres et les résultats, accessible même en mode lecture ou lors d'une recherche. Ce bouton ouvre le **formulaire existant** `editP()` avec début de prise en charge, horaire, accès et soins. Aucun patient n'est créé sans confirmation d'enregistrement ; le bouton conditionnel précédent a été retiré pour éviter un doublon. Les actions de modification de fiches existantes restent soumises aux règles précédentes.
+
+Les boutons de tri utilisent des classes dédiées, `aria-pressed`, des couleurs de texte/fond explicites selon le thème, un focus visible et des cibles tactiles ≥48 px. Le bouton de création occupe ≥54 px. Pas de nouvelle donnée, clé de coffre, stockage cloud, connexion Topaze ni dossier réel transmis via GitHub.
+
+Tests fictifs V267 : visibilité même pendant les filtres et recherches, ouverture du formulaire existant, modes de tri et sélection, styles à contraste explicite, respect du coffre et du cache hors ligne. Validation visuelle iPhone encore nécessaire.
