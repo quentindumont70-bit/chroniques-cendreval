@@ -15,7 +15,7 @@ async function fixture({cachePresent=true,complete=true,controlled=true,offline=
  };
  const paths=['tournee-complete.html','tournee-demarrage.html','tournee-controle-iphone.html'];
  const caches={
-  keys:async()=>{if(denied)throw Error('not allowed');return cachePresent?['big-cthu-public-v2-v266']:[]},
+  keys:async()=>{if(denied)throw Error('not allowed');return cachePresent?['big-cthu-public-v2-v267']:[]},
   open:async()=>({match:async url=>{
    const found=paths.find(path=>url.endsWith(path));
    return found&&(!(!complete&&found==='tournee-demarrage.html'))?{ok:true}:undefined;
@@ -68,6 +68,6 @@ test('V257 : aucun accès aux données de santé, aucun réseau et intégration 
  assert.match(html,/CacheStorage/);
  assert.match(guide,/tournee-controle-iphone\.html/);
  assert.match(sw,/'\.\/tournee-controle-iphone\.html'/);
- assert.match(sw,/big-cthu-public-v2-v266/);
+ assert.match(sw,/big-cthu-public-v2-v267/);
  assert.match(packageJson,/tests\/tournee-v257-offline-readiness\.test\.mjs/);
 });
