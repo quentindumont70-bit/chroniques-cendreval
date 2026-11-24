@@ -1,0 +1,273 @@
+/* P14 — FINAL VISIBLE PLAYER HOME: #binch-adventure-home
+ * The older #binch-front is hidden by player-home.css. P14 does not reskin
+ * hidden copies; it extends the actual cinematic character card and task UI.
+ * No new downloads beyond P12/P13 optimized WebP and existing ornaments.
+ */
+html[data-binch-shaaby="true"]{
+ --p14-medal:#f0d2a1;
+ --p14-ink:#e8f1d6;
+ --p14-edge:#c7ac7e;
+ --p14-glow:#a3c782;
+ --p14-tint:#13281e;
+ --p14-card:#14261fd9;
+ --p14-corner:19px 37px 9px 24px;
+ --p14-ornament:url("./shaaby-ivy-ornament.svg");
+}
+html[data-binch-forsaken="true"]{
+ --p14-medal:#e1b9e7;
+ --p14-ink:#e8dff2;
+ --p14-edge:#a28bb0;
+ --p14-glow:#b194ce;
+ --p14-tint:#1c1829;
+ --p14-card:#1d1b2ddc;
+ --p14-corner:4px 30px 4px 22px;
+ --p14-ornament:url("./forsaken-occult-gear.svg");
+}
+/* The *actual* player-home sections remain real, data-driven, and interactive. */
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub.binch-adventure-ready #binch-adventure-home{
+ gap:clamp(14px,2vw,23px);
+}
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card{
+ border-color:var(--p14-edge);
+ border-radius:var(--p14-corner);
+ box-shadow:0 31px 90px #000c,inset 0 1px #f3e5c21e,0 0 0 2px color-mix(in srgb,var(--p14-edge) 12%,transparent);
+}
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub.binch-adventure-ready #binch-adventure-home .binch-portrait{
+ border-color:var(--p14-edge);
+ box-shadow:0 0 0 5px #0a1417e9,0 0 0 7px color-mix(in srgb,var(--p14-edge) 60%,transparent),0 0 35px color-mix(in srgb,var(--p14-glow) 30%,transparent);
+}
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub.binch-adventure-ready #binch-adventure-home .binch-kicker{
+ color:var(--p14-medal);text-shadow:0 2px 12px #000c;
+}
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub.binch-adventure-ready #binch-adventure-home .binch-priority-guard{
+ position:relative;isolation:isolate;overflow:hidden;
+ border:1px solid var(--p14-edge);border-radius:8px 28px 8px 22px;
+ background-color:var(--p14-tint);
+ background-image:linear-gradient(133deg,#07171df3,var(--p14-card)),var(--p14-ornament);
+ background-position:center,right -72px top -90px;
+ background-size:cover,270px auto;background-repeat:no-repeat;
+ box-shadow:0 18px 51px #0008,inset 0 1px #f3e3bd20;
+}
+html[data-binch-forsaken="true"] #page-hub #binch-adventure-home .binch-priority-guard{
+ border-radius:4px 25px 4px 17px;
+}
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-guard-counter{
+ border-color:var(--p14-edge);background:var(--p14-tint);
+ color:var(--p14-medal);border-radius:5px 12px 5px 11px;
+}
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-guard-list>button{
+ border:1px solid color-mix(in srgb,var(--p14-edge) 70%,transparent);
+ border-left:4px solid var(--p14-edge);
+ background:linear-gradient(125deg,var(--p14-tint),#0d1b22ed);
+ border-radius:5px 16px 5px 13px;
+ color:var(--p14-ink);
+ box-shadow:inset 0 1px #faf2dc1b,0 8px 19px #0006;
+}
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-guard-list>button:hover,
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-guard-list>button:focus-visible{
+ border-color:var(--p14-glow);
+ box-shadow:0 0 0 1px color-mix(in srgb,var(--p14-glow) 22%,transparent),0 13px 24px #0009;
+}
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub.binch-adventure-ready #binch-adventure-home .binch-route{
+ border:1px solid var(--p14-edge);
+ border-radius:10px 27px 8px 21px;
+ background-image:linear-gradient(140deg,#101b22f6,var(--p14-card)),var(--p14-ornament);
+ background-position:center,right -90px top -120px;
+ background-size:cover,340px auto;
+ background-repeat:no-repeat;
+ box-shadow:0 22px 54px #0008,inset 0 1px #fff1;
+}
+html[data-binch-forsaken="true"] #page-hub #binch-adventure-home .binch-route{
+ border-radius:4px 22px 4px 16px;
+}
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-route h2{
+ color:var(--p14-medal);text-shadow:0 2px 11px #0008;
+}
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-route-tools input{
+ border-color:color-mix(in srgb,var(--p14-edge) 55%,transparent);
+ background:#0a1720eb;min-height:44px;color:#f3eadb;
+}
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-route-step .binch-route-task{
+ border-color:color-mix(in srgb,var(--p14-edge) 58%,transparent);
+ background:linear-gradient(124deg,#1b2a2cdd,var(--p14-card));
+ box-shadow:inset 0 1px #f2dfbd12,0 8px 24px #0005;
+ border-radius:6px 17px 6px 15px;
+}
+html[data-binch-forsaken="true"] #page-hub #binch-adventure-home .binch-route-step .binch-route-task{
+ border-radius:3px 13px 3px 11px;
+}
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-route-step.pinned .binch-route-task{
+ border-color:var(--p14-medal);
+ box-shadow:inset 3px 0 var(--p14-edge),0 9px 26px #0008;
+}
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-route-step .binch-route-main:focus-visible,
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-route-step .binch-route-pin:focus-visible{
+ outline:3px solid var(--p14-medal);outline-offset:2px;
+}
+/* Real journal / skill / professions / GM modules, not detached mockups. */
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-metiers .panel.section{
+ border-color:var(--p14-edge);
+ background-image:linear-gradient(135deg,#111b21f0,var(--p14-card)),var(--p14-ornament);
+ background-size:cover,215px auto;
+ background-position:center,right -85px top -58px;background-repeat:no-repeat;
+}
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-metiers #jobs-content .tile{
+ border:1px solid var(--p14-edge);
+ background:linear-gradient(135deg,#192b2cda,var(--p14-card));
+ color:var(--p14-ink);border-radius:7px 19px 7px 15px;
+}
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-progression .panel.section,
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-gm .panel.section,
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-specs #binch-specs{
+ border-color:var(--p14-edge);
+ box-shadow:inset 0 1px #f1e4d312,0 13px 36px #0007;
+}
+html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-edit-profile{
+ border-color:var(--p14-edge);
+ border-radius:7px 18px 7px 14px;
+ background:linear-gradient(133deg,var(--p14-card),#111c22e9);
+}
+/* Avoid scrolling the portrait behind a giant menu; mobile nav handled separately. */
+@media(max-width:760px){
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card{
+  min-height:clamp(495px,142vw,680px);
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-priority-guard{
+  background-size:cover,160px auto;
+  background-position:center,right -62px top -65px;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-route{
+  background-size:cover,180px auto;
+  background-position:center,right -80px top -75px;
+ }
+}
+@media(max-width:390px){
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card{
+  min-height:515px;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #binch-adventure-home :is(button,input,summary){
+  animation:none!important;transition:none!important;
+ }
+}
+html[data-binch-detail="lite"]:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #binch-adventure-home .binch-priority-guard,
+html[data-binch-detail="lite"]:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #binch-adventure-home .binch-route{
+ box-shadow:none;background-image:linear-gradient(145deg,#15252b,var(--p14-tint));
+}
+@media(forced-colors:active){
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #binch-adventure-home :is(.binch-character-card,.binch-priority-guard,.binch-route,.binch-route-task){
+  border:2px solid CanvasText!important;background:Canvas!important;color:CanvasText!important;
+ }
+}
+
+/* Transactional reforge: the *draft* dictates the forge frame, not the saved profile. */
+.binch-reforge-dialog[data-binch-preview="shaaby"]{
+ --p14-preview-metal:#d9bd86;--p14-preview-tint:#1c3026;--p14-preview-ornament:url("./shaaby-ivy-ornament.svg");
+ border-color:#d5b684;border-radius:10px 29px 9px 20px;
+}
+.binch-reforge-dialog[data-binch-preview="forsaken"]{
+ --p14-preview-metal:#c1a0d0;--p14-preview-tint:#282035;--p14-preview-ornament:url("./forsaken-occult-gear.svg");
+ border-color:#aa90bc;border-radius:4px 24px 4px 17px;
+}
+.binch-reforge-dialog[data-binch-preview="other"]{
+ --p14-preview-metal:#bea988;--p14-preview-tint:#172329;--p14-preview-ornament:none;
+}
+.binch-reforge-dialog[data-binch-preview] .binch-reforge-frame{
+ background-image:var(--p14-preview-ornament),linear-gradient(130deg,var(--p14-preview-tint),#09141de9);
+ background-size:210px auto,cover;background-position:right -78px top -60px,center;
+ background-repeat:no-repeat;
+}
+.binch-reforge-dialog[data-binch-preview] .binch-reforge-header h2,
+.binch-reforge-dialog[data-binch-preview] .binch-reforge-set legend{color:var(--p14-preview-metal)}
+.binch-reforge-dialog[data-binch-preview] .binch-reforge-choice.selected{
+ border-color:var(--p14-preview-metal);
+ box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--p14-preview-metal) 50%,transparent),0 4px 18px #0006;
+}
+.binch-reforge-dialog[data-binch-preview] .binch-reforge-footer{
+ background:linear-gradient(transparent,#09151bdd 35%,#09151bea);
+}
+@media(max-width:760px){
+ .binch-reforge-dialog[data-binch-preview] .binch-reforge-frame{
+  background-size:150px auto,cover;
+ }
+}
+
+/* P14 visual screenshot correction: the old 91px+fluid grid squeezed long names
+   because the cinematic compositor injects extra children. Use a reliable flex
+   stack on iPhone instead. Never remove the level/XP medal or character data. */
+@media(max-width:760px){
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:flex-end!important;
+  align-items:stretch!important;
+  gap:15px!important;
+  padding:clamp(270px,72vw,340px) 19px 23px!important;
+  min-height:clamp(590px,150vw,710px)!important;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-character-card > .binch-portrait{
+  position:absolute!important;
+  top:65px;left:21px;bottom:auto;right:auto;
+  width:70px!important;min-width:70px!important;
+  height:70px!important;
+  grid-column:auto!important;grid-row:auto!important;
+  justify-self:auto!important;
+  z-index:3;
+  opacity:.88;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-character-card > .binch-portrait + div{
+  width:100%!important;
+  min-width:0!important;max-width:100%!important;
+  order:1;
+  grid-column:auto!important;grid-row:auto!important;
+  align-self:stretch!important;
+  text-align:left;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-character-card h1{
+  font:700 clamp(2rem,7.1vw,3.05rem)/1.08 Georgia,serif!important;
+  letter-spacing:-.035em;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  hyphens:none!important;
+  text-wrap:balance;
+  max-width:100%;
+  margin:6px 0 10px!important;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home #binch-home-meta{
+  font-size:.88rem!important;line-height:1.4;
+  max-width:calc(100vw - 55px);
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-character-card .binch-level{
+  position:relative!important;
+  order:2;
+  align-self:flex-start!important;
+  justify-self:auto!important;
+  grid-column:auto!important;grid-row:auto!important;
+  width:103px!important;height:103px!important;
+  min-width:103px!important;min-height:103px!important;
+  max-width:103px!important;max-height:103px!important;
+  padding:15px 10px!important;
+  border-radius:50%!important;
+  margin-top:2px;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-level strong{
+  font-size:2.55rem!important;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-level small{
+  font-size:.55rem!important;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-level #binch-home-zone{
+  max-width:90px;font-size:.58rem!important;
+ }
+}
+@media(max-width:390px){
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card{
+  padding-top:260px!important;
+  padding-inline:16px!important;
+  min-height:595px!important;
+ }
+ html:is([data-binch-shaaby="true"],[data-binch-forsaken="true"]) #page-hub #binch-adventure-home .binch-character-card h1{
+  font-size:clamp(1.7rem,7.1vw,2.5rem)!important;
+ }
+}

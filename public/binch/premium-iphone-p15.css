@@ -1,0 +1,165 @@
+/* LA BINCH — P15 : iPhone polish based on actual rendered screenshots.
+ * Fix the cropped wordmark, restore an unobstructed full-width portrait, and
+ * place existing editor inside the collapsible navigation (no lost handler).
+ * No game-state writes, no new scroll locking, no external art dependency.
+ */
+@media (max-width:760px) {
+ #app .app-head {
+  display:grid!important;
+  grid-template-columns:minmax(140px,1fr) minmax(148px,1.12fr)!important;
+  align-items:center!important;
+  column-gap:8px!important;
+  row-gap:9px!important;
+  padding:10px 1px 8px!important;
+  margin-bottom:4px!important;
+ }
+ #app .app-head > .brand {
+  grid-column:1!important;
+  grid-row:1!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  width:100%;min-width:0!important;
+  white-space:nowrap;
+ }
+ #app .app-head .brand .binch-crest {
+  flex:0 0 42px!important;
+  width:42px!important;
+  height:42px!important;
+ }
+ #app .app-head .binch-wordmark {
+  display:flex!important;
+  flex-direction:column;
+  justify-content:center;
+  min-width:0!important;
+  max-width:none!important;
+  overflow:visible!important;
+ }
+ #app .app-head .binch-wordmark > b {
+  display:block;
+  font:700 clamp(.93rem,3.45vw,1.35rem)/1.1 Georgia,serif!important;
+  letter-spacing:.07em!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  word-break:normal!important;
+  overflow-wrap:normal!important;
+  text-wrap:nowrap!important;
+ }
+ #app .app-head .binch-wordmark > small {
+  display:none!important;
+ }
+ #app .app-head > #binch-profile-trigger{
+  grid-column:2!important;grid-row:1!important;
+  min-width:0!important;max-width:100%!important;
+  width:100%;min-height:48px;
+  padding:6px 9px!important;
+  justify-content:flex-start;
+  overflow:hidden;
+ }
+ #app #binch-profile-trigger > span:last-child{
+  min-width:0!important;overflow:hidden;text-overflow:ellipsis;
+ }
+ #app #binch-profile-trigger #mini-name{
+  display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  max-width:100%;font-size:clamp(.74rem,2.7vw,1rem);
+ }
+ #app .app-head > :not(.brand):not(#binch-profile-trigger){
+  grid-column:auto;
+  grid-row:auto;
+  min-width:0!important;
+  max-width:100%!important;
+ }
+ #app .app-head > :not(.brand):not(#binch-profile-trigger):is(button,details) {
+  width:100%;
+  min-height:43px;
+  margin:0!important;
+  font-size:.75rem;
+  box-sizing:border-box;
+ }
+ #app .app-head > :not(.brand):not(#binch-profile-trigger) :is(button,summary) {
+  white-space:normal!important;
+  overflow-wrap:break-word;
+ }
+ #app #binch-p14-sections:not([hidden]){
+  min-height:44px!important;
+  margin:3px 0 9px!important;
+ }
+ /* The actual native editor control, now in the original full navigation.
+    It never floats over the art and uses the unchanged ui-editor.js behavior. */
+ #app nav.nav.p14-nav-managed #binch-editor-toggle.p15-nav-editor{
+  position:static!important;
+  display:flex!important;
+  grid-column:1/-1!important;
+  justify-content:center;
+  align-items:center;
+  width:100%!important;
+  min-height:46px!important;
+  max-width:none!important;
+  margin:6px 0 0!important;
+  padding:10px 14px!important;
+  border:1px solid #d9bd87;
+  border-radius:6px 15px 7px 12px;
+  background:linear-gradient(110deg,#42344c,#28433b);
+  color:#f6e1c0;
+  font-size:.77rem!important;
+  line-height:1.3!important;
+  opacity:1;
+  box-shadow:inset 0 1px #fff2,0 7px 18px #0009;
+  white-space:normal;
+ }
+ #app nav.nav.p14-nav-managed #binch-editor-toggle.p15-nav-editor:focus-visible {
+  outline:3px solid #f6dca2;
+  outline-offset:2px;
+ }
+ /* Ambience controls remain attached to the real hero. */
+ #page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card {
+  scroll-margin-top:15px;
+ }
+ #page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card > div:not(.binch-identity-composition) {
+  min-width:0;
+ }
+ /* Compact Faith floats above the bottom dock in an otherwise free corner;
+    its popover remains a full readable conversation when opened. */
+ #binch-faith-dock {
+  width:46px!important;height:46px!important;
+  min-width:46px!important;min-height:46px!important;
+  max-width:46px!important;
+  border-radius:50%!important;
+  font-size:0!important;
+  right:max(11px,env(safe-area-inset-right,0px))!important;
+  bottom:calc(108px + env(safe-area-inset-bottom,0px))!important;
+ }
+ #binch-faith-dock::before {
+  content:"✧";
+  font:700 27px/1 Georgia,serif!important;
+  color:#f3ddfa;
+ }
+ #binch-faith-dialogue:not([hidden]){
+  bottom:calc(162px + env(safe-area-inset-bottom,0px))!important;
+ }
+}
+@media (max-width:390px) {
+ #app .app-head {
+  grid-template-columns:minmax(127px,1fr) minmax(132px,1fr)!important;
+  column-gap:5px!important;
+ }
+ #app .app-head .brand { gap:6px!important; }
+ #app .app-head .brand .binch-crest {width:37px!important;height:37px!important;flex-basis:37px!important}
+ #app .app-head .binch-wordmark > b {font-size:clamp(.86rem,3.3vw,1.05rem)!important;letter-spacing:.04em!important}
+ #app #binch-profile-trigger {padding:5px 7px!important}
+ #app .app-head > :not(.brand):not(#binch-profile-trigger):is(button,details) {font-size:.7rem}
+}
+@media (max-width:350px) {
+ #app .app-head {grid-template-columns:minmax(115px,1fr) minmax(118px,1fr)!important}
+ #app .app-head .brand .binch-crest{width:32px!important;height:32px!important;flex-basis:32px!important}
+ #app .app-head .binch-wordmark > b{font-size:.82rem!important;letter-spacing:0!important}
+}
+@media (prefers-reduced-motion:reduce) {
+ #app #binch-profile-trigger,#app .binch-wordmark{animation:none!important;transition:none!important}
+}
+@media (forced-colors:active){
+ #app #binch-editor-toggle.p15-nav-editor,
+ #app .app-head > #binch-profile-trigger {
+  border:2px solid CanvasText!important;background:Canvas!important;color:CanvasText!important;
+ }
+}

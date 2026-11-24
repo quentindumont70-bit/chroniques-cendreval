@@ -1,0 +1,210 @@
+/*
+  Renaissance — création de personnage : neuf vraies scènes et blasons de classe,
+  peuples lisibles, et métiers. Habillage uniquement, sans changer les choix.
+*/
+#onboarding .onboard-card{width:min(1040px,calc(100vw - 24px));max-width:1040px}
+#onboarding .choices{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#onboarding .choice{
+ min-width:0;position:relative;isolation:isolate;overflow:hidden;display:flex;
+ flex-direction:column;align-items:flex-start;text-align:left;
+ min-height:134px;padding:18px 17px;
+ border:1px solid #a28d69;
+ background:linear-gradient(150deg,#2d3d37,#101f24);color:#f2e9d8;
+ box-shadow:0 10px 27px #0006,inset 0 1px #ffffff19;
+}
+#onboarding .choice strong{position:relative;z-index:1;color:#ffebca;font-size:clamp(.94rem,1.8vw,1.12rem)}
+#onboarding .choice small{position:relative;z-index:1;line-height:1.42;font-size:.77rem;color:#d1ded1}
+#onboarding .choice .sigil{position:relative;z-index:1;font:37px Georgia,serif}
+#onboarding .choice.selected{
+ outline:2px solid #f5d48c;outline-offset:2px;
+ border-color:#ffe8b1;box-shadow:0 0 0 4px #e1bd7856,0 19px 39px #0009,inset 0 1px #fff3;
+}
+#onboarding .choice:focus-visible{outline:3px solid #fff1be;outline-offset:4px}
+#onboarding #class-choices .choice{
+ --br-choice-art:var(--br-world-art);
+ --br-choice-crest:none;
+ --br-choice-accent:#e8c18b;
+ padding:98px 15px 15px;min-height:202px;
+ border-color:color-mix(in srgb,var(--br-choice-accent) 75%,#6b7b73);
+ background:#102327;
+}
+#onboarding #class-choices .choice::before{
+ content:"";z-index:-1;pointer-events:none;position:absolute;inset:0;
+ background-image:linear-gradient(180deg,#0b1c1d18 0%,#091a21bf 46%,#07151cf5 82%),
+ var(--br-choice-art);
+ background-position:center center;
+ background-size:cover;
+ transition:transform .25s ease;
+}
+#onboarding #class-choices .choice::after{
+ content:"";position:absolute;pointer-events:none;z-index:0;
+ top:9px;left:10px;width:65px;height:65px;
+ background:var(--br-choice-crest) center/contain no-repeat;
+ filter:drop-shadow(0 5px 13px #0008);
+}
+#onboarding #class-choices .choice .sigil{
+ position:absolute;top:15px;right:16px;font-size:29px;
+ color:var(--br-choice-accent);
+ text-shadow:0 1px 10px #000d;
+}
+#onboarding #class-choices .choice strong{
+ font:700 1.17rem Cinzel,Georgia,serif;
+ text-shadow:0 2px 9px #000e;
+}
+#onboarding #class-choices .choice small{
+ font-size:.76rem;color:#e1e8dd;
+ text-shadow:0 1px 6px #000e;
+}
+#onboarding #class-choices .choice.selected{
+ border-color:var(--br-choice-accent);
+ background:#1c372f;
+ box-shadow:0 0 0 3px color-mix(in srgb,var(--br-choice-accent) 40%,transparent),
+ 0 13px 32px #000a;
+}
+#onboarding #class-choices [data-classe="Druide"]{--br-choice-art:url("./renaissance-world-druid.svg");--br-choice-crest:url("./renaissance-sigil-druid.svg");--br-choice-accent:#a7d28b}
+#onboarding #class-choices [data-classe="Guerrier"]{--br-choice-art:url("./renaissance-world-warrior.svg");--br-choice-crest:url("./renaissance-sigil-warrior.svg");--br-choice-accent:#dbaf8e}
+#onboarding #class-choices [data-classe="Mage"]{--br-choice-art:url("./renaissance-world-mage.svg");--br-choice-crest:url("./renaissance-sigil-mage.svg");--br-choice-accent:#9ed4ff}
+#onboarding #class-choices [data-classe="Prêtre"]{--br-choice-art:url("./renaissance-world-priest.svg");--br-choice-crest:url("./renaissance-sigil-priest.svg");--br-choice-accent:#f6e6c4}
+#onboarding #class-choices [data-classe="Paladin"]{--br-choice-art:url("./renaissance-world-paladin.svg");--br-choice-crest:url("./renaissance-sigil-paladin.svg");--br-choice-accent:#e8bad1}
+#onboarding #class-choices [data-classe="Voleur"]{--br-choice-art:url("./renaissance-world-rogue.svg");--br-choice-crest:url("./renaissance-sigil-rogue.svg");--br-choice-accent:#e9d995}
+#onboarding #class-choices [data-classe="Chasseur"]{--br-choice-art:url("./renaissance-world-hunter.svg");--br-choice-crest:url("./renaissance-sigil-hunter.svg");--br-choice-accent:#b0d38a}
+#onboarding #class-choices [data-classe="Chaman"]{--br-choice-art:url("./renaissance-world-shaman.svg");--br-choice-crest:url("./renaissance-sigil-shaman.svg");--br-choice-accent:#93d0df}
+#onboarding #class-choices [data-classe="Démoniste"]{--br-choice-art:url("./renaissance-world-warlock.svg");--br-choice-crest:url("./renaissance-sigil-warlock.svg");--br-choice-accent:#c5a0ea}
+/* The atmospheric selection changes only the illustration behind the wizard. */
+#onboarding:has(#class-choices .choice.selected){--br-selected-world:url("./renaissance-citadel.svg")}
+#onboarding:has(#class-choices [data-classe="Druide"].selected){--br-selected-world:url("./renaissance-world-druid.svg")}
+#onboarding:has(#class-choices [data-classe="Guerrier"].selected){--br-selected-world:url("./renaissance-world-warrior.svg")}
+#onboarding:has(#class-choices [data-classe="Mage"].selected){--br-selected-world:url("./renaissance-world-mage.svg")}
+#onboarding:has(#class-choices [data-classe="Prêtre"].selected){--br-selected-world:url("./renaissance-world-priest.svg")}
+#onboarding:has(#class-choices [data-classe="Paladin"].selected){--br-selected-world:url("./renaissance-world-paladin.svg")}
+#onboarding:has(#class-choices [data-classe="Voleur"].selected){--br-selected-world:url("./renaissance-world-rogue.svg")}
+#onboarding:has(#class-choices [data-classe="Chasseur"].selected){--br-selected-world:url("./renaissance-world-hunter.svg")}
+#onboarding:has(#class-choices [data-classe="Chaman"].selected){--br-selected-world:url("./renaissance-world-shaman.svg")}
+#onboarding:has(#class-choices [data-classe="Démoniste"].selected){--br-selected-world:url("./renaissance-world-warlock.svg")}
+#onboarding:has(#class-choices .choice.selected){
+ background-image:linear-gradient(110deg,#071416f7,#081821c9 55%,#0c1519e0),var(--br-selected-world);
+}
+#onboarding #race-choices .choice{min-height:151px}
+#onboarding #race-choices .choice::after{
+ content:"";position:absolute;top:12px;right:12px;z-index:1;pointer-events:none;
+ border:1px solid #aab79b7a;border-radius:100px;padding:4px 8px;
+ font-size:.62rem;font-weight:800;letter-spacing:.1em;color:#d6e7d4;
+ background:#112b2ab3;
+}
+#onboarding #race-choices [data-race="Orc"],
+#onboarding #race-choices [data-race="Tauren"],
+#onboarding #race-choices [data-race="Troll"],
+#onboarding #race-choices [data-race="MortVivant"]{
+ background-image:radial-gradient(circle at 92% 20%,#a1c57724,transparent 56%),
+ linear-gradient(145deg,#244033,#102323);
+}
+#onboarding #race-choices [data-race="Orc"]::after,
+#onboarding #race-choices [data-race="Tauren"]::after,
+#onboarding #race-choices [data-race="Troll"]::after,
+#onboarding #race-choices [data-race="MortVivant"]::after{content:"HORDE";border-color:#c0a17293;color:#f0c99c}
+#onboarding #race-choices [data-race="Humain"]::after,
+#onboarding #race-choices [data-race="Nain"]::after,
+#onboarding #race-choices [data-race="Elfe"]::after,
+#onboarding #race-choices [data-race="Gnome"]::after{content:"ALLIANCE";border-color:#8fbcd18c;color:#c3e1f1}
+#onboarding #job-choices .choice[data-job="Minage"],
+#onboarding #job-choices .choice[data-job="Ingénierie"]{
+ padding:15px 15px 15px 100px;
+ background:linear-gradient(95deg,#1e3033,#101f25);
+ min-height:111px;justify-content:center;
+}
+#onboarding #job-choices .choice[data-job="Minage"]::before,
+#onboarding #job-choices .choice[data-job="Ingénierie"]::before{
+ content:"";position:absolute;left:11px;top:50%;transform:translateY(-50%);
+ width:76px;height:76px;pointer-events:none;
+ background:center/contain no-repeat url("./renaissance-profession-mining.svg");
+}
+#onboarding #job-choices .choice[data-job="Ingénierie"]::before{
+ background-image:url("./renaissance-profession-engineering.svg");
+}
+#onboarding #job-choices .choice[data-job="Minage"] .sigil,
+#onboarding #job-choices .choice[data-job="Ingénierie"] .sigil{display:none}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+ #onboarding #class-choices .choice:hover::before{transform:scale(1.055)}
+}
+@media(max-width:850px){
+ #onboarding .choices{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #onboarding #class-choices .choice{min-height:192px}
+}
+@media(max-width:530px){
+ #onboarding .choices{gap:9px}
+ #onboarding #class-choices .choice{min-height:183px;padding:93px 10px 12px}
+ #onboarding #class-choices .choice strong{font-size:.94rem}
+ #onboarding #class-choices .choice small{font-size:.7rem}
+ #onboarding #class-choices .choice::after{width:51px;height:51px;top:7px;left:7px}
+ #onboarding #class-choices .choice .sigil{right:9px;top:10px;font-size:23px}
+ #onboarding #race-choices .choice{min-height:129px;padding:13px 9px}
+ #onboarding #race-choices .choice::after{font-size:.5rem;padding:3px 5px;top:8px;right:5px}
+ #onboarding #job-choices .choice[data-job="Minage"],
+ #onboarding #job-choices .choice[data-job="Ingénierie"]{
+  padding:89px 9px 12px;min-height:162px
+ }
+ #onboarding #job-choices .choice[data-job="Minage"]::before,
+ #onboarding #job-choices .choice[data-job="Ingénierie"]::before{
+  left:50%;top:9px;transform:translateX(-50%);width:75px;height:75px;
+ }
+ #onboarding #job-choices .choice strong{font-size:.91rem}
+}
+@media(max-width:360px){
+ #onboarding #class-choices .choice{min-height:172px}
+ #onboarding #race-choices .choice{min-height:124px}
+}
+@media(prefers-reduced-motion:reduce){
+ #onboarding #class-choices .choice::before{transition:none!important;transform:none!important}
+}
+/* Beta iPhone/accessibility: prefer readable static cards on constrained screens. */
+html[data-binch-detail=lite] #onboarding{
+ background-image:linear-gradient(130deg,#09191d,#152529)!important;
+}
+html[data-binch-detail=lite] #onboarding #class-choices .choice::before{
+ background-image:linear-gradient(160deg,#254339,#122129)!important;
+ transition:none!important;transform:none!important;
+}
+html[data-binch-detail=lite] #onboarding .choice{box-shadow:none!important}
+@media(prefers-contrast:more){
+ #onboarding .choice{border-width:2px;color:#fff}
+ #onboarding .choice small{color:#f1fff6}
+ #onboarding #class-choices .choice::before{
+  background-image:linear-gradient(180deg,#09201fc7,#07151cf5 55%),var(--br-choice-art);
+ }
+}
+@media(max-width:350px){
+ #onboarding .onboard-card{padding:18px 9px}
+ #onboarding #class-choices .choice{min-height:177px;padding:94px 8px 10px}
+ #onboarding #class-choices .choice small{font-size:.67rem}
+}
+@media(forced-colors:active){
+ #onboarding .choice,#onboarding #class-choices .choice{background:Canvas!important;color:CanvasText;border-color:CanvasText}
+ #onboarding #class-choices .choice::before,#onboarding #class-choices .choice::after,
+ #onboarding #job-choices .choice::before{display:none}
+ #onboarding .choice.selected{outline:3px solid Highlight}
+}
+
+/* P10: full cinematic original class scenes, including in the *real* initial wizard. */
+#onboarding #class-choices [data-classe="Druide"]{--br-choice-art:url("./renaissance-p9-hero-druid.svg")}
+#onboarding:has(#class-choices [data-classe="Druide"].selected){--br-selected-world:url("./renaissance-p9-hero-druid.svg")}
+#onboarding #class-choices [data-classe="Démoniste"]{--br-choice-art:url("./renaissance-p9-hero-warlock.svg")}
+#onboarding:has(#class-choices [data-classe="Démoniste"].selected){--br-selected-world:url("./renaissance-p9-hero-warlock.svg")}
+#onboarding #class-choices [data-classe="Guerrier"]{--br-choice-art:url("./renaissance-p10-hero-warrior.svg")}
+#onboarding:has(#class-choices [data-classe="Guerrier"].selected){--br-selected-world:url("./renaissance-p10-hero-warrior.svg")}
+#onboarding #class-choices [data-classe="Paladin"]{--br-choice-art:url("./renaissance-p10-hero-paladin.svg")}
+#onboarding:has(#class-choices [data-classe="Paladin"].selected){--br-selected-world:url("./renaissance-p10-hero-paladin.svg")}
+#onboarding #class-choices [data-classe="Chasseur"]{--br-choice-art:url("./renaissance-p10-hero-hunter.svg")}
+#onboarding:has(#class-choices [data-classe="Chasseur"].selected){--br-selected-world:url("./renaissance-p10-hero-hunter.svg")}
+#onboarding #class-choices [data-classe="Voleur"]{--br-choice-art:url("./renaissance-p10-hero-rogue.svg")}
+#onboarding:has(#class-choices [data-classe="Voleur"].selected){--br-selected-world:url("./renaissance-p10-hero-rogue.svg")}
+#onboarding #class-choices [data-classe="Prêtre"]{--br-choice-art:url("./renaissance-p10-hero-priest.svg")}
+#onboarding:has(#class-choices [data-classe="Prêtre"].selected){--br-selected-world:url("./renaissance-p10-hero-priest.svg")}
+#onboarding #class-choices [data-classe="Chaman"]{--br-choice-art:url("./renaissance-p10-hero-shaman.svg")}
+#onboarding:has(#class-choices [data-classe="Chaman"].selected){--br-selected-world:url("./renaissance-p10-hero-shaman.svg")}
+#onboarding #class-choices [data-classe="Mage"]{--br-choice-art:url("./renaissance-p10-hero-mage.svg")}
+#onboarding:has(#class-choices [data-classe="Mage"].selected){--br-selected-world:url("./renaissance-p10-hero-mage.svg")}
+#onboarding #class-choices .choice::before{background-position:center;background-size:cover;will-change:auto}
+
+@media(max-width:530px){#onboarding #class-choices .choice::before{background-position:65% center}}
+
+@media(prefers-reduced-motion:reduce){#onboarding #class-choices .choice::before{transition:none!important;transform:none!important}}

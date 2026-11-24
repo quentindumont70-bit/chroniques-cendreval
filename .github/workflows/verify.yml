@@ -34,6 +34,101 @@ jobs:
         run: npm test
       - name: Tests AH et navigation mobile de La Binch
         run: node --test tests/binch-ah-trading.test.mjs tests/binch-ah-portfolio.test.mjs tests/binch-ah-feed.test.mjs tests/binch-ah-mobile.test.mjs tests/binch-ahledger.test.mjs
+      - name: Vérifier la Renaissance visuelle de La Binch
+        run: |
+          node --test tests/binch-visual-renaissance.test.mjs
+          python3 -c "import xml.etree.ElementTree as ET, pathlib; paths=list(pathlib.Path('public/binch').glob('renaissance-*.svg')); assert len(paths)==35, f'Expected 35 original Renaissance SVG assets, got {len(paths)}'; [ET.parse(path) for path in paths]; print('Validated',len(paths),'original SVG artworks')"
+      - name: Capturer la galerie Renaissance pour revue graphique
+        if: github.event_name == 'pull_request' && github.head_ref == 'feature/binch-visual-renaissance-20261118'
+        shell: bash
+        run: |
+          CHROME="$(command -v google-chrome || command -v chromium || true)"
+          if [ -z "$CHROME" ]; then echo "Navigateur Chromium absent : captures facultatives ignorées"; exit 0; fi
+          mkdir -p renaissance-captures
+          # P14: only CI-local synthetic profiles; real dashboard, not a detached gallery.
+          node tests/helpers/binch-p14-screenshot-fixtures.mjs
+          for class in druid mage warlock; do
+            "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2500 --window-size=1440,960 --screenshot="renaissance-captures/${class}-desktop.png" "file://$PWD/public/binch/renaissance-atelier.html?classe=${class}"
+          done
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2500 --window-size=430,860 --screenshot="renaissance-captures/druid-mobile.png" "file://$PWD/public/binch/renaissance-atelier.html?classe=druid"
+          # Captures de la vraie interface initiale : le profil ne sera ni créé ni modifié.
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=3500 --window-size=1440,960 --screenshot="renaissance-captures/onboarding-desktop.png" "file://$PWD/public/binch/index.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=3500 --window-size=430,860 --screenshot="renaissance-captures/onboarding-mobile.png" "file://$PWD/public/binch/index.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2500 --window-size=1440,960 --screenshot="renaissance-captures/creation-classe-desktop.png" "file://$PWD/public/binch/renaissance-onboarding-atelier.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2500 --window-size=430,860 --screenshot="renaissance-captures/creation-classe-mobile.png" "file://$PWD/public/binch/renaissance-onboarding-atelier.html"
+          # P10 interactive art direction: two distinct identities, no profile storage.
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2800 --window-size=1440,960 --screenshot="renaissance-captures/p10-tauren-druid-desktop.png" "file://$PWD/public/binch/renaissance-p10-showcase.html?race=Tauren&classe=Druide&jobs=Herboristerie,Alchimie"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2800 --window-size=430,860 --screenshot="renaissance-captures/p10-tauren-druid-mobile.png" "file://$PWD/public/binch/renaissance-p10-showcase.html?race=Tauren&classe=Druide&jobs=Herboristerie,Alchimie"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2800 --window-size=1440,960 --screenshot="renaissance-captures/p10-forsaken-warlock-desktop.png" "file://$PWD/public/binch/renaissance-p10-showcase.html?race=MortVivant&classe=D%C3%A9moniste&jobs=Ing%C3%A9nierie,Enchantement"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2800 --window-size=430,860 --screenshot="renaissance-captures/p10-forsaken-warlock-mobile.png" "file://$PWD/public/binch/renaissance-p10-showcase.html?race=MortVivant&classe=D%C3%A9moniste&jobs=Ing%C3%A9nierie,Enchantement"
+          # P13: capture genuine premium images with zero stored game profile.
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2600 --window-size=1440,960 --screenshot="renaissance-captures/p13-premium-tauren-desktop.png" "file://$PWD/public/binch/premium-sanctuaries-review.html?identity=tauren"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2600 --window-size=430,860 --screenshot="renaissance-captures/p13-premium-tauren-iphone.png" "file://$PWD/public/binch/premium-sanctuaries-review.html?identity=tauren"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2600 --window-size=1440,960 --screenshot="renaissance-captures/p13-premium-forsaken-desktop.png" "file://$PWD/public/binch/premium-sanctuaries-review.html?identity=forsaken"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=2600 --window-size=430,860 --screenshot="renaissance-captures/p13-premium-forsaken-iphone.png" "file://$PWD/public/binch/premium-sanctuaries-review.html?identity=forsaken"
+          # P14: real binch-front with actual profile/name/level/buttons and premium class identity.
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=1440,960 --screenshot="renaissance-captures/p14-real-tauren-desktop.png" "file://$PWD/public/binch/.p14-preview-tauren.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=430,860 --screenshot="renaissance-captures/p14-real-tauren-iphone.png" "file://$PWD/public/binch/.p14-preview-tauren.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=1440,960 --screenshot="renaissance-captures/p14-real-forsaken-desktop.png" "file://$PWD/public/binch/.p14-preview-forsaken.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=430,860 --screenshot="renaissance-captures/p14-real-forsaken-iphone.png" "file://$PWD/public/binch/.p14-preview-forsaken.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4800 --window-size=430,860 --screenshot="renaissance-captures/p14-reforge-iphone.png" "file://$PWD/public/binch/.p14-preview-tauren.html?reforge=1"
+          # P15: real app at narrow iPhones and selected profession/utility views.
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=320,800 --screenshot="renaissance-captures/p15-tauren-320.png" "file://$PWD/public/binch/.p14-preview-tauren.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=375,812 --screenshot="renaissance-captures/p15-forsaken-375.png" "file://$PWD/public/binch/.p14-preview-forsaken.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=390,844 --screenshot="renaissance-captures/p15-tauren-390.png" "file://$PWD/public/binch/.p14-preview-tauren.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=430,860 --screenshot="renaissance-captures/p15-tauren-herbalism-iphone.png" "file://$PWD/public/binch/.p14-preview-tauren.html?page=metiers"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=430,860 --screenshot="renaissance-captures/p15-forsaken-engineering-iphone.png" "file://$PWD/public/binch/.p14-preview-forsaken.html?page=metiers"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=430,860 --screenshot="renaissance-captures/p15-full-menu-iphone.png" "file://$PWD/public/binch/.p14-preview-tauren.html?menu=open"
+          # P16: inspect genuinely mounted adventure home, not the old hidden hero.
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=1440,960 --screenshot="renaissance-captures/p16-shaman-real-desktop.png" "file://$PWD/public/binch/.p14-preview-storm.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=430,860 --screenshot="renaissance-captures/p16-shaman-real-iphone.png" "file://$PWD/public/binch/.p14-preview-storm.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=320,800 --screenshot="renaissance-captures/p16-shaman-real-320.png" "file://$PWD/public/binch/.p14-preview-storm.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4200 --window-size=430,860 --screenshot="renaissance-captures/p16-shaman-reforge-iphone.png" "file://$PWD/public/binch/.p14-preview-storm.html?reforge=1"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=3000 --window-size=430,860 --screenshot="renaissance-captures/p16-three-sanctuaries-iphone.png" "file://$PWD/public/binch/premium-sanctuaries-review.html?identity=storm"
+          # P17: visible real Gnome Mage identity, no detached UI mockup and only CI-synthetic profiles.
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4300 --window-size=1440,960 --screenshot="renaissance-captures/p17-mage-real-desktop.png" "file://$PWD/public/binch/.p14-preview-mage.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4300 --window-size=430,860 --screenshot="renaissance-captures/p17-mage-real-iphone.png" "file://$PWD/public/binch/.p14-preview-mage.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4300 --window-size=320,800 --screenshot="renaissance-captures/p17-mage-real-320.png" "file://$PWD/public/binch/.p14-preview-mage.html"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4800 --window-size=430,860 --screenshot="renaissance-captures/p17-mage-reforge-iphone.png" "file://$PWD/public/binch/.p14-preview-mage.html?reforge=1"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=3000 --window-size=430,860 --screenshot="renaissance-captures/p17-four-sanctuaries-iphone.png" "file://$PWD/public/binch/premium-sanctuaries-review.html?identity=mage"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --disable-gpu --hide-scrollbars --virtual-time-budget=4300 --window-size=430,860 --screenshot="renaissance-captures/p17-mage-metiers-iphone.png" "file://$PWD/public/binch/.p14-preview-mage.html?page=metiers"
+          ls -lh renaissance-captures/
+      - name: Conserver les captures de revue (3 jours, sans publication Pages)
+        if: github.event_name == 'pull_request' && github.head_ref == 'feature/binch-visual-renaissance-20261118'
+        uses: actions/upload-artifact@v4
+        with:
+          name: binch-renaissance-captures
+          path: renaissance-captures/*.png
+          retention-days: 3
+          if-no-files-found: warn
+      - name: Tester le HUD mobile Renaissance
+        run: node --test tests/binch-visual-renaissance-dock.test.mjs
+      - name: Tester la constellation et les chapitres Renaissance
+        run: node --test tests/binch-visual-renaissance-finale.test.mjs
+      - name: Tester la création de personnage Renaissance et ses choix accessibles
+        run: node --test tests/binch-visual-renaissance-onboarding.test.mjs
+      - name: Tester l'identité visuelle composite et la reforge sans perte de données
+        run: node --test tests/binch-visual-identity-compositor.test.mjs
+      - name: Tester le prototype premium Shaaby et son artwork embarqué
+        run: node --test tests/binch-shaaby-premium.test.mjs
+      - name: Tester l'intégration Shaaby Premium sur le vrai compagnon
+        run: node --test tests/binch-shaaby-live.test.mjs
+      - name: Tester le flagship premium Mort-vivant Démoniste dans le vrai compagnon
+        run: node --test tests/binch-forsaken-premium-live.test.mjs
+      - name: Vérifier le vrai accueil premium P14 et la reforge visuelle
+        run: node --test tests/binch-p14-real-front.test.mjs
+      - name: Tester le polissage iPhone P15 et les vrais métiers illustrés
+        run: |
+          node --test tests/binch-p15-iphone-professions.test.mjs
+          python3 -c "import xml.etree.ElementTree as ET,glob; assets=glob.glob('public/binch/profession-*-p15.svg'); assert len(assets)==4; [ET.parse(p) for p in assets]; print('4 original profession SVGs validated')"
+      - name: P16 — contrôler le vrai flagship Tauren Chaman et son SVG
+        run: |
+          node --test tests/binch-p16-storm-flagship.test.mjs
+          python3 -c "import xml.etree.ElementTree as ET; ET.parse('public/binch/tauren-shaman-storm-totem-p16.svg'); print('P16 original storm totem valid XML')"
+      - name: P17 — vérifier le vrai flagship Gnome Mage et les quatre mondes
+        run: |
+          node --test tests/binch-p17-gnome-mage-flagship.test.mjs
+          python3 -c "import xml.etree.ElementTree as ET; ET.parse('public/binch/gnome-mage-astrolabe-p17.svg'); print('P17 original armillary SVG valid XML')"
       - name: Vérifier la présence de Big Cthu dans le paquet Pages
         run: |
           node scripts/stage-big-cthu-beta.mjs

@@ -1,0 +1,219 @@
+/* La Binch — P13 Forsaken Warlock cinematic, not a Druid recolour.
+ * The scene, mechanical ornaments and asymmetrical stone interfaces all differ.
+ * Only the saved MortVivant + Démoniste profile activates it.
+ */
+html[data-binch-forsaken="true"]{
+ --fw-violet:#c29be2;--fw-fel:#9cf2b9;--fw-ash:#101a22;--fw-brass:#b59b72;
+ --br-gold:#dfc4a0;--br-edge:#94739e99;
+}
+html[data-binch-forsaken="true"] body{background-color:#080a17}
+html[data-binch-forsaken="true"] #page-hub .binch-character-card{
+ min-height:clamp(550px,51vw,780px);
+ border:1px solid #b2a6b1;
+ border-radius:5px 32px 5px 28px;
+ background:#0a111d;
+ box-shadow:0 30px 95px #000e,inset 0 0 0 6px #b39ac716,0 0 0 1px #4d5766;
+ isolation:isolate;
+}
+html[data-binch-forsaken="true"] #page-hub .binch-character-card:has(.binch-identity-composition)::before{
+ background:none!important;filter:none!important;
+}
+html[data-binch-forsaken="true"] #page-hub .binch-character-card > .binch-identity-composition{
+ position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:inherit;pointer-events:none;
+}
+html[data-binch-forsaken="true"][data-br-class="warlock"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-landscape{
+ background-image:
+  linear-gradient(90deg,#070d1bf9 0%,#101221ea 23%,#11162794 47%,#080e2106 76%),
+  linear-gradient(0deg,#070e19cf,transparent 36%),
+  url("./forsaken-warlock-premium.webp");
+ background-repeat:no-repeat;background-size:cover;
+ background-position:center,center,68% 45%;
+ filter:contrast(1.06) saturate(1.08);
+}
+html[data-binch-forsaken="true"][data-br-race="forsaken"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-architecture{
+ background-image:url("./forsaken-occult-gear.svg");
+ background-size:clamp(145px,18vw,240px) auto;
+ background-repeat:no-repeat;
+ background-position:right -49px top -56px;
+ opacity:.75;mix-blend-mode:screen;filter:drop-shadow(0 3px 17px #5c318d);
+ mask-image:none;
+}
+html[data-binch-forsaken="true"] #page-hub .binch-character-card .binch-identity-aura{
+ background:radial-gradient(ellipse at 81% 31%,#a57cc42c,transparent 47%),
+            radial-gradient(ellipse at 66% 87%,#2d936e1b,transparent 50%);
+ opacity:.76;
+}
+html[data-binch-forsaken="true"] #page-hub .binch-character-card .binch-identity-professions{
+ color:var(--fw-fel);text-shadow:0 0 19px #7deeb65a;
+}
+html[data-binch-forsaken="true"] #page-hub .binch-character-card .binch-identity-professions::before{
+ content:var(--br-job-glyph);right:7%;bottom:10%;font-size:2.4rem;
+}
+html[data-binch-forsaken="true"] #page-hub .binch-character-card .binch-identity-professions::after{
+ content:var(--br-second-glyph);right:15%;bottom:21%;font-size:1.65rem;
+}
+html[data-binch-forsaken="true"] #page-hub .binch-renaissance-stage{
+ border:1px solid #ae9dbd7e;
+ border-radius:3px 22px 3px 18px;
+ box-shadow:inset 0 0 0 1px #caacdc27;
+ background:linear-gradient(130deg,#8c6cab12,transparent 28%,transparent 66%,#61d9aa10);
+}
+html[data-binch-forsaken="true"] #page-hub .binch-character-card h1{
+ color:#f9e7de;
+ text-shadow:0 4px 18px #000f,0 0 24px #b08bc844;
+}
+html[data-binch-forsaken="true"] #page-hub .binch-character-card .binch-kicker{
+ color:#d9beea;text-shadow:0 2px 10px #000;
+}
+/* The actual navigation is sculpted into asymmetric dark iron, not the Druid's wood/ivy. */
+html[data-binch-forsaken="true"] #app nav.nav{
+ background:linear-gradient(118deg,#241c30f7,#0b1420f8);
+ border:1px solid #846e9399;border-radius:4px 18px 4px 15px;
+ box-shadow:inset 0 1px #b58abf25,0 14px 33px #000b;
+}
+html[data-binch-forsaken="true"] #app nav.nav button{
+ background:linear-gradient(115deg,#30263d,#121e2a);
+ color:#e5dbec;
+ border-radius:3px 11px 3px 10px;
+ border-color:#88769587;
+}
+html[data-binch-forsaken="true"] #app nav.nav button.active{
+ background:linear-gradient(115deg,#493052,#223c40);
+ border-color:#b6a9cc;
+ color:#f8e7fa;
+ box-shadow:inset 0 1px #d4aeed3a,0 0 19px #a775c330;
+}
+html[data-binch-forsaken="true"] #app .app-head .identity,
+html[data-binch-forsaken="true"] #binch-profile-trigger.identity{
+ border:1px solid #bc9ebda3;border-radius:3px 17px 3px 15px;
+ background:linear-gradient(115deg,#2b2338,#101b26);
+ color:#f1e4ec;
+ box-shadow:inset 0 1px #ae8bc42c,0 8px 25px #0008;
+}
+html[data-binch-forsaken="true"] #binch-profile-trigger.identity::after{content:"✧";color:#a7e6c0}
+html[data-binch-forsaken="true"] #app :is(.tile,.binch-route,.binch-gm-watch,.panel.section){
+ background-color:#111a29;
+ background-image:
+  url("./forsaken-occult-gear.svg"),
+  radial-gradient(ellipse at 100% 0%,#a46cbd17,transparent 55%),
+  linear-gradient(137deg,#211a2df7,#101e2aee 65%,#172831ed);
+ background-position:right -48px top -42px,center,center;
+ background-size:116px auto,cover,cover;
+ background-repeat:no-repeat;
+ border:1px solid #8f788e92;
+ border-radius:4px 18px 5px 14px;
+ box-shadow:inset 0 1px #dac4d21e,0 16px 34px #0008;
+}
+html[data-binch-forsaken="true"] #app :is(.tile,.binch-route,.binch-gm-watch,.panel.section) :is(h2,h3){
+ color:#e6c8e7;
+ text-shadow:0 2px 10px #0008;
+}
+html[data-binch-forsaken="true"] #page-hub .binch-renaissance-portal{
+ background:linear-gradient(137deg,#302238,#152331);
+ border:1px solid #9d82aa;
+ border-radius:3px 16px 3px 14px;
+ box-shadow:inset 0 1px #e5c9e125,0 13px 32px #0007;
+}
+html[data-binch-forsaken="true"] #page-hub .binch-renaissance-portal:hover{
+ border-color:#b9e7cb;
+ box-shadow:0 0 0 1px #9be7c452,0 12px 35px #000b,0 0 22px #aa65b645;
+}
+html[data-binch-forsaken="true"] #app :is(button,a,input,select,textarea):focus-visible{
+ outline:3px solid #d0b2e9;outline-offset:3px;
+}
+/* Reforge preview uses the current *draft* and never changes saved character. */
+.binch-reforge-preview[data-binch-forsaken-preview="true"]{
+ min-height:clamp(240px,33vw,360px);
+ border:2px solid #af8abf;
+ border-radius:4px 22px 4px 17px;
+ background-image:
+  linear-gradient(90deg,#0b101be9,#0f1321b3 52%,#0c11210d),
+  url("./forsaken-warlock-premium.webp");
+ background-size:cover;background-position:center,69% center;
+ box-shadow:inset 0 0 0 7px #9867ad1c,0 21px 45px #000c;
+}
+.binch-reforge-preview[data-binch-forsaken-preview="true"]::before{
+ background-image:url("./forsaken-occult-gear.svg");
+ background-position:right -30px top -35px;
+ background-size:160px auto;
+ opacity:.45;filter:none;mask-image:none;
+}
+.binch-reforge-preview[data-binch-forsaken-preview="true"] .binch-reforge-summary{
+ color:#f6e2ef;font-size:clamp(1.1rem,2.9vw,2.1rem);
+ text-shadow:0 3px 19px #000;
+}
+html[data-binch-forsaken="true"] .binch-reforge-dialog{
+ background:linear-gradient(139deg,#221b2ef1,#0b1420 65%,#1a2830);
+ border:1px solid #ab90b7;border-radius:4px 23px 4px 20px;
+}
+html[data-binch-forsaken="true"] .binch-reforge-dialog .binch-reforge-frame{
+ background-image:url("./forsaken-occult-gear.svg");
+ background-position:right -110px top -85px;
+ background-size:220px auto;background-repeat:no-repeat;
+}
+html[data-binch-forsaken="true"] .binch-reforge-dialog .binch-reforge-choice.selected{
+ border-color:#c5aee0;background:linear-gradient(110deg,#45334e,#203b40);
+}
+/* The real onboarding receives the artwork only for this exact race-class pair. */
+#onboarding:has(#race-choices [data-race="MortVivant"].selected):has(#class-choices [data-classe="Démoniste"].selected){
+ --br-selected-world:url("./forsaken-warlock-premium.webp");
+ background-image:linear-gradient(110deg,#070c1af6 0%,#131321e7 39%,#0b1121a0 78%),var(--br-selected-world);
+ background-size:cover;background-position:center,72% center;
+}
+#onboarding:has(#race-choices [data-race="MortVivant"].selected) #class-choices [data-classe="Démoniste"]{
+ --br-choice-art:url("./forsaken-warlock-premium.webp");
+ --br-choice-accent:#c2a6df;
+}
+@media(max-width:760px){
+ html[data-binch-forsaken="true"] #page-hub .binch-character-card{
+  min-height:560px;border-radius:4px 22px 4px 15px;
+ }
+ html[data-binch-forsaken="true"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-landscape{
+  background-image:
+   linear-gradient(180deg,#080e1bdb 0%,#0d122033 28%,#0b1121bd 72%,#070d1be9 100%),
+   linear-gradient(90deg,#070e1b8a,#070e1b20),
+   url("./forsaken-warlock-premium.webp");
+  background-position:center,center,78% 41%;background-size:cover;
+ }
+ html[data-binch-forsaken="true"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-architecture{
+  background-position:right -36px top -26px;
+  background-size:145px auto;opacity:.5;
+ }
+ html[data-binch-forsaken="true"] #page-hub .binch-character-card h1{
+  font-size:clamp(1.8rem,7.5vw,3rem);
+ }
+ .binch-reforge-preview[data-binch-forsaken-preview="true"]{
+  min-height:235px;background-position:center,76% center;
+ }
+ #onboarding:has(#race-choices [data-race="MortVivant"].selected):has(#class-choices [data-classe="Démoniste"].selected){
+  background-position:center,78% center;
+ }
+}
+@media(max-width:390px){
+ html[data-binch-forsaken="true"] #page-hub .binch-character-card{min-height:530px}
+ html[data-binch-forsaken="true"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-landscape{
+  background-position:center,center,82% 39%;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-binch-forsaken="true"] #app nav.nav *,
+ html[data-binch-forsaken="true"] #page-hub .binch-character-card *{
+  transition:none!important;animation:none!important;
+ }
+}
+html[data-binch-detail="lite"][data-binch-forsaken="true"] #page-hub .binch-character-card .binch-identity-aura,
+html[data-binch-detail="lite"][data-binch-forsaken="true"] #page-hub .binch-character-card .binch-identity-professions{
+ display:none;
+}
+html[data-binch-detail="lite"][data-binch-forsaken="true"] #page-hub .binch-character-card .binch-identity-landscape{
+ filter:none;
+}
+html[data-binch-detail="lite"][data-binch-forsaken="true"] #page-hub .binch-character-card .binch-identity-architecture{opacity:.12}
+@media(forced-colors:active){
+ html[data-binch-forsaken="true"] #page-hub .binch-character-card,
+ html[data-binch-forsaken="true"] #app :is(.tile,.panel.section){
+  color:CanvasText;border:2px solid CanvasText;background:Canvas;box-shadow:none;
+ }
+ html[data-binch-forsaken="true"] #page-hub .binch-character-card .binch-identity-composition{display:none}
+ .binch-reforge-preview[data-binch-forsaken-preview="true"]{background:Canvas;border:2px solid CanvasText}
+}

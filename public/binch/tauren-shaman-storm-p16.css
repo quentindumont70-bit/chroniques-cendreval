@@ -1,0 +1,316 @@
+/* BINCH P16 — THE HEART OF THE STORM
+ * Unique class artwork + Tauren carved wood/bronze + real jobs' signatures.
+ * Only saved onboarded Tauren/Chaman activates this, no user data mutation.
+ * Painted artwork is an optimized original WebP, NOT an SVG colour swap.
+ */
+html[data-binch-storm="true"]{
+ --storm-cyan:#a1e6f4;--storm-copper:#e2b887;--storm-ink:#f4eadc;
+ --storm-iron:#152633;--storm-edge:#9dc7d0;
+ --p14-medal:#f3cf9c;--p14-ink:#d7f1f4;--p14-edge:#9ac5cf;
+ --p14-glow:#78cdeb;--p14-tint:#12242d;--p14-card:#142937de;
+ --p14-corner:7px 29px 4px 24px;
+ --p14-ornament:url("./tauren-shaman-storm-totem-p16.svg");
+}
+html[data-binch-storm="true"] body{background-color:#070f17}
+html[data-binch-storm="true"] #page-hub.binch-adventure-ready #binch-adventure-home{
+ gap:clamp(15px,2vw,23px);
+}
+/* The authentic mounted player home, NOT the hidden #binch-front. */
+html[data-binch-storm="true"] #page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card{
+ position:relative;isolation:isolate;overflow:hidden;
+ min-height:clamp(570px,52vw,790px);
+ border:2px solid #b9ac8a!important;
+ border-left:5px solid #77bace!important;
+ border-radius:7px 33px 9px 28px;
+ background-color:#091722;
+ box-shadow:0 35px 105px #000e,0 0 0 1px #7eb9c540,inset 0 0 0 8px #b5d7d109;
+}
+html[data-binch-storm="true"] #page-hub .binch-character-card:has(.binch-identity-composition)::before{
+ background:none!important;filter:none!important;
+}
+html[data-binch-storm="true"] #page-hub .binch-character-card > .binch-identity-composition{
+ position:absolute;inset:0;z-index:0;overflow:hidden;
+ border-radius:inherit;pointer-events:none;
+}
+html[data-binch-storm="true"][data-br-class="shaman"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-landscape{
+ background-image:
+  linear-gradient(90deg,#06111cf7 0%,#071421e5 22%,#091b2969 46%,#09192310 74%),
+  linear-gradient(0deg,#07131fe3 0%,transparent 30%),
+  url("./tauren-shaman-storm-p16.webp");
+ background-size:cover;
+ background-position:center,center,72% 43%;
+ background-repeat:no-repeat;
+ filter:contrast(1.08) saturate(1.06);
+}
+html[data-binch-storm="true"][data-br-race="tauren"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-architecture{
+ background-image:url("./tauren-shaman-storm-totem-p16.svg");
+ background-size:clamp(180px,23vw,305px) auto;
+ background-position:left -88px top -80px;
+ background-repeat:no-repeat;
+ opacity:.33;mix-blend-mode:screen;
+ filter:drop-shadow(0 9px 18px #000a);
+ mask-image:linear-gradient(90deg,#000,transparent 78%);
+}
+html[data-binch-storm="true"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-aura{
+ background:
+  radial-gradient(ellipse at 79% 20%,#68dfff26,transparent 48%),
+  radial-gradient(ellipse at 57% 90%,#e7ad6b20,transparent 39%);
+ opacity:.8;
+ /* A brief lighting flicker, every 25 seconds; no strobe or flash. */
+ animation:binch-storm-glimmer 25s ease-in-out infinite;
+}
+@keyframes binch-storm-glimmer{
+ 0%,72%,78%,100%{opacity:.71}
+ 74%,76%{opacity:.93}
+}
+html[data-binch-storm="true"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-professions{
+ color:#f2d5a8;text-shadow:0 0 23px #58bde0a6;opacity:.72;
+}
+html[data-binch-storm="true"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-professions::before{
+ content:var(--br-job-glyph);right:7%;bottom:8%;font-size:2.5rem;
+}
+html[data-binch-storm="true"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-professions::after{
+ content:var(--br-second-glyph);right:15%;bottom:23%;font-size:1.6rem;
+}
+html[data-binch-storm="true"] #page-hub #binch-adventure-home .binch-character-card h1{
+ color:#fff0de;
+ font-family:Georgia,serif;
+ text-shadow:0 5px 28px #020b17,0 0 17px #0b1b2b;
+}
+html[data-binch-storm="true"] #page-hub .binch-character-card .binch-kicker{
+ color:#caecf8;letter-spacing:.18em;text-shadow:0 3px 12px #000;
+}
+html[data-binch-storm="true"] #page-hub .binch-character-card #binch-home-meta{
+ color:#e2e6e8;text-shadow:0 3px 11px #000;
+}
+html[data-binch-storm="true"] #page-hub .binch-character-card .binch-portrait{
+ border:2px solid #d6b489;
+ border-radius:6px 22px 6px 20px;
+ background:linear-gradient(135deg,#243d46,#081722);
+ box-shadow:0 0 0 4px #08121de8,0 0 0 7px #c7b18b99,0 0 34px #73d6ec62;
+}
+html[data-binch-storm="true"] #page-hub .binch-character-card .binch-level{
+ border-color:#d3bd8e;
+ background:radial-gradient(circle at 40% 27%,#314853,#10212b 60%,#071119);
+ box-shadow:inset 0 0 0 7px #081821,inset 0 0 0 8px #ac8860,0 13px 39px #000c,0 0 25px #5db7cd33;
+}
+html[data-binch-storm="true"] #page-hub .binch-character-card .binch-level strong{
+ color:#ffdfb2;text-shadow:0 2px 13px #000,0 0 19px #53b6df55;
+}
+html[data-binch-storm="true"] #page-hub .binch-character-card .binch-level small{color:#c9eaf0}
+html[data-binch-storm="true"] #page-hub .binch-character-card .binch-level-ring{filter:drop-shadow(0 0 5px #56d8de55)}
+/* Structural Tauren shaman craftsmanship throughout the TRUE gameplay UI.
+   Stone-cut geometry + metal banding, unlike druid's ivy and warlock's clockwork. */
+html[data-binch-storm="true"] #page-hub #binch-adventure-home .binch-priority-guard,
+html[data-binch-storm="true"] #page-hub #binch-adventure-home .binch-route{
+ border:1px solid #8ab7c4;
+ border-left:5px solid #aa8960;
+ border-radius:7px 27px 4px 22px;
+ background-image:
+  linear-gradient(113deg,#091924f5 0%,#112c38f1 57%,#1f3845d9 100%),
+  url("./tauren-shaman-storm-totem-p16.svg");
+ background-position:center,right -115px top -100px;
+ background-size:cover,280px auto;
+ background-repeat:no-repeat;
+ box-shadow:inset 0 1px #f6dcb127,0 18px 42px #0009;
+}
+html[data-binch-storm="true"] #page-hub #binch-adventure-home .binch-priority-guard .binch-guard-counter{
+ border-color:#c2a77d;background:#102c34;color:#f5d6a2;
+ border-radius:5px 15px 5px 15px;
+}
+html[data-binch-storm="true"] #page-hub #binch-adventure-home .binch-guard-list>button,
+html[data-binch-storm="true"] #page-hub #binch-adventure-home .binch-route-task{
+ border:1px solid #668e9b;
+ border-left:4px solid #b38f60;
+ background:linear-gradient(126deg,#203746e6,#0e1f29eb);
+ border-radius:4px 16px 4px 13px;
+ box-shadow:inset 0 1px #f2e4c012,0 9px 22px #0007;
+}
+html[data-binch-storm="true"] #page-hub #binch-adventure-home .binch-route-step.pinned .binch-route-task{
+ border-color:#e0b985;box-shadow:inset 5px 0 #d2a86e,0 12px 22px #0009;
+}
+html[data-binch-storm="true"] #page-hub #binch-adventure-home .binch-route h2{color:#e3d1ac}
+html[data-binch-storm="true"] #page-hub #binch-adventure-home .binch-route-tools input{
+ border:1px solid #6c9da9;background:#091b26;color:#f4eae2;min-height:44px;
+}
+html[data-binch-storm="true"] #page-hub #binch-adventure-home :is(button,input):focus-visible{
+ outline:3px solid #a2eafa;outline-offset:3px;
+}
+html[data-binch-storm="true"] #app nav.nav{
+ border:1px solid #ac9a7b;border-radius:5px 25px 5px 17px;
+ background:linear-gradient(120deg,#1d3d44f5,#101e2af8);
+ box-shadow:0 13px 30px #000b,inset 0 1px #f9daac24;
+}
+html[data-binch-storm="true"] #app nav.nav button{
+ border:1px solid #7ca4b0;border-radius:6px 14px 5px 12px;
+ background:linear-gradient(120deg,#25434b,#112535);color:#e1eff2;
+}
+html[data-binch-storm="true"] #app nav.nav button.active{
+ border-color:#dec69f;
+ background:linear-gradient(120deg,#b69b6e,#537b89);color:#081821;
+ box-shadow:inset 0 1px #ffecc988,0 0 15px #83bed64a;
+}
+html[data-binch-storm="true"] #app .app-head #binch-profile-trigger.identity{
+ border:1px solid #c5b187;border-radius:6px 22px 6px 15px;
+ background:linear-gradient(123deg,#2c4149,#122a34);color:#f5dfbd;
+ box-shadow:inset 0 1px #f9e5c031,0 9px 30px #000a;
+}
+html[data-binch-storm="true"] #app .app-head #binch-profile-trigger.identity::after{content:"ϟ";color:#91e6ef}
+html[data-binch-storm="true"] #app :is(.tile,.panel.section,.binch-gm-watch){
+ border-color:#7c9ba5;
+ border-radius:6px 19px 5px 17px;
+ background-color:#132b34;
+ background-image:linear-gradient(135deg,#172d37fa,#10232ffa 62%,#1d3137db),url("./tauren-shaman-storm-totem-p16.svg");
+ background-size:cover,130px auto;
+ background-position:center,right -60px top -55px;
+ background-repeat:no-repeat;
+ box-shadow:0 13px 36px #0008,inset 0 1px #e6cda91b;
+}
+html[data-binch-storm="true"] #page-hub .binch-renaissance-portal{
+ border-color:#86afbc;
+ box-shadow:inset 0 1px #f0cba327,0 11px 32px #000a;
+}
+html[data-binch-storm="true"] #app .panel.section h2{color:#e8d5af}
+/* Reforge uses the *draft*, even if a saved Druide is being previewed as Chaman. */
+.binch-reforge-preview[data-binch-storm-preview="true"]{
+ min-height:clamp(245px,32vw,385px);
+ border:2px solid #b69d73;border-left-width:6px;
+ border-radius:5px 28px 6px 20px;
+ background-image:
+  linear-gradient(90deg,#071728f6,#0d2336ac 58%,#092a3a0a),
+  url("./tauren-shaman-storm-p16.webp");
+ background-position:center,76% 45%;
+ background-size:cover;background-repeat:no-repeat;
+ box-shadow:inset 0 0 0 6px #eacb901c,0 18px 43px #000b;
+}
+.binch-reforge-preview[data-binch-storm-preview="true"]::before{
+ background-image:url("./tauren-shaman-storm-totem-p16.svg");
+ background-position:right -51px top -62px;
+ background-size:190px auto;background-repeat:no-repeat;
+ opacity:.32;filter:none;mask-image:none;
+}
+.binch-reforge-preview[data-binch-storm-preview="true"] .binch-reforge-summary{
+ color:#fff0d7;text-shadow:0 3px 18px #000;
+ font-size:clamp(1.15rem,2.8vw,2.15rem);
+}
+.binch-reforge-dialog[data-binch-preview="storm"]{
+ --p14-preview-metal:#b9ddea;--p14-preview-tint:#162f3b;
+ --p14-preview-ornament:url("./tauren-shaman-storm-totem-p16.svg");
+ border:2px solid #a4bfc3;border-left:5px solid #c29e70;
+ border-radius:6px 29px 6px 20px;
+ background:linear-gradient(135deg,#18313c,#081822 71%);
+}
+.binch-reforge-dialog[data-binch-preview="storm"] .binch-reforge-frame{
+ background-image:var(--p14-preview-ornament),linear-gradient(135deg,#203c44,#0b1a29);
+ background-size:215px auto,cover;background-position:right -65px top -56px,center;
+ background-repeat:no-repeat;
+}
+.binch-reforge-dialog[data-binch-preview="storm"] .binch-reforge-set legend{
+ color:#e2d3ae;
+}
+.binch-reforge-dialog[data-binch-preview="storm"] .binch-reforge-choice.selected{
+ border-color:#a5d9e5;
+ background:linear-gradient(115deg,#31535d,#1a3040);
+}
+/* Real class/race wizard, ONLY after choosing both values. */
+#onboarding:has(#race-choices [data-race="Tauren"].selected):has(#class-choices [data-classe="Chaman"].selected){
+ --br-selected-world:url("./tauren-shaman-storm-p16.webp");
+ background-image:
+  linear-gradient(92deg,#061522f5,#061927d8 42%,#081825ad 82%),
+  var(--br-selected-world);
+ background-size:cover;background-position:center,78% center;
+}
+#onboarding:has(#race-choices [data-race="Tauren"].selected) #class-choices [data-classe="Chaman"]{
+ --br-choice-art:url("./tauren-shaman-storm-p16.webp");
+ --br-choice-accent:#93dceb;
+}
+#onboarding:has(#race-choices [data-race="Tauren"].selected):has(#class-choices [data-classe="Chaman"].selected) .onboard-card{
+ border:2px solid #bca27a;
+ border-radius:6px 28px 6px 20px;
+ box-shadow:0 30px 100px #000e,inset 0 0 0 3px #abcfdd14;
+}
+/* Texture, not a frantic animation. */
+@media(max-width:760px){
+ html[data-binch-storm="true"] #page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card{
+  display:flex!important;flex-direction:column!important;justify-content:flex-end;
+  align-items:stretch!important;gap:14px!important;
+  min-height:clamp(610px,159vw,755px)!important;
+  padding:clamp(275px,78vw,376px) 18px 22px!important;
+  border-radius:6px 23px 5px 18px;
+ }
+ html[data-binch-storm="true"] #page-hub .binch-character-card > .binch-portrait{
+  position:absolute!important;top:65px;left:20px;bottom:auto;
+  width:69px!important;height:69px!important;min-width:69px!important;
+  grid-column:auto!important;grid-row:auto!important;
+  z-index:3;
+ }
+ html[data-binch-storm="true"] #page-hub .binch-character-card > .binch-portrait + div{
+  width:100%!important;max-width:100%!important;min-width:0!important;
+  grid-column:auto!important;grid-row:auto!important;
+  order:1;align-self:stretch;text-align:left;
+ }
+ html[data-binch-storm="true"] #page-hub .binch-character-card h1{
+  font:700 clamp(1.8rem,7.5vw,3.1rem)/1.1 Georgia,serif!important;
+  margin:6px 0 8px;overflow-wrap:normal!important;word-break:normal!important;
+  text-wrap:balance;max-width:100%;
+ }
+ html[data-binch-storm="true"] #page-hub .binch-character-card .binch-level{
+  position:relative!important;order:2;
+  align-self:flex-start!important;
+  width:103px!important;height:103px!important;
+  min-width:103px!important;min-height:103px!important;
+  max-width:103px!important;max-height:103px!important;
+  border-radius:50%;padding:15px 10px!important;
+ }
+ html[data-binch-storm="true"] #page-hub .binch-character-card .binch-level strong{font-size:2.55rem!important}
+ html[data-binch-storm="true"] #page-hub .binch-character-card .binch-level small{font-size:.56rem!important}
+ html[data-binch-storm="true"][data-br-class="shaman"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-landscape{
+  background-image:
+   linear-gradient(180deg,#061522b4 0%,#07152306 26%,#09192754 44%,#071522e7 78%,#06111df8 100%),
+   url("./tauren-shaman-storm-p16.webp");
+  background-position:center,78% 39%;background-size:cover;
+ }
+ html[data-binch-storm="true"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-architecture{
+  background-size:175px auto;background-position:left -60px top -45px;
+  opacity:.21;
+ }
+ html[data-binch-storm="true"] #page-hub #binch-adventure-home .binch-route,
+ html[data-binch-storm="true"] #page-hub #binch-adventure-home .binch-priority-guard{
+  background-size:cover,165px auto;background-position:center,right -69px top -53px;
+ }
+ .binch-reforge-preview[data-binch-storm-preview="true"]{
+  min-height:245px;background-position:center,82% center;
+ }
+ #onboarding:has(#race-choices [data-race="Tauren"].selected):has(#class-choices [data-classe="Chaman"].selected){
+  background-position:center,81% center;
+ }
+}
+@media(max-width:390px){
+ html[data-binch-storm="true"] #page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card{
+  min-height:605px!important;padding-top:275px!important;padding-inline:15px!important;
+ }
+ html[data-binch-storm="true"][data-br-class="shaman"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-landscape{
+  background-position:center,82% 40%;
+ }
+ html[data-binch-storm="true"] #page-hub .binch-character-card h1{
+  font-size:clamp(1.65rem,7.1vw,2.65rem)!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-binch-storm="true"] .binch-identity-aura,
+ html[data-binch-storm="true"] :is(button,.binch-renaissance-portal){
+  animation:none!important;transition:none!important;
+ }
+}
+html[data-binch-detail="lite"][data-binch-storm="true"] #page-hub .binch-identity-aura,
+html[data-binch-detail="lite"][data-binch-storm="true"] #page-hub .binch-identity-professions{display:none}
+html[data-binch-detail="lite"][data-binch-storm="true"] #page-hub .binch-identity-architecture{opacity:.08}
+html[data-binch-detail="lite"][data-binch-storm="true"] #page-hub .binch-identity-landscape{filter:none}
+html[data-binch-detail="lite"][data-binch-storm="true"] #page-hub .binch-priority-guard{box-shadow:none}
+@media(forced-colors:active){
+ html[data-binch-storm="true"] #page-hub :is(.binch-character-card,.binch-priority-guard,.binch-route),
+ .binch-reforge-preview[data-binch-storm-preview="true"]{
+  border:2px solid CanvasText!important;background:Canvas!important;color:CanvasText!important;
+ }
+ html[data-binch-storm="true"] #page-hub .binch-identity-composition{display:none!important}
+}

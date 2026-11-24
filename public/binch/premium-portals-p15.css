@@ -1,0 +1,134 @@
+/* La Binch P15 — six functional portals, six distinct engraved surfaces.
+ * Preserves original data-to navigation handlers from visual-renaissance.js.
+ * Not six gradient recolors: each carries a different structural motif.
+ */
+#page-hub .binch-renaissance-portals{
+ gap:clamp(9px,1.6vw,19px);
+}
+#page-hub .binch-renaissance-portal{
+ position:relative;isolation:isolate;overflow:hidden;
+ min-height:clamp(117px,13vw,156px);
+ border:1px solid var(--p15-portal-edge,#bfae89);
+ border-radius:7px 21px 7px 17px;
+ background-color:#0c171f;
+ background-image:var(--p15-portal-material,linear-gradient(135deg,#1b3030,#121c2b));
+ background-repeat:no-repeat;background-size:cover;
+ box-shadow:0 13px 30px #0008,inset 0 1px #f8dfb31c;
+ transition:border-color .18s,box-shadow .18s,transform .18s;
+}
+#page-hub .binch-renaissance-portal::after{
+ content:var(--p15-portal-mark,"");
+ position:absolute;
+ top:auto!important;bottom:-13px!important;right:-8px!important;
+ width:125px!important;height:116px!important;
+ border:0!important;border-radius:0!important;
+ display:grid;place-items:center;
+ font:700 100px/1 Georgia,serif;
+ color:var(--p15-portal-mark-color,#afbaad);
+ opacity:.12;
+ pointer-events:none;
+ transform:none;box-shadow:none;
+}
+#page-hub .binch-renaissance-portal > *{
+ position:relative;z-index:1;pointer-events:none;
+}
+#page-hub .binch-renaissance-portal .binch-portal-icon{
+ border:1px solid var(--p15-portal-edge,#a9c4b7);
+ border-radius:7px 17px 7px 15px;
+ background:linear-gradient(135deg,#172a31e9,#0b1b26ee);
+ color:var(--p15-portal-edge,#efd7a1);
+ box-shadow:0 4px 14px #0008,inset 0 1px #ffffff17;
+}
+#page-hub .binch-renaissance-portal[data-to="progression"]{
+ --p15-portal-edge:#a5d1ba;--p15-portal-mark:"⌖";
+ --p15-portal-mark-color:#9bcba6;
+ --p15-portal-material:
+  repeating-radial-gradient(ellipse at 85% 90%,#add5bc24 0 2px,transparent 3px 25px),
+  linear-gradient(123deg,#142f2c,#101d27 80%);
+ border-radius:22px 7px 23px 9px;
+}
+#page-hub .binch-renaissance-portal[data-to="specs"]{
+ --p15-portal-edge:#c5b6e9;--p15-portal-mark:"✧";
+ --p15-portal-mark-color:#b19de6;
+ --p15-portal-material:
+  linear-gradient(35deg,transparent 46%,#b09fdd21 46% 46.4%,transparent 46.5%),
+  linear-gradient(-35deg,transparent 55%,#b5adcd1c 55% 55.4%,transparent 55.5%),
+  radial-gradient(circle at 75% 75%,#7453a547,transparent 44%),
+  linear-gradient(126deg,#252338,#151c2f);
+ border-radius:19px 19px 7px 7px;
+}
+#page-hub .binch-renaissance-portal[data-to="metiers"]{
+ --p15-portal-edge:#d6ba8c;--p15-portal-mark:"⚙";
+ --p15-portal-mark-color:#d2b18c;
+ --p15-portal-material:
+  repeating-linear-gradient(130deg,#dabf8e13 0 1px,transparent 1px 18px),
+  radial-gradient(circle at 80% 50%,#deb97f2f,transparent 55%),
+  linear-gradient(120deg,#30291f,#16252d);
+ border-radius:5px 22px 5px 18px;
+}
+#page-hub .binch-renaissance-portal[data-to="gm"]{
+ --p15-portal-edge:#dfad9e;--p15-portal-mark:"♜";
+ --p15-portal-mark-color:#d99c91;
+ --p15-portal-material:
+  linear-gradient(90deg,#f5bc8916 0 6px,transparent 6px 100%),
+  repeating-linear-gradient(0deg,#bd8c8612 0 1px,transparent 1px 28px),
+  linear-gradient(130deg,#32242d,#1a2732);
+ border-radius:9px 7px 24px 7px;
+}
+#page-hub .binch-renaissance-portal[data-to="command"]{
+ --p15-portal-edge:#96c6d1;--p15-portal-mark:"⌘";
+ --p15-portal-mark-color:#92d0dc;
+ --p15-portal-material:
+  repeating-linear-gradient(0deg,#9fccd814 0 1px,transparent 1px 26px),
+  repeating-linear-gradient(90deg,#9fccd80e 0 1px,transparent 1px 26px),
+  radial-gradient(ellipse at 85% 20%,#4f869837,transparent 54%),
+  linear-gradient(125deg,#17303b,#121d28);
+ border-radius:7px 7px 22px 22px;
+}
+#page-hub .binch-renaissance-portal[data-to="tresors"]{
+ --p15-portal-edge:#dfbdda;--p15-portal-mark:"◇";
+ --p15-portal-mark-color:#cca1d7;
+ --p15-portal-material:
+  conic-gradient(from -25deg at 85% 60%,#c9a4da13 0 30deg,transparent 30deg 78deg,#d4b1eb20 78deg 106deg,transparent 106deg 360deg),
+  radial-gradient(circle at 84% 67%,#8c65b247,transparent 45%),
+  linear-gradient(130deg,#272238,#14212f);
+ border-radius:7px 25px 7px 24px;
+}
+#page-hub .binch-renaissance-portal:hover{
+ border-color:var(--p15-portal-edge,#f2deb4);
+ box-shadow:0 17px 36px #0009,0 0 0 1px color-mix(in srgb,var(--p15-portal-edge) 39%,transparent),inset 0 1px #f7e7cc2b;
+}
+#page-hub .binch-renaissance-portal:focus-visible{
+ outline:3px solid var(--p15-portal-edge,#ffe0a1);
+ outline-offset:3px;
+}
+html[data-binch-forsaken="true"] #page-hub .binch-renaissance-portal{
+ box-shadow:0 14px 32px #000b,inset 0 1px #dac4e22b;
+}
+html[data-binch-shaaby="true"] #page-hub .binch-renaissance-portal{
+ box-shadow:0 13px 30px #000a,inset 0 1px #f0dfa51a;
+}
+@media(max-width:760px){
+ #page-hub .binch-renaissance-portal{
+  min-height:112px;padding:12px 11px;
+ }
+ #page-hub .binch-renaissance-portal::after{
+  width:83px!important;height:85px!important;font-size:75px;
+  bottom:-10px!important;right:-7px!important;
+ }
+ #page-hub .binch-renaissance-portal .binch-portal-icon{
+  flex-shrink:0;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ #page-hub .binch-renaissance-portal{
+  transform:none!important;animation:none!important;transition:none!important;
+ }
+}
+html[data-binch-detail="lite"] #page-hub .binch-renaissance-portal{
+ box-shadow:none;transition:none;
+}
+@media(forced-colors:active){
+ #page-hub .binch-renaissance-portal{border:2px solid CanvasText!important;background:Canvas!important;color:CanvasText!important}
+ #page-hub .binch-renaissance-portal::after{display:none}
+}

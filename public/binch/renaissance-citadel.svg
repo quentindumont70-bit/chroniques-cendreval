@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 760" role="img" aria-label="Citadelle imaginaire dans les brumes d'une vallée fantastique">
+<defs>
+ <linearGradient id="sky" x2=".2" y2="1"><stop stop-color="#101b30"/><stop offset=".57" stop-color="#385057"/><stop offset="1" stop-color="#996540"/></linearGradient>
+ <radialGradient id="halo"><stop stop-color="#fff4bb" stop-opacity=".9"/><stop offset=".21" stop-color="#ffc386" stop-opacity=".4"/><stop offset="1" stop-color="#e6b06c" stop-opacity="0"/></radialGradient>
+ <linearGradient id="ridge" x2="0" y2="1"><stop stop-color="#4e7771"/><stop offset="1" stop-color="#102c2e"/></linearGradient>
+ <linearGradient id="river" x2="0" y2="1"><stop stop-color="#e2af7a" stop-opacity=".7"/><stop offset="1" stop-color="#33615b" stop-opacity=".4"/></linearGradient>
+ <pattern id="stars" width="181" height="119" patternUnits="userSpaceOnUse"><circle cx="23" cy="14" r="1.2" fill="#f9eacc" opacity=".6"/><circle cx="131" cy="78" r=".8" fill="#f5eed6" opacity=".5"/></pattern>
+ <g id="fir"><path d="M0 0V-78M-23-9 0-70 23-9M-21-27 0-87 21-27M-14-46 0-91 14-46" stroke="#0b2624" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g>
+</defs>
+<path fill="url(#sky)" d="M0 0h1600v760H0z"/>
+<path fill="url(#stars)" d="M0 0h1600v360H0z"/>
+<circle cx="1165" cy="177" r="240" fill="url(#halo)"/>
+<circle cx="1165" cy="177" r="65" fill="#ffe5b1" opacity=".95"/>
+<path d="m-40 475 195-159 95 56 121-139 130 170 143-150 146 190 111-112 118 83 109-177 152 174 116-94 179 162V760H-40Z" fill="#37545a" opacity=".76"/>
+<path d="m258 366 113-133 130 170-127-104zm365-95 167 172-140-95  -64 41zm504-34 152 174-132-95-86 67z" fill="#e3dbbb" opacity=".19"/>
+<path d="m-40 555 188-92 173 65 135-100 184 104 137-99 175 121 166-107 213 69 190-80 140 78v250H-40Z" fill="url(#ridge)"/>
+<path d="M0 588q180-75 354-9t340-2q165-49 296 6t340-55q150-43 270-2v234H0Z" fill="#173936"/>
+<ellipse cx="1055" cy="563" rx="504" ry="52" fill="#e7bd89" opacity=".12"/>
+<path d="M1167 562q-160 19-172 68t-146 73q-88 8-170 57h584q-128-80-96-122t0-76" fill="url(#river)"/>
+<!-- Citadel, designed as an original fantasy skyline -->
+<path d="m981 492 56-62 25-75 115-53 93 35 92 99 47 67-15 52H986Z" fill="#10272b"/>
+<path d="M1043 448V317h40v131zm10-133-9-14 18-37 19 37-8 14zm67 136V258h69v193zm14-191-12-19 33-81 32 81-11 19zm102 185V295h51v150zm10-151-9-13 26-52 24 52-10 13zm82 155V344h35v106zm6-109-5-12 16-28 16 28-7 12z" fill="#122e31" stroke="#63827a" stroke-width="2" stroke-opacity=".5"/>
+<path d="M1141 333h10v21h-10zm0 50h10v22h-10zm-84-44h9v22h-9zm197-8h9v22h-9zm83 30h9v23h-9zm-185-114h8v26h-8z" fill="#f5c783" opacity=".95"/>
+<path d="M1153 160v-36m-94 141v-31m205-6v-29" fill="none" stroke="#d9bd88" stroke-width="2" opacity=".6"/>
+<path d="M1154 128q24-15 39 0v18q-19-10-39 0z" fill="#cfa773" opacity=".7"/>
+<path d="M-20 703q171-96 311-56t271 84q80 28 183 29H-20Z" fill="#0b2622"/>
+<path d="M1326 614q134-85 294-48v194h-510q116-91 216-146" fill="#0a2822"/>
+<g opacity=".9"><use href="#fir" x="45" y="653"/><use href="#fir" x="120" y="651"/><use href="#fir" x="201" y="658"/><use href="#fir" x="278" y="652"/><use href="#fir" x="366" y="678"/><use href="#fir" x="454" y="683"/><use href="#fir" x="1350" y="640"/><use href="#fir" x="1421" y="609"/><use href="#fir" x="1500" y="625"/><use href="#fir" x="1571" y="638"/></g>
+<path d="M0 0h1600v760H0Z" fill="#081314" opacity=".08"/>
+</svg>
