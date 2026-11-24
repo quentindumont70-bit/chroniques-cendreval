@@ -1,0 +1,302 @@
+/* BINCH RENAISSANCE P17 — GNOME MAGE / LA BIBLIOTHÈQUE DES ÉQUATIONS
+ * Cinematic observatory, precise art direction: brass, etched parchment,
+ * rotating astronomy, suspended books and arcane light.
+ * This is an actual saved race + class identity, not a recolored generic theme.
+ */
+html[data-binch-mage-library="true"]{
+ --mage-ink:#f7dfb4;--mage-stars:#94edfa;--mage-metal:#e8c48a;
+ --mage-dusk:#0c1827;--mage-dome:#17263b;--mage-edge:#baa576;
+ --p14-medal:#ffdfb1;--p14-ink:#e7f7fc;--p14-edge:#ddc593;
+ --p14-glow:#68d9fa;--p14-tint:#15273a;--p14-card:#16293bde;
+ --p14-corner:28px 7px 28px 7px;
+ --p14-ornament:url("./gnome-mage-astrolabe-p17.svg");
+}
+html[data-binch-mage-library="true"] body{background:#07101c}
+html[data-binch-mage-library="true"] #page-hub.binch-adventure-ready #binch-adventure-home{
+ gap:clamp(15px,2.1vw,25px);
+}
+/* Actual mounted application only: the older #binch-front is hidden. */
+html[data-binch-mage-library="true"] #page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card{
+ position:relative;isolation:isolate;overflow:hidden;
+ min-height:clamp(575px,52vw,795px);
+ border:2px solid #c6a979!important;
+ border-top:5px solid #d5b685!important;
+ border-radius:32px 5px 30px 6px;
+ background-color:#0b1526;
+ box-shadow:0 38px 105px #000e,0 0 0 1px #8bcdda30,inset 0 0 0 7px #c9ac7830;
+}
+/* Avoid an accidental double legacy foreground over the painting. */
+html[data-binch-mage-library="true"] #page-hub .binch-character-card:has(.binch-identity-composition)::before{
+ background:none!important;filter:none!important;
+}
+html[data-binch-mage-library="true"] #page-hub .binch-character-card > .binch-identity-composition{
+ position:absolute;inset:0;z-index:0;overflow:hidden;
+ border-radius:inherit;pointer-events:none;
+}
+html[data-binch-mage-library="true"][data-br-class="mage"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-landscape{
+ background-image:
+  linear-gradient(90deg,#071322f5 0%,#081526cf 22%,#0b1c2b64 49%,#0b1b2a09 72%),
+  linear-gradient(0deg,#091522ed 0%,transparent 32%),
+  url("./gnome-mage-library-p17.webp");
+ background-position:center,center,71% 41%;
+ background-size:cover;background-repeat:no-repeat;
+ filter:contrast(1.07) saturate(1.06);
+}
+html[data-binch-mage-library="true"][data-br-race="gnome"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-architecture{
+ background-image:url("./gnome-mage-astrolabe-p17.svg");
+ background-size:clamp(200px,26vw,360px) auto;
+ background-position:left -108px top -99px;
+ background-repeat:no-repeat;
+ opacity:.3;mix-blend-mode:screen;
+ filter:drop-shadow(0 10px 22px #000c);
+ mask-image:linear-gradient(90deg,#000,transparent 86%);
+}
+html[data-binch-mage-library="true"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-aura{
+ background:
+  radial-gradient(ellipse at 74% 22%,#8eecf625,transparent 45%),
+  radial-gradient(ellipse at 42% 76%,#ebba7836,transparent 35%);
+ opacity:.77;
+ animation:binch-mage-aurora 26s ease-in-out infinite;
+}
+@keyframes binch-mage-aurora{
+ 0%,60%,100%{opacity:.7}
+ 72%,80%{opacity:.89}
+}
+html[data-binch-mage-library="true"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-professions{
+ color:#ebd6a9;text-shadow:0 0 23px #7ccef1a0;opacity:.7;
+}
+html[data-binch-mage-library="true"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-professions::before{
+ content:var(--br-job-glyph);right:7%;bottom:7%;font-size:2.3rem;
+}
+html[data-binch-mage-library="true"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-professions::after{
+ content:var(--br-second-glyph);right:15%;bottom:23%;font-size:1.5rem;
+}
+html[data-binch-mage-library="true"] #page-hub .binch-character-card h1{
+ color:#fff0d5;
+ font-family:Georgia,serif;
+ text-shadow:0 5px 31px #020a17,0 0 18px #0b1422;
+}
+html[data-binch-mage-library="true"] #page-hub .binch-character-card .binch-kicker{
+ color:#d5eefa;letter-spacing:.17em;text-shadow:0 3px 12px #000;
+}
+html[data-binch-mage-library="true"] #page-hub .binch-character-card #binch-home-meta{
+ color:#f1e8d5;text-shadow:0 3px 12px #000;
+}
+html[data-binch-mage-library="true"] #page-hub .binch-character-card .binch-portrait{
+ border:2px solid #e3c893;border-radius:21px 5px 21px 5px;
+ background:radial-gradient(ellipse at 60% 20%,#3a4a58,#0b1627);
+ box-shadow:0 0 0 4px #090f19e9,0 0 0 7px #e1c38986,0 0 32px #7cdff65d;
+}
+html[data-binch-mage-library="true"] #page-hub .binch-character-card .binch-level{
+ border-color:#d5bb89;
+ background:radial-gradient(circle at 34% 21%,#31465a,#131e30 61%,#07101c);
+ box-shadow:inset 0 0 0 7px #081522,inset 0 0 0 8px #d4b788,0 13px 41px #000b,0 0 23px #70d5e62b;
+}
+html[data-binch-mage-library="true"] #page-hub .binch-character-card .binch-level strong{
+ color:#ffe6b7;text-shadow:0 2px 12px #000;
+}
+html[data-binch-mage-library="true"] #page-hub .binch-character-card .binch-level small{color:#c8edf7}
+html[data-binch-mage-library="true"] #page-hub .binch-character-card .binch-level-ring{filter:drop-shadow(0 0 5px #7ad8f05a)}
+/* P17 distinct REAL task/route panels: angled brass corner cuts, charts and parchment. */
+html[data-binch-mage-library="true"] #page-hub #binch-adventure-home :is(.binch-priority-guard,.binch-route){
+ border:1px solid #d0b284;
+ border-top:4px double #efcf94;
+ border-radius:25px 4px 20px 4px;
+ background-image:linear-gradient(110deg,#0c1d31f5,#1a2f42eb 64%,#263946d3),
+  url("./gnome-mage-astrolabe-p17.svg");
+ background-position:center,right -100px top -106px;
+ background-size:cover,285px auto;
+ background-repeat:no-repeat;
+ box-shadow:inset 0 1px #f6e2c53a,0 22px 48px #0009;
+}
+html[data-binch-mage-library="true"] #page-hub #binch-adventure-home .binch-priority-guard .binch-guard-counter{
+ border:1px solid #c4b487;color:#fce6b3;background:#15283c;
+ border-radius:17px 3px 15px 3px;
+}
+html[data-binch-mage-library="true"] #page-hub #binch-adventure-home :is(.binch-guard-list>button,.binch-route-task){
+ border:1px solid #7f9baf;border-top:3px double #c7aa79;
+ background:linear-gradient(120deg,#19334ae8,#101f34ee);
+ border-radius:18px 4px 15px 4px;
+ box-shadow:inset 0 1px #f4ddb418,0 9px 22px #0007;
+}
+html[data-binch-mage-library="true"] #page-hub #binch-adventure-home .binch-route-step.pinned .binch-route-task{
+ border-color:#eac78b;box-shadow:inset 4px 0 #d9ba7e,0 11px 23px #000a;
+}
+html[data-binch-mage-library="true"] #page-hub #binch-adventure-home .binch-route h2{color:#ffe1a9}
+html[data-binch-mage-library="true"] #page-hub #binch-adventure-home .binch-route-tools input{
+ border-color:#a1bac6;background:#0e2235;color:#f6ead9;min-height:44px;
+}
+/* Existing routing and event listeners remain; only visual material changes. */
+html[data-binch-mage-library="true"] #app nav.nav{
+ border:1px solid #c7b487;border-radius:22px 3px 19px 4px;
+ background:linear-gradient(120deg,#183042f4,#0c1b2cf8);
+ box-shadow:0 13px 34px #000b,inset 0 1px #e9d4b32b;
+}
+html[data-binch-mage-library="true"] #app nav.nav button{
+ border:1px solid #9caaa7;border-radius:15px 3px 15px 3px;
+ background:linear-gradient(120deg,#283c4b,#0e263a);color:#f0e1c5;
+}
+html[data-binch-mage-library="true"] #app nav.nav button.active{
+ border-color:#e3c68d;
+ background:linear-gradient(125deg,#e4c28d,#7aabb8);
+ color:#0b1a29;
+ box-shadow:inset 0 1px #ffe9bd,0 0 15px #84c4dc4b;
+}
+html[data-binch-mage-library="true"] #app .app-head #binch-profile-trigger.identity{
+ border:1px solid #e4ca96;border-radius:20px 4px 18px 4px;
+ background:linear-gradient(127deg,#314352,#14263a);
+ box-shadow:inset 0 1px #ffe3b342,0 8px 24px #0009;
+ color:#f5e7c9;
+}
+html[data-binch-mage-library="true"] #app .app-head #binch-profile-trigger.identity::after{
+ content:"✣";color:#89e1f2;
+}
+html[data-binch-mage-library="true"] #app :is(.tile,.panel.section,.binch-gm-watch){
+ border:1px solid #c1a57b;
+ border-radius:21px 5px 18px 5px;
+ background-image:linear-gradient(136deg,#122337f8,#172b3cf1 62%,#233b47dc),
+  url("./gnome-mage-astrolabe-p17.svg");
+ background-size:cover,142px auto;
+ background-position:center,right -68px top -56px;
+ background-repeat:no-repeat;
+ box-shadow:inset 0 1px #efdab12b,0 14px 32px #0009;
+}
+html[data-binch-mage-library="true"] #page-hub .binch-renaissance-portal{
+ border:1px solid #d3b888;
+ border-radius:20px 4px 18px 4px;
+ box-shadow:inset 0 1px #eddeb63b,0 12px 33px #000a;
+}
+html[data-binch-mage-library="true"] #app .panel.section h2{color:#f4d9a7}
+/* Unsaved reforge draft is immersive, but NEVER writes character data. */
+.binch-reforge-preview[data-binch-mage-library-preview="true"]{
+ min-height:clamp(245px,32vw,390px);
+ border:2px solid #e1c494;border-top-width:5px;
+ border-radius:22px 4px 23px 4px;
+ background-image:
+  linear-gradient(90deg,#091524f8,#10263aab 56%,#10283c12),
+  url("./gnome-mage-library-p17.webp");
+ background-position:center,72% 43%;
+ background-size:cover;background-repeat:no-repeat;
+ box-shadow:inset 0 0 0 6px #f0d9af1b,0 18px 43px #000c;
+}
+.binch-reforge-preview[data-binch-mage-library-preview="true"]::before{
+ background-image:url("./gnome-mage-astrolabe-p17.svg");
+ background-position:right -62px top -70px;
+ background-size:190px auto;background-repeat:no-repeat;
+ opacity:.32;filter:none;mask-image:none;
+}
+.binch-reforge-preview[data-binch-mage-library-preview="true"] .binch-reforge-summary{
+ color:#fff0d5;text-shadow:0 3px 17px #000;
+ font-size:clamp(1.15rem,2.8vw,2.1rem);
+}
+.binch-reforge-dialog[data-binch-preview="mage-library"]{
+ --p14-preview-metal:#ead6ad;
+ --p14-preview-tint:#172e42;
+ --p14-preview-ornament:url("./gnome-mage-astrolabe-p17.svg");
+ border:2px solid #cdb687;border-top:5px solid #e7d3a7;
+ border-radius:23px 5px 21px 5px;
+ background:linear-gradient(138deg,#223a4b,#101f34 72%);
+}
+.binch-reforge-dialog[data-binch-preview="mage-library"] .binch-reforge-frame{
+ background-image:var(--p14-preview-ornament),linear-gradient(140deg,#1e3952,#0a1c2f);
+ background-size:218px auto,cover;background-position:right -73px top -63px,center;
+ background-repeat:no-repeat;
+}
+.binch-reforge-dialog[data-binch-preview="mage-library"] .binch-reforge-set legend{color:#f2d8a9}
+.binch-reforge-dialog[data-binch-preview="mage-library"] .binch-reforge-choice.selected{
+ border-color:#f1cf9b;
+ background:linear-gradient(127deg,#2f5362,#1b2942);
+}
+#onboarding:has(#race-choices [data-race="Gnome"].selected):has(#class-choices [data-classe="Mage"].selected){
+ --br-selected-world:url("./gnome-mage-library-p17.webp");
+ background-image:linear-gradient(90deg,#091322f4,#101e31d9 43%,#121d2ba3 83%),
+  var(--br-selected-world);
+ background-size:cover;background-position:center,72% center;
+}
+#onboarding:has(#race-choices [data-race="Gnome"].selected) #class-choices [data-classe="Mage"]{
+ --br-choice-art:url("./gnome-mage-library-p17.webp");
+ --br-choice-accent:#97e4f5;
+}
+#onboarding:has(#race-choices [data-race="Gnome"].selected):has(#class-choices [data-classe="Mage"].selected) .onboard-card{
+ border:2px solid #dec593;border-radius:25px 5px 23px 5px;
+ box-shadow:0 28px 100px #000e,inset 0 0 0 5px #ffdb9730;
+}
+@media(max-width:760px){
+ html[data-binch-mage-library="true"] #page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card{
+  display:flex!important;flex-direction:column!important;justify-content:flex-end!important;
+  align-items:stretch!important;gap:13px!important;
+  min-height:clamp(590px,148vw,715px)!important;
+  padding:clamp(245px,66vw,332px) 18px 22px!important;
+  border-radius:23px 5px 21px 5px;
+ }
+ html[data-binch-mage-library="true"] #page-hub .binch-character-card > .binch-portrait{
+  position:absolute!important;top:64px;left:19px;bottom:auto;right:auto;
+  width:68px!important;height:68px!important;min-width:68px!important;
+  grid-column:auto!important;grid-row:auto!important;z-index:3;
+ }
+ html[data-binch-mage-library="true"] #page-hub .binch-character-card > .binch-portrait + div{
+  width:100%!important;max-width:100%!important;min-width:0!important;
+  grid-column:auto!important;grid-row:auto!important;
+  order:1;align-self:stretch!important;text-align:left;
+ }
+ html[data-binch-mage-library="true"] #page-hub .binch-character-card h1{
+  font:700 clamp(1.85rem,7.4vw,3.05rem)/1.07 Georgia,serif!important;
+  margin:5px 0 9px!important;max-width:100%;
+  word-break:normal!important;overflow-wrap:normal!important;
+  text-wrap:balance;
+ }
+ html[data-binch-mage-library="true"] #page-hub .binch-character-card .binch-level{
+  position:relative!important;order:2;
+  align-self:flex-start!important;
+  width:103px!important;height:103px!important;
+  min-width:103px!important;min-height:103px!important;
+  max-width:103px!important;max-height:103px!important;
+  border-radius:50%!important;padding:15px 10px!important;
+ }
+ html[data-binch-mage-library="true"] #page-hub .binch-character-card .binch-level strong{
+  font-size:2.55rem!important;
+ }
+ html[data-binch-mage-library="true"] #page-hub .binch-character-card .binch-level small{font-size:.56rem!important}
+ html[data-binch-mage-library="true"][data-br-class="mage"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-landscape{
+  background-image:linear-gradient(180deg,#081322a0 0%,#08152314 24%,#10172749 43%,#091622e7 77%,#07111ef7 100%),url("./gnome-mage-library-p17.webp");
+  background-position:center,77% 42%;background-size:cover;
+ }
+ html[data-binch-mage-library="true"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-architecture{
+  background-size:170px auto;background-position:left -59px top -51px;opacity:.2;
+ }
+ html[data-binch-mage-library="true"] #page-hub #binch-adventure-home :is(.binch-route,.binch-priority-guard){
+  background-size:cover,180px auto;background-position:center,right -74px top -61px;
+ }
+ .binch-reforge-preview[data-binch-mage-library-preview="true"]{
+  min-height:240px;background-position:center,78% center;
+ }
+ #onboarding:has(#race-choices [data-race="Gnome"].selected):has(#class-choices [data-classe="Mage"].selected){
+  background-position:center,77% center;
+ }
+}
+@media(max-width:390px){
+ html[data-binch-mage-library="true"] #page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card{
+  min-height:590px!important;padding-top:225px!important;padding-inline:15px!important;
+ }
+ html[data-binch-mage-library="true"][data-br-class="mage"] #page-hub .binch-character-card > .binch-identity-composition .binch-identity-landscape{
+  background-position:center,80% 43%;
+ }
+ html[data-binch-mage-library="true"] #page-hub .binch-character-card h1{
+  font-size:clamp(1.65rem,7.1vw,2.6rem)!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-binch-mage-library="true"] .binch-identity-aura,
+ html[data-binch-mage-library="true"] :is(button,.binch-renaissance-portal){animation:none!important;transition:none!important}
+}
+html[data-binch-detail="lite"][data-binch-mage-library="true"] #page-hub .binch-identity-aura,
+html[data-binch-detail="lite"][data-binch-mage-library="true"] #page-hub .binch-identity-professions{display:none}
+html[data-binch-detail="lite"][data-binch-mage-library="true"] #page-hub .binch-identity-architecture{opacity:.08}
+html[data-binch-detail="lite"][data-binch-mage-library="true"] #page-hub .binch-identity-landscape{filter:none}
+@media(forced-colors:active){
+ html[data-binch-mage-library="true"] #page-hub :is(.binch-character-card,.binch-priority-guard,.binch-route),
+ .binch-reforge-preview[data-binch-mage-library-preview="true"]{
+  border:2px solid CanvasText!important;background:Canvas!important;color:CanvasText!important
+ }
+ html[data-binch-mage-library="true"] #page-hub .binch-identity-composition{display:none!important}
+}
