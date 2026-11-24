@@ -138,9 +138,9 @@ test('V263 : cache offline public et non-régression de l ancien écran',async()
   readFile(new URL('../package.json',import.meta.url),'utf8'),
   readFile(new URL('../docs/tournee-pro/PLAN-DE-LANCEMENT.md',import.meta.url),'utf8')
  ]);
- assert.match(sw,/big-cthu-public-v2-v265/);
+ assert.match(sw,/big-cthu-public-v2-v266/);
  assert.match(sw,/'\.\/tournee-v263-calendar\.css'/);
- assert.match(control,/big-cthu-public-v2-v265/);
+ assert.match(control,/big-cthu-public-v2-v266/);
  assert.match(pkg,/tests\/tournee-v263-effective-calendar\.test\.mjs/);
  assert.match(plan,/Golipette V263/);
  const app=await read('tournee-complete.html');

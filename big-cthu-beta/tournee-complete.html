@@ -585,6 +585,7 @@ body.tournee-locked #tour-save-strip{display:none}
 <link rel="stylesheet" href="./tournee-medical-ops.css">
 <link rel="stylesheet" href="./tournee-v262-mobile.css">
 <link rel="stylesheet" href="./tournee-v263-calendar.css">
+<link rel="stylesheet" href="./tournee-v266-intake.css">
 </head>
 <body class="tournee-locked tournee-checking"><section id="tour-security-gate" hidden role="dialog" aria-modal="true" aria-labelledby="tour-backup-title">
 <h1 id="tour-backup-title">Mes sauvegardes</h1>
@@ -1046,7 +1047,13 @@ function maps(a){return"https://www.google.com/maps/search/?api=1&query="+encode
 function dateFor(d){return DT(d)}
 function dkey(d){return d}
 function rel(d){const diff=Math.round((dateFor(d)-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/864e5);return diff===0?"Aujourd'hui":diff===1?"Demain":diff===-1?"Hier":JN[DT(d).getDay()]}
-function list(d){const L=P.filter(p=>onDate(p,d)),o=st.get("ord_"+dkey(d),null);if(!o)return L;return L.slice().sort((a,b)=>(o.indexOf(a.id)+1||999)-(o.indexOf(b.id)+1||999))}
+function list(d){
+ const L=P.filter(p=>onDate(p,d)),o=st.get("ord_"+dkey(d),null);
+ const ordered=o?L.slice().sort((a,b)=>(o.indexOf(a.id)+1||999)-(o.indexOf(b.id)+1||999)):L;
+ // V266: un patient explicitement epingle en premier reste premier meme si un ordre journalier existe.
+ if(!ordered.some(p=>p.routeFirst))return ordered;
+ return ordered.slice().sort((a,b)=>Number(!!b.routeFirst)-Number(!!a.routeFirst));
+}
 function doneSet(){return st.get("done_"+dkey(day),[]).concat(st.get("abs_"+dkey(day),[]))}
 function initials(n){const w=n.split(" ");return (w[0][0]+(w[w.length-1][0]||"")).toUpperCase()}
 function setTheme(t){st.set("theme",t);if(t==="auto")autoAmb();else document.documentElement.dataset.theme=t;skSync();const m=document.querySelector('meta[name=theme-color]');const th=THEMES.find(x=>x[0]===t);if(m&&th)m.content=th[4];renderPk()}
@@ -1862,27 +1869,35 @@ async function cfgSave(msg){if(!CFG.ref){try{TOUR_STORE.setItem("tidel_Pl",JSON.
 function toTxt(h){return String(h||"").replace(/<span class="code">(.*?)<\/span>/g,"[$1]").replace(/<br\s*\/?>/g,"\n").replace(/<[^>]+>/g,"")}
 function toHtml(t){return esc(t.trim()).replace(/\[([^\]]+)\]/g,'<span class="code">$1</span>').replace(/\n/g,"<br>")}
 let DR=null;
-function editP(id){const src=id?P.find(x=>x.id===id):{id:"p"+Date.now().toString(36),n:"",h:"",a:"",soins:"",j:[DT(day).getDay()]};DR=JSON.parse(JSON.stringify(src));DR._new=!id;edForm()}
+function editP(id){const src=id?P.find(x=>x.id===id):{id:"p"+Date.now().toString(36),n:"",h:"",a:"",soins:"",deb:day,j:[DT(day).getDay()]};DR=JSON.parse(JSON.stringify(src));DR._new=!id;edForm()}
 function edForm(){const p=DR,sh=document.getElementById("sheet"),jj=p.j||ALL,CW=mkPer(wk(day)[0],addD(wk(day)[0],13)),ex=CW.filter(s=>(p.add||[]).includes(s)||(p.rm||[]).includes(s)||(p.only||[]).includes(s));
  const f=(k,l,v,ph,ta)=>`<label class="fl">${l}${ta?`<textarea id="e_${k}" placeholder="${ph||""}">${esc(v||"")}</textarea>`:`<input type="search" id="e_${k}" value="${esc(v||"")}" placeholder="${ph||""}">`}</label>`;
  sh.innerHTML=`<div class="sh"><div class="t"><button class="hbtn" onclick="closeF()" aria-label="Fermer">‹</button><h2>${p._new?"Nouveau patient":"Modifier · "+esc(p.n)}</h2></div></div><div class="sb">
- <div class="blk">${f("n","Nom Prénom",p.n,"DUPONT Marie")}${f("h","Horaire",p.h,"7h15, 9h-10h…")}${f("a","Adresse",p.a,"12 rue …, 69002 Lyon")}${f("etage","Étage / porte",p.etage,"3e étage, porte gauche")}</div>
+ <div class="blk">${f("n","Nom Prénom",p.n,"DUPONT Marie")}${f("h","Horaire",p.h,"7h15, 9h-10h…")}${f("a","Adresse",p.a,"12 rue …, 69002 Lyon")}<label class="fl" for="e_deb">Début de prise en charge<input id="e_deb" type="date" value="${esc(p.deb||"")}" required></label>${f("etage","Étage / porte",p.etage,"3e étage, porte gauche")}<label class="tq-route-first"><input type="checkbox" id="e_first" ${p.routeFirst?"checked":""}><span>🏁 En première position de la tournée les jours de passage</span></label></div>
  <div class="blk">${f("acces","Accès (mets les codes entre crochets : [1234])",toTxt(p.acces),"Code rue [1234], puis…",1)}${f("tel","Téléphones (séparés par des virgules)",(p.tel||[]).join(", "),"0612345678")}${f("telNote","Contact",p.telNote,"Ex. sa fille")}</div>
  <div class="blk">${f("soins","Soins",toTxt(p.soins),"Une ligne par soin",1)}${f("alerte","Alerte (bandeau orange)",p.alerte,"Ex. sonner longtemps")}${f("labo","Laboratoire",p.labo,"Nom du laboratoire")}${f("cot","Cotation habituelle (aide à la facturation)",p.cot,"Ex. AMI 1 + IFD")}</div><div class="blk"><div class="lab">Dossier</div>${f("hab","À savoir (habitudes, relationnel, particularités)",p.hab,"Ex. aime parler, café à 8h, chien gentil",1)}${f("med","Médecin traitant",p.med,"Dr …")}${f("medtel","Téléphone du médecin",p.medtel,"04…")}${f("all","Allergies",p.all,"Ex. pénicilline, latex")}${f("atcd","Antécédents / contexte",p.atcd,"Ex. diabète type 2, IC",1)}${f("taches","Rappels (une ligne : hebdo: texte ou mensuel: texte)",(p.taches||[]).map(t=>t.f+": "+t.txt).join("\n"),"hebdo: Préparation des traitements",1)}</div>
- <div class="blk"><div class="lab">Jours habituels</div><div class="wk">${[1,2,3,4,5,6,0].map(d=>`<button class="${jj.includes(d)&&!p.only?"y":""}" onclick="edDay(${d})">${JC[d]}</button>`).join("")}</div>
+ <div class="blk"><div class="lab">Jours habituels</div>${!p.cyc?'<button type="button" class="btn ghost tq-every-day" onclick="edEveryDay()">✓ Tous les jours</button>':""}<div class="wk">${[1,2,3,4,5,6,0].map(d=>`<button class="${jj.includes(d)&&!p.only?"y":""}" onclick="edDay(${d})">${JC[d]}</button>`).join("")}</div>
  <div class="lab" style="margin-top:12px">Exceptions · 2 semaines à partir du ${short(CW[0])} · tape une date pour l'activer ou la retirer</div><div class="cal">${CW.map(s=>`<span class="${onDate(p,s)?"y":""} ${ex.includes(s)?"exd":""}" onclick="edDate('${s}')">${JC[DT(s).getDay()][0]}<b>${DT(s).getDate()}</b></span>`).join("")}</div>
  ${p.cyc?`<div class="sub" style="margin-top:7px">Rythme en cycles (chimio / Granocytes). Toucher un jour le remplace par des jours fixes.</div>`:""}${p.only?`<div class="sub" style="margin-top:7px">Ce patient n'est vu qu'à des dates précises. <button class="lnk" onclick="delete DR.only;edForm()">Revenir aux jours habituels</button></div>`:""}${f("exc","Note sur les exceptions",p.exc,"Ex. pas de passage samedi 7")}</div>
  ${trtForm(p)}${suspForm(p)}
  <div class="acts" style="margin-bottom:12px"><button class="btn" style="flex:1;justify-content:center" onclick="edSave()">Enregistrer</button>${p._new?"":`<button class="btn ghost" id="delb" onclick="edDel(this)">Retirer de la tournée</button>`}</div>
  <div class="warnbox">Les modifications s'appliquent tout de suite chez les remplaçants qui utilisent le lien. Pense à me les signaler pour mettre à jour la sauvegarde.</div></div>`;
  sh.classList.add("on","ed");sh.scrollTop=sh.scrollTop}
-function edGrab(){["n","h","a","etage","telNote","alerte","labo","exc","cot","med","all","atcd","hab"].forEach(k=>{const v=document.getElementById("e_"+k).value.trim();if(v)DR[k]=v;else delete DR[k]});
+function edGrab(){
+ const begin=document.getElementById("e_deb");
+ if(begin){const value=begin.value.trim();if(value)DR.deb=value;else delete DR.deb}
+ const priority=document.getElementById("e_first");
+ if(priority){if(priority.checked)DR.routeFirst=true;else delete DR.routeFirst}
+ ["n","h","a","etage","telNote","alerte","labo","exc","cot","med","all","atcd","hab"].forEach(k=>{const v=document.getElementById("e_"+k).value.trim();if(v)DR[k]=v;else delete DR[k]});
  DR.acces=toHtml(document.getElementById("e_acces").value);if(!DR.acces)delete DR.acces;DR.soins=toHtml(document.getElementById("e_soins").value);
  const mt=document.getElementById("e_medtel").value.replace(/\D/g,"");if(mt)DR.medtel=mt;else delete DR.medtel;const tl=document.getElementById("e_tel").value.split(/[,;]/).map(x=>x.replace(/\D/g,"")).filter(Boolean);if(tl.length)DR.tel=tl;else delete DR.tel;
  const old=DR.taches||[],tk=document.getElementById("e_taches").value.split("\n").map(l=>l.trim()).filter(Boolean).map((l,i)=>{const m=l.match(/^(hebdo|mensuel)\s*:\s*(.+)$/i);const f=m?m[1].toLowerCase():"hebdo",txt=m?m[2]:l;const o=old.find(x=>x.txt===txt);return{k:o?o.k:"t"+i+Date.now().toString(36),txt,f}});if(tk.length)DR.taches=tk;else delete DR.taches;const et=document.getElementById("e_trt");if(et){const T=trtParse(et.value);if(T.length)DR.trt=T;else delete DR.trt;const pl=document.getElementById("e_pil").value.trim();if(pl)DR.pil=pl;else delete DR.pil;const H=hospParse(document.getElementById("e_hosp").value);if(H.length)DR.hosp=H;else delete DR.hosp}const fi=document.getElementById("e_fin");if(fi){if(fi.value)DR.fin=fi.value;else delete DR.fin}}
+function edEveryDay(){edGrab();if(DR.cyc){toast("Un patient avec cycle ne peut pas être converti ici sans vérification.");return}delete DR.only;delete DR.j;edForm()}
 function edDay(d){edGrab();if(DR.only)delete DR.only;if(DR.cyc){DR.j=DR.j||[];delete DR.cyc}let j=DR.j||ALL.slice();j=j.includes(d)?j.filter(x=>x!==d):j.concat(d);if(j.length===7)delete DR.j;else DR.j=j.sort();edForm()}
 function edDate(s){edGrab();const rm=a=>(DR[a]||[]).filter(x=>x!==s);if(DR.only){DR.only=DR.only.includes(s)?rm("only"):DR.only.concat(s)}else{const base=(DR.j||ALL).includes(DT(s).getDay());const on=onDate(DR,s);DR.add=rm("add");DR.rm=rm("rm");if(on&&base)DR.rm.push(s);else if(!on&&!base)DR.add.push(s);["add","rm"].forEach(k=>{if(!DR[k].length)delete DR[k]})}edForm()}
-async function edSave(){edGrab();if(!DR.n||!DR.a){toast("Il faut au moins un nom et une adresse");return}const isNew=DR._new;delete DR._new;if(!DR.h)DR.h="—";const i=P.findIndex(x=>x.id===DR.id);const prev=P.slice();const before=i>=0?P[i]:null;if(i<0)P=P.concat(DR);else{P=P.slice();P[i]=DR}if(await cfgSave(isNew?"Patient ajouté":"Fiche mise à jour")){const id=DR.id;try{fhLog(before,DR)}catch(e){}document.getElementById("sheet").classList.remove("ed");fiche(id,true)}else P=prev}
+async function edSave(){edGrab();if(!DR.n||!DR.a){toast("Il faut au moins un nom et une adresse");return}
+ if(DR._new&&!DR.deb){toast("Indique la date du premier passage. Aucun enregistrement.");return}
+ if(DR.deb&&!(/^\d{4}-\d{2}-\d{2}$/.test(DR.deb)&&!Number.isNaN(Date.parse(DR.deb+"T12:00:00Z")))){toast("Date de début invalide. Aucun enregistrement.");return}const isNew=DR._new;delete DR._new;if(!DR.h)DR.h="—";const i=P.findIndex(x=>x.id===DR.id);const prev=P.slice();const before=i>=0?P[i]:null;if(i<0)P=P.concat(DR);else{P=P.slice();P[i]=DR}if(await cfgSave(isNew?"Patient ajouté":"Fiche mise à jour")){const id=DR.id;try{fhLog(before,DR)}catch(e){}document.getElementById("sheet").classList.remove("ed");fiche(id,true)}else P=prev}
 async function edDel(b){if(!b.dataset.c){b.dataset.c=1;b.textContent="Confirmer le retrait";setTimeout(()=>{if(b.isConnected){b.dataset.c="";b.textContent="Retirer de la tournée"}},4000);return}const prev=P;P=P.filter(x=>x.id!==DR.id);if(await cfgSave("Patient retiré de la tournée"))closeF();else P=prev}
 async function mvP(id,dir){const i=P.findIndex(x=>x.id===id),j=i+dir;if(j<0||j>=P.length)return;const a=P.slice();[a[i],a[j]]=[a[j],a[i]];const prev=P;P=a;render();if(!(await cfgSave("Ordre de passage mis à jour"))){P=prev;render()}}
 
