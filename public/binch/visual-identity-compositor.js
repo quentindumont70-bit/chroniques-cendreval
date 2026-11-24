@@ -65,6 +65,8 @@ function apply(input){
  root.dataset.binchForsaken=String(Boolean(input?.onboarded&&c.profile.race==='MortVivant'&&c.profile.classe==='Démoniste'));
  // P16 third cinematic flagship: same Tauren race, entirely different shamanic world.
  root.dataset.binchStorm=String(Boolean(input?.onboarded&&c.profile.race==='Tauren'&&c.profile.classe==='Chaman'));
+ // Fourth premium flagship: Gnome Mage star-library, never activated on other races/classes.
+ root.dataset.binchMageLibrary=String(Boolean(input?.onboarded&&c.profile.race==='Gnome'&&c.profile.classe==='Mage'));
  root.dataset.brJobs=c.jobs.map(j=>j.effect).join(' ');
  for(const [key,value] of Object.entries(c.vars))root.style.setProperty(key,value);
  const note=document.getElementById('binch-identity-signature');
@@ -104,8 +106,9 @@ function refresh(){
  preview.dataset.binchShaabyPreview=String(c.profile.race==='Tauren'&&c.profile.classe==='Druide');
  preview.dataset.binchForsakenPreview=String(c.profile.race==='MortVivant'&&c.profile.classe==='Démoniste');
  preview.dataset.binchStormPreview=String(c.profile.race==='Tauren'&&c.profile.classe==='Chaman');
+ preview.dataset.binchMageLibraryPreview=String(c.profile.race==='Gnome'&&c.profile.classe==='Mage');
  // Reforge's surrounding materials follow the unsaved preview, not the saved character.
- dialog.dataset.binchPreview=c.profile.race==='Tauren'&&c.profile.classe==='Druide'?'shaaby':c.profile.race==='Tauren'&&c.profile.classe==='Chaman'?'storm':c.profile.race==='MortVivant'&&c.profile.classe==='Démoniste'?'forsaken':'other';
+ dialog.dataset.binchPreview=c.profile.race==='Tauren'&&c.profile.classe==='Druide'?'shaaby':c.profile.race==='Tauren'&&c.profile.classe==='Chaman'?'storm':c.profile.race==='Gnome'&&c.profile.classe==='Mage'?'mage-library':c.profile.race==='MortVivant'&&c.profile.classe==='Démoniste'?'forsaken':'other';
  preview.style.setProperty('--br-preview-world',c.vars['--br-class-world']);
  preview.style.setProperty('--br-preview-race',c.vars['--br-race-art']);
  preview.style.setProperty('--br-preview-metal',c.race.metal);
@@ -208,12 +211,14 @@ function attach(){
    portfolio.append(premium);
   }
   const saved=read();
-  const featured=saved?.onboarded&&saved.race==='Tauren'&&saved.classe==='Chaman'?'storm':
+  const featured=saved?.onboarded&&saved.race==='Gnome'&&saved.classe==='Mage'?'mage':
+   saved?.onboarded&&saved.race==='Tauren'&&saved.classe==='Chaman'?'storm':
    saved?.onboarded&&saved.race==='MortVivant'&&saved.classe==='Démoniste'?'forsaken':'tauren';
   premium.href='./premium-sanctuaries-review.html?identity='+featured;
-  premium.textContent=featured==='storm'?'Contempler le Cœur de l’Orage ✦':
+  premium.textContent=featured==='mage'?'Contempler la Bibliothèque des Équations ✦':
+   featured==='storm'?'Contempler le Cœur de l’Orage ✦':
    featured==='forsaken'?'Contempler le Pacte des Ombres ✦':
-   saved?.onboarded&&saved.race==='Tauren'&&saved.classe==='Druide'?'Contempler le sanctuaire de Shaaby ✦':'Comparer les trois sanctuaires premium ✦';
+   saved?.onboarded&&saved.race==='Tauren'&&saved.classe==='Druide'?'Contempler le sanctuaire de Shaaby ✦':'Comparer les quatre sanctuaires premium ✦';
   premium.setAttribute('aria-label','Ouvrir la galerie artistique premium, sans modifier le profil');
  }
  if(cinematic&&!cinematic.querySelector('.binch-identity-composition')){
