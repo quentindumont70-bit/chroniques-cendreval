@@ -60,7 +60,7 @@ test('P16: activation is exactly saved onboarded Tauren Chaman; other races/clas
 });
 test('P16: authentic character card, wizard and unsaved reforge all use unique storm artwork',()=>{
  assert.ok(html.includes('./tauren-shaman-storm-p16.css?v=001'));
- assert.ok(html.includes('./visual-identity-compositor.js?v=008'));
+ assert.ok(html.includes('./visual-identity-compositor.js?v=009'));
  for(const x of [
   '#page-hub.binch-adventure-ready #binch-adventure-home .binch-character-card',
   'data-binch-storm="true"', 'data-br-class="shaman"',
@@ -89,10 +89,10 @@ test('P16: mobile readability + rare accessible motion + low-graphics mode',()=>
  assert.ok(css.includes('outline:3px solid'));
 });
 test('P16: the gallery compares three premiums read-only and deep-link reveals storm',()=>{
- assert.match(gallery,/<title>La Binch Renaissance — Trois sanctuaires premium<\/title>/);
+ assert.match(gallery,/<title>La Binch Renaissance — Quatre sanctuaires premium<\/title>/);
  for(const key of ['tauren','forsaken','storm'])assert.ok(gallery.includes('data-pick="'+key+'"'));
  assert.ok(gallery.includes('url("./tauren-shaman-storm-p16.webp")'));
- assert.ok(gallery.includes("select(chosen==='storm'?'storm'"));
+ assert.ok(gallery.includes("select(chosen==='mage'?'mage':chosen==='storm'?'storm'"));
  assert.ok(gallery.includes("art:'./tauren-shaman-storm-p16.webp'"));
  assert.ok(gallery.includes("tags:['Tauren','Chaman','Minage','Forge']"));
  assert.ok(gallery.includes('./index.html'));
