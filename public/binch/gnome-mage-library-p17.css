@@ -309,3 +309,45 @@ html[data-binch-mage-library="true"] #app nav.nav :is(button,a):focus-visible,
  outline-offset:3px!important;
  box-shadow:0 0 0 6px #071623e0,0 0 0 8px #efd0a06e!important;
 }
+
+/* Actual 1440px screenshot: 17 top tabs had occupied three rows, pushing
+ * the high-fidelity hero outside the first fold. One navigable ribbon keeps
+ * ALL original buttons and listeners, with horizontal swipe/scroll and focus. */
+@media(min-width:761px){
+ html[data-binch-mage-library="true"] #app nav.nav{
+  display:flex!important;
+  flex-flow:row nowrap!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:9px!important;
+  min-height:68px!important;
+  max-height:76px!important;
+  width:100%;
+  padding:9px 10px!important;
+  margin-block:5px 12px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  overscroll-behavior-x:contain;
+  scroll-snap-type:x proximity;
+  scrollbar-color:#bca175 #142a37;
+  scrollbar-width:thin;
+ }
+ html[data-binch-mage-library="true"] #app nav.nav button{
+  flex:0 0 auto!important;
+  min-width:clamp(132px,11vw,175px)!important;
+  max-width:195px!important;
+  width:auto!important;
+  min-height:47px!important;
+  padding:9px 14px!important;
+  white-space:normal!important;
+  line-height:1.18;
+  scroll-snap-align:start;
+ }
+ html[data-binch-mage-library="true"] #app nav.nav::-webkit-scrollbar{height:7px}
+ html[data-binch-mage-library="true"] #app nav.nav::-webkit-scrollbar-thumb{
+  background:#b9a279;border-radius:8px;
+ }
+ html[data-binch-mage-library="true"] #app nav.nav button:focus-visible{
+  outline:3px solid #c4edfc!important;outline-offset:-3px;
+ }
+}
