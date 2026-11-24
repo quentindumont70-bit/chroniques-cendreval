@@ -142,9 +142,9 @@ test('V266 : aucune fiche réelle embarquée dans le code, chiffrement et caches
  assert.doesNotThrow(()=>new Script(js));
  assert.match(html,/function writeEncryptedVaultRecord\(record\)/);
  assert.match(js,/async function cfgSave\(msg\)/);
- assert.match(sw,/big-cthu-public-v2-v266/);
+ assert.match(sw,/big-cthu-public-v2-v267/);
  assert.match(sw,/'\.\/tournee-v266-intake\.css'/);
- assert.match(control,/big-cthu-public-v2-v266/);
+ assert.match(control,/big-cthu-public-v2-v267/);
  assert.match(pkg,/tests\/tournee-v266-new-patient-start\.test\.mjs/);
  assert.match(plan,/Golipette V266/);
  assert.doesNotMatch(html,/D'Andrea|Delandine|0763331378/i);

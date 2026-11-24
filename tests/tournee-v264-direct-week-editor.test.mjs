@@ -119,7 +119,7 @@ test('V264 : CSS compact sur iPhone, sans transmission, et cache public à jour'
  assert.match(css,/@media\(max-width:350px\)/);
  assert.match(css,/focus-visible/);
  assert.doesNotMatch(css,/@import|url\(|https?:\/\//);
- assert.match(sw,/big-cthu-public-v2-v266/);
+ assert.match(sw,/big-cthu-public-v2-v267/);
  assert.match(sw,/'\.\/tournee-v263-calendar\.css'/);
  assert.match(plan,/Golipette V264/);
  assert.match(pkg,/tests\/tournee-v264-direct-week-editor\.test\.mjs/);

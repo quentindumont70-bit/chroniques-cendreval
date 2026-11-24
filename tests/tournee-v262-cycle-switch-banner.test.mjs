@@ -157,7 +157,7 @@ test('V262 : cache offline, tests complets et documentation; aucun réseau dans 
   readFile(new URL('../docs/tournee-pro/PLAN-DE-LANCEMENT.md',import.meta.url),'utf8'),
   read('tournee-v262-mobile.css'),read('tournee-quick-core.js')
  ]);
- assert.match(sw,/big-cthu-public-v2-v266/);
+ assert.match(sw,/big-cthu-public-v2-v267/);
  assert.match(sw,/'\.\/tournee-v262-mobile\.css'/);
  assert.match(pkg,/tests\/tournee-v262-cycle-switch-banner\.test\.mjs/);
  assert.match(plan,/Golipette V262/);

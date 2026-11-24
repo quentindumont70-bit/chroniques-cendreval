@@ -1,0 +1,50 @@
+/* V267 — permanently accessible patient creation + high-contrast sort buttons.
+   Styling only; no patient data, no local storage or network. */
+.tq-patient-create{
+ display:flex;flex-direction:column;align-items:stretch;
+ gap:6px;margin:0 0 13px;padding:11px;
+ background:var(--card);border:1px solid var(--line);
+ border-radius:16px;box-shadow:var(--sh);
+}
+.tq-patient-create-button{
+ display:flex;align-items:center;justify-content:center;
+ width:100%;min-height:54px;padding:12px 15px;
+ border:2px solid var(--acc);border-radius:12px;
+ background:var(--acc);color:var(--acc-ink);
+ font:inherit;font-size:16px;font-weight:850;
+ letter-spacing:0;line-height:1.3;cursor:pointer;
+ text-align:center;opacity:1;
+}
+.tq-patient-create p{
+ color:var(--mut);font-size:12px;line-height:1.45;
+ margin:0 3px;overflow-wrap:anywhere;
+}
+.tq-patient-sort-actions{
+ display:flex;align-items:center;flex-wrap:wrap;gap:9px;
+ margin:8px 0 12px;
+}
+.tq-patient-sort-btn{
+ display:inline-flex;align-items:center;justify-content:center;
+ min-width:90px;min-height:48px;padding:10px 15px;
+ border:1.5px solid var(--line);border-radius:12px;
+ background:var(--card)!important;color:var(--ink)!important;
+ font:inherit;font-size:14px;font-weight:800;
+ letter-spacing:.01em;line-height:1.2;opacity:1!important;
+ cursor:pointer;box-shadow:var(--sh);
+ -webkit-text-fill-color:currentColor;
+}
+.tq-patient-sort-btn.is-active{
+ background:var(--acc)!important;color:var(--acc-ink)!important;
+ border-color:var(--acc);box-shadow:0 0 0 1px var(--acc);
+}
+.tq-patient-create-button:focus-visible,
+.tq-patient-sort-btn:focus-visible{
+ outline:3px solid var(--acc);outline-offset:3px;
+}
+@media(max-width:360px){
+ .tq-patient-sort-btn{flex:1;min-width:0}
+ .tq-patient-create{padding:9px}
+}
+@media(prefers-reduced-motion:reduce){
+ .tq-patient-create-button,.tq-patient-sort-btn{transition:none}
+}

@@ -66,8 +66,8 @@ test('V261 : aucun changement du coffre, mise en cache et CI complètes',async()
   readFile(new URL('../docs/tournee-pro/PLAN-DE-LANCEMENT.md',import.meta.url),'utf8'),
   readFile(new URL('tournee-v260-medical-ops-theme.test.mjs',import.meta.url),'utf8')
  ]);
- assert.match(sw,/big-cthu-public-v2-v266/);
- assert.match(control,/big-cthu-public-v2-v266/);
+ assert.match(sw,/big-cthu-public-v2-v267/);
+ assert.match(control,/big-cthu-public-v2-v267/);
  assert.match(sw,/'\.\/tournee-medical-ops\.css'/);
  assert.match(html,/function writeEncryptedVaultRecord\(record\)/);
  assert.match(html,/function tqPostitBlock\(\)/);
