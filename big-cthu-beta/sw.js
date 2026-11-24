@@ -6,7 +6,7 @@ const PUBLIC_SCENERY_CACHE='big-cthu-public-scenery-v1';
 const PUBLIC_ALPINE_PHOTO='/photo-1649401691853-6ecfa00f044e';
 const PUBLIC_SCENERY_PHOTOS=new Set([PUBLIC_ALPINE_PHOTO,'/photo-1523486230352-65ff5222cea4','/photo-1648565726114-cfb73eb46340']);
 const ASSETS=['./','./index.html','./cockpit-themes.css','./cinema-upgrade.css','./cockpit-themes.js','./maison-pulse.js','./nutrition.html','./cinema-nutrition.css','./nutrition-hub.js','./musique.html','./cinema-musique.css','./musique-studio.js','./action-favorites.js','./active-pulse.js','./idel-echeances.html','./idel-echeances-core.js','./idel-echeances.js','./next-session.js','./cockpit-neuf.html','./premium-cinema.html','./organic-cinema.html','./medical-ops-cinema.html','./tournee-complete.html','./tournee-medical-ops.css','./tournee-v262-mobile.css','./tournee-v263-calendar.css','./tournee-v266-intake.css','./tournee-v267-patients.css','./tournee-demarrage.html','./tournee-controle-iphone.html','./tournee-secours-v246.html','./tournee-import-v247.html','./tournee-quick-core.js','./tournee-diagnostic.html','./tournee-diagnostic-local.js','./tournee.html','./absences-demo.html','./absences-demo-core.js','./installation-iphone.html','./mobile-boot.js','./maison.html','./cinema-maison.css','./equipements.html','./migration-maison.html','./discobinch.html','./entretiens.html','./depenses-maison.html','./registre-maison.html','./force.html','./recettes.html','./escalade.html','./programmes.html','./repas.html','./contrats.html','./consommations.html','./rpg.html','./ugap-demo.html','./agenda.html','./capture.html','./cinema-daily.css','./passions.html','./cerveau.html','./garde-manger.html','./budget.html','./voyages.html','./voyages-core.js','./cantine.html','./cantine-core.js','./etudes.html','./apprentissage.html','./apprentissage-data.js','./parcours-scolaires.html','./code-permis.html','./annales.html','./examens.html','./flashcards.html','./fiches-imprimables.html','./etudiant.html','./outils.html','./outils-mesure.html','./outils-atelier.html','./outils-tempo.html','./outils-favoris.html','./outils-chantier.html','./outils-scientifique.html','./outils-photo.html','./outils-intervalles.html','./sauvegardes.html','./cinema-coffre.css','./manifest.webmanifest','./icon.svg','./apple-touch-icon.png'];
-self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});
+self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS.map(a=>new Request(new URL(a,self.registration.scope),{cache:'reload'})))).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('big-cthu-public-v2-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',event=>{
  const r=event.request;
@@ -44,6 +44,14 @@ self.addEventListener('fetch',event=>{
    if(response.status>=500)return (await offlineCopy())||response;
    return response;
   }).catch(offlineCopy));
+  return;
+ }
+ // The startup updater must not be held back by the previous app shell while online.
+ if(asset==='./mobile-boot.js'){
+  event.respondWith(fetch(r,{cache:'no-store'}).then(async response=>{
+   if(!response.ok)return (await caches.match(r,{ignoreSearch:true}))||response;
+   return response;
+  }).catch(()=>caches.match(r,{ignoreSearch:true})));
   return;
  }
  if(asset)event.respondWith(caches.match(r,{ignoreSearch:true}).then(hit=>hit||fetch(r)));
