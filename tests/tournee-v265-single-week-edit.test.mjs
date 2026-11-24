@@ -170,8 +170,8 @@ test('V265 : CSS, cache offline et feuille de route sont actualisés',async()=>{
  ]);
  assert.match(css,/\.tq-week-slot\[hidden\]\{display:none!important\}/);
  assert.match(css,/\.tq-week \.tq-actions button\{min-height:48px\}/);
- assert.match(sw,/big-cthu-public-v2-v265/);
- assert.match(control,/big-cthu-public-v2-v265/);
+ assert.match(sw,/big-cthu-public-v2-v266/);
+ assert.match(control,/big-cthu-public-v2-v266/);
  assert.match(sw,/'\.\/tournee-v263-calendar\.css'/);
  assert.match(pkg,/tests\/tournee-v265-single-week-edit\.test\.mjs/);
  assert.match(plan,/Golipette V265/);
