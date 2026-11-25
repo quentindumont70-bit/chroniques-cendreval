@@ -989,11 +989,13 @@ if("serviceWorker" in navigator && (location.protocol==="https:"||location.hostn
  let priorController=navigator.serviceWorker.controller;
  let interacted=false;
  let refreshing=false;
+ let pendingRefresh=false;
  for(const event of ['pointerdown','keydown','input','change'])document.addEventListener(event,()=>{interacted=true},{capture:true,passive:true});
  navigator.serviceWorker.addEventListener('controllerchange',()=>{
    const hadController=!!priorController;
    priorController=navigator.serviceWorker.controller;
    if(!hadController||!priorController)return;
+   pendingRefresh=true;
    if(!interacted&&!refreshing&&navigator.onLine!==false&&!document.hidden){refreshing=true;location.reload();return;}
    $('#refreshUpdate').hidden=false;
  });
@@ -1005,7 +1007,7 @@ if("serviceWorker" in navigator && (location.protocol==="https:"||location.hostn
      if(installing)installing.addEventListener('statechange',()=>{if(installing.state==='installed')showUpdate()});
    });
    if(navigator.onLine!==false)reg.update().catch(()=>{});
-   document.addEventListener('visibilitychange',()=>{if(!document.hidden && navigator.onLine!==false){if(!interacted&&!refreshing&&!$('#refreshUpdate').hidden){refreshing=true;location.reload();return;}reg.update().catch(()=>{})}});
+   document.addEventListener('visibilitychange',()=>{if(!document.hidden && navigator.onLine!==false){if(!interacted&&!refreshing&&pendingRefresh){refreshing=true;location.reload();return;}reg.update().catch(()=>{})}});
    window.addEventListener('pageshow',()=>{if(navigator.onLine!==false)reg.update().catch(()=>{});});
    window.addEventListener('online',()=>reg.update().catch(()=>{}));
  }).catch(()=>{});
