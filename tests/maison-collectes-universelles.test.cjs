@@ -1,0 +1,16 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const vm=require('node:vm');
+const source=fs.readFileSync(path.join(__dirname,'../big-cthu-beta/maison-collectes.js'),'utf8');
+const context={localStorage:{getItem:()=>null},document:{readyState:'loading',addEventListener(){}},window:{addEventListener(){}},setInterval(){}};
+vm.runInNewContext(source.replace(/\}\)\(\);\s*$/, 'globalThis.collectionCore=core;globalThis.legacyDates=makeSchedule();})();'),context);
+const k=context.collectionCore;
+const base={name:'Bac gris',color:'gris',type:'cycle',interval:2,anchor:'2026-11-27',dates:[],skip:[]};
+test('fortnight through new year',()=>assert.equal(k.occurrences(base,'2026-11-25').slice(0,4).join(','),'2026-11-27,2026-12-11,2026-12-25,2027-01-08'));
+test('report overrides original date',()=>assert.equal(k.occurrences({...base,skip:['2026-12-11'],dates:['2026-12-12']},'2026-12-01')[0],'2026-12-12'));
+test('explicit dates never extrapolate',()=>assert.equal(k.occurrences({...base,type:'dates',dates:['2026-12-12']},'2026-12-13').length,0));
+test('date validation and deduplication',()=>{assert.equal(k.valid('2026-02-30'),false);assert.equal(k.dateList('27/11/2026 2026-11-27').length,1);assert.equal(k.shift('2027-01-01',-1),'2026-12-31')});
+test('legacy official dates remain unchanged for December',()=>{assert.equal(context.legacyDates.filter(x=>x.kind==='ordures'&&x.date.startsWith('2026-12')).map(x=>x.date).join(','),'2026-12-04,2026-12-11,2026-12-18,2026-12-24,2026-12-31');assert.equal(context.legacyDates.some(x=>x.date.startsWith('2027')),false)});
+test('invalid rule and interval rejected',()=>{assert.throws(()=>k.clean({...base,interval:0}));assert.throws(()=>k.clean({...base,color:'unknown'}));});
